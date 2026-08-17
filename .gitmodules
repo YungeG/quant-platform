@@ -1,0 +1,15 @@
+[submodule "backtest"]
+	path = backtest
+	url = git@github.com:YungeG/quant-backtest.git
+[submodule "foundation"]
+	path = foundation
+	url = git@github.com:YungeG/quant-foundation.git
+[submodule "research-platform"]
+	path = research-platform
+	url = git@github.com:YungeG/quant-research-platform.git
+[submodule "strategy-validation"]
+	path = strategy-validation
+	url = git@github.com:YungeG/quant-strategy-validation.git
+[submodule "promotion-gate"]
+	path = promotion-gate
+	url = git@github.com:YungeG/quant-promotion-gate.git
