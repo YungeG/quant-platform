@@ -10,6 +10,7 @@ P00_BTA_RECEIPT = ROOT / "implementation/p00-bta-01-receipt.md"
 P00_SEAM_RECEIPT = ROOT / "implementation/p00-seam-01-receipt.md"
 PLAT_ADM_RECEIPT = ROOT / "implementation/plat-adm-01-receipt.md"
 RP_THIN_RECEIPT = ROOT / "implementation/rp-thin-02-receipt.md"
+SV_THIN_RECEIPT = ROOT / "implementation/sv-thin-01-receipt.md"
 PLAN_FILES = {
     "PF-LOG-01": PLAN_DIR / "foundation.md",
     "PF-CORE-01": PLAN_DIR / "foundation.md",
@@ -114,8 +115,24 @@ def test_research_thin_receipt_binds_the_clean_revision() -> None:
     ):
         assert value in receipt
     assert "| `RP-THIN-02` | DONE |" in roadmap
-    assert "| `SV-THIN-01` | READY |" in roadmap
     assert "Validation, Promotion, and FI receipts remain downstream" in receipt
+
+
+def test_validation_thin_receipt_binds_the_clean_revision() -> None:
+    receipt = SV_THIN_RECEIPT.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+
+    for value in (
+        "b84346cfe42ca0d75021e2b08b9a81445225d7e8",
+        "692f6ca1a471ec7ccf7e284a4a71ed30652b3661",
+        "275 passed",
+        "Pre/post validation status:** clean",
+        "2e4563b8de7dd8c06798508f611bf7caacc28b11769bd71fa1348be97de5cfba",
+        "74e4386fb11bdf79ca606c62c2d2158ce87fa2a77745834426a1dcfe243febb5",
+    ):
+        assert value in receipt
+    assert "| `SV-THIN-01` | DONE |" in roadmap
+    assert "Promotion and FI receipts remain downstream" in receipt
 
 
 def test_module_plans_have_deep_interface_and_acceptance_sections() -> None:
