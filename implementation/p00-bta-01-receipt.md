@@ -2,7 +2,8 @@
 
 - **Status:** PASSED
 - **Accepted Platform revision:** `7aa76dc2de65fb713a146e27651538dd755d5231`
-- **Accepted Backtest source revision:** `e3c04fb612d6798aef1420b60864d4f315ed12ac`
+- **Accepted Backtest dependency source revision:** `e3c04fb612d6798aef1420b60864d4f315ed12ac`
+- **Backtest acceptance-record checkout:** `92810375fdf6c0c48c1edaeade74b97755f20220` — documentation-only receipt whose parent is the source revision; not a dependency pin or second Platform receipt
 - **Backtest package-code revision:** `a014e9389f36b6696653606c5ebcb845cabe9f24`
 - **Foundation revision:** `9d88ed67a84d06c558276f8bae2206b069bcec8f`
 - **Acceptance environment:** fresh clone at `/tmp/platform-p00-bta-clean`
@@ -53,4 +54,4 @@ Results: nine public imports passed; `257 passed`; clean status before and after
 | `uv.lock` | `d96c6ebf36bbb9baf332e956be220c9d01bbb7d2010b82e9568d54ddcd6d39b6` |
 | `tests/integration/test_backtest_public_binding.py` | `65748e030e3118cb82a968c809f3019144289c3a623a42e93e040392c4b76795` |
 
-This receipt closes only `P00-BTA-01`. Platform governance admission and module thin receipts remain separate nodes.
+This is the canonical Platform receipt for `P00-BTA-01`; the Backtest gitlink records its separate acceptance record. Platform governance admission and module thin receipts remain separate nodes.

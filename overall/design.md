@@ -57,7 +57,7 @@ Research and Validation integrated shells construct public `CashDevelopmentReque
 
 ## 5. Workspace state
 
-`platform/` remains the independent system root. `P00-PLAT-01` established one non-package root `pyproject.toml` workspace coordinator and one root `uv.lock`; the current P00-BTA candidate pins Backtest packages and the Backtest submodule to accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`. No leaf lock is retained or treated as a Platform lock. The earlier P00-PLAT receipt remains historical evidence for revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`; P00-BTA/P00-SEAM require a new clean-clone receipt after these changes are committed.
+`platform/` remains the independent system root. `P00-PLAT-01` established one non-package root `pyproject.toml` workspace coordinator and one root `uv.lock`; those dependency files pin Backtest packages to accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`. The Backtest gitlink instead records acceptance receipt `92810375fdf6c0c48c1edaeade74b97755f20220`, the documentation-only child of that source revision, and is not a dependency pin. No leaf lock is retained or treated as a Platform lock. The earlier P00-PLAT receipt remains historical evidence for revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`; P00-BTA/P00-SEAM require a new clean-clone receipt after these changes are committed.
 
 The eventual package dependency direction is:
 
