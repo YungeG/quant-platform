@@ -43,7 +43,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `SV-SHELL-01` | DONE | fixture-backed Validation runtime, canonical replay reuse, and focused shell suite pass; real provider acceptance remains blocked |
 | `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real validation/admission acceptance remains blocked |
 | `P00-SEAM-01` | DONE | real Foundation/Backtest fan-in accepted in [`p00-seam-01-receipt.md`](p00-seam-01-receipt.md) |
-| `PLAT-ADM-01` | READY | P00-SEAM and PF-CORE accepted; implement first evidence admission composition |
+| `PLAT-ADM-01` | DONE | clean-clone governance admission accepted in [`plat-adm-01-receipt.md`](plat-adm-01-receipt.md) |
 | `RP-THIN-02` | READY | RP-SHELL and P00-SEAM accepted; run real Research acceptance |
 | `SV-THIN-01` | WAITING_RESEARCH | waits for SV-SHELL, RP-THIN, and P00-SEAM real acceptance |
 | `PG-THIN-01` | WAITING_VALIDATION | waits for PG-SHELL, SV-THIN, and PLAT-ADM real acceptance |

@@ -8,6 +8,7 @@ PLAN_DIR = ROOT / "implementation/plans"
 P00_PLAT_RECEIPT = ROOT / "implementation/p00-plat-01-receipt.md"
 P00_BTA_RECEIPT = ROOT / "implementation/p00-bta-01-receipt.md"
 P00_SEAM_RECEIPT = ROOT / "implementation/p00-seam-01-receipt.md"
+PLAT_ADM_RECEIPT = ROOT / "implementation/plat-adm-01-receipt.md"
 PLAN_FILES = {
     "PF-LOG-01": PLAN_DIR / "foundation.md",
     "PF-CORE-01": PLAN_DIR / "foundation.md",
@@ -79,6 +80,23 @@ def test_p00_backtest_and_seam_receipts_bind_the_clean_revision() -> None:
     assert "| `P00-BTA-01` | DONE |" in roadmap
     assert "| `P00-SEAM-01` | DONE |" in roadmap
     assert "does not admit evidence into Platform governance" in seam
+
+
+def test_platform_admission_receipt_binds_the_clean_revision() -> None:
+    receipt = PLAT_ADM_RECEIPT.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+
+    for value in (
+        "bb68146da4b188e4da114ff7adaaa594c47a49f7",
+        "92810375fdf6c0c48c1edaeade74b97755f20220",
+        "266 passed",
+        "Pre/post validation status:** clean",
+        "c1fc5ae645cefd11c301a4dff4f8c4f77c2692eeb026b7f04c1557ac70d2f92f",
+        "3c4f1b4d138b5377bc37222c775b1b640da62053fb8e5d8f23aa0cf82e009a8e",
+    ):
+        assert value in receipt
+    assert "| `PLAT-ADM-01` | DONE |" in roadmap
+    assert "does not produce Research, Validation, Promotion, or FI receipts" in receipt
 
 
 def test_module_plans_have_deep_interface_and_acceptance_sections() -> None:
