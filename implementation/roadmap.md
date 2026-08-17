@@ -46,8 +46,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PLAT-ADM-01` | DONE | clean-clone governance admission accepted in [`plat-adm-01-receipt.md`](plat-adm-01-receipt.md) |
 | `RP-THIN-02` | DONE | real Research golden accepted in [`rp-thin-02-receipt.md`](rp-thin-02-receipt.md) |
 | `SV-THIN-01` | DONE | real Validation rejection accepted in [`sv-thin-01-receipt.md`](sv-thin-01-receipt.md) |
-| `PG-THIN-01` | READY | PG-SHELL, SV-THIN, and PLAT-ADM accepted; run real Promotion acceptance |
-| `FI-01` | WAITING_LEAVES | waits for all three integrated thin receipts |
+| `PG-THIN-01` | DONE | real negative Promotion accepted in [`pg-thin-01-receipt.md`](pg-thin-01-receipt.md) |
+| `FI-01` | READY | RP-THIN, SV-THIN, PG-THIN, and PLAT-ADM accepted; run whole-Platform golden |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
 
 ## 3. Execution DAG
@@ -140,7 +140,7 @@ P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
 - [`P00-BTA-01`](p00-bta-01-receipt.md)
 - [`P00-SEAM-01`](p00-seam-01-receipt.md)
 
-P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. `PLAT-ADM-01`, `RP-THIN-02`, and `SV-THIN-01` are accepted. The serialized fan-in queue now advances to `PG-THIN-01`; no Promotion or FI receipt is implied by Validation acceptance.
+P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. `PLAT-ADM-01`, `RP-THIN-02`, `SV-THIN-01`, and `PG-THIN-01` are accepted. The serialized fan-in queue now advances to the final `FI-01` whole-Platform golden.
 
 The approved P00-CON-02 clarification remains narrow: existing immutable static capture plus retirement evidence suffices for P00-LEG-01/P00-CUT-01; hermetic replay is not a P00-PLAT prerequisite. It does not approve runtime or provider work.
 
