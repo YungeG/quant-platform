@@ -1,6 +1,6 @@
 # Backtest Platform Integration Extension Register
 
-- **Status:** BT-GAP-09 preparation accepted; P00-BTA remains blocked on Backtest-owned durable FAILED repository acceptance
+- **Status:** CLOSED — BT-GAP-09, P00-BTA, and P00-SEAM accepted; retained as immutable handoff history
 - **Assessment baseline:** accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` (package code `a014e9389f36b6696653606c5ebcb845cabe9f24`); public preparation, request registration, executable v2 transport, metric-profile publication, and durable FAILED repository loading are accepted; Platform receipts remain open
 - **Prior assessed baselines:** `1bcec4e754b2ebc0a49ef4124cbc65c25c017951`, `b47409b54f6ba0cb112171b6c454c97bc803cca3`, `2a62b4af155a4e8d13d5afef04a0d4f6482fe7e6`
 - **Scope:** capabilities required by Platform Integration v1 at the Backtest seam

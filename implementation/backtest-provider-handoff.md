@@ -1,6 +1,6 @@
 # Backtest Provider Handoff
 
-- **Status:** READY FOR P00-BTA — Backtest public seam and clean package revision accepted; Platform provider binding and P00-SEAM receipt pending
+- **Status:** CLOSED — P00-BTA and P00-SEAM accepted at Platform revision `7aa76dc2de65fb713a146e27651538dd755d5231`
 - **Consumer contract:** [`BT-PORT-01`](plans/backtest-port.md)
 - **Canonical fixture:** [`backtest-consumer-port-v1.json`](../tests/contracts/backtest-consumer-port-v1.json)
 - **Current executable guard:** [`test_backtest_consumer_port.py`](../tests/architecture/test_backtest_consumer_port.py)

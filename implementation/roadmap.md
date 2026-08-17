@@ -30,7 +30,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `P00-CON-02` | APPROVED | both repository-owner approvals recorded; static legacy evidence gate clarified without hermetic replay |
 | `P00-LEG-01`, `P00-CUT-01` | HISTORICAL_EVIDENCE | static capture/retirement retained; not runtime proof |
 | `BT-PORT-01` | DONE | consumer fixture/support and mutation suite pass |
-| `P00-BTA-01` | READY_REVISION | real Foundation/provider/repository/analysis binding passes; waits for committed Foundation/root revisions and clean-clone receipt |
+| `P00-BTA-01` | DONE | clean-clone binding accepted in [`p00-bta-01-receipt.md`](p00-bta-01-receipt.md) at Platform revision `7aa76dc2de65fb713a146e27651538dd755d5231` |
 | `PF-LOG-01` | DONE | generic append/clock, issued-checkpoint membership, immutable-prefix implementation, and focused mutation suite pass |
 | `PF-CORE-01` | DONE | exact Domain Envelope CAS, verified structural reads, idempotent replay, and failure mutations pass without Backtest decoding |
 | `P00-PLAT-01` | DONE | clean-clone workspace/lock acceptance recorded in [`p00-plat-01-receipt.md`](p00-plat-01-receipt.md) at Platform revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a` |
@@ -42,9 +42,9 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `RP-SHELL-01` | DONE | fixture-backed Research runtime, durable partial replay, and focused shell suite pass; real provider acceptance remains blocked |
 | `SV-SHELL-01` | DONE | fixture-backed Validation runtime, canonical replay reuse, and focused shell suite pass; real provider acceptance remains blocked |
 | `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real validation/admission acceptance remains blocked |
-| `P00-SEAM-01` | READY_REVISION | P00-PLAT is DONE and Backtest acceptance is complete; waits for committed revisions and clean-clone fan-in receipt |
-| `PLAT-ADM-01` | WAITING_SEAM | waits for P00-SEAM and PF-CORE; freezes first evidence admission composition |
-| `RP-THIN-02` | WAITING_SEAM | waits for P00-SEAM real provider acceptance |
+| `P00-SEAM-01` | DONE | real Foundation/Backtest fan-in accepted in [`p00-seam-01-receipt.md`](p00-seam-01-receipt.md) |
+| `PLAT-ADM-01` | READY | P00-SEAM and PF-CORE accepted; implement first evidence admission composition |
+| `RP-THIN-02` | READY | RP-SHELL and P00-SEAM accepted; run real Research acceptance |
 | `SV-THIN-01` | WAITING_RESEARCH | waits for SV-SHELL, RP-THIN, and P00-SEAM real acceptance |
 | `PG-THIN-01` | WAITING_VALIDATION | waits for PG-SHELL, SV-THIN, and PLAT-ADM real acceptance |
 | `FI-01` | WAITING_LEAVES | waits for all three integrated thin receipts |
@@ -132,15 +132,15 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 
 `RP-SHELL-01`, `SV-SHELL-01`, and `PG-SHELL-01` are DONE. Keep one writer per package. Root lock, status registry, real THIN tests, and receipts remain serialized. The parked provider lane consumes no Platform writer slot.
 
-## 7. Parked external gate
+## 7. P00 fan-in complete
 
-The remaining revision/receipt fan-in is tracked by:
+P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
 
-- [Backtest Platform integration extension register](backtest-integration-gap-register.md)
-- [Backtest provider handoff](backtest-provider-handoff.md)
-- `backtest/docs/implementation/platform-integration-dependencies.md`
+- [`P00-PLAT-01`](p00-plat-01-receipt.md)
+- [`P00-BTA-01`](p00-bta-01-receipt.md)
+- [`P00-SEAM-01`](p00-seam-01-receipt.md)
 
-P00-PLAT has created and clean-clone validated one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; its receipt is recorded at Platform revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`. The real BT-GAP-09 binding and durable FAILED verification are implemented but cannot receive P00-BTA/P00-SEAM receipts until the Foundation interoperability change and current Platform root are committed and clean-clone validated. No integrated thin or FI receipt may be claimed before then; no leaf lock is retained or treated as a Platform lock.
+P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. The ready queue now advances to `PLAT-ADM-01` and `RP-THIN-02`. No thin or FI receipt is implied by P00 acceptance.
 
 The approved P00-CON-02 clarification remains narrow: existing immutable static capture plus retirement evidence suffices for P00-LEG-01/P00-CUT-01; hermetic replay is not a P00-PLAT prerequisite. It does not approve runtime or provider work.
 
