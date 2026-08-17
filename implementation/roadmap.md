@@ -44,8 +44,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real validation/admission acceptance remains blocked |
 | `P00-SEAM-01` | DONE | real Foundation/Backtest fan-in accepted in [`p00-seam-01-receipt.md`](p00-seam-01-receipt.md) |
 | `PLAT-ADM-01` | DONE | clean-clone governance admission accepted in [`plat-adm-01-receipt.md`](plat-adm-01-receipt.md) |
-| `RP-THIN-02` | READY | RP-SHELL and P00-SEAM accepted; run real Research acceptance |
-| `SV-THIN-01` | WAITING_RESEARCH | waits for SV-SHELL, RP-THIN, and P00-SEAM real acceptance |
+| `RP-THIN-02` | DONE | real Research golden accepted in [`rp-thin-02-receipt.md`](rp-thin-02-receipt.md) |
+| `SV-THIN-01` | READY | SV-SHELL, RP-THIN, and P00-SEAM accepted; run real Validation acceptance |
 | `PG-THIN-01` | WAITING_VALIDATION | waits for PG-SHELL, SV-THIN, and PLAT-ADM real acceptance |
 | `FI-01` | WAITING_LEAVES | waits for all three integrated thin receipts |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
@@ -140,7 +140,7 @@ P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
 - [`P00-BTA-01`](p00-bta-01-receipt.md)
 - [`P00-SEAM-01`](p00-seam-01-receipt.md)
 
-P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. The ready queue now advances to `PLAT-ADM-01` and `RP-THIN-02`. No thin or FI receipt is implied by P00 acceptance.
+P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. `PLAT-ADM-01` and `RP-THIN-02` are accepted. The serialized fan-in queue now advances to `SV-THIN-01`; no Validation, Promotion, or FI receipt is implied by Research acceptance.
 
 The approved P00-CON-02 clarification remains narrow: existing immutable static capture plus retirement evidence suffices for P00-LEG-01/P00-CUT-01; hermetic replay is not a P00-PLAT prerequisite. It does not approve runtime or provider work.
 
