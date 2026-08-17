@@ -40,9 +40,9 @@ Prove the accepted Platform environment can construct/register a public request,
 ### Golden interface path
 
 ```text
-Platform-constructed public BacktestRequest with opaque context
-→ Backtest validation/registration and BacktestRequestRef
-→ facade run
+Platform-constructed CashDevelopmentRequestIntent with opaque context + public provider facts
+→ Backtest preparation/registration and BacktestRequestRef
+→ executable BacktestExecutionRequest@2 + configured facade run
 → CompletedPublication | TerminalPublication
 → Foundation exact structural storage/read
 → CanonicalEvidenceRepository verification
@@ -68,7 +68,7 @@ uv run --locked pytest -q \
 
 Required evidence:
 
-- one completed development run and one each durable `BLOCKED`, `FAILED`, `CANCELLED`;
+- one completed development run plus real durable `BLOCKED` and `CANCELLED`; Backtest-owned accepted repository evidence must load one durable `FAILED` graph without Platform manufacturing an internal defect;
 - opaque Platform context is hash-bound by Backtest without Platform deriving identity;
 - completed-only analysis and terminal rejection;
 - exact metric profile/publication/execution-result linkage;

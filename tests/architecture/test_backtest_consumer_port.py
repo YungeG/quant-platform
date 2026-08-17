@@ -399,23 +399,22 @@ def test_reconciled_request_and_admission_boundaries_are_normative() -> None:
     roadmap = ROADMAP_PATH.read_text(encoding="utf-8")
 
     for required in (
-        "Platform-constructed `BacktestRequest`",
+        "`CashDevelopmentRequestIntent@1`",
         "backtest_admission(entry_ref",
         "platform.backtest-evidence-admission.v1",
         "BacktestEvidenceAdmission@1",
         "Platform governance residency",
         "`PLAT-REC-03`",
-        "passed by value",
-        "stores only that envelope",
-        "not placed in Foundation CAS",
+        "BacktestRequestRef",
+        "BacktestExecutionRequest@2",
+        "prepare_cash_development_backtest()",
         "`ArtifactReadResult.artifact` is not a semantic authority",
         "G12E remains the MarketBundle read authority",
-        "run returns `BacktestCanonicalPublicationRef | ArtifactRef`",
-        "Domain owns its `ArtifactEnvelope`/`ArtifactRef` coordinates",
-        "Backtest-owned provider code calls",
-        "does not construct or understand the internal initial-financial-state template",
-        "`materialize_execution_input_bundle`",
-        "`BacktestExecutionRequest@1`",
+        "run returns `BacktestCanonicalPublicationRef \\| ArtifactRef`",
+        "Platform never derives Backtest IDs",
+        "`ResolvedBacktestRequest`",
+        "pre-Attempt failures",
+        "must provide accepted `BacktestEvidenceRepository.load_terminal()` evidence",
     ):
         assert required in integration
     assert "backtest_governance" not in integration
@@ -423,15 +422,15 @@ def test_reconciled_request_and_admission_boundaries_are_normative() -> None:
     assert "proposed reconciliations" not in integration
     for gap in range(1, 9):
         assert f"`BT-GAP-0{gap}`" in handoff
-    accepted_sha = "9e5937895d7559b8537a4595d73b6aabc94f6f13"
+    accepted_sha = "e3c04fb612d6798aef1420b60864d4f315ed12ac"
     assert accepted_sha in handoff
-    assert "every BT-GAP extension is Backtest-PASSED" in handoff
+    assert "BT-GAP-09" in handoff
     assert "fixture remains selector-only" in handoff
     assert "returns `BacktestCanonicalPublicationRef | ArtifactRef`" in handoff
     assert "provider/storage failures remain outside the union" in handoff
-    assert "Every BT-GAP row now has Backtest-owned PASSED evidence" in handoff
-    assert f"accepted clean Backtest package revision `{accepted_sha}`" in gap_register
-    assert "Domain owns `ArtifactEnvelope` and `ArtifactRef`" in gap_register
+    assert "BT-GAP-09 closes preparation, request-registration, metric-profile, and durable FAILED repository ownership" in handoff
+    assert f"accepted BT-GAP-09 source revision `{accepted_sha}`" in gap_register
+    assert "exact-read verifies both through Foundation" in gap_register
     assert "| `PF-CORE-01` | DONE |" in roadmap
     assert "| `SV-LEDGER-01` | DONE |" in roadmap
     assert "| `PG-LEDGER-01` | DONE |" in roadmap

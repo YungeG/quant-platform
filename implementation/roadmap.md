@@ -1,6 +1,6 @@
 # Platform implementation roadmap — Integration v1
 
-> **Status:** Integration design accepted; Research, Validation, Promotion pure cores, Foundation `PF-LOG-01`/`PF-CORE-01`, and the Validation and Promotion ledgers are implemented; clean Backtest package revision `9e5937895d7559b8537a4595d73b6aabc94f6f13` is accepted and Platform provider binding remains open.
+> **Status:** Platform cores and P00-PLAT are implemented; accepted Backtest source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` includes BT-GAP-09 plus durable FAILED repository acceptance; real P00-BTA/P00-SEAM binding is implemented and awaits clean committed revisions/receipts.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules remain in [Integration v1](../overall/integration-v1.md); node instructions live in [implementation plans](plans/README.md#integration-v1-implementation-plans); Platform-specific provider extensions live in the [Backtest Platform Integration Extension Register](backtest-integration-gap-register.md).
 
@@ -18,7 +18,7 @@ Platform work may advance generic Foundation logs and module-owned ledger plans 
 
 There is no second simulator, Pilot adapter, fifth provider adapter package, queue, database, service, generic DAG engine, Feature/Model interface, positive Promotion, Shadow runtime, deployment, or economic-parity claim in v1.
 
-`PLAT-REC-01` fixes Platform request construction with Backtest-owned validation/identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive execution-input transport. All BT-GAP extensions now PASS at accepted Backtest SHA `9e5937895d7559b8537a4595d73b6aabc94f6f13`; the real Platform binding remains a P00 fan-in step.
+`PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; Platform clean binding receipts remain the P00 fan-in step.
 
 ## 2. Status registry
 
@@ -30,10 +30,10 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `P00-CON-02` | APPROVED | both repository-owner approvals recorded; static legacy evidence gate clarified without hermetic replay |
 | `P00-LEG-01`, `P00-CUT-01` | HISTORICAL_EVIDENCE | static capture/retirement retained; not runtime proof |
 | `BT-PORT-01` | DONE | consumer fixture/support and mutation suite pass |
-| `P00-BTA-01` | BLOCKED_PROVIDER | package closure passes, but Backtest must expose approved v2 provider preparation/registration without Platform constructing resolved internals |
+| `P00-BTA-01` | READY_REVISION | real Foundation/provider/repository/analysis binding passes; waits for committed Foundation/root revisions and clean-clone receipt |
 | `PF-LOG-01` | DONE | generic append/clock, issued-checkpoint membership, immutable-prefix implementation, and focused mutation suite pass |
 | `PF-CORE-01` | DONE | exact Domain Envelope CAS, verified structural reads, idempotent replay, and failure mutations pass without Backtest decoding |
-| `P00-PLAT-01` | READY_REVISION | root workspace/lock created and validated against accepted Backtest SHA; waits for traceable Platform revision and acceptance receipt |
+| `P00-PLAT-01` | DONE | clean-clone workspace/lock acceptance recorded in [`p00-plat-01-receipt.md`](p00-plat-01-receipt.md) at Platform revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a` |
 | `RP-CORE-02` | DONE | pure Experiment/task/manifest/family/selection core passes |
 | `SV-CORE-01` | DONE | pure admission/OOS/report core passes |
 | `PG-CORE-01` | DONE | pure status/review/freshness/negative-decision core passes |
@@ -42,7 +42,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `RP-SHELL-01` | DONE | fixture-backed Research runtime, durable partial replay, and focused shell suite pass; real provider acceptance remains blocked |
 | `SV-SHELL-01` | DONE | fixture-backed Validation runtime, canonical replay reuse, and focused shell suite pass; real provider acceptance remains blocked |
 | `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real validation/admission acceptance remains blocked |
-| `P00-SEAM-01` | WAITING_BINDINGS | waits for P00-BTA real provider receipt and P00-PLAT root binding |
+| `P00-SEAM-01` | READY_REVISION | P00-PLAT is DONE and Backtest acceptance is complete; waits for committed revisions and clean-clone fan-in receipt |
 | `PLAT-ADM-01` | WAITING_SEAM | waits for P00-SEAM and PF-CORE; freezes first evidence admission composition |
 | `RP-THIN-02` | WAITING_SEAM | waits for P00-SEAM real provider acceptance |
 | `SV-THIN-01` | WAITING_RESEARCH | waits for SV-SHELL, RP-THIN, and P00-SEAM real acceptance |
@@ -134,12 +134,13 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 
 ## 7. Parked external gate
 
-The remaining Backtest provider preparation/registration seam is tracked by:
+The remaining revision/receipt fan-in is tracked by:
 
 - [Backtest Platform integration extension register](backtest-integration-gap-register.md)
 - [Backtest provider handoff](backtest-provider-handoff.md)
+- `backtest/docs/implementation/platform-integration-dependencies.md`
 
-P00-PLAT has created and validated one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`, but no P00-PLAT receipt may be claimed before a traceable Platform revision exists. No provider binding receipt, P00 seam, integrated thin receipt, or FI receipt may be claimed until the provider gate closes; no leaf lock is retained or treated as a Platform lock.
+P00-PLAT has created and clean-clone validated one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; its receipt is recorded at Platform revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`. The real BT-GAP-09 binding and durable FAILED verification are implemented but cannot receive P00-BTA/P00-SEAM receipts until the Foundation interoperability change and current Platform root are committed and clean-clone validated. No integrated thin or FI receipt may be claimed before then; no leaf lock is retained or treated as a Platform lock.
 
 The approved P00-CON-02 clarification remains narrow: existing immutable static capture plus retirement evidence suffices for P00-LEG-01/P00-CUT-01; hermetic replay is not a P00-PLAT prerequisite. It does not approve runtime or provider work.
 

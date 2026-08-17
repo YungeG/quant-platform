@@ -1,0 +1,4 @@
+backtest/packages/backtest-runtime/build/lib/crypto_quant_backtest/binance_usdm_profile.py:generic-api-key:60
+backtest/packages/backtest-runtime/src/crypto_quant_backtest/binance_usdm_profile.py:generic-api-key:60
+backtest/packages/trading-kernel/build/lib/crypto_quant_trading/profiles/binance_usdm/margin_tiers.py:generic-api-key:32
+backtest/packages/trading-kernel/src/crypto_quant_trading/profiles/binance_usdm/margin_tiers.py:generic-api-key:32

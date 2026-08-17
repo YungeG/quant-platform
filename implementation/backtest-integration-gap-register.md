@@ -1,13 +1,13 @@
 # Backtest Platform Integration Extension Register
 
-- **Status:** Backtest extension closure accepted; active input to Platform `P00-BTA-01` / `P00-SEAM-01`, not itself a Platform seam receipt
-- **Assessment baseline:** accepted clean Backtest package revision `9e5937895d7559b8537a4595d73b6aabc94f6f13`; every `BT-GAP-*` row is Backtest-PASSED; real Foundation binding and Platform fan-in remain open
+- **Status:** BT-GAP-09 preparation accepted; P00-BTA remains blocked on Backtest-owned durable FAILED repository acceptance
+- **Assessment baseline:** accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` (package code `a014e9389f36b6696653606c5ebcb845cabe9f24`); public preparation, request registration, executable v2 transport, metric-profile publication, and durable FAILED repository loading are accepted; Platform receipts remain open
 - **Prior assessed baselines:** `1bcec4e754b2ebc0a49ef4124cbc65c25c017951`, `b47409b54f6ba0cb112171b6c454c97bc803cca3`, `2a62b4af155a4e8d13d5afef04a0d4f6482fe7e6`
 - **Scope:** capabilities required by Platform Integration v1 at the Backtest seam
 - **Write boundary:** this document records Platform consumer needs only; Backtest implementation remains owned by the Backtest repository
 - **Provider handoff:** [Backtest Provider Handoff](backtest-provider-handoff.md)
 
-Backtest product completion and Platform integration acceptance are different scopes. The accepted revision now includes the shared ref, versioned execution-input hydration and production composition, deep public facade, publication refs, structural reader, completed-only analysis, verified repository, additive v2 completed-evidence closure, and clean package receipt. The maintainer worktree may remain dirty because of its pre-existing `.gitignore` change, but BT-GAP-08 was proved independently in a clean detached worktree at the accepted SHA. The historical `BT-GAP-*` identifiers name integration extensions, not defects in Backtest economics or its completed roadmap.
+Backtest product completion and Platform integration acceptance are different scopes. The accepted revision now also includes BT-GAP-09's installable development cash provider, `CashDevelopmentRequestIntent`, persisted `BacktestRequestRef`, executable v2 preparation result, and metric-profile publication authority. Clean acceptance was proved independently from the maintainer worktree. The historical `BT-GAP-*` identifiers name integration extensions, not defects in Backtest economics or its completed roadmap.
 
 ## 1. Existing capability we should reuse
 
@@ -34,7 +34,8 @@ Platform must not replace these with a second simulator, profit/loss implementat
 | `BT-GAP-05` | Completed-only analysis runtime | PASSED: `BacktestAnalysisRuntime.derive()` accepts the explicit verified completed v1/v2 union, publishes immutable `backtest_analysis@1`, and returns only `AnalysisArtifactRef`. | P00 real completed/terminal binding only. |
 | `BT-GAP-06` | Minimum v1 analysis fields | PASSED: the passive v1 profile and analysis schemas freeze canonical return/null, authoritative Fill count, result grade, metric-profile ref, source publication ref, and source execution-result hash. | P00 fixture-to-real-output comparison only. |
 | `BT-GAP-07` | Structural reader injection | PASSED: Backtest exports the exact narrow `ArtifactEnvelopeReader.read(*, ref) -> ArtifactReadResult` Protocol. | Platform Foundation conformance and P00 fan-in remain; Backtest retains all semantic decoding and verification. |
-| `BT-GAP-08` | P00 acceptance revision | PASSED: clean accepted revision `9e5937895d7559b8537a4595d73b6aabc94f6f13`; all five packages build/install from one lock, 1715 tests and 106 import-boundary files pass, and exact package hashes are recorded. | Platform consumes this immutable SHA in `P00-BTA-01`; a dirty sibling worktree is not evidence. |
+| `BT-GAP-08` | Base P00 package revision | PASSED: clean revision `9e5937895d7559b8537a4595d73b6aabc94f6f13`; all five packages build/install from one lock, 1715 tests and 106 import-boundary files pass. | Superseded as Platform provider input by additive BT-GAP-09 while remaining immutable evidence. |
+| `BT-GAP-09` | Installable development cash provider and preparation | PASSED: public intent/preparation, request ref, executable v2 transport, metric-profile publication, and durable FAILED repository graph at accepted source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; 1793 tests and 111 import-boundary files pass. | Platform P00-BTA/P00-SEAM clean binding receipts only. |
 
 ## 3. Accepted Platform contract reconciliations
 
@@ -43,13 +44,14 @@ These decisions are normative in [Platform Integration v1](../overall/integratio
 ### `PLAT-REC-01` — request ownership: resolved
 
 ```text
-Platform integrated shell constructs public BacktestRequest
-→ opaque TrialDeclarationRef or ValidationCaseRef encoded in public context/experiment_id
-→ Backtest validates, normalizes, registers, and returns BacktestRequestRef
-→ Backtest owns request hash, SemanticRunId, execution, publication, and evidence
+Platform integrated shell constructs CashDevelopmentRequestIntent
+→ opaque TrialDeclarationRef or ValidationCaseRef encoded in experiment_id
+→ Platform supplies only public provider external facts
+→ Backtest derives/registers/persists BacktestRequest and returns BacktestRequestRef
+→ Backtest owns request hash, SemanticRunId, execution case, execution, publication, and evidence
 ```
 
-Backtest imports no Research or Validation type. Platform derives no Backtest identity and composes no Backtest internal object.
+Backtest imports no Research or Validation type. Platform derives no Backtest identity and composes no resolved Backtest internal object.
 
 ### `PLAT-REC-02` — governance publication time: resolved
 
@@ -57,27 +59,11 @@ Backtest proves evidence identity, integrity, retention, and lineage. The Platfo
 
 Freshness therefore measures Platform governance residency, not Backtest execution age. A delayed first admission begins residency when accepted; replayed admission or a delayed Promotion status event cannot rejuvenate it.
 
-### `PLAT-REC-03` — additive execution-input transport: resolved
+### `PLAT-REC-03` — additive executable transport: resolved
 
-Platform preserves the embedded public `BacktestRequest@1` bytes and hashes and introduces one Backtest-owned additive execution request for transport:
+BT-GAP-09 preserves accepted v1 bytes and adds `prepare_cash_development_backtest()`, which returns `PreparedBacktestExecution(request_ref, semantic_run_id, execution_request@2, runtime)`. Backtest constructs and publishes the exact `BacktestRequest@1` plus `backtest_execution_input_bundle@2`, exact-read verifies both through Foundation, and exposes no resolved request/case, plan, registry, or private builder.
 
-```text
-BacktestExecutionRequest@1 = {
-  schema_version: 1,
-  request: BacktestRequest,           # exact immutable BacktestRequest@1
-  execution_input_bundle_ref: ArtifactRef,
-}
-```
-
-BT-GAP-02B freezes the public names as `BacktestExecutionRequest@1`, `materialize_execution_input_bundle`, and `backtest_execution_input_bundle@1`. Domain owns `ArtifactEnvelope` and `ArtifactRef`; Backtest owns the bundle schema, public materializer, decoder, and semantic validation.
-
-Backtest-owned provider code calls the materializer. Platform does not construct or understand the internal initial-financial-state template; it receives the opaque bundle envelope, stores only that envelope through `Foundation.put()`, and embeds the returned Domain `ArtifactRef` in the execution transport passed by value. The transport itself is not stored in CAS and has no second ref/hash. Platform may not:
-
-- add request hash/path/repository metadata;
-- fabricate refs, choose hidden paths, decode bundle semantics, or add registries;
-- derive Backtest IDs or retry identity from it.
-
-Backtest validates the bundle before Attempt creation, checking target digest, initial financial state, market/timeline bindings, and recomputed `execution_case_semantic_hash` against identities committed by the embedded request. Missing, tampered, mismatched, or unavailable bundle inputs remain storage/validation failures, not terminal outcomes. `MarketBundle` bytes remain bound through `MarketBundleRef` and are not copied into this bundle.
+Platform passes the returned execution request by value and may not fabricate refs, decode bundle semantics, derive IDs, or add path/registry conventions. Missing, tampered, mismatched, or unavailable inputs remain pre-Attempt failures. `MarketBundle` bytes remain bound through `MarketBundleRef` and are not copied into Platform artifacts.
 
 ## 4. Preferred minimal consumer port
 
@@ -91,14 +77,14 @@ load_terminal(terminal_ref) -> verified terminal evidence
 load_analysis(analysis_ref) -> verified analysis evidence
 ```
 
-The accepted Backtest facade/repository satisfies this behavior directly; Platform adds no fifth pass-through package. Core Research, Validation, and Promotion tests use contract fixtures; the real public binding and fan-in receipt must now consume accepted Backtest SHA `9e5937895d7559b8537a4595d73b6aabc94f6f13`.
+The accepted Backtest provider/facade/repository satisfies this behavior directly; Platform adds no fifth pass-through package. Core tests retain contract fixtures; the real public binding and fan-in receipt consume accepted Backtest source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`.
 
 ## 5. Backtest acceptance fixture minimum
 
 The P00-BT acceptance fixture should cover:
 
 1. one deterministic completed development-grade run;
-2. one each durable `BLOCKED`, `FAILED`, and `CANCELLED` terminal;
+2. real durable `BLOCKED` and `CANCELLED`, plus Backtest-owned accepted repository loading of durable `FAILED` without a manufactured provider defect;
 3. retry/cache parity for the same semantic request;
 4. tampered artifact, manifest, hash-chain, and missing-retention rejection;
 5. completed-only analysis with exact source execution-result linkage;
@@ -111,7 +97,7 @@ The P00-BT acceptance fixture should cover:
 
 Backtest extension closure is complete: every `BT-GAP-*` row has Backtest-owned acceptance and `PLAT-REC-01`, `PLAT-REC-02`, and `PLAT-REC-03` are reconciled. Platform closes the remaining handoff only when:
 
-- the real Backtest public binding passes consumer contract tests against accepted SHA `9e5937895d7559b8537a4595d73b6aabc94f6f13`; and
+- the real Backtest public binding passes consumer contract tests against a clean accepted SHA containing BT-GAP-09 and durable FAILED repository acceptance; and
 - P00-SEAM fan-in proves completed, terminal, analysis, tamper, and replay paths without copied Backtest evidence.
 
 ## 7. Assessment sources

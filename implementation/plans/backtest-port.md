@@ -32,7 +32,7 @@ load_terminal(terminal_ref) -> verified terminal evidence
 load_analysis(analysis_ref) -> verified analysis evidence
 ```
 
-The contract fixture remains selector-only (`request_spec.fixture_case`) while BT-PORT is frozen. Its test helper may carry an opaque canonical `experiment_id` for shell observation, but that field never selects or changes fixture evidence. The future real binding must use the now-frozen `BacktestExecutionRequest@1` additive transport approved by PLAT-REC-03 and BT-GAP-02B.
+The contract fixture remains selector-only (`request_spec.fixture_case`) while BT-PORT is frozen. Its test helper may carry an opaque canonical `experiment_id` for shell observation, but that field never selects or changes fixture evidence. The real binding uses accepted BT-GAP-09 `CashDevelopmentRequestIntent@1` and `prepare_cash_development_backtest()` to obtain the persisted `BacktestRequestRef`, semantic run, configured runtime, and executable `BacktestExecutionRequest@2` without exposing resolved internals.
 
 The contract fixture must represent:
 
@@ -98,14 +98,15 @@ Prove the accepted Backtest facade/repository satisfies the consumer contract di
 ### Implementation rules
 
 - Binding tests import only `crypto_quant_domain` and `crypto_quant_backtest` public roots.
-- Module shells construct public Backtest requests with opaque canonical Platform context; Backtest validates/registers them and owns all request identities.
+- Module shells construct public `CashDevelopmentRequestIntent@1` with opaque canonical Platform context and supply only public provider facts; Backtest constructs/registers the immutable request and owns every request and semantic-run identity.
 - Preserve the opaque Platform producer/context coordinate in deterministic request/evidence lineage without Backtest importing Platform modules.
-- Receive the opaque `backtest_execution_input_bundle@1` Domain `ArtifactEnvelope` produced when Backtest-owned provider code calls `materialize_execution_input_bundle`; Platform must not construct or understand its internal financial-state template. Store only that envelope with `Foundation.put()`, then construct/pass `BacktestExecutionRequest@1` by value with the exact embedded `BacktestRequest@1` and returned ref.
+- Invoke `prepare_cash_development_backtest()` with real Foundation reader/publisher and public market reader. Consume only its `BacktestRequestRef`, semantic run, configured runtime, and executable `BacktestExecutionRequest@2`; Platform must not construct or understand resolved requests/cases, the internal financial-state template, or bundle contents.
 - Reject missing/tampered/mismatched/unavailable bundle preflight outcomes as provider/storage failures; no preemptive terminal publications.
 - Delegate run publication, terminal evidence, completed evidence, analysis, tamper checks, and retention checks to Backtest.
 - Do not translate provider exceptions into terminal publications; provider/storage failures remain failures.
 - Add no production package, shared gateway, metrics helper, or evidence wrapper.
-- Do not store the transport in CAS, create a second transport ref, decode/derive from execution-input bundle contents in Platform, or add hidden path/registry logic.
+- Do not separately store the transport in CAS, create a second transport ref, decode/derive from execution-input bundle contents in Platform, or add hidden path/registry logic.
+- Prove real COMPLETED/BLOCKED/CANCELLED through the cash provider. Prove FAILED repository verification and mapping through accepted immutable Backtest evidence; do not fabricate an internal provider defect merely to generate FAILED.
 
 ### Acceptance
 

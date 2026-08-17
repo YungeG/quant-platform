@@ -1,0 +1,8 @@
+title = "Platform secret scanning"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Backtest is an independently accepted submodule with its own secret scan"
+paths = ['''^backtest/''']

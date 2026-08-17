@@ -33,7 +33,7 @@ Hermetic replay is neither required nor permitted as a P00-PLAT prerequisite.
 
 The receipts retain the evidence classification `static_historical_evidence`; that classification is not a lifecycle status. P00-CON-02 does not alter `ArtifactEnvelope` v1, `ArtifactRef`, the Backtest seam, lock rules, ownership, or the approved P00-CON-01 fixture. Both required repository-owner approvals are recorded, so the static receipts satisfy the clarified legacy gate without hermetic replay.
 
-The integrated system has one non-package `platform/` workspace and one root `uv.lock`. The lock pins all Backtest packages to accepted SHA `9e5937895d7559b8537a4595d73b6aabc94f6f13` and includes the four Platform module submodules as workspace members. Research and Validation consume the public Backtest facade and evidence repository directly. Validation owns sample-consumption semantics; Foundation owns only generic CAS, append, receipt, checkpoint, and log-chain mechanics.
+The integrated system has one non-package `platform/` workspace and one root `uv.lock`. The current P00-BTA candidate pins all Backtest packages and the Backtest submodule to accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` (package code `a014e9389f36b6696653606c5ebcb845cabe9f24`) and includes the four Platform module submodules as workspace members. Research and Validation consume the public Backtest preparation/facade/repository/analysis roots directly. Validation owns sample-consumption semantics; Foundation owns only generic CAS, append, receipt, checkpoint, and log-chain mechanics.
 
 ## 2. Identity, time, and publication
 
@@ -58,7 +58,7 @@ payload_source_hash = sha256(exact owner-log payload bytes)
 | Reference | Owner and v1 handling |
 | --- | --- |
 | `ArtifactRef` / `Ref[T]` | Domain-owned typed coordinate for Platform artifacts. |
-| `BacktestExecutionRequest@1` | Conceptual additive Backtest-owned transport value for Platform→Backtest execution. Domain owns its `ArtifactEnvelope`/`ArtifactRef` coordinates; Backtest owns bundle schema, encoding, and validation; Platform passes the value by value and stores only the referenced bundle envelope in Foundation CAS. |
+| `CashDevelopmentRequestIntent@1` / `BacktestExecutionRequest@2` | Platform constructs only the public intent with opaque Trial/Validation context and supplies public provider facts. Backtest derives, registers, and persists `BacktestRequest@1`, publishes the v2 execution-input Envelope through Foundation, and returns the executable transport by value. Platform never constructs resolved internals or decodes the bundle. |
 | `BacktestRequestRef`, `BacktestCanonicalPublicationRef`, `AnalysisArtifactRef`, `BacktestMarketBundleRef`, `BacktestModelRef` | Nominal opaque Backtest refs. Platform stores and passes them only; it never fabricates, downcasts, or substitutes a general `ArtifactRef`. |
 | `BacktestMetricProfileRef` | A Backtest-owned, type/version-constrained Domain `ArtifactRef`; it is opaque to Platform. The public `derive()` parameter remains the underlying `ArtifactRef`. |
 | `ActorRef` | Domain-owned opaque identity coordinate. Equality is exact canonical wire equality only. |
@@ -298,21 +298,22 @@ BacktestTrialSpec@1 = {
 
 One `TrialDeclaration` materializes at most one `BacktestTrialSpec`. Two declarations must not map to one Backtest request or semantic run (`TRIAL_REQUEST_COLLISION`). A Research dependency block before request materialization is a local `dependency_blocked`; it never fabricates a Backtest terminal.
 
-The Research integrated shell constructs the accepted public `BacktestRequest` value from `TrialDeclaration` coordinates and encodes the opaque canonical `TrialDeclarationRef` in the public request context/`experiment_id`. The Validation integrated shell does the same with `ValidationCaseRef`. Backtest imports no Platform type: it validates, normalizes, registers, and persists the public request, returns the Backtest-owned `BacktestRequestRef`, and exclusively derives the request hash and `SemanticRunId`. Platform never derives Backtest IDs or composes Backtest internals.
+The Research integrated shell constructs `CashDevelopmentRequestIntent@1` from `TrialDeclaration` coordinates and encodes the opaque canonical `TrialDeclarationRef` in `experiment_id`. Validation does the same with `ValidationCaseRef`. The composition root supplies only public `CashDevelopmentProviderInputs@1` external authorities. Backtest imports no Platform type: `prepare_cash_development_backtest()` derives, validates, registers, and persists the immutable `BacktestRequest@1`; returns its opaque `BacktestRequestRef` and `SemanticRunId`; publishes and verifies the execution-input Envelope through Foundation; and returns an executable `BacktestExecutionRequest@2` inside `PreparedBacktestExecution`. Platform never derives Backtest IDs or constructs a Resolver, Registry, `ResolvedBacktestRequest`, `ResolvedExecutionCase`, or execution plan.
 
-`PLAT-REC-03` — Additive execution-input transport: the same immutable public `BacktestRequest@1` bytes and hashes are preserved, and Platform passes one versioned Backtest-owned transport value before any attempt. BT-GAP-02B freezes its exact name and wire as:
+`PLAT-REC-03` — Additive executable transport: accepted v1 request and bundle bytes remain immutable, while BT-GAP-09 adds the executable v2 provider-preparation seam:
 
 ```python
-BacktestExecutionRequest@1 = {
-  schema_version: 1,
-  request: BacktestRequest,         # exact BacktestRequest@1 bytes/hashes
-  execution_input_bundle_ref: ArtifactRef,
+PreparedBacktestExecution = {
+  request_ref: BacktestRequestRef,
+  semantic_run_id: str,
+  execution_request: BacktestExecutionRequest@2,
+  runtime: BacktestRuntime,
 }
 ```
 
-Backtest exposes `materialize_execution_input_bundle`, which Backtest-owned provider code calls to create the canonical `backtest_execution_input_bundle@1` `ArtifactEnvelope`. Platform does not construct or understand the internal initial-financial-state template; it receives the opaque envelope, stores only that envelope through `Foundation.put()`, and embeds the Domain-owned returned `ArtifactRef` in `BacktestExecutionRequest@1`. The transport value itself is passed by value; it is not placed in Foundation CAS and gains no second ref, hash, timestamp, status, path, or registry entry.
+The v2 transport still embeds exactly one immutable `BacktestRequest@1` plus one Domain-owned `backtest_execution_input_bundle@2` `ArtifactRef`. Backtest alone constructs both after resolving public intent/provider inputs. Foundation supplies the structural reader/publisher; Platform neither separately stores the transport nor decodes, fabricates, or reconstructs its bundle, request identity, semantic run, profiles, financial state, or execution case.
 
-Platform may not fabricate the bundle ref, choose paths, add a digest registry, or decode bundle semantics. Backtest resolves and validates the bundle **before** Attempt creation by checking target stream digest, build constants, initial financial bindings, market/timeline bindings, and recomputed `execution_case_semantic_hash` against identities already committed by the embedded request; missing, tampered, mismatched, or unavailable inputs are failures, not terminal runs. G12E remains the MarketBundle read authority through existing `MarketBundleRef`; market bytes are never copied into the bundle.
+Backtest validates and exact-read verifies the persisted request and bundle before returning prepared authority. Missing, tampered, mismatched, or unavailable inputs are pre-Attempt failures, not terminal runs. The accepted development cash provider proves real COMPLETED, BLOCKED, and CANCELLED behavior. P00 does not manufacture an internal defect to obtain FAILED; Backtest must provide accepted `BacktestEvidenceRepository.load_terminal()` evidence for one durable FAILED graph before P00-BTA/P00-SEAM close. Any real provider FAILED ref remains supported by the unchanged `backtest_terminal(FAILED, ...)` contract. G12E remains the MarketBundle read authority and market bytes are never copied into Platform artifacts.
 
 ```text
 TaskRef =
@@ -763,9 +764,9 @@ No path source, editable dependency, branch/tag-only revision, `PYTHONPATH`, cop
 | --- | --- | --- |
 | `P00-CON-02` | release/design; proposal and structural guard only | static receipts hash-verified; external evidence of both owner approvals; hermetic replay excluded |
 | `P00-DOM-01` | Backtest Domain | root `ArtifactRef`; Envelope vector unchanged |
-| `P00-BT-01` | Backtest Runtime | public request type/validation/registration and Backtest-owned identities; public facade/repository; run returns `BacktestCanonicalPublicationRef | ArtifactRef`; repository loads recover three terminal statuses; derive restriction; tamper/retention failure |
+| `P00-BT-01` | Backtest Runtime | public request type/validation/registration and Backtest-owned identities; public facade/repository; run returns `BacktestCanonicalPublicationRef \| ArtifactRef`; repository loads recover three terminal statuses; derive restriction; tamper/retention failure |
 | `P00-PLAT-01` | Foundation | CAS, receipt chain, append conflict/idempotency, entry refs, injected governance-clock behavior, Foundation-assigned checkpoints, generic entries, AST guard, clean root install |
-| `P00-SEAM-01` | fan-in tests only | Platform-constructed public request with opaque context plus `BacktestExecutionRequest@1` transport (exact `BacktestRequest@1` + one execution-input bundle ref) → Backtest-owned request ref/identity → real Foundation reader/admission → real facade/repository/analysis; no copied market bytes/evidence |
+| `P00-SEAM-01` | fan-in tests only | Platform-constructed `CashDevelopmentRequestIntent@1` with opaque context + public provider facts → Backtest-owned request/ref/identity and executable v2 transport → real Foundation reader/publisher → real facade/repository/analysis; real COMPLETED/BLOCKED/CANCELLED plus required Backtest-owned FAILED repository acceptance; no copied market bytes/evidence |
 | `RP-THIN-02` | Research only | canonical finite axes; 4 trials/8 tasks; exact TaskOutcome manifest; two-field CandidateFamily; blocked declaration retained; forged links rejected |
 | `SV-THIN-01` | Validation only | precommitted checkpoint/plan; reservation coverage; adverse OOS gives `rejected`; terminal and contamination mappings exact |
 | `PG-THIN-01` | Promotion only | real rejected/development report, governed status snapshot/review cutoff, and `needs_more_evidence`; no positive/deploy fields |
@@ -792,8 +793,8 @@ The completed Backtest capability baseline and Platform-specific seam extensions
 The following are external P00 implementation facts owned outside this design:
 
 1. P00-DOM and Backtest clean-SHA/package receipts for the accepted public roots.
-2. A usable P00-BT public execution binding. The accepted package currently requires an additive v2 execution transport; Platform has approved that direction, but Backtest must expose provider preparation/registration without requiring Platform to construct resolved internals.
-3. P00-BT public validation/normalization/registration of Platform-constructed `BacktestRequest` values, returning a Backtest-owned opaque request coordinate and identities while importing no Platform types.
+2. Platform P00-BTA/P00-SEAM binding to accepted BT-GAP-09 public preparation, request registration, executable v2 transport, repository, and analysis authorities.
+3. Platform construction of only `CashDevelopmentRequestIntent@1` plus public provider facts; Backtest retains request, profile, semantic-run, execution-case, and transport authority while importing no Platform types.
 4. Platform composition-root implementation of `BacktestEvidenceAdmission@1` after Backtest verification, using generic Foundation append mechanics and the immutable first admission `accepted_at`.
 5. P00-BT analysis linkage and minimum output: profile ref, source publication, execution-result hash, `simple_period_return`, `trade_count`, and `BacktestResultGrade`.
 6. P00-BT guarantee that one request cannot resolve to differing semantic runs across retries.

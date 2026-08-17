@@ -35,13 +35,13 @@ Integrated v1 的 Promotion 只能产生 `rejected | needs_more_evidence`。`sha
 | Promotion synthetic evaluator | [Promotion design](../promotion-gate/design.md) and source/tests | frozen source/tests |
 | Module implementation and receipts | [Implementation plans](../implementation/plans/README.md) | [roadmap registry](../implementation/roadmap.md#2-status-registry) |
 
-A frozen Platform design does not self-certify integration. Backtest now provides the accepted deep facade, verified evidence repository, analysis runtime, terminal refs, and clean package revision `9e5937895d7559b8537a4595d73b6aabc94f6f13`; Foundation generic storage also exists. Pure Research, Validation, and Promotion cores still proceed against the frozen consumer contract and fixtures until `P00-BTA-01` and `P00-SEAM-01` prove the real request/context binding, Foundation transport, unchanged consumer behavior, remaining approval/root-lock closure, and traceable Platform source revision.
+A frozen Platform design does not self-certify integration. Backtest now provides BT-GAP-09 public cash-development intent/preparation, persisted request refs, executable v2 transport, the deep facade, verified repository including durable FAILED acceptance, analysis runtime, and accepted source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` (package code `a014e9389f36b6696653606c5ebcb845cabe9f24`); Foundation generic storage also exists. Pure Research, Validation, and Promotion cores still proceed against the frozen consumer contract and fixtures until `P00-BTA-01` and `P00-SEAM-01` prove the real request/context binding, Foundation transport, consumer behavior, and traceable Platform source revision.
 
 ## 3. Module ownership
 
 | Module | Owns | Does not own |
 | --- | --- | --- |
-| Backtest | public request validation/registration and identities, run/publish facade, canonical evidence repository, analysis, all simulation semantics | Platform request composition and Research/Validation/Promotion policy |
+| Backtest | public intent preparation, request construction/registration and identities, executable transport, run/publish facade, canonical evidence repository, analysis, all simulation semantics | Platform Trial/Validation context and Research/Validation/Promotion policy |
 | Foundation | generic CAS, generic append, receipts, entry refs, checkpoints | Backtest decoding, sample semantics, status projection |
 | Research | Experiment/task universe, execution evidence, ExperimentExecutionManifest, CandidateFamily, SelectionDeclaration, StrategyCandidate | profit/loss simulation, validation conclusion |
 | Strategy Validation | sample consumption semantics, admission, OOS cases, report | candidate selection, Backtest mutation |
@@ -51,13 +51,13 @@ Foundation only appends generic payload bytes idempotently; it defines neither a
 
 ## 4. Public boundary
 
-Research and Validation integrated shells receive the deep `BacktestFacade` and `CanonicalEvidenceRepository` directly from the accepted public Backtest binding; Platform adds no fifth adapter package. They construct public `BacktestRequest` values with opaque Platform context, while Backtest owns validation, registration, request refs, semantic identities, execution, and evidence. They branch `BacktestPublicationOutcome`; only `CompletedPublication.publication_ref` reaches `derive()`. Verified Backtest subjects enter Platform governance through integration-owned `BacktestEvidenceAdmission@1` and generic Foundation append mechanics. Promotion reads immutable wire contracts and generic Foundation entries/checkpoints to construct its own status snapshot; it does not import Research or Validation implementation.
+Research and Validation integrated shells construct public `CashDevelopmentRequestIntent` values with opaque Platform context and supply only public provider facts. `prepare_cash_development_backtest()` returns the persisted `BacktestRequestRef`, semantic run, executable v2 transport, and configured `BacktestRuntime`; Platform adds no fifth adapter and sees no resolved Backtest objects. Only verified completed publications reach `BacktestAnalysisRuntime.derive()`. Verified Backtest subjects enter Platform governance through integration-owned `BacktestEvidenceAdmission@1` and generic Foundation append mechanics. Promotion reads immutable wire contracts and generic Foundation entries/checkpoints to construct its own status snapshot; it does not import Research or Validation implementation.
 
 `ArtifactEnvelope` v1 and `ArtifactRef` remain Domain-owned. Foundation validates generic structure only; Backtest validates Backtest semantics. Owner-log publication, rather than a CAS write, makes an immutable ref usable as downstream evidence. See [Integration v1 §2–3](integration-v1.md#2-identity-time-and-publication).
 
 ## 5. Workspace state
 
-`platform/` remains the independent system root. `P00-PLAT-01` has created one non-package root `pyproject.toml` workspace coordinator and one root `uv.lock`, pinning Backtest packages to accepted SHA `9e5937895d7559b8537a4595d73b6aabc94f6f13`; no leaf lock is retained or treated as a Platform lock. Its acceptance receipt still waits for a traceable Platform revision.
+`platform/` remains the independent system root. `P00-PLAT-01` established one non-package root `pyproject.toml` workspace coordinator and one root `uv.lock`; the current P00-BTA candidate pins Backtest packages and the Backtest submodule to accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`. No leaf lock is retained or treated as a Platform lock. The earlier P00-PLAT receipt remains historical evidence for revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`; P00-BTA/P00-SEAM require a new clean-clone receipt after these changes are committed.
 
 The eventual package dependency direction is:
 
