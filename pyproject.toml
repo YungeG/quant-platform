@@ -29,6 +29,17 @@ members = [
   "strategy-validation",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = [
+  "foundation/tests",
+  "research-platform/tests",
+  "strategy-validation/tests",
+  "promotion-gate/tests",
+  "tests/architecture",
+  "tests/integration",
+]
+
 [tool.uv.sources]
 crypto-quant-backtest = { git = "https://github.com/YungeG/quant-backtest.git", rev = "e3c04fb612d6798aef1420b60864d4f315ed12ac", subdirectory = "packages/backtest-runtime" }
 crypto-quant-bundle-builder = { git = "https://github.com/YungeG/quant-backtest.git", rev = "e3c04fb612d6798aef1420b60864d4f315ed12ac", subdirectory = "packages/market-bundle-builder" }
