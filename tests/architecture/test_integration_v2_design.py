@@ -12,7 +12,7 @@ PROTECTED_V1 = ROOT / "foundation/tests/fixtures/architecture/p00-contract-v1.js
 PLAN_DIR = ROOT / "implementation/plans"
 FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
 APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
-FIXTURE_SHA = "f1a77232a4149cc188272d7ab128f9a00580fd053a41c003433bbe51e1bb17cf"
+FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
 
 
 def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
@@ -43,6 +43,7 @@ def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
         "resolution_requires_completed_model_training": True,
     }
     assert fixture["model_evidence_rules"]["platform_duplicates_model_artifact_ref"] is False
+    assert fixture["model_evidence_rules"]["cross_clock_publication_comparison"] is False
     assert fixture["backtest_binding"]["failure_phase"] == "before Attempt creation"
     assert FIXTURE_SHA in approval
     assert "| Platform | `YungeG` | APPROVED |" in approval

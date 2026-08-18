@@ -135,7 +135,8 @@
     "training_interval_matches_plan": true,
     "training_code_hash_matches_trainer_recipe": true,
     "feature_schema_hash_matches_feature_recipe": true,
-    "available_at_not_before_training_publication": true,
+    "training_end_not_after_available_at_instant": true,
+    "cross_clock_publication_comparison": false,
     "genesis_supersedes_revision_id": null
   },
   "backtest_binding": {

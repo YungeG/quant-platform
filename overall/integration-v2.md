@@ -143,10 +143,10 @@ The embedded Backtest public value must satisfy:
 - training interval exactly equals the Plan training slice;
 - `training_code_hash == TrainerRecipe.training_code_hash`;
 - `feature_schema_hash == FeatureRecipe.feature_schema_hash`;
-- `available_at` is not before ModelTraining publication;
+- Backtest's owner invariant holds: `training_end <= available_at.instant`;
 - v2 genesis uses `supersedes_revision_id = null`.
 
-The Platform artifact is owner-log evidence. The embedded Backtest value is not a second Domain `ArtifactRef` and is not separately admitted as Backtest run evidence.
+The Platform artifact is owner-log evidence. Append ordering proves that ModelBuildEvidence is not published before ModelTraining completes; Research does not compare that owner-log order with Backtest's simulation-time `available_at`. The embedded Backtest value is not a second Domain `ArtifactRef` and is not separately admitted as Backtest run evidence.
 
 ## 6. Sample reservations
 
