@@ -1,6 +1,6 @@
 # Platform implementation roadmap — Integration v1
 
-> **Status:** Platform cores and P00-PLAT are implemented; accepted Backtest source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` includes BT-GAP-09 plus durable FAILED repository acceptance; real P00-BTA/P00-SEAM binding is implemented and awaits clean committed revisions/receipts.
+> **Status:** Integration v1 is accepted end to end at Platform revision `c525cb522b5a869565a7261f42d5592144cb5e63`; the clean-clone FI-01 release suite passes `280` tests.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules remain in [Integration v1](../overall/integration-v1.md); node instructions live in [implementation plans](plans/README.md#integration-v1-implementation-plans); Platform-specific provider extensions live in the [Backtest Platform Integration Extension Register](backtest-integration-gap-register.md).
 
@@ -14,11 +14,11 @@ Frozen Experiment
 → PromotionDecision(needs_more_evidence)
 ```
 
-Platform work may advance generic Foundation logs and module-owned ledger plans while the provider lane is deferred. It may not claim a real provider seam, accepted SHA, root lock, thin-node receipt, or whole-flow acceptance from fixtures.
+Integration v1 acceptance is complete. Fixture-backed shell proofs remain distinct from the real P00, THIN, admission, and FI receipts that close the release DAG.
 
 There is no second simulator, Pilot adapter, fifth provider adapter package, queue, database, service, generic DAG engine, Feature/Model interface, positive Promotion, Shadow runtime, deployment, or economic-parity claim in v1.
 
-`PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; Platform clean binding receipts remain the P00 fan-in step.
+`PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; P00, admission, all three THIN nodes, and FI-01 have clean receipts.
 
 ## 2. Status registry
 
@@ -39,15 +39,15 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-CORE-01` | DONE | pure status/review/freshness/negative-decision core passes |
 | `SV-LEDGER-01` | DONE | shared reservation/snapshot/assessment interface and focused mutation suite pass |
 | `PG-LEDGER-01` | DONE | Promotion status/review append, immutable cutoff reconstruction, and focused mutation suite pass |
-| `RP-SHELL-01` | DONE | fixture-backed Research runtime, durable partial replay, and focused shell suite pass; real provider acceptance remains blocked |
-| `SV-SHELL-01` | DONE | fixture-backed Validation runtime, canonical replay reuse, and focused shell suite pass; real provider acceptance remains blocked |
-| `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real validation/admission acceptance remains blocked |
+| `RP-SHELL-01` | DONE | fixture-backed Research runtime, durable partial replay, and focused shell suite pass; real binding is recorded separately by RP-THIN-02 |
+| `SV-SHELL-01` | DONE | fixture-backed Validation runtime, canonical replay reuse, and focused shell suite pass; real binding is recorded separately by SV-THIN-01 |
+| `PG-SHELL-01` | DONE | fixture-backed Promotion runtime, exact-Case decision replay, and focused shell suite pass; real binding is recorded separately by PG-THIN-01 |
 | `P00-SEAM-01` | DONE | real Foundation/Backtest fan-in accepted in [`p00-seam-01-receipt.md`](p00-seam-01-receipt.md) |
 | `PLAT-ADM-01` | DONE | clean-clone governance admission accepted in [`plat-adm-01-receipt.md`](plat-adm-01-receipt.md) |
 | `RP-THIN-02` | DONE | real Research golden accepted in [`rp-thin-02-receipt.md`](rp-thin-02-receipt.md) |
 | `SV-THIN-01` | DONE | real Validation rejection accepted in [`sv-thin-01-receipt.md`](sv-thin-01-receipt.md) |
 | `PG-THIN-01` | DONE | real negative Promotion accepted in [`pg-thin-01-receipt.md`](pg-thin-01-receipt.md) |
-| `FI-01` | READY | RP-THIN, SV-THIN, PG-THIN, and PLAT-ADM accepted; run whole-Platform golden |
+| `FI-01` | DONE | whole-Platform golden accepted in [`fi-01-receipt.md`](fi-01-receipt.md) at revision `c525cb522b5a869565a7261f42d5592144cb5e63` |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
 
 ## 3. Execution DAG
@@ -126,13 +126,14 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 5 | `RP-SHELL-01` | RP real acceptance | Research package | DONE |
 | 6 | `SV-SHELL-01` | SV real acceptance | Validation package | DONE |
 | 7 | `PG-SHELL-01` | PG real acceptance | Promotion package | DONE |
-| 8 | `RP-THIN-02` | Validation real acceptance | integrated Research test/receipt | WAITING provider seam |
-| 9 | `SV-THIN-01` | Promotion real acceptance | integrated Validation test/receipt | WAITING RP/provider seam |
-| 10 | `PG-THIN-01` | FI-01 | integrated Promotion test/receipt | WAITING SV/admission |
+| 8 | `RP-THIN-02` | Validation real acceptance | integrated Research test/receipt | DONE |
+| 9 | `SV-THIN-01` | Promotion real acceptance | integrated Validation test/receipt | DONE |
+| 10 | `PG-THIN-01` | FI-01 | integrated Promotion test/receipt | DONE |
+| 11 | `FI-01` | Integration v1 release | integration golden/receipt | DONE |
 
-`RP-SHELL-01`, `SV-SHELL-01`, and `PG-SHELL-01` are DONE. Keep one writer per package. Root lock, status registry, real THIN tests, and receipts remain serialized. The parked provider lane consumes no Platform writer slot.
+The Integration v1 queue is complete. Keep one writer per package for any future scope; this release adds no deployment lane.
 
-## 7. P00 fan-in complete
+## 7. Integration v1 accepted
 
 P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
 
@@ -140,7 +141,7 @@ P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
 - [`P00-BTA-01`](p00-bta-01-receipt.md)
 - [`P00-SEAM-01`](p00-seam-01-receipt.md)
 
-P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. `PLAT-ADM-01`, `RP-THIN-02`, `SV-THIN-01`, and `PG-THIN-01` are accepted. The serialized fan-in queue now advances to the final `FI-01` whole-Platform golden.
+P00-PLAT owns one non-package `platform/pyproject.toml` workspace coordinator and one root `platform/uv.lock`; no leaf lock is retained or treated as a Platform lock. `PLAT-ADM-01`, `RP-THIN-02`, `SV-THIN-01`, `PG-THIN-01`, and [`FI-01`](fi-01-receipt.md) are accepted. The serialized release DAG is complete.
 
 The approved P00-CON-02 clarification remains narrow: existing immutable static capture plus retirement evidence suffices for P00-LEG-01/P00-CUT-01; hermetic replay is not a P00-PLAT prerequisite. It does not approve runtime or provider work.
 

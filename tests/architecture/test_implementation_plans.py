@@ -12,6 +12,7 @@ PLAT_ADM_RECEIPT = ROOT / "implementation/plat-adm-01-receipt.md"
 RP_THIN_RECEIPT = ROOT / "implementation/rp-thin-02-receipt.md"
 SV_THIN_RECEIPT = ROOT / "implementation/sv-thin-01-receipt.md"
 PG_THIN_RECEIPT = ROOT / "implementation/pg-thin-01-receipt.md"
+FI_RECEIPT = ROOT / "implementation/fi-01-receipt.md"
 PLAN_FILES = {
     "PF-LOG-01": PLAN_DIR / "foundation.md",
     "PF-CORE-01": PLAN_DIR / "foundation.md",
@@ -150,6 +151,25 @@ def test_promotion_thin_receipt_binds_the_clean_revision() -> None:
         assert value in receipt
     assert "| `PG-THIN-01` | DONE |" in roadmap
     assert "whole-Platform `FI-01` receipt remains downstream" in receipt
+
+
+def test_fi_receipt_binds_the_clean_release_revision() -> None:
+    receipt = FI_RECEIPT.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+
+    for value in (
+        "c525cb522b5a869565a7261f42d5592144cb5e63",
+        "e3c04fb612d6798aef1420b60864d4f315ed12ac",
+        "280 passed",
+        "Pre/post validation status:** clean",
+        "7fc055fd6bdf50fb6fe09b1f0edf23ce899b687d0b26053a9d88b3fd7a972ac3",
+        "cb6013243f73fd8fd1aef953260eb89de5eee3270244e51c5ac61380b7af44f2",
+        "sha256:58d9291757f3d49971b111b2fc048994bc339dd7c2c58c0eb0952772775b2bca",
+    ):
+        assert value in receipt
+    assert "| `FI-01` | DONE |" in roadmap
+    assert "The serialized release DAG is complete" in roadmap
+    assert "positive Promotion, Shadow, Live" in receipt
 
 
 def test_module_plans_have_deep_interface_and_acceptance_sections() -> None:
