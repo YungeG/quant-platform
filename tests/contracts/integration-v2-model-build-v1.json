@@ -1,0 +1,211 @@
+{
+  "contract_id": "integration-v2-model-build-v1",
+  "schema_version": 1,
+  "status": "frozen",
+  "predecessor": {
+    "contract": "overall/integration-v1.md",
+    "receipt": "implementation/fi-01-receipt.md",
+    "platform_revision": "c525cb522b5a869565a7261f42d5592144cb5e63"
+  },
+  "ownership": {
+    "research": [
+      "FeatureRecipe@1",
+      "TrainerRecipe@1",
+      "ModelBuildPlan@1",
+      "FeatureBuildTask@1",
+      "ModelTrainingTask@1",
+      "FeatureDatasetManifest@1",
+      "ModelBuildEvidence@1",
+      "model-build task outcomes and Trial dependency binding"
+    ],
+    "validation": [
+      "feature_build sample reservation",
+      "model_training sample reservation",
+      "model-build provenance admission"
+    ],
+    "backtest": [
+      "ModelArtifactRef",
+      "ModelRevisionTimeline",
+      "point-in-time model visibility",
+      "model-aware request, invocation, and SemanticRun identity"
+    ],
+    "foundation": [
+      "generic CAS",
+      "generic append",
+      "receipts",
+      "checkpoints"
+    ],
+    "promotion": [
+      "governed model-build status, review, freshness, and negative decision"
+    ]
+  },
+  "schemas": {
+    "FeatureRecipe@1": [
+      "feature_key",
+      "feature_code_hash",
+      "feature_schema_hash",
+      "input_names"
+    ],
+    "TrainerRecipe@1": [
+      "trainer_key",
+      "training_code_hash",
+      "model_key",
+      "hyperparameters"
+    ],
+    "ModelBuildPlan@1": [
+      "experiment_ref",
+      "feature_recipe_ref",
+      "trainer_recipe_ref",
+      "training_slice",
+      "seed"
+    ],
+    "FeatureBuildTask@1": [
+      "experiment_ref",
+      "model_build_plan_ref"
+    ],
+    "ModelTrainingTask@1": [
+      "experiment_ref",
+      "model_build_plan_ref",
+      "feature_build_task_ref"
+    ],
+    "FeatureDatasetManifest@1": [
+      "model_build_plan_ref",
+      "dataset_revision",
+      "interval_start",
+      "interval_end",
+      "feature_schema_hash",
+      "training_data_hash",
+      "row_count"
+    ],
+    "ModelBuildEvidence@1": [
+      "model_build_plan_ref",
+      "feature_dataset_manifest_ref",
+      "model_artifact"
+    ],
+    "StrategyCandidate@2_addition": [
+      "model_build_evidence_ref"
+    ]
+  },
+  "task_universe": {
+    "null_plan": {
+      "model_build_tasks": 0,
+      "trial_tasks": 4,
+      "analysis_tasks": 4,
+      "total": 8,
+      "v1_identity_unchanged": true
+    },
+    "non_null_plan": {
+      "model_build_tasks": 2,
+      "trial_tasks": 4,
+      "analysis_tasks": 4,
+      "total": 10,
+      "task_kinds_added": [
+        "FEATURE_BUILD",
+        "MODEL_TRAINING"
+      ]
+    }
+  },
+  "completed_witnesses_added": {
+    "feature_dataset_manifest": [
+      "feature_dataset_manifest_ref"
+    ],
+    "model_build_evidence": [
+      "model_build_evidence_ref"
+    ]
+  },
+  "sample_reservations": {
+    "FeatureBuildTask@1": "feature_build",
+    "ModelTrainingTask@1": "model_training",
+    "protocol": "append-before-read",
+    "same_interval_distinct_events": true
+  },
+  "model_evidence_rules": {
+    "platform_duplicates_model_artifact_ref": false,
+    "embedded_owner_type": "crypto_quant_backtest.ModelArtifactRef",
+    "model_key_matches_trainer_recipe": true,
+    "training_data_hash_matches_feature_manifest": true,
+    "training_interval_matches_plan": true,
+    "training_code_hash_matches_trainer_recipe": true,
+    "feature_schema_hash_matches_feature_recipe": true,
+    "available_at_not_before_training_publication": true,
+    "genesis_supersedes_revision_id": null
+  },
+  "backtest_binding": {
+    "public_types_only": [
+      "ModelArtifactRef",
+      "ModelRevisionTimeline",
+      "PreparedBacktestExecution"
+    ],
+    "identity_fields": [
+      "artifact_ref_hash",
+      "timeline_hash"
+    ],
+    "must_bind": [
+      "Backtest request evidence",
+      "Strategy invocation evidence",
+      "SemanticRun identity"
+    ],
+    "failure_phase": "before Attempt creation"
+  },
+  "downstream": {
+    "candidate_family_fields_unchanged": [
+      "experiment_ref",
+      "execution_manifest_ref"
+    ],
+    "validation_methods_added": 0,
+    "validation_report_vocabulary_unchanged": [
+      "supported",
+      "rejected",
+      "inconclusive"
+    ],
+    "promotion_decisions_unchanged": [
+      "rejected",
+      "needs_more_evidence"
+    ]
+  },
+  "golden": {
+    "model_build_plans": 1,
+    "feature_build": "COMPLETED",
+    "model_training": "COMPLETED",
+    "trials": {
+      "COMPLETED": 3,
+      "BLOCKED": 1
+    },
+    "analysis_tasks": {
+      "COMPLETED": 3,
+      "BLOCKED": 1
+    },
+    "oos_simple_period_return": "-0.1",
+    "oos_trade_count": 1,
+    "validation_report": "rejected",
+    "promotion_decision": "needs_more_evidence"
+  },
+  "failure_precedence": [
+    "MODEL_BUILD_PLAN_INVALID",
+    "SAMPLE_RESERVATION_FAILED",
+    "FEATURE_BUILD_FAILED",
+    "MODEL_TRAINING_BLOCKED",
+    "MODEL_TRAINING_FAILED",
+    "MODEL_BINDING_INVALID",
+    "BACKTEST_MODEL_FAILURE",
+    "V1_FAILURE_PRECEDENCE"
+  ],
+  "exclusions": [
+    "feature matrix wire format",
+    "model byte format",
+    "Python callable or Protocol ABI",
+    "plugin registry or factory",
+    "dynamic import",
+    "ML framework SDK",
+    "model loader or inference ABI",
+    "remote trainer or model server",
+    "more than one ModelBuildPlan per Experiment",
+    "tuning, hyperparameter search, range search, or adaptive search",
+    "cross-Experiment CandidateFamily",
+    "walk-forward training",
+    "positive Promotion",
+    "Shadow or Live runtime",
+    "credentials or deployment",
+    "database, queue, service, or distributed worker"
+  ]
+}

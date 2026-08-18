@@ -50,9 +50,9 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-THIN-01` | DONE | real negative Promotion accepted in [`pg-thin-01-receipt.md`](pg-thin-01-receipt.md) |
 | `FI-01` | DONE | whole-Platform golden accepted in [`fi-01-receipt.md`](fi-01-receipt.md) at revision `c525cb522b5a869565a7261f42d5592144cb5e63` |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
-| `V2-CON-01` | ACTIVE | freeze protected model-build contract fixture and record Platform/Backtest owner approvals |
-| `MB-CORE-01` | WAITING_CONTRACT | waits for V2-CON schemas and Backtest model type ownership |
-| `BT-MODEL-01` | WAITING_CONTRACT | waits for V2-CON; Backtest owner implements additive model-aware public preparation |
+| `V2-CON-01` | DONE | protected fixture `d88068234db5577c0a2753c89700663b362efce80f20ace7b1f374f67dfbc874` and both owner approvals recorded in [`v2-contract-model-build-v1.md`](v2-contract-model-build-v1.md) |
+| `MB-CORE-01` | READY | V2 contract frozen; implement pure Research declarations and ten-task universe |
+| `BT-MODEL-01` | READY | V2 contract frozen; Backtest owner implements additive model-aware public preparation |
 | `RP-MODEL-01` | WAITING_CORE_SEAM | waits for MB-CORE, BT-MODEL, and accepted build evidence |
 | `V2-SEAM-01` | WAITING_PROVIDER | waits for MB-CORE, BT-MODEL accepted revision, root lock, and real binding |
 | `SV-MODEL-01` | WAITING_RESEARCH | waits for RP-MODEL and V2-SEAM real candidate |
@@ -167,9 +167,9 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
-| 1 | `V2-CON-01` | MB-CORE and BT-MODEL | contract docs/fixture/registry | ACTIVE |
-| 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | WAITING_CONTRACT |
-| 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | WAITING_CONTRACT |
+| 1 | `V2-CON-01` | MB-CORE and BT-MODEL | contract docs/fixture/registry | DONE |
+| 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | READY |
+| 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | READY |
 | 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | WAITING_CORE_SEAM |
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | WAITING_PROVIDER |
 | 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | WAITING_RESEARCH |

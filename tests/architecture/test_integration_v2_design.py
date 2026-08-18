@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -9,6 +10,31 @@ ROADMAP = ROOT / "implementation/roadmap.md"
 GLOSSARY = ROOT / "CONTEXT.md"
 PROTECTED_V1 = ROOT / "foundation/tests/fixtures/architecture/p00-contract-v1.json"
 PLAN_DIR = ROOT / "implementation/plans"
+FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
+APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
+FIXTURE_SHA = "d88068234db5577c0a2753c89700663b362efce80f20ace7b1f374f67dfbc874"
+
+
+def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
+    fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    approval = APPROVAL.read_text(encoding="utf-8")
+
+    assert hashlib.sha256(FIXTURE.read_bytes()).hexdigest() == FIXTURE_SHA
+    assert fixture["contract_id"] == "integration-v2-model-build-v1"
+    assert fixture["status"] == "frozen"
+    assert fixture["ownership"]["backtest"] == [
+        "ModelArtifactRef",
+        "ModelRevisionTimeline",
+        "point-in-time model visibility",
+        "model-aware request, invocation, and SemanticRun identity",
+    ]
+    assert fixture["task_universe"]["null_plan"]["v1_identity_unchanged"] is True
+    assert fixture["task_universe"]["non_null_plan"]["total"] == 10
+    assert fixture["model_evidence_rules"]["platform_duplicates_model_artifact_ref"] is False
+    assert fixture["backtest_binding"]["failure_phase"] == "before Attempt creation"
+    assert FIXTURE_SHA in approval
+    assert "| Platform | `YungeG` | APPROVED |" in approval
+    assert "| Backtest | `YungeG` | APPROVED |" in approval
 
 
 def test_v2_contract_is_additive_model_provenance_not_a_second_runtime() -> None:
@@ -39,9 +65,9 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
     )[0]
 
     expected = {
-        "V2-CON-01": "ACTIVE",
-        "MB-CORE-01": "WAITING_CONTRACT",
-        "BT-MODEL-01": "WAITING_CONTRACT",
+        "V2-CON-01": "DONE",
+        "MB-CORE-01": "READY",
+        "BT-MODEL-01": "READY",
         "RP-MODEL-01": "WAITING_CORE_SEAM",
         "V2-SEAM-01": "WAITING_PROVIDER",
         "SV-MODEL-01": "WAITING_RESEARCH",
