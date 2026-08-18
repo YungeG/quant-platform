@@ -12,7 +12,7 @@ PROTECTED_V1 = ROOT / "foundation/tests/fixtures/architecture/p00-contract-v1.js
 PLAN_DIR = ROOT / "implementation/plans"
 FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
 APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
-FIXTURE_SHA = "d88068234db5577c0a2753c89700663b362efce80f20ace7b1f374f67dfbc874"
+FIXTURE_SHA = "9aa07f82f76527e331ba8c9e2dcbca772f69cc316190f4d5d2fbd9ab7f950bc3"
 
 
 def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
@@ -27,6 +27,12 @@ def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
         "ModelRevisionTimeline",
         "point-in-time model visibility",
         "model-aware request, invocation, and SemanticRun identity",
+    ]
+    assert fixture["schemas"]["ModelBuildPlan@1"] == [
+        "feature_recipe_ref",
+        "trainer_recipe_ref",
+        "training_slice",
+        "seed",
     ]
     assert fixture["task_universe"]["null_plan"]["v1_identity_unchanged"] is True
     assert fixture["task_universe"]["non_null_plan"]["total"] == 10

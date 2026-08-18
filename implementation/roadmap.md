@@ -50,7 +50,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-THIN-01` | DONE | real negative Promotion accepted in [`pg-thin-01-receipt.md`](pg-thin-01-receipt.md) |
 | `FI-01` | DONE | whole-Platform golden accepted in [`fi-01-receipt.md`](fi-01-receipt.md) at revision `c525cb522b5a869565a7261f42d5592144cb5e63` |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
-| `V2-CON-01` | DONE | protected fixture `d88068234db5577c0a2753c89700663b362efce80f20ace7b1f374f67dfbc874` and both owner approvals recorded in [`v2-contract-model-build-v1.md`](v2-contract-model-build-v1.md) |
+| `V2-CON-01` | DONE | protected fixture `9aa07f82f76527e331ba8c9e2dcbca772f69cc316190f4d5d2fbd9ab7f950bc3` and both owner approvals recorded in [`v2-contract-model-build-v1.md`](v2-contract-model-build-v1.md) |
 | `MB-CORE-01` | READY | V2 contract frozen; implement pure Research declarations and ten-task universe |
 | `BT-MODEL-01` | READY | V2 contract frozen; Backtest owner implements additive model-aware public preparation |
 | `RP-MODEL-01` | WAITING_CORE_SEAM | waits for MB-CORE, BT-MODEL, and accepted build evidence |

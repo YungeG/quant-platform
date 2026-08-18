@@ -61,7 +61,6 @@ A TrainerRecipe identifies one immutable training contract and one logical Backt
 
 ```python
 ModelBuildPlan@1 = {
-  experiment_ref,
   feature_recipe_ref,
   trainer_recipe_ref,
   training_slice: DataSlice,
@@ -69,9 +68,9 @@ ModelBuildPlan@1 = {
 }
 ```
 
-An Experiment has `model_build_plan = null | Ref[ModelBuildPlan@1]`. V2 permits at most one non-null plan. The Plan is published before any FeatureBuild or ModelTraining attempt and is not tuned from results.
+An Experiment has `model_build_plan = null | Ref[ModelBuildPlan@1]`. V2 permits at most one non-null plan. Recipes and the Plan are published before the Experiment, so the Experiment content-addresses the immutable Plan without a recursive `ExperimentRef ↔ ModelBuildPlanRef` identity cycle. FeatureBuild/ModelTraining tasks bind both `experiment_ref` and `model_build_plan_ref`.
 
-The training slice must be one of the Experiment's declared data slices. Its exact interval is reserved before each read under Validation-owned sample semantics.
+The training slice must be one of the consuming Experiment's declared data slices. Its exact interval is reserved before each read under Validation-owned sample semantics. A content-identical Plan may be referenced by another Experiment; execution/task identity remains Experiment-specific.
 
 ## 4. Build evidence and task universe
 

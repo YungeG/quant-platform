@@ -53,7 +53,6 @@
       "hyperparameters"
     ],
     "ModelBuildPlan@1": [
-      "experiment_ref",
       "feature_recipe_ref",
       "trainer_recipe_ref",
       "training_slice",

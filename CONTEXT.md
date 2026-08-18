@@ -100,7 +100,7 @@ _Avoid_: trainer callback, framework object, hyperparameter search
 
 **ModelBuildPlan**
 
-The pre-result binding of one Experiment, one FeatureRecipe, one TrainerRecipe, one declared training slice, and one seed. V2 permits at most one per Experiment.
+The pre-result binding of one FeatureRecipe, one TrainerRecipe, one declared training slice, and one seed, content-addressed by a consuming Experiment. It omits Experiment identity to avoid a recursive content-reference cycle; V2 permits at most one plan ref per Experiment.
 
 _Avoid_: mutable training job, tuned result, worker request
 
