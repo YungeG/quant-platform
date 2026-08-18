@@ -55,8 +55,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `BT-MODEL-01` | DONE | Backtest accepted revision `033344172b24847e73941bb97a06da0490527edf` recorded in [`bt-model-01-receipt.md`](bt-model-01-receipt.md) |
 | `RP-MODEL-01` | DONE | model build shell and accepted Backtest binding recorded in [`rp-model-01-receipt.md`](rp-model-01-receipt.md) at Research revision `f05c91b2fa75826fb0439ccdcb0d2ae507bff013` |
 | `V2-SEAM-01` | DONE | remote-pinned Research/Backtest binding accepted in [`v2-seam-01-receipt.md`](v2-seam-01-receipt.md) at Platform revision `84693cfb62d7e5e22ad24701b7ce1893bde0dca1` |
-| `SV-MODEL-01` | READY | RP-MODEL and V2-SEAM are complete; admit the real model-aware candidate and reservations |
-| `PG-MODEL-01` | WAITING_VALIDATION | waits for SV-MODEL governed graph |
+| `SV-MODEL-01` | DONE | model-build provenance admission accepted in [`sv-model-01-receipt.md`](sv-model-01-receipt.md) at Validation revision `acf2e36ed009deeee399744508e83af16cdc90d9` |
+| `PG-MODEL-01` | READY | SV-MODEL is complete; extend governed closure without changing negative-only decisions |
 | `FI-02` | WAITING_LEAVES | waits for V2-SEAM, RP-MODEL, SV-MODEL, and PG-MODEL receipts |
 
 ## 3. Execution DAG
@@ -172,8 +172,8 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | DONE |
 | 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | DONE |
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | DONE |
-| 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | READY |
-| 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | WAITING_VALIDATION |
+| 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | DONE |
+| 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | READY |
 | 8 | `FI-02` | Integration v2 release | root golden/receipt/release | WAITING_LEAVES |
 
 Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work may proceed independently because their write sets are disjoint; root pinning and all fan-in remain serialized.
