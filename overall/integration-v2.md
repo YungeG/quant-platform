@@ -161,13 +161,13 @@ Both reservations are append-before-read and replay-idempotent. Feature and trai
 
 ## 7. Trial and Backtest binding
 
-A model-bound TrialDeclaration carries exactly one binding:
+A model-bound TrialDeclaration predeclares exactly one dependency without referencing result-time evidence:
 
 ```python
-model_input_bindings = ((TrainerRecipe.model_key, model_build_evidence_ref),)
+model_input_bindings = (("primary_model", model_build_plan_ref),)
 ```
 
-`BacktestTrialSpec.resolved_model_refs` carries the exact embedded Backtest `ModelArtifactRef` selected from that evidence. The Backtest public preparation seam must:
+This keeps TrialDeclaration and the ten-task universe deterministic before ModelTraining. `BacktestTrialSpec.resolved_model_refs` is materialized only after the completed ModelTraining outcome and carries the exact embedded Backtest `ModelArtifactRef` from ModelBuildEvidence. The Backtest public preparation seam must:
 
 1. accept only public `ModelArtifactRef` / `ModelRevisionTimeline` values;
 2. select point-in-time visibility using the existing Backtest authority;
@@ -190,7 +190,7 @@ StrategyCandidate@2 = {
 }
 ```
 
-The selected Trial's binding, TrialSpec resolved model ref, completed ModelTraining outcome, and Candidate model ref must all resolve to the same `ModelBuildEvidence` and Backtest `artifact_ref_hash`.
+The selected Trial's predeclared Plan binding, completed ModelTraining outcome, Candidate model ref, and TrialSpec resolved model ref must resolve through the same `ModelBuildPlan` / `ModelBuildEvidence` chain and Backtest `artifact_ref_hash`.
 
 Validation adds no new method. Admission verifies the model-build chain and both training reservations before publishing the existing evidence-integrity and OOS cases. OOS thresholds and report vocabulary remain unchanged.
 

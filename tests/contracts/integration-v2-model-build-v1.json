@@ -104,6 +104,15 @@
       ]
     }
   },
+  "trial_binding": {
+    "declaration_binding": [
+      "primary_model",
+      "model_build_plan_ref"
+    ],
+    "result_time_evidence_in_trial_identity": false,
+    "trial_spec_resolved_value": "crypto_quant_backtest.ModelArtifactRef",
+    "resolution_requires_completed_model_training": true
+  },
   "completed_witnesses_added": {
     "feature_dataset_manifest": [
       "feature_dataset_manifest_ref"

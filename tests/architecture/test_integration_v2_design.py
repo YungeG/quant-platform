@@ -12,7 +12,7 @@ PROTECTED_V1 = ROOT / "foundation/tests/fixtures/architecture/p00-contract-v1.js
 PLAN_DIR = ROOT / "implementation/plans"
 FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
 APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
-FIXTURE_SHA = "9aa07f82f76527e331ba8c9e2dcbca772f69cc316190f4d5d2fbd9ab7f950bc3"
+FIXTURE_SHA = "f1a77232a4149cc188272d7ab128f9a00580fd053a41c003433bbe51e1bb17cf"
 
 
 def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
@@ -36,6 +36,12 @@ def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
     ]
     assert fixture["task_universe"]["null_plan"]["v1_identity_unchanged"] is True
     assert fixture["task_universe"]["non_null_plan"]["total"] == 10
+    assert fixture["trial_binding"] == {
+        "declaration_binding": ["primary_model", "model_build_plan_ref"],
+        "result_time_evidence_in_trial_identity": False,
+        "trial_spec_resolved_value": "crypto_quant_backtest.ModelArtifactRef",
+        "resolution_requires_completed_model_training": True,
+    }
     assert fixture["model_evidence_rules"]["platform_duplicates_model_artifact_ref"] is False
     assert fixture["backtest_binding"]["failure_phase"] == "before Attempt creation"
     assert FIXTURE_SHA in approval
