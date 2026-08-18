@@ -1,6 +1,6 @@
 # Platform Integration v1
 
-- **Status:** Accepted design; Platform-owned v1 decisions, including `PLAT-REC-01`, `PLAT-REC-02`, and `PLAT-REC-03`, are frozen. Integrated implementation remains blocked on the P00 prerequisites below.
+- **Status:** Accepted and released as `integration-v1`; Platform-owned v1 decisions, including `PLAT-REC-01`, `PLAT-REC-02`, and `PLAT-REC-03`, remain frozen. Additive model-build work is specified separately in [Integration v2](integration-v2.md).
 - **Version:** 1.0
 - **Scope:** the first integrated Research → Validation → negative Promotion path
 - **Authority:** This document is the authoritative integration contract. It supersedes only the *Integration Draft* portions of the overview and module designs. `RP-THIN-01`, `SV-00A-core`, and `PG-SYN-1` remain separately Frozen exactly as documented in their module designs.

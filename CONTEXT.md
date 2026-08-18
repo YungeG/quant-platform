@@ -1,6 +1,6 @@
 # Platform glossary
 
-This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md). Frozen pure-value terms remain defined by their module designs.
+This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md) and additive [Integration v2](overall/integration-v2.md). Frozen pure-value terms remain defined by their module designs.
 
 ## Evidence and storage
 
@@ -86,9 +86,39 @@ _Avoid_: Backtest result, retry attempt
 
 The Frozen compiler compatibility input and the integrated selection artifact are distinct types despite their shared spelling.
 
+**FeatureRecipe**
+
+The immutable identity of one feature transformation contract: its logical key, code hash, output schema hash, and named inputs. It is a declaration, not executable code or a feature matrix.
+
+_Avoid_: feature callback, plugin, DataFrame
+
+**TrainerRecipe**
+
+The immutable identity of one training contract: its logical key, code hash, model lineage, and explicit hyperparameters. It is not an estimator object, search space, or model loader.
+
+_Avoid_: trainer callback, framework object, hyperparameter search
+
+**ModelBuildPlan**
+
+The pre-result binding of one Experiment, one FeatureRecipe, one TrainerRecipe, one declared training slice, and one seed. V2 permits at most one per Experiment.
+
+_Avoid_: mutable training job, tuned result, worker request
+
+**FeatureDatasetManifest**
+
+Research evidence identifying the exact training interval, feature schema, training-data hash, and row count produced for one ModelBuildPlan. It is provenance metadata, not a standardized feature-matrix transport.
+
+_Avoid_: raw feature matrix, proof of complete observation
+
+**ModelBuildEvidence**
+
+The Research owner-log artifact that binds one ModelBuildPlan and FeatureDatasetManifest to the Backtest-owned `ModelArtifactRef` produced by training.
+
+_Avoid_: duplicate ModelArtifactRef, model bytes, deployment artifact
+
 **AnalysisTask / AnalysisTask@1**
 
-In v1 this name denotes the integrated declaration to derive one Backtest analysis for one trial and metric profile; it is not a Frozen pure value or the Backtest analysis result.
+In v1/v2 this name denotes the integrated declaration to derive one Backtest analysis for one trial and metric profile; it is not a Frozen pure value or the Backtest analysis result.
 
 _Avoid_: the Backtest analysis result itself
 

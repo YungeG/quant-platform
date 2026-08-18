@@ -30,6 +30,14 @@ PLAN_FILES = {
     "P00-SEAM-01": PLAN_DIR / "fan-in.md",
     "PLAT-ADM-01": PLAN_DIR / "fan-in.md",
     "FI-01": PLAN_DIR / "fan-in.md",
+    "V2-CON-01": PLAN_DIR / "v2-contract.md",
+    "MB-CORE-01": PLAN_DIR / "v2-research-model-build.md",
+    "BT-MODEL-01": PLAN_DIR / "v2-backtest-model.md",
+    "RP-MODEL-01": PLAN_DIR / "v2-research-model-build.md",
+    "V2-SEAM-01": PLAN_DIR / "v2-backtest-model.md",
+    "SV-MODEL-01": PLAN_DIR / "v2-fan-in.md",
+    "PG-MODEL-01": PLAN_DIR / "v2-fan-in.md",
+    "FI-02": PLAN_DIR / "v2-fan-in.md",
 }
 
 

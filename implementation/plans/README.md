@@ -1,14 +1,15 @@
-# Integration v1 implementation plans
+# Platform integration implementation plans
 
 This directory owns node-level implementation instructions. The [roadmap status registry and execution DAG](../roadmap.md#2-status-registry) are the sole mutable authority for node state and readiness; subplans intentionally do not repeat editable status fields.
 
 ## Outcome
 
-Implement the accepted Platform flow as deep modules with small interfaces:
+Preserve accepted Integration v1 and implement additive Integration v2 as deep modules with small interfaces:
 
 ```text
 Foundation exact storage/logs
-→ Research exact Experiment closure and selection
+→ Research optional ModelBuild + exact Experiment closure and selection
+→ Backtest point-in-time model identity + canonical run evidence
 → Validation authoritative sample ledger and OOS report
 → Promotion governed-evidence negative decision
 ```
@@ -25,7 +26,8 @@ Provider execution remains an external seam. Deferring it does not require the P
 - One module exposes one deep orchestration operation rather than public step-by-step CAS/log/provider choreography.
 - A CAS object is not evidence until exact owner-log publication. A failed append means no authorized sample read.
 - Only completed Backtest publication reaches analysis. Missing metrics are missing/inconclusive, never zero.
-- Positive Promotion, Shadow/Live authorization, deployment, database, queue, distributed writer, and generic DAG remain outside v1.
+- V2 adds one immutable Feature/Trainer recipe pair and one ModelBuildPlan; it adds no plugin/framework ABI, model bytes/loader/inference, tuning/search, or multiple model plans.
+- Positive Promotion, Shadow/Live authorization, deployment, database, queue, distributed writer, and generic DAG remain outside v1/v2.
 
 ## Plan map
 
@@ -37,6 +39,10 @@ Provider execution remains an external seam. Deferring it does not require the P
 | [Promotion Gate](promotion.md) | `PG-CORE-01`, `PG-LEDGER-01`, `PG-SHELL-01`, `PG-THIN-01` | Promotion package and receipt |
 | [Integration fan-in](fan-in.md) | `P00-SEAM-01`, `PLAT-ADM-01`, `FI-01` | integration tests/support and receipts only |
 | [Backtest contract/binding](backtest-port.md) | `BT-PORT-01`, `P00-BTA-01` | consumer fixture/support; provider work remains external |
+| [V2 contract](v2-contract.md) | `V2-CON-01` | v2 normative docs, fixture, approvals |
+| [V2 Research model build](v2-research-model-build.md) | `MB-CORE-01`, `RP-MODEL-01` | Research model declarations/runtime and receipts |
+| [V2 Backtest model seam](v2-backtest-model.md) | `BT-MODEL-01`, `V2-SEAM-01` | Backtest owner seam; root pin/integration receipt |
+| [V2 downstream fan-in](v2-fan-in.md) | `SV-MODEL-01`, `PG-MODEL-01`, `FI-02` | Validation/Promotion extensions and final golden |
 
 Provider-owner requirements are packaged separately in the [Backtest Provider Handoff](../backtest-provider-handoff.md). They are not duplicated into module plans.
 

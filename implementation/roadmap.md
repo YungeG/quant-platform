@@ -1,14 +1,15 @@
-# Platform implementation roadmap — Integration v1
+# Platform implementation roadmap
 
-> **Status:** Integration v1 is accepted end to end at Platform revision `c525cb522b5a869565a7261f42d5592144cb5e63`; the clean-clone FI-01 release suite passes `280` tests.
+> **Status:** Integration v1 is released at `integration-v1`; Integration v2 model-build contract work is active.
 
-This file is the sole mutable status registry and release DAG. Normative schemas/state rules remain in [Integration v1](../overall/integration-v1.md); node instructions live in [implementation plans](plans/README.md#integration-v1-implementation-plans); Platform-specific provider extensions live in the [Backtest Platform Integration Extension Register](backtest-integration-gap-register.md).
+This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
 ## 1. Outcome and non-goals
 
 ```text
 Frozen Experiment
-→ public Backtest evidence
+→ optional FeatureBuild / ModelTraining provenance
+→ model-bound public Backtest evidence
 → exact CandidateFamily
 → precommitted admission + OOS ValidationReport(rejected)
 → PromotionDecision(needs_more_evidence)
@@ -16,7 +17,7 @@ Frozen Experiment
 
 Integration v1 acceptance is complete. Fixture-backed shell proofs remain distinct from the real P00, THIN, admission, and FI receipts that close the release DAG.
 
-There is no second simulator, Pilot adapter, fifth provider adapter package, queue, database, service, generic DAG engine, Feature/Model interface, positive Promotion, Shadow runtime, deployment, or economic-parity claim in v1.
+V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding. It adds no second simulator, fifth adapter package, callable/plugin/framework ABI, model loader/inference, tuning/search, queue, database, service, generic DAG engine, positive Promotion, Shadow runtime, or deployment.
 
 `PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; P00, admission, all three THIN nodes, and FI-01 have clean receipts.
 
@@ -49,6 +50,14 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-THIN-01` | DONE | real negative Promotion accepted in [`pg-thin-01-receipt.md`](pg-thin-01-receipt.md) |
 | `FI-01` | DONE | whole-Platform golden accepted in [`fi-01-receipt.md`](fi-01-receipt.md) at revision `c525cb522b5a869565a7261f42d5592144cb5e63` |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
+| `V2-CON-01` | ACTIVE | freeze protected model-build contract fixture and record Platform/Backtest owner approvals |
+| `MB-CORE-01` | WAITING_CONTRACT | waits for V2-CON schemas and Backtest model type ownership |
+| `BT-MODEL-01` | WAITING_CONTRACT | waits for V2-CON; Backtest owner implements additive model-aware public preparation |
+| `RP-MODEL-01` | WAITING_CORE_SEAM | waits for MB-CORE, BT-MODEL, and accepted build evidence |
+| `V2-SEAM-01` | WAITING_PROVIDER | waits for MB-CORE, BT-MODEL accepted revision, root lock, and real binding |
+| `SV-MODEL-01` | WAITING_RESEARCH | waits for RP-MODEL and V2-SEAM real candidate |
+| `PG-MODEL-01` | WAITING_VALIDATION | waits for SV-MODEL governed graph |
+| `FI-02` | WAITING_LEAVES | waits for V2-SEAM, RP-MODEL, SV-MODEL, and PG-MODEL receipts |
 
 ## 3. Execution DAG
 
@@ -80,7 +89,22 @@ PG-SHELL-01 + SV-THIN-01 + PLAT-ADM-01 ─────────────�
                                                                 FI-01
 ```
 
-The graph is acyclic:
+Integration v2 adds this acyclic DAG:
+
+```text
+FI-01 ─→ V2-CON-01 ─┬─→ MB-CORE-01 ───────────────┐
+                     └─→ BT-MODEL-01 ────────┐     │
+                                             ├─→ V2-SEAM-01 ─┐
+MB-CORE-01 + existing Foundation/SV ledger ──┴─→ RP-MODEL-01 ┤
+                                                              ↓
+                                                        SV-MODEL-01
+                                                              ↓
+                                                        PG-MODEL-01
+                                                              ↓
+                                                            FI-02
+```
+
+The graphs are acyclic:
 
 - Validation owns the shared sample-ledger interface consumed by Research producers.
 - Research produces the candidate later consumed by Validation.
@@ -110,6 +134,14 @@ The graph is acyclic:
 | `SV-THIN-01` | SV-SHELL + RP candidate + P00 seam | real adverse OOS evidence | Validation integrated test/receipt |
 | `PG-THIN-01` | PG-SHELL + SV report + PLAT-ADM | real status/review/admission facts | Promotion integrated test/receipt |
 | `FI-01` | all thin receipts | clean replay and cross-module provenance | integration golden/receipt |
+| `V2-CON-01` | FI-01 + Backtest public model values | owner approvals and protected fixture | contract docs/fixture/registry |
+| `MB-CORE-01` | V2 Feature/Trainer/Plan/build schemas | pure ten-task golden | Research integration/public root |
+| `BT-MODEL-01` | V2 contract + Backtest G11H | accepted model-aware provider evidence | Backtest public runtime/provider root |
+| `RP-MODEL-01` | MB core + BT model seam + existing ledger | accepted build observation and real model binding | Research runtime/public root |
+| `V2-SEAM-01` | MB core + BT model public seam | accepted Backtest revision/root lock | root lock/gitlink/integration receipt |
+| `SV-MODEL-01` | real model-bound candidate | build/reservation/Backtest binding evidence | Validation runtime/integrated receipt |
+| `PG-MODEL-01` | real model-aware Validation report | owner-log status/review evidence | Promotion runtime/integrated receipt |
+| `FI-02` | all v2 receipts | remote clean replay and provenance | integration golden/receipt/release |
 
 ## 5. Plan index
 
@@ -131,7 +163,20 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 10 | `PG-THIN-01` | FI-01 | integrated Promotion test/receipt | DONE |
 | 11 | `FI-01` | Integration v1 release | integration golden/receipt | DONE |
 
-The Integration v1 queue is complete. Keep one writer per package for any future scope; this release adds no deployment lane.
+### Integration v2 ready queue
+
+| Priority | Node | Unblocks | Write set | State |
+| --- | --- | --- | --- | --- |
+| 1 | `V2-CON-01` | MB-CORE and BT-MODEL | contract docs/fixture/registry | ACTIVE |
+| 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | WAITING_CONTRACT |
+| 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | WAITING_CONTRACT |
+| 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | WAITING_CORE_SEAM |
+| 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | WAITING_PROVIDER |
+| 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | WAITING_RESEARCH |
+| 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | WAITING_VALIDATION |
+| 8 | `FI-02` | Integration v2 release | root golden/receipt/release | WAITING_LEAVES |
+
+Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work may proceed independently because their write sets are disjoint; root pinning and all fan-in remain serialized.
 
 ## 7. Integration v1 accepted
 
@@ -159,6 +204,14 @@ PromotionDecision = needs_more_evidence
 
 Focused plans own malformed leaf behavior. `FI-01` owns only cross-module provenance, immutable cutoff reuse, first-admission linkage, whole-flow replay, and clean lock/import closure. See [fan-in proof ownership](plans/fan-in.md#proof-ownership).
 
-## 9. Deferred scope
+## 9. Integration v2 golden and deferred scope
 
-v1 excludes Feature/model/trainer interface; non-null model build; range/adaptive search; walk-forward/stress/capacity/bootstrap/selection-bias methods; positive Promotion, ShadowSpec/Runtime, Live authorization, credentials, and deployment; cryptographic RBAC; database/queue/distributed/object-store writers; proof of uninstrumented reads; physical legacy deletion; pilot parity; and any deployable application/service.
+```text
+1 FeatureBuild + 1 ModelTraining + 4 Trials + 4 Analysis = 10 tasks
+one Backtest ModelArtifactRef bound through build evidence, TrialSpec, invocation evidence, and SemanticRun
+3 completed Trials, 1 durable BLOCKED
+ValidationReport = rejected
+PromotionDecision = needs_more_evidence
+```
+
+V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loading/inference, multiple model plans, tuning/range/adaptive search, walk-forward/stress/capacity/bootstrap/selection-bias methods, positive Promotion, ShadowSpec/Runtime, Live authorization, credentials, deployment, cryptographic RBAC, database/queue/distributed/object-store writers, and any deployable application/service.

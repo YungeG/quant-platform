@@ -2,8 +2,8 @@
 
 - **实现状态：** 以 [Roadmap status registry](../implementation/roadmap.md#2-status-registry) 为唯一可变权威；本文只维护系统设计
 - **日期：** 2026-08-14
-- **权威集成契约：** [Integration v1](integration-v1.md)
-- **适用范围：** Research、可信 Backtest、Validation 和 negative-only Promotion
+- **权威集成契约：** [Integration v1](integration-v1.md)；additive [Integration v2](integration-v2.md)
+- **适用范围：** Research、offline ModelBuild provenance、可信 Backtest、Validation 和 negative-only Promotion
 
 本文件说明系统边界、模块责任和当前状态；它不重复 Integration v1 的 wire schema、Foundation interface、状态机、failure mapping 或 storage contract。`RP-THIN-01`、`SV-00A-core`、`PG-SYN-1` 的 Frozen 行为仍分别由模块设计和现有测试定义。
 
@@ -12,7 +12,8 @@
 ```text
 可证伪假设
 → 冻结 Experiment
-→ Backtest public evidence
+→ optional FeatureBuild / ModelTraining provenance
+→ model-bound Backtest public evidence
 → 完整 CandidateFamily
 → 冻结 Validation Plan / OOS report
 → PromotionDecision(rejected | needs_more_evidence)
@@ -29,21 +30,22 @@ Integrated v1 的 Promotion 只能产生 `rejected | needs_more_evidence`。`sha
 | Surface | Authority | State source |
 | --- | --- | --- |
 | Cross-module v1 schemas, identity, time, publication, states, failures | [Integration v1](integration-v1.md) | accepted contract text |
+| Additive model-build schemas, task kinds, Backtest model binding, downstream provenance | [Integration v2](integration-v2.md) | roadmap registry |
 | Foundation mechanics | [Foundation design](../foundation/design.md) | [roadmap registry](../implementation/roadmap.md#2-status-registry) |
 | Research declaration compiler | [Research design](../research-platform/design.md) and source/tests | frozen source/tests |
 | Validation sample projection | [Validation design](../strategy-validation/design.md) and source/tests | frozen source/tests |
 | Promotion synthetic evaluator | [Promotion design](../promotion-gate/design.md) and source/tests | frozen source/tests |
 | Module implementation and receipts | [Implementation plans](../implementation/plans/README.md) | [roadmap registry](../implementation/roadmap.md#2-status-registry) |
 
-A frozen Platform design does not self-certify integration. Backtest now provides BT-GAP-09 public cash-development intent/preparation, persisted request refs, executable v2 transport, the deep facade, verified repository including durable FAILED acceptance, analysis runtime, and accepted source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac` (package code `a014e9389f36b6696653606c5ebcb845cabe9f24`); Foundation generic storage also exists. Pure Research, Validation, and Promotion cores still proceed against the frozen consumer contract and fixtures until `P00-BTA-01` and `P00-SEAM-01` prove the real request/context binding, Foundation transport, consumer behavior, and traceable Platform source revision.
+Integration v1 is accepted by [`FI-01`](../implementation/fi-01-receipt.md) and released as `integration-v1`. Backtest now provides BT-GAP-09 public cash-development intent/preparation, persisted request refs, executable v2 transport, verified repository evidence, and analysis authority. Integration v2 starts from those immutable receipts. Existing Backtest `ModelArtifactRef` and `ModelRevisionTimeline` are reused; the additive model-aware preparation seam remains a Backtest-owned v2 node and cannot be claimed from Platform fixtures.
 
 ## 3. Module ownership
 
 | Module | Owns | Does not own |
 | --- | --- | --- |
-| Backtest | public intent preparation, request construction/registration and identities, executable transport, run/publish facade, canonical evidence repository, analysis, all simulation semantics | Platform Trial/Validation context and Research/Validation/Promotion policy |
+| Backtest | public intent preparation, request construction/registration and identities, executable transport, point-in-time model visibility, run/publish facade, canonical evidence repository, analysis, all simulation semantics | offline ModelBuild orchestration, Platform Trial/Validation context and Research/Validation/Promotion policy |
 | Foundation | generic CAS, generic append, receipts, entry refs, checkpoints | Backtest decoding, sample semantics, status projection |
-| Research | Experiment/task universe, execution evidence, ExperimentExecutionManifest, CandidateFamily, SelectionDeclaration, StrategyCandidate | profit/loss simulation, validation conclusion |
+| Research | Experiment/task universe, Feature/Trainer recipes, ModelBuildPlan/evidence, execution evidence, ExperimentExecutionManifest, CandidateFamily, SelectionDeclaration, StrategyCandidate | runtime model visibility, profit/loss simulation, validation conclusion |
 | Strategy Validation | sample consumption semantics, admission, OOS cases, report | candidate selection, Backtest mutation |
 | Promotion Gate | evidence-status semantics, policy, reviews, negative evaluation/decision | Research/Validation implementation, deployment |
 
@@ -57,7 +59,7 @@ Research and Validation integrated shells construct public `CashDevelopmentReque
 
 ## 5. Workspace state
 
-`platform/` remains the independent system root. `P00-PLAT-01` established one non-package root `pyproject.toml` workspace coordinator and one root `uv.lock`; those dependency files pin Backtest packages to accepted BT-GAP-09 source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`. The Backtest gitlink instead records acceptance receipt `92810375fdf6c0c48c1edaeade74b97755f20220`, the documentation-only child of that source revision, and is not a dependency pin. No leaf lock is retained or treated as a Platform lock. The earlier P00-PLAT receipt remains historical evidence for revision `bb75f2d903111be55be23bcb2d730c8cdec3bf3a`; P00-BTA/P00-SEAM require a new clean-clone receipt after these changes are committed.
+`platform/` is the independent public superproject at `YungeG/quant-platform`. Integration v1 is tagged and released; one non-package root `pyproject.toml` coordinates the workspace and one root `uv.lock` pins accepted package revisions. No Platform leaf lock is retained or treated as a release lock. V2 must preserve remote-reachable submodule pins and clean-clone acceptance.
 
 The eventual package dependency direction is:
 
@@ -71,7 +73,7 @@ foundation + domain + backtest → promotion
 
 ## 6. Non-goals
 
-v1 excludes Feature/model/trainer ABI, non-null `model_build_plan`, range/adaptive search, walk-forward/stress/capacity/bootstrap/selection-bias methods, positive Promotion, Shadow or Live runtime, cryptographic RBAC, DB/queue/distributed/object-store writers, proof of uninstrumented reads, physical sibling-pilot deletion, and pilot economic parity.
+V2 admits immutable Feature/Trainer recipe contracts, one non-null ModelBuildPlan, build provenance, and Backtest model identity binding. It still excludes model/feature byte formats, callable/plugin/framework ABI, actual model loader/inference, multiple model plans, tuning/range/adaptive search, walk-forward training, additional validation methods, positive Promotion, Shadow or Live runtime, cryptographic RBAC, DB/queue/distributed/object-store writers, and deployment.
 
 ## 7. Completion evidence
 
