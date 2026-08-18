@@ -17,6 +17,7 @@ BT_MODEL_RECEIPT = ROOT / "implementation/bt-model-01-receipt.md"
 V2_SEAM_RECEIPT = ROOT / "implementation/v2-seam-01-receipt.md"
 RP_MODEL_RECEIPT = ROOT / "implementation/rp-model-01-receipt.md"
 SV_MODEL_RECEIPT = ROOT / "implementation/sv-model-01-receipt.md"
+PG_MODEL_RECEIPT = ROOT / "implementation/pg-model-01-receipt.md"
 FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
 BT_MODEL_SHA = "033344172b24847e73941bb97a06da0490527edf"
 V2_SEAM_RESEARCH_SHA = "51897c2118828febc844e9b21980e31cf0760138"
@@ -24,6 +25,9 @@ RP_MODEL_SHA = "f05c91b2fa75826fb0439ccdcb0d2ae507bff013"
 MODEL_LEDGER_SHA = "256e17c2f528f374e1041cd16d7e829f1f120556"
 SV_RESEARCH_SHA = "9251222d4fa2f3ec548161e6949bf117e30d9348"
 SV_MODEL_SHA = "acf2e36ed009deeee399744508e83af16cdc90d9"
+PG_RESEARCH_SHA = "d2dd913a1efd23728c7889bd15c894d6cf22ad4e"
+PG_VALIDATION_SHA = "41c35219d227fe5cdb736747b917144f6b8a8c65"
+PG_MODEL_SHA = "966b5984c430ec61c53b15761099d2620ed028e6"
 V2_LOCK_SHA = "dcfeab99dfdf28daa9206d8f94315740d288c7f43df89d6ccc21e415e25101ef"
 
 
@@ -152,11 +156,58 @@ def test_sv_model_receipt_pins_validation_and_research_observation() -> None:
         ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
     ).split()
 
-    assert research_entry[:2] == ["160000", SV_RESEARCH_SHA]
-    assert validation_entry[:2] == ["160000", SV_MODEL_SHA]
+    assert research_entry[0] == "160000"
+    assert validation_entry[0] == "160000"
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "research-platform",
+            "merge-base",
+            "--is-ancestor",
+            SV_RESEARCH_SHA,
+            research_entry[1],
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "strategy-validation",
+            "merge-base",
+            "--is-ancestor",
+            SV_MODEL_SHA,
+            validation_entry[1],
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
     assert SV_RESEARCH_SHA in receipt
     assert SV_MODEL_SHA in receipt
     assert "305 passed" in receipt
+
+
+def test_pg_model_receipt_pins_all_governed_model_revisions() -> None:
+    receipt = PG_MODEL_RECEIPT.read_text(encoding="utf-8")
+    research_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "research-platform"], cwd=ROOT, text=True
+    ).split()
+    validation_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
+    ).split()
+    promotion_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "promotion-gate"], cwd=ROOT, text=True
+    ).split()
+
+    assert research_entry[:2] == ["160000", PG_RESEARCH_SHA]
+    assert validation_entry[:2] == ["160000", PG_VALIDATION_SHA]
+    assert promotion_entry[:2] == ["160000", PG_MODEL_SHA]
+    assert PG_RESEARCH_SHA in receipt
+    assert PG_VALIDATION_SHA in receipt
+    assert PG_MODEL_SHA in receipt
+    assert "308 passed" in receipt
 
 
 def test_v2_contract_is_additive_model_provenance_not_a_second_runtime() -> None:
@@ -193,8 +244,8 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
         "RP-MODEL-01": "DONE",
         "V2-SEAM-01": "DONE",
         "SV-MODEL-01": "DONE",
-        "PG-MODEL-01": "READY",
-        "FI-02": "WAITING_LEAVES",
+        "PG-MODEL-01": "DONE",
+        "FI-02": "READY",
     }
     for node, state in expected.items():
         assert registry.count(f"| `{node}` | {state} |") == 1

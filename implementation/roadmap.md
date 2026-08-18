@@ -56,8 +56,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `RP-MODEL-01` | DONE | model build shell and accepted Backtest binding recorded in [`rp-model-01-receipt.md`](rp-model-01-receipt.md) at Research revision `f05c91b2fa75826fb0439ccdcb0d2ae507bff013` |
 | `V2-SEAM-01` | DONE | remote-pinned Research/Backtest binding accepted in [`v2-seam-01-receipt.md`](v2-seam-01-receipt.md) at Platform revision `84693cfb62d7e5e22ad24701b7ce1893bde0dca1` |
 | `SV-MODEL-01` | DONE | model-build provenance admission accepted in [`sv-model-01-receipt.md`](sv-model-01-receipt.md) at Validation revision `acf2e36ed009deeee399744508e83af16cdc90d9` |
-| `PG-MODEL-01` | READY | SV-MODEL is complete; extend governed closure without changing negative-only decisions |
-| `FI-02` | WAITING_LEAVES | waits for V2-SEAM, RP-MODEL, SV-MODEL, and PG-MODEL receipts |
+| `PG-MODEL-01` | DONE | governed model-build closure accepted in [`pg-model-01-receipt.md`](pg-model-01-receipt.md) at Promotion revision `966b5984c430ec61c53b15761099d2620ed028e6` |
+| `FI-02` | READY | all v2 leaf receipts are complete; run remote clean whole-Platform golden and release acceptance |
 
 ## 3. Execution DAG
 
@@ -173,8 +173,8 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | DONE |
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | DONE |
 | 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | DONE |
-| 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | READY |
-| 8 | `FI-02` | Integration v2 release | root golden/receipt/release | WAITING_LEAVES |
+| 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | DONE |
+| 8 | `FI-02` | Integration v2 release | root golden/receipt/release | READY |
 
 Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work may proceed independently because their write sets are disjoint; root pinning and all fan-in remain serialized.
 
