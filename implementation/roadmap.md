@@ -53,9 +53,9 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `V2-CON-01` | DONE | protected fixture `4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb` and both owner approvals recorded in [`v2-contract-model-build-v1.md`](v2-contract-model-build-v1.md) |
 | `MB-CORE-01` | DONE | Research revision `94dafc97d3c7c59ab68601625d55d1b45e806d1e` implements immutable declarations, model evidence validation, and the optional ten-task universe |
 | `BT-MODEL-01` | DONE | Backtest accepted revision `033344172b24847e73941bb97a06da0490527edf` recorded in [`bt-model-01-receipt.md`](bt-model-01-receipt.md) |
-| `RP-MODEL-01` | READY | MB-CORE and BT-MODEL are complete; implement the offline build shell and accepted model-bound evidence |
+| `RP-MODEL-01` | DONE | model build shell and accepted Backtest binding recorded in [`rp-model-01-receipt.md`](rp-model-01-receipt.md) at Research revision `f05c91b2fa75826fb0439ccdcb0d2ae507bff013` |
 | `V2-SEAM-01` | DONE | remote-pinned Research/Backtest binding accepted in [`v2-seam-01-receipt.md`](v2-seam-01-receipt.md) at Platform revision `84693cfb62d7e5e22ad24701b7ce1893bde0dca1` |
-| `SV-MODEL-01` | WAITING_RESEARCH | waits for RP-MODEL and V2-SEAM real candidate |
+| `SV-MODEL-01` | READY | RP-MODEL and V2-SEAM are complete; admit the real model-aware candidate and reservations |
 | `PG-MODEL-01` | WAITING_VALIDATION | waits for SV-MODEL governed graph |
 | `FI-02` | WAITING_LEAVES | waits for V2-SEAM, RP-MODEL, SV-MODEL, and PG-MODEL receipts |
 
@@ -170,9 +170,9 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 1 | `V2-CON-01` | MB-CORE and BT-MODEL | contract docs/fixture/registry | DONE |
 | 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | DONE |
 | 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | DONE |
-| 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | READY |
+| 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | DONE |
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | DONE |
-| 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | WAITING_RESEARCH |
+| 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | READY |
 | 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | WAITING_VALIDATION |
 | 8 | `FI-02` | Integration v2 release | root golden/receipt/release | WAITING_LEAVES |
 

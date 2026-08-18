@@ -15,9 +15,12 @@ FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
 APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
 BT_MODEL_RECEIPT = ROOT / "implementation/bt-model-01-receipt.md"
 V2_SEAM_RECEIPT = ROOT / "implementation/v2-seam-01-receipt.md"
+RP_MODEL_RECEIPT = ROOT / "implementation/rp-model-01-receipt.md"
 FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
 BT_MODEL_SHA = "033344172b24847e73941bb97a06da0490527edf"
-RESEARCH_MODEL_SHA = "51897c2118828febc844e9b21980e31cf0760138"
+V2_SEAM_RESEARCH_SHA = "51897c2118828febc844e9b21980e31cf0760138"
+RP_MODEL_SHA = "f05c91b2fa75826fb0439ccdcb0d2ae507bff013"
+MODEL_LEDGER_SHA = "256e17c2f528f374e1041cd16d7e829f1f120556"
 V2_LOCK_SHA = "dcfeab99dfdf28daa9206d8f94315740d288c7f43df89d6ccc21e415e25101ef"
 
 
@@ -74,12 +77,41 @@ def test_v2_seam_receipt_pins_research_and_root_lock() -> None:
         ["git", "ls-files", "-s", "research-platform"], cwd=ROOT, text=True
     ).split()
 
-    assert research_entry[:2] == ["160000", RESEARCH_MODEL_SHA]
+    assert research_entry[0] == "160000"
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "research-platform",
+            "merge-base",
+            "--is-ancestor",
+            V2_SEAM_RESEARCH_SHA,
+            research_entry[1],
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
     assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == V2_LOCK_SHA
-    assert RESEARCH_MODEL_SHA in receipt
+    assert V2_SEAM_RESEARCH_SHA in receipt
     assert BT_MODEL_SHA in receipt
     assert V2_LOCK_SHA in receipt
     assert "294 passed" in receipt
+
+
+def test_rp_model_receipt_pins_research_and_validation_ledger() -> None:
+    receipt = RP_MODEL_RECEIPT.read_text(encoding="utf-8")
+    research_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "research-platform"], cwd=ROOT, text=True
+    ).split()
+    validation_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
+    ).split()
+
+    assert research_entry[:2] == ["160000", RP_MODEL_SHA]
+    assert validation_entry[:2] == ["160000", MODEL_LEDGER_SHA]
+    assert RP_MODEL_SHA in receipt
+    assert MODEL_LEDGER_SHA in receipt
+    assert "301 passed" in receipt
 
 
 def test_v2_contract_is_additive_model_provenance_not_a_second_runtime() -> None:
@@ -113,9 +145,9 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
         "V2-CON-01": "DONE",
         "MB-CORE-01": "DONE",
         "BT-MODEL-01": "DONE",
-        "RP-MODEL-01": "READY",
+        "RP-MODEL-01": "DONE",
         "V2-SEAM-01": "DONE",
-        "SV-MODEL-01": "WAITING_RESEARCH",
+        "SV-MODEL-01": "READY",
         "PG-MODEL-01": "WAITING_VALIDATION",
         "FI-02": "WAITING_LEAVES",
     }
