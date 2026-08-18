@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -12,7 +13,9 @@ PROTECTED_V1 = ROOT / "foundation/tests/fixtures/architecture/p00-contract-v1.js
 PLAN_DIR = ROOT / "implementation/plans"
 FIXTURE = ROOT / "tests/contracts/integration-v2-model-build-v1.json"
 APPROVAL = ROOT / "implementation/v2-contract-model-build-v1.md"
+BT_MODEL_RECEIPT = ROOT / "implementation/bt-model-01-receipt.md"
 FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
+BT_MODEL_SHA = "033344172b24847e73941bb97a06da0490527edf"
 
 
 def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
@@ -50,6 +53,18 @@ def test_v2_protected_fixture_and_both_owner_approvals_match() -> None:
     assert "| Backtest | `YungeG` | APPROVED |" in approval
 
 
+def test_bt_model_receipt_and_superproject_pin_match() -> None:
+    receipt = BT_MODEL_RECEIPT.read_text(encoding="utf-8")
+    index_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "backtest"], cwd=ROOT, text=True
+    ).split()
+
+    assert index_entry[:2] == ["160000", BT_MODEL_SHA]
+    assert BT_MODEL_SHA in receipt
+    assert "1861 passed" in receipt
+    assert "Status:** ACCEPTED" in receipt
+
+
 def test_v2_contract_is_additive_model_provenance_not_a_second_runtime() -> None:
     contract = CONTRACT.read_text(encoding="utf-8")
 
@@ -80,9 +95,9 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
     expected = {
         "V2-CON-01": "DONE",
         "MB-CORE-01": "DONE",
-        "BT-MODEL-01": "READY",
-        "RP-MODEL-01": "WAITING_PROVIDER",
-        "V2-SEAM-01": "WAITING_PROVIDER",
+        "BT-MODEL-01": "DONE",
+        "RP-MODEL-01": "READY",
+        "V2-SEAM-01": "READY",
         "SV-MODEL-01": "WAITING_RESEARCH",
         "PG-MODEL-01": "WAITING_VALIDATION",
         "FI-02": "WAITING_LEAVES",
