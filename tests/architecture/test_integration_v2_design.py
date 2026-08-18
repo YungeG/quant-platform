@@ -79,9 +79,9 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
 
     expected = {
         "V2-CON-01": "DONE",
-        "MB-CORE-01": "READY",
+        "MB-CORE-01": "DONE",
         "BT-MODEL-01": "READY",
-        "RP-MODEL-01": "WAITING_CORE_SEAM",
+        "RP-MODEL-01": "WAITING_PROVIDER",
         "V2-SEAM-01": "WAITING_PROVIDER",
         "SV-MODEL-01": "WAITING_RESEARCH",
         "PG-MODEL-01": "WAITING_VALIDATION",

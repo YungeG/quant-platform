@@ -51,9 +51,9 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `FI-01` | DONE | whole-Platform golden accepted in [`fi-01-receipt.md`](fi-01-receipt.md) at revision `c525cb522b5a869565a7261f42d5592144cb5e63` |
 | `RP-THIN-01`, `SV-00A-core`, `PG-SYN-1` | FROZEN | existing local slices remain authoritative and distinct from integrated artifacts |
 | `V2-CON-01` | DONE | protected fixture `4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb` and both owner approvals recorded in [`v2-contract-model-build-v1.md`](v2-contract-model-build-v1.md) |
-| `MB-CORE-01` | READY | V2 contract frozen; implement pure Research declarations and ten-task universe |
+| `MB-CORE-01` | DONE | Research revision `94dafc97d3c7c59ab68601625d55d1b45e806d1e` implements immutable declarations, model evidence validation, and the optional ten-task universe |
 | `BT-MODEL-01` | READY | V2 contract frozen; Backtest owner implements additive model-aware public preparation |
-| `RP-MODEL-01` | WAITING_CORE_SEAM | waits for MB-CORE, BT-MODEL, and accepted build evidence |
+| `RP-MODEL-01` | WAITING_PROVIDER | MB-CORE is complete; waits for BT-MODEL and accepted build evidence |
 | `V2-SEAM-01` | WAITING_PROVIDER | waits for MB-CORE, BT-MODEL accepted revision, root lock, and real binding |
 | `SV-MODEL-01` | WAITING_RESEARCH | waits for RP-MODEL and V2-SEAM real candidate |
 | `PG-MODEL-01` | WAITING_VALIDATION | waits for SV-MODEL governed graph |
@@ -168,9 +168,9 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
 | 1 | `V2-CON-01` | MB-CORE and BT-MODEL | contract docs/fixture/registry | DONE |
-| 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | READY |
+| 2 | `MB-CORE-01` | RP-MODEL and V2-SEAM | Research pure core/public root | DONE |
 | 3 | `BT-MODEL-01` | RP-MODEL and V2-SEAM | Backtest public provider/runtime | READY |
-| 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | WAITING_CORE_SEAM |
+| 4 | `RP-MODEL-01` | SV-MODEL | Research runtime/integrated receipt | WAITING_PROVIDER |
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | WAITING_PROVIDER |
 | 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | WAITING_RESEARCH |
 | 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | WAITING_VALIDATION |

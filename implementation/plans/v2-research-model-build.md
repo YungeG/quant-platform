@@ -12,7 +12,8 @@ Research can construct immutable FeatureRecipe, TrainerRecipe, ModelBuildPlan, F
 
 ```text
 build_task_universe(experiment) -> exact ordered TaskRefs
-validate_model_build(plan, feature_manifest, model_artifact) -> ModelBuildEvidence
+validate_model_build(plan, feature_recipe, trainer_recipe, feature_manifest, model_artifact)
+  -> ModelBuildEvidence
 ```
 
 The existing Research module remains deep: callers provide one Experiment and receive canonical values; they do not orchestrate validation steps. A null plan retains the v1 eight-task identity byte-for-byte. A non-null plan adds exactly one FEATURE_BUILD and one MODEL_TRAINING task before Trial/Analysis ordering.
