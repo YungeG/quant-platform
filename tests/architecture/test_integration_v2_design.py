@@ -18,6 +18,7 @@ V2_SEAM_RECEIPT = ROOT / "implementation/v2-seam-01-receipt.md"
 RP_MODEL_RECEIPT = ROOT / "implementation/rp-model-01-receipt.md"
 SV_MODEL_RECEIPT = ROOT / "implementation/sv-model-01-receipt.md"
 PG_MODEL_RECEIPT = ROOT / "implementation/pg-model-01-receipt.md"
+FI_02_RECEIPT = ROOT / "implementation/fi-02-receipt.md"
 FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
 BT_MODEL_SHA = "033344172b24847e73941bb97a06da0490527edf"
 V2_SEAM_RESEARCH_SHA = "51897c2118828febc844e9b21980e31cf0760138"
@@ -28,6 +29,7 @@ SV_MODEL_SHA = "acf2e36ed009deeee399744508e83af16cdc90d9"
 PG_RESEARCH_SHA = "d2dd913a1efd23728c7889bd15c894d6cf22ad4e"
 PG_VALIDATION_SHA = "41c35219d227fe5cdb736747b917144f6b8a8c65"
 PG_MODEL_SHA = "966b5984c430ec61c53b15761099d2620ed028e6"
+FI_02_GOLDEN_SHA = "92f320affa1c41afdadab1cb1c0a7ec6b7672105"
 V2_LOCK_SHA = "dcfeab99dfdf28daa9206d8f94315740d288c7f43df89d6ccc21e415e25101ef"
 
 
@@ -210,6 +212,31 @@ def test_pg_model_receipt_pins_all_governed_model_revisions() -> None:
     assert "308 passed" in receipt
 
 
+def test_fi_02_receipt_closes_all_v2_leaves_and_preserves_v1() -> None:
+    receipt = FI_02_RECEIPT.read_text(encoding="utf-8")
+
+    assert subprocess.run(
+        ["git", "merge-base", "--is-ancestor", FI_02_GOLDEN_SHA, "HEAD"],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
+    assert FI_02_GOLDEN_SHA in receipt
+    assert V2_LOCK_SHA in receipt
+    assert "Fresh remote recursive clone" in receipt
+    assert "310 passed" in receipt
+    for leaf in (
+        BT_MODEL_RECEIPT,
+        V2_SEAM_RECEIPT,
+        RP_MODEL_RECEIPT,
+        SV_MODEL_RECEIPT,
+        PG_MODEL_RECEIPT,
+    ):
+        assert leaf.is_file()
+    assert hashlib.sha256(PROTECTED_V1.read_bytes()).hexdigest() == (
+        "aebb1be1894d739b06856e012e4343d7835fc1ed0306d8c28a4bfb1d8025b782"
+    )
+
+
 def test_v2_contract_is_additive_model_provenance_not_a_second_runtime() -> None:
     contract = CONTRACT.read_text(encoding="utf-8")
 
@@ -245,7 +272,7 @@ def test_v2_roadmap_has_one_active_contract_node_and_an_acyclic_fan_in() -> None
         "V2-SEAM-01": "DONE",
         "SV-MODEL-01": "DONE",
         "PG-MODEL-01": "DONE",
-        "FI-02": "READY",
+        "FI-02": "DONE",
     }
     for node, state in expected.items():
         assert registry.count(f"| `{node}` | {state} |") == 1

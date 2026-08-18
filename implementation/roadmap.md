@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 is released at `integration-v1`; Integration v2 model-build contract work is active.
+> **Status:** Integration v1 is released at `integration-v1`; Integration v2 is accepted and ready for release at `integration-v2`.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -57,7 +57,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `V2-SEAM-01` | DONE | remote-pinned Research/Backtest binding accepted in [`v2-seam-01-receipt.md`](v2-seam-01-receipt.md) at Platform revision `84693cfb62d7e5e22ad24701b7ce1893bde0dca1` |
 | `SV-MODEL-01` | DONE | model-build provenance admission accepted in [`sv-model-01-receipt.md`](sv-model-01-receipt.md) at Validation revision `acf2e36ed009deeee399744508e83af16cdc90d9` |
 | `PG-MODEL-01` | DONE | governed model-build closure accepted in [`pg-model-01-receipt.md`](pg-model-01-receipt.md) at Promotion revision `966b5984c430ec61c53b15761099d2620ed028e6` |
-| `FI-02` | READY | all v2 leaf receipts are complete; run remote clean whole-Platform golden and release acceptance |
+| `FI-02` | DONE | whole-Platform model-build golden accepted in [`fi-02-receipt.md`](fi-02-receipt.md) at Platform revision `92f320affa1c41afdadab1cb1c0a7ec6b7672105` |
 
 ## 3. Execution DAG
 
@@ -174,7 +174,7 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 5 | `V2-SEAM-01` | SV-MODEL/FI-02 | root lock/gitlink/integration receipt | DONE |
 | 6 | `SV-MODEL-01` | PG-MODEL | Validation runtime/integrated receipt | DONE |
 | 7 | `PG-MODEL-01` | FI-02 | Promotion runtime/integrated receipt | DONE |
-| 8 | `FI-02` | Integration v2 release | root golden/receipt/release | READY |
+| 8 | `FI-02` | Integration v2 release | root golden/receipt/release | DONE |
 
 Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work may proceed independently because their write sets are disjoint; root pinning and all fan-in remain serialized.
 
