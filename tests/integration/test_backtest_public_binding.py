@@ -26,6 +26,7 @@ from crypto_quant_domain import (
     Price,
     PricePurpose,
     Scale,
+    SimulationInstant,
     SourceSequence,
     StrategySleeveId,
     TimeInForce,
@@ -37,6 +38,14 @@ from crypto_quant_domain import (
 )
 from crypto_quant_foundation import LocalFoundation
 from crypto_quant_market_data import InMemoryMarketBundleReader, MarketEvent
+from crypto_quant_research import (
+    DataSlice,
+    FeatureDatasetManifest,
+    FeatureRecipe,
+    ModelBuildPlan,
+    TrainerRecipe,
+    validate_model_build,
+)
 from crypto_quant_trading import (
     MarkObservation,
     OrderCapabilityKey,
@@ -47,7 +56,7 @@ from crypto_quant_trading import (
 )
 
 _ROOT = Path(__file__).resolve().parents[2]
-_ACCEPTED_BACKTEST_SHA = "e3c04fb612d6798aef1420b60864d4f315ed12ac"
+_ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
 _VENUE = VenueId("synthetic")
 _USD = CurrencyId("USD")
 _INSTRUMENT = InstrumentId(_VENUE, "cash:btc-usd")
@@ -617,6 +626,121 @@ def test_public_repository_fails_closed_for_missing_tamper_and_retention(
     assert foreign_link.value.code is backtest.BacktestEvidenceFailureCode.PORT_ANALYSIS_LINK_MISMATCH
 
 
+def _model_build_evidence():
+    training_slice = DataSlice(
+        _market_reader().bundle_ref.to_canonical_dict(),
+        "platform-model-training-v1",
+        "1970-01-01T00:00:00.000000Z",
+        "1970-01-01T00:00:00.000001Z",
+    )
+    feature = FeatureRecipe(
+        "returns-v1",
+        _hash("platform feature code"),
+        _hash("platform feature schema"),
+        ("close",),
+    )
+    trainer = TrainerRecipe(
+        "linear-v1",
+        _hash("platform trainer code"),
+        "alpha.primary",
+        {"ridge": "0.1"},
+    )
+    plan = ModelBuildPlan(feature.ref, trainer.ref, training_slice, 7)
+    manifest = FeatureDatasetManifest(
+        plan.ref,
+        training_slice.dataset_revision,
+        training_slice.interval_start,
+        training_slice.interval_end,
+        feature.feature_schema_hash,
+        _hash("platform training data"),
+        100,
+    )
+    artifact = backtest.ModelArtifactRef(
+        model_key=trainer.model_key,
+        model_hash=_hash("platform model artifact"),
+        training_data_hash=manifest.training_data_hash,
+        training_start=UtcInstant(0),
+        training_end=UtcInstant(1_000),
+        training_code_hash=trainer.training_code_hash,
+        feature_schema_hash=feature.feature_schema_hash,
+        available_at=SimulationInstant(
+            UtcInstant(1_000),
+            TimelinePhase(70, "model_availability"),
+            SourceSequence(1),
+        ),
+        revision_id="genesis",
+        supersedes_revision_id=None,
+    )
+    evidence = validate_model_build(
+        plan,
+        feature,
+        trainer,
+        manifest,
+        artifact.to_canonical_dict(),
+    )
+    timeline = backtest.ModelRevisionTimeline(
+        model_key=trainer.model_key,
+        decision_instant=SimulationInstant(
+            UtcInstant(1_000),
+            TimelinePhase(70, "model_availability"),
+            SourceSequence(2),
+        ),
+        artifacts=(artifact,),
+    )
+    return evidence, artifact, timeline
+
+
+def test_v2_model_build_evidence_binds_real_backtest_request_and_run(
+    tmp_path: Path,
+) -> None:
+    evidence, artifact, timeline = _model_build_evidence()
+    foundation = LocalFoundation(tmp_path / "foundation")
+    prepared = backtest.prepare_model_bound_cash_development_backtest(
+        request_intent=_intent("platform:trial:model-bound-1"),
+        provider_inputs=_provider_inputs(),
+        model_timeline=timeline,
+        expected_model_key=artifact.model_key,
+        expected_artifact_ref_hash=artifact.artifact_ref_hash,
+        artifact_reader=foundation,
+        artifact_publisher=foundation,
+        market_reader=_market_reader(),
+        publication_root=tmp_path / "publications",
+    )
+
+    publication_ref = prepared.runtime.run(prepared.execution_request)
+    completed = backtest.BacktestEvidenceRepository(foundation).load_completed(
+        publication_ref
+    )
+
+    assert evidence.model_artifact["artifact_ref_hash"] == artifact.artifact_ref_hash
+    assert prepared.model_binding.artifact_ref_hash == artifact.artifact_ref_hash
+    assert prepared.execution_request.request.model_binding == prepared.model_binding
+    assert completed.engine_context.model_binding == prepared.model_binding
+    assert completed.semantic_run_id == prepared.semantic_run_id
+
+
+def test_v2_model_substitution_fails_before_request_or_attempt(tmp_path: Path) -> None:
+    _, artifact, timeline = _model_build_evidence()
+    foundation = LocalFoundation(tmp_path / "foundation")
+    publication_root = tmp_path / "publications"
+
+    with pytest.raises(backtest.ModelPreparationFailure) as caught:
+        backtest.prepare_model_bound_cash_development_backtest(
+            request_intent=_intent("platform:trial:model-substitution"),
+            provider_inputs=_provider_inputs(),
+            model_timeline=timeline,
+            expected_model_key=artifact.model_key,
+            expected_artifact_ref_hash="sha256:" + "0" * 64,
+            artifact_reader=foundation,
+            artifact_publisher=foundation,
+            market_reader=_market_reader(),
+            publication_root=publication_root,
+        )
+
+    assert caught.value.code == "MODEL_BINDING_MISMATCH"
+    assert not publication_root.exists()
+
+
 def test_binding_imports_only_public_package_roots() -> None:
     tree = ast.parse(Path(__file__).read_text(encoding="utf-8"), filename=__file__)
     imported = {
@@ -635,6 +759,7 @@ def test_binding_imports_only_public_package_roots() -> None:
         "crypto_quant_domain",
         "crypto_quant_foundation",
         "crypto_quant_market_data",
+        "crypto_quant_research",
         "crypto_quant_trading",
     }
     assert {name for name in imported if name.startswith("crypto_quant")} == (
