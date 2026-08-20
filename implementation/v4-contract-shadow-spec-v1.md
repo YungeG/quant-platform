@@ -1,23 +1,23 @@
-# Integration v4 ShadowSpec contract candidate
+# Integration v4 ShadowSpec contract approval
 
 - **Contract:** `integration-v4-shadow-spec-v1`
 - **Protected fixture:** [`tests/contracts/integration-v4-shadow-spec-v1.json`](../tests/contracts/integration-v4-shadow-spec-v1.json)
 - **Fixture SHA-256:** `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`
-- **Normative candidate:** [`overall/integration-v4.md`](../overall/integration-v4.md)
+- **Normative contract:** [`overall/integration-v4.md`](../overall/integration-v4.md)
 - **Predecessor receipt:** [`FI-03`](fi-03-receipt.md)
-- **Status:** AWAITING_APPROVAL
+- **Status:** APPROVED
 
 ## Owner approvals
 
 | Repository owner | Name | Status | Approved at |
 | --- | --- | --- | --- |
-| Platform | — | PENDING | — |
-| Promotion | — | PENDING | — |
-| Shadow | — | PENDING | — |
+| Platform | `YungeG` | APPROVED | `2026-08-20T09:12:23Z` |
+| Promotion | `YungeG` | APPROVED | `2026-08-20T09:12:23Z` |
+| Shadow | `YungeG` | APPROVED | `2026-08-20T09:12:23Z` |
 
-Approval must bind the exact fixture hash above. No Shadow package, runtime, or operational capability is authorized by this candidate packet.
+All approvals bind the exact fixture hash above. Contract approval does not authorize a Shadow package, runtime, or operational capability.
 
-## Frozen candidate decisions
+## Approved decisions
 
 - Add only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`.
 - Resolve Candidate and Validation provenance through the accepted Promotion chain instead of duplicating refs.
@@ -29,4 +29,4 @@ Approval must bind the exact fixture hash above. No Shadow package, runtime, or 
 
 ## Exclusions
 
-Shadow runtime, monitoring/outcomes, market data, fills/accounting/P&L, positions, capital/risk allocation, Live/deployment, credentials/order routing, RBAC, decision supersession, infrastructure, and package implementation remain outside this contract candidate.
+Shadow runtime, monitoring/outcomes, market data, fills/accounting/P&L, positions, capital/risk allocation, Live/deployment, credentials/order routing, RBAC, decision supersession, infrastructure, and package implementation remain outside this contract.

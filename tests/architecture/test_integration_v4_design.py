@@ -17,7 +17,7 @@ INTEGRATION_V3_RELEASE_SHA = "3ea0be372d14501decbbfd0343b06488eb2dee28"
 ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
 
 
-def test_v4_shadow_spec_candidate_is_frozen_but_not_approved() -> None:
+def test_v4_shadow_spec_contract_is_frozen_and_approved() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     approval = APPROVAL.read_text(encoding="utf-8")
     contract = CONTRACT.read_text(encoding="utf-8")
@@ -61,12 +61,14 @@ def test_v4_shadow_spec_candidate_is_frozen_but_not_approved() -> None:
     }
     assert fixture["compatibility"]["backtest_changes"] == 0
     assert FIXTURE_SHA in approval
-    assert approval.count("| — | PENDING | — |") == 3
-    assert "**Status:** AWAITING_APPROVAL" in approval
+    assert approval.count(
+        "| `YungeG` | APPROVED | `2026-08-20T09:12:23Z` |"
+    ) == 3
+    assert "**Status:** APPROVED" in approval
     assert "creates no Shadow runtime" in contract
 
 
-def test_v4_roadmap_authorizes_only_contract_approval() -> None:
+def test_v4_roadmap_records_only_the_approved_contract() -> None:
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
     glossary = GLOSSARY.read_text(encoding="utf-8")
@@ -77,11 +79,11 @@ def test_v4_roadmap_authorizes_only_contract_approval() -> None:
         ["git", "ls-files", "-s", "backtest"], cwd=ROOT, text=True
     ).split()
 
-    assert registry.count("| `V4-CON-01` | READY_FOR_APPROVAL |") == 1
-    assert "FI-03 ─→ V4-CON-01 [READY_FOR_APPROVAL]" in roadmap
-    assert "no implementation node before approval" in roadmap
+    assert registry.count("| `V4-CON-01` | APPROVED |") == 1
+    assert "FI-03 ─→ V4-CON-01 [APPROVED]" in roadmap
+    assert "future Shadow package implementation plan" in roadmap
     assert "ShadowSpec@1(" in plan
-    assert "**ShadowSpec (V4 candidate)**" in glossary
+    assert "**ShadowSpec**" in glossary
     assert "SHADOW-" not in roadmap
     assert subprocess.check_output(
         ["git", "rev-list", "-n", "1", "integration-v3"], cwd=ROOT, text=True

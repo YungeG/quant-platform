@@ -1,10 +1,10 @@
-# Platform Integration v4 candidate — Immutable ShadowSpec proposal
+# Platform Integration v4 — Immutable ShadowSpec proposal
 
 - **Scope:** one immutable observe-only ShadowSpec that cites an accepted `shadow_ready` decision
 - **Predecessor:** [Integration v3](integration-v3.md) and [`FI-03`](../implementation/fi-03-receipt.md)
-- **Candidate approval:** [`V4-CON-01`](../implementation/v4-contract-shadow-spec-v1.md)
+- **Contract approval:** [`V4-CON-01`](../implementation/v4-contract-shadow-spec-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** frozen candidate bytes; not approved or implemented
+- **Status:** approved contract; not implemented
 
 ## 1. Outcome and ceiling
 
@@ -81,11 +81,11 @@ This forces a new positive Promotion evaluation before scheduling a window beyon
 - Promotion gains no ShadowSpec field, runtime hook, or decision-supersession behavior.
 - No Backtest schema, code, fixture, gitlink, or runtime changes.
 
-## 7. Candidate acceptance
+## 7. Contract acceptance
 
-`V4-CON-01` may become approved only when Platform, Promotion, and Shadow owners approve the exact protected fixture hash. Approval freezes the contract but does not authorize a package implementation or Shadow runtime.
+`V4-CON-01` is approved by Platform, Promotion, and Shadow owners against the exact protected fixture hash. Approval freezes the contract but does not authorize a package implementation or Shadow runtime.
 
-The first implementation node, if separately authorized, must prove exact decision linkage, limitation rejection, time/freshness bounds, owner-log publication, replay, and structural absence of operational fields.
+The first implementation node, when separately defined and authorized, must prove exact decision linkage, limitation rejection, time/freshness bounds, owner-log publication, replay, and structural absence of operational fields.
 
 ## 8. Explicit exclusions
 

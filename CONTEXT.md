@@ -246,7 +246,7 @@ The Frozen synthetic source types and same-spelled integrated provenance artifac
 
 ## Shadow
 
-**ShadowSpec (V4 candidate)**
+**ShadowSpec**
 
 An immutable observe-only proposal that cites an accepted limitation-free `shadow_ready` decision and precommits one bounded future observation window.
 

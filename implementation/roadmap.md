@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract candidate awaits owner approval.
+> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract is approved and awaits a Shadow package seam.
 
 This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), and additive [Integration v3](../overall/integration-v3.md); the [Integration v4](../overall/integration-v4.md) contract is a candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -23,7 +23,7 @@ V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Back
 
 The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `PromotionDecision@2(shadow_ready)` as evidence-level governance values. `PG-POS-01` implements their pure mapping, `PG-POS-RUNTIME-01` publishes the `@2` artifacts, and `PG-POS-THIN-01` binds one real supported ValidationReport without changing any Backtest contract or authorizing Shadow runtime, Live operation, or deployment.
 
-The v4 candidate adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. It authorizes no Shadow package/runtime or operational capability.
+The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability.
 
 ## 2. Status registry
 
@@ -67,7 +67,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-POS-RUNTIME-01` | DONE | additive `@2` Evaluation/Decision runtime accepted in [`pg-pos-runtime-01-receipt.md`](pg-pos-runtime-01-receipt.md) at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03` |
 | `PG-POS-THIN-01` | DONE | real supported ValidationReport → replay-stable `shadow_ready` accepted in [`pg-pos-thin-01-receipt.md`](pg-pos-thin-01-receipt.md) at Platform revision `f042b6e0a35f6c0bc0064ca60538e40555452863` |
 | `FI-03` | DONE | whole-Platform positive Promotion golden accepted in [`fi-03-receipt.md`](fi-03-receipt.md) at Platform revision `e5ef7093265206c6896972825fdbd0a86fd1a28c` |
-| `V4-CON-01` | READY_FOR_APPROVAL | frozen candidate `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`; Platform, Promotion, and Shadow owner approvals pending |
+| `V4-CON-01` | APPROVED | protected fixture `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7` and Platform/Promotion/Shadow owner approvals recorded in [`v4-contract-shadow-spec-v1.md`](v4-contract-shadow-spec-v1.md) |
 
 ## 3. Execution DAG
 
@@ -125,7 +125,7 @@ FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]
 Integration v4 currently authorizes only its contract node:
 
 ```text
-FI-03 ─→ V4-CON-01 [READY_FOR_APPROVAL]
+FI-03 ─→ V4-CON-01 [APPROVED]
 ```
 
 The graphs are acyclic:
@@ -222,7 +222,7 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
-| 1 | `V4-CON-01` | no implementation node before approval | root contract/docs/tests only | READY_FOR_APPROVAL |
+| 1 | `V4-CON-01` | future Shadow package implementation plan | root contract/docs/tests only | APPROVED |
 
 ## 7. Integration v1 accepted
 
@@ -268,8 +268,8 @@ The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-25
 
 `PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. [`PG-POS-THIN-01`](pg-pos-thin-01-receipt.md) accepts that the real Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`. [`FI-03`](fi-03-receipt.md) accepts the whole-Platform remote-clone golden at revision `e5ef7093265206c6896972825fdbd0a86fd1a28c`. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.
 
-## 11. Integration v4 contract candidate
+## 11. Integration v4 approved contract
 
-The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`. It adds only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`, owned by a future Shadow module and published in `shadow.artifacts.v1` through existing Domain/Foundation mechanics.
+The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`. Platform, Promotion, and Shadow owner approvals bind that exact hash. It adds only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`, owned by a future Shadow module and published in `shadow.artifacts.v1` through existing Domain/Foundation mechanics.
 
-Platform, Promotion, and Shadow owner approvals remain pending. Until they bind that exact hash, no Shadow package or implementation is authorized. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
+No Shadow package or implementation is claimed yet. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.

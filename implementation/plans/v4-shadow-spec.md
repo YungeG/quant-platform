@@ -1,10 +1,10 @@
 # Integration v4 ShadowSpec contract plan
 
-- **Normative candidate:** [Integration v4](../../overall/integration-v4.md)
+- **Normative contract:** [Integration v4](../../overall/integration-v4.md)
 - **Mutable status authority:** [Roadmap §2](../roadmap.md#2-status-registry)
 - **Protected fixture:** [`integration-v4-shadow-spec-v1.json`](../../tests/contracts/integration-v4-shadow-spec-v1.json)
 
-This plan owns only the contract approval node. No Shadow package or runtime implementation is authorized before exact owner approval.
+This plan owns only the approved contract node. Shadow package/runtime implementation requires a separate future node and package seam.
 
 ## Execution DAG
 
@@ -16,7 +16,7 @@ FI-03 ─→ V4-CON-01
 
 ### Outcome
 
-Platform, Promotion, and Shadow owners approve one additive `ShadowSpec@1` contract that cites an accepted limitation-free `PromotionDecision@2(shadow_ready)` and precommits a bounded observation window without granting an operational capability.
+Platform, Promotion, and Shadow owners approved one additive `ShadowSpec@1` contract that cites an accepted limitation-free `PromotionDecision@2(shadow_ready)` and precommits a bounded observation window without granting an operational capability.
 
 ### Dependencies
 
@@ -74,7 +74,7 @@ Every failure produces no ShadowSpec publication.
 uv run pytest -q -p no:cacheprovider tests/architecture/test_integration_v4_design.py
 ```
 
-The guard must bind the exact fixture hash, pending owner approvals, schema field set, exact decision/time rules, v1-v3 compatibility, Backtest independence, and absence of operational authority.
+The guard must bind the exact fixture hash and owner approvals, schema field set, exact decision/time rules, v1-v3 compatibility, Backtest independence, and absence of operational authority.
 
 ### Exclusions
 
