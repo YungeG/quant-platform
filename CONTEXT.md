@@ -212,7 +212,7 @@ _Avoid_: Shadow authorization, mutable status
 
 **PromotionPolicy**
 
-The Promotion-owned rule that evaluates governed evidence on the negative-only path.
+The Promotion-owned rule that evaluates governed evidence. The accepted v1 interface is negative-only; Integration v3 reuses the same policy for additive positive eligibility.
 
 _Avoid_: deployment configuration
 
@@ -230,10 +230,24 @@ _Avoid_: cryptographic authorization
 
 **PromotionEvaluation**
 
-The negative-only automatic result at a governed status snapshot and review checkpoint.
+The automatic result at a governed status snapshot and review checkpoint. `PromotionEvaluation@1` is negative-only; `PromotionEvaluation@2` additively admits `ELIGIBLE`.
 
-_Avoid_: positive eligibility, deployment authority
+_Avoid_: deployment authority
+
+**shadow_ready**
+
+The evidence-only `PromotionDecision@2` conclusion that an eligible case may be cited by a future Shadow proposal. It grants no runtime, trading, credential, or deployment authority.
+
+_Avoid_: Shadow authorization, paper-trading session, deployment approval
 
 **PG-SYN-1 PromotionPolicy, PromotionReview, PromotionEvaluation, PromotionDecision / their `@1` artifacts**
 
 The Frozen synthetic source types and same-spelled integrated provenance artifacts are distinct types; neither converts to the other.
+
+## Shadow
+
+**ShadowSpec (V4 candidate)**
+
+An immutable observe-only proposal that cites an accepted limitation-free `shadow_ready` decision and precommits one bounded future observation window.
+
+_Avoid_: running Shadow session, market-data subscription, capital allocation, Live authorization

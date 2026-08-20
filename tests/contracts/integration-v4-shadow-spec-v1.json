@@ -1,0 +1,99 @@
+{
+  "contract_id": "integration-v4-shadow-spec-v1",
+  "schema_version": 1,
+  "status": "frozen",
+  "predecessor": {
+    "contract": "overall/integration-v3.md",
+    "receipt": "implementation/fi-03-receipt.md",
+    "platform_revision": "3ea0be372d14501decbbfd0343b06488eb2dee28"
+  },
+  "ownership": {
+    "shadow": [
+      "ShadowSpec@1",
+      "exact Promotion decision linkage",
+      "observation-window validation",
+      "shadow.artifacts.v1 publication"
+    ],
+    "promotion": [
+      "PromotionDecision@2",
+      "PromotionEvaluation@2",
+      "governed evidence and freshness policy"
+    ],
+    "foundation": [
+      "generic CAS",
+      "generic append",
+      "receipts",
+      "checkpoints",
+      "verified structural reads"
+    ],
+    "unchanged": {
+      "backtest": "simulation economics, evidence, analysis, and public refs",
+      "research": "experiment and candidate provenance",
+      "validation": "ValidationReport and validation conclusion"
+    }
+  },
+  "owner_log": "shadow.artifacts.v1",
+  "schemas": {
+    "ShadowSpec@1": [
+      "promotion_decision_ref",
+      "proposed_by_ref",
+      "observation_start",
+      "observation_end"
+    ]
+  },
+  "decision_requirements": {
+    "decision_schema": "PromotionDecision@2",
+    "decision": "shadow_ready",
+    "decision_limitations": [],
+    "evaluation_schema": "PromotionEvaluation@2",
+    "evaluation_result": "ELIGIBLE",
+    "evaluation_reason_codes": [],
+    "promotion_policy_required_validation_result": "supported",
+    "exact_published_linkage": true
+  },
+  "time_rules": {
+    "format": "canonical UTC microseconds",
+    "publication_not_after_start": true,
+    "start_before_end": true,
+    "end_not_after_evaluation_plus_policy_maximum_age": true,
+    "past_start_allowed": false,
+    "open_ended_window_allowed": false,
+    "caller_freshness_override_allowed": false
+  },
+  "identity_rules": {
+    "candidate_ref_duplicated": false,
+    "validation_report_ref_duplicated": false,
+    "new_nominal_shadow_ref": false,
+    "domain_artifact_ref_reused": true,
+    "observe_only_mode_is_fixed": true
+  },
+  "authority": {
+    "evidence_only": true,
+    "creates_shadow_runtime": false,
+    "subscribes_market_data": false,
+    "creates_simulated_fills_or_positions": false,
+    "allocates_capital": false,
+    "authorizes_live_or_deployment": false,
+    "grants_credentials_or_order_routing": false
+  },
+  "compatibility": {
+    "v1_v2_v3_unchanged": true,
+    "foundation_shadow_semantics_added": false,
+    "promotion_shadow_fields_added": false,
+    "backtest_changes": 0
+  },
+  "exclusions": [
+    "Shadow runtime, monitoring, alerts, rollback, or outcome schema",
+    "market-data subscription",
+    "simulated fills, accounting, positions, or profit and loss",
+    "capital, notional, position, or risk allocation",
+    "Live authorization or deployment",
+    "credentials, secrets, broker access, or order routing",
+    "organizational RBAC or cryptographic authority",
+    "decision supersession",
+    "database, queue, object store, scheduler, service, or distributed worker",
+    "new Validation methods",
+    "model loading, inference, tuning, or search",
+    "Backtest schema, code, fixture, revision, or runtime change"
+  ]
+}

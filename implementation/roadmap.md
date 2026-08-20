@@ -1,8 +1,8 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 and v2 are released; Integration v3 positive Promotion is accepted and ready for release at `integration-v3`.
+> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract candidate awaits owner approval.
 
-This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
+This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), and additive [Integration v3](../overall/integration-v3.md); the [Integration v4](../overall/integration-v4.md) contract is a candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
 ## 1. Outcome and non-goals
 
@@ -22,6 +22,8 @@ V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Back
 `PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; P00, admission, all three THIN nodes, and FI-01 have clean receipts.
 
 The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `PromotionDecision@2(shadow_ready)` as evidence-level governance values. `PG-POS-01` implements their pure mapping, `PG-POS-RUNTIME-01` publishes the `@2` artifacts, and `PG-POS-THIN-01` binds one real supported ValidationReport without changing any Backtest contract or authorizing Shadow runtime, Live operation, or deployment.
+
+The v4 candidate adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. It authorizes no Shadow package/runtime or operational capability.
 
 ## 2. Status registry
 
@@ -65,6 +67,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-POS-RUNTIME-01` | DONE | additive `@2` Evaluation/Decision runtime accepted in [`pg-pos-runtime-01-receipt.md`](pg-pos-runtime-01-receipt.md) at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03` |
 | `PG-POS-THIN-01` | DONE | real supported ValidationReport → replay-stable `shadow_ready` accepted in [`pg-pos-thin-01-receipt.md`](pg-pos-thin-01-receipt.md) at Platform revision `f042b6e0a35f6c0bc0064ca60538e40555452863` |
 | `FI-03` | DONE | whole-Platform positive Promotion golden accepted in [`fi-03-receipt.md`](fi-03-receipt.md) at Platform revision `e5ef7093265206c6896972825fdbd0a86fd1a28c` |
+| `V4-CON-01` | READY_FOR_APPROVAL | frozen candidate `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`; Platform, Promotion, and Shadow owner approvals pending |
 
 ## 3. Execution DAG
 
@@ -119,6 +122,12 @@ FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]
                                                 └─→ PG-POS-THIN-01 [DONE] ─→ FI-03 [DONE]
 ```
 
+Integration v4 currently authorizes only its contract node:
+
+```text
+FI-03 ─→ V4-CON-01 [READY_FOR_APPROVAL]
+```
+
 The graphs are acyclic:
 
 - Validation owns the shared sample-ledger interface consumed by Research producers.
@@ -162,6 +171,7 @@ The graphs are acyclic:
 | `PG-POS-RUNTIME-01` | accepted PG-POS-01 + existing Promotion ledger/runtime | v2 publication/replay/no-fork/v1-compatibility evidence | Promotion runtime/public root/shell tests only |
 | `PG-POS-THIN-01` | accepted PG-POS-RUNTIME-01 + real Research/Backtest/Validation/admission seam | supported-report/threshold/admission/replay evidence | root integration test and receipt only |
 | `FI-03` | all v3 receipts + remote package pins | fresh-clone full suite, lock, provenance, replay | release receipt/status/tag only |
+| `V4-CON-01` | FI-03 + accepted PromotionDecision@2 chain | exact protected fixture plus Platform/Promotion/Shadow owner approvals | root contract/docs/tests only; no package write |
 
 ## 5. Plan index
 
@@ -208,6 +218,12 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 4 | `PG-POS-THIN-01` | `FI-03` | root integration test/receipt | DONE |
 | 5 | `FI-03` | Integration v3 release | release receipt/status/tag | DONE |
 
+### Integration v4 ready queue
+
+| Priority | Node | Unblocks | Write set | State |
+| --- | --- | --- | --- | --- |
+| 1 | `V4-CON-01` | no implementation node before approval | root contract/docs/tests only | READY_FOR_APPROVAL |
+
 ## 7. Integration v1 accepted
 
 P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
@@ -251,3 +267,9 @@ V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loa
 The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-256 `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9`. Platform and Promotion owner approvals bind that exact hash. The contract reuses accepted v1/v2 policy, case, review, status, closure, freshness, Validation, and Backtest evidence contracts; only the Evaluation and Decision result vocabularies widen.
 
 `PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. [`PG-POS-THIN-01`](pg-pos-thin-01-receipt.md) accepts that the real Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`. [`FI-03`](fi-03-receipt.md) accepts the whole-Platform remote-clone golden at revision `e5ef7093265206c6896972825fdbd0a86fd1a28c`. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.
+
+## 11. Integration v4 contract candidate
+
+The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`. It adds only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`, owned by a future Shadow module and published in `shadow.artifacts.v1` through existing Domain/Foundation mechanics.
+
+Platform, Promotion, and Shadow owner approvals remain pending. Until they bind that exact hash, no Shadow package or implementation is authorized. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
