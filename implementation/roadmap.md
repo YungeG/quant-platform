@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 and v2 are released; Integration v3 contract is approved and its positive Promotion core revision is published pending an acceptance receipt.
+> **Status:** Integration v1 and v2 are released; Integration v3 contract and positive Promotion core are accepted, with runtime publication still deferred.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -61,7 +61,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-MODEL-01` | DONE | governed model-build closure accepted in [`pg-model-01-receipt.md`](pg-model-01-receipt.md) at Promotion revision `966b5984c430ec61c53b15761099d2620ed028e6` |
 | `FI-02` | DONE | whole-Platform model-build golden accepted in [`fi-02-receipt.md`](fi-02-receipt.md) at Platform revision `92f320affa1c41afdadab1cb1c0a7ec6b7672105` |
 | `V3-CON-01` | APPROVED | protected fixture `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9` and Platform/Promotion owner approvals recorded in [`v3-contract-positive-promotion-v1.md`](v3-contract-positive-promotion-v1.md) |
-| `PG-POS-01` | READY_FOR_ACCEPTANCE | remote Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` passes focused/full tests; acceptance receipt pending |
+| `PG-POS-01` | DONE | pure positive evaluation/decision core accepted in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md) at Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` |
 
 ## 3. Execution DAG
 
@@ -111,7 +111,7 @@ MB-CORE-01 + existing Foundation/SV ledger ──┴─→ RP-MODEL-01 ┤
 Integration v3 currently contains its approved contract and pure core node:
 
 ```text
-FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [READY_FOR_ACCEPTANCE]
+FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]
 ```
 
 The graphs are acyclic:
@@ -195,7 +195,7 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
 | 1 | `V3-CON-01` | `PG-POS-01` | root contract/docs/tests only | APPROVED |
-| 2 | `PG-POS-01` | future runtime publication node | Promotion integration core/tests | READY_FOR_ACCEPTANCE |
+| 2 | `PG-POS-01` | future runtime publication node | Promotion integration core/tests | DONE |
 
 ## 7. Integration v1 accepted
 
@@ -239,4 +239,4 @@ V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loa
 
 The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-256 `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9`. Platform and Promotion owner approvals bind that exact hash. The contract reuses accepted v1/v2 policy, case, review, status, closure, freshness, Validation, and Backtest evidence contracts; only the Evaluation and Decision result vocabularies widen.
 
-`PG-POS-01` implements the additive pure core: the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` is remotely reachable; an acceptance receipt remains pending. No runtime publication or integrated positive receipt is claimed. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.
+`PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. No runtime publication or integrated positive receipt is claimed. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.

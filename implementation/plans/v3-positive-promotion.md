@@ -110,7 +110,7 @@ The implementation calls the accepted v1 evaluator first. It converts only the s
 uv run pytest -q -p no:cacheprovider promotion-gate/tests/test_promotion_core.py
 ```
 
-Required evidence covers `ELIGIBLE → shadow_ready`, all existing negative mappings, non-positive policy rejection, and unchanged v1 `POSITIVE_PATH_DEFERRED` behavior. Published implementation revision: `de10a535b8c6a4da79a3b0f29e1dddd925d23586`; package acceptance remains separate.
+Required evidence covers `ELIGIBLE → shadow_ready`, all existing negative mappings, non-positive policy rejection, and unchanged v1 `POSITIVE_PATH_DEFERRED` behavior. Accepted implementation revision: `de10a535b8c6a4da79a3b0f29e1dddd925d23586`; evidence is recorded in [`PG-POS-01`](../pg-pos-01-receipt.md).
 
 ### Exclusions
 
