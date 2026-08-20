@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 is released at `integration-v1`; Integration v2 is accepted and ready for release at `integration-v2`.
+> **Status:** Integration v1 and v2 are released; Integration v3 contract is approved and its positive Promotion core revision is published pending an acceptance receipt.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -20,6 +20,8 @@ Integration v1 acceptance is complete. Fixture-backed shell proofs remain distin
 V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding. It adds no second simulator, fifth adapter package, callable/plugin/framework ABI, model loader/inference, tuning/search, queue, database, service, generic DAG engine, positive Promotion, Shadow runtime, or deployment.
 
 `PLAT-REC-01` fixes Platform intent/context construction with Backtest-owned request registration and identity. `PLAT-REC-02` fixes integration-owned first Backtest evidence admission. `PLAT-REC-03` fixes the additive executable v2 transport. BT-GAP-09 plus durable FAILED repository evidence PASS at source revision `e3c04fb612d6798aef1420b60864d4f315ed12ac`; P00, admission, all three THIN nodes, and FI-01 have clean receipts.
+
+The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `PromotionDecision@2(shadow_ready)` as evidence-level governance values. `PG-POS-01` implements their pure evaluation/decision mapping without changing any Backtest contract or authorizing Shadow runtime, Live operation, or deployment.
 
 ## 2. Status registry
 
@@ -58,6 +60,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `SV-MODEL-01` | DONE | model-build provenance admission accepted in [`sv-model-01-receipt.md`](sv-model-01-receipt.md) at Validation revision `acf2e36ed009deeee399744508e83af16cdc90d9` |
 | `PG-MODEL-01` | DONE | governed model-build closure accepted in [`pg-model-01-receipt.md`](pg-model-01-receipt.md) at Promotion revision `966b5984c430ec61c53b15761099d2620ed028e6` |
 | `FI-02` | DONE | whole-Platform model-build golden accepted in [`fi-02-receipt.md`](fi-02-receipt.md) at Platform revision `92f320affa1c41afdadab1cb1c0a7ec6b7672105` |
+| `V3-CON-01` | APPROVED | protected fixture `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9` and Platform/Promotion owner approvals recorded in [`v3-contract-positive-promotion-v1.md`](v3-contract-positive-promotion-v1.md) |
+| `PG-POS-01` | READY_FOR_ACCEPTANCE | remote Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` passes focused/full tests; acceptance receipt pending |
 
 ## 3. Execution DAG
 
@@ -104,6 +108,12 @@ MB-CORE-01 + existing Foundation/SV ledger ──┴─→ RP-MODEL-01 ┤
                                                             FI-02
 ```
 
+Integration v3 currently contains its approved contract and pure core node:
+
+```text
+FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [READY_FOR_ACCEPTANCE]
+```
+
 The graphs are acyclic:
 
 - Validation owns the shared sample-ledger interface consumed by Research producers.
@@ -142,6 +152,8 @@ The graphs are acyclic:
 | `SV-MODEL-01` | real model-bound candidate | build/reservation/Backtest binding evidence | Validation runtime/integrated receipt |
 | `PG-MODEL-01` | real model-aware Validation report | owner-log status/review evidence | Promotion runtime/integrated receipt |
 | `FI-02` | all v2 receipts | remote clean replay and provenance | integration golden/receipt/release |
+| `V3-CON-01` | FI-02 + accepted v1/v2 Promotion governance contract | exact protected fixture plus Platform and Promotion owner approvals | root contract/docs/tests only; no submodule write |
+| `PG-POS-01` | approved V3 contract + accepted PG-CORE-01 | focused positive/negative/v1-compatibility evidence | Promotion integration core and core tests only |
 
 ## 5. Plan index
 
@@ -177,6 +189,13 @@ Node instructions, owned write areas, focused commands, and exclusions live only
 | 8 | `FI-02` | Integration v2 release | root golden/receipt/release | DONE |
 
 Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work may proceed independently because their write sets are disjoint; root pinning and all fan-in remain serialized.
+
+### Integration v3 ready queue
+
+| Priority | Node | Unblocks | Write set | State |
+| --- | --- | --- | --- | --- |
+| 1 | `V3-CON-01` | `PG-POS-01` | root contract/docs/tests only | APPROVED |
+| 2 | `PG-POS-01` | future runtime publication node | Promotion integration core/tests | READY_FOR_ACCEPTANCE |
 
 ## 7. Integration v1 accepted
 
@@ -215,3 +234,9 @@ PromotionDecision = needs_more_evidence
 ```
 
 V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loading/inference, multiple model plans, tuning/range/adaptive search, walk-forward/stress/capacity/bootstrap/selection-bias methods, positive Promotion, ShadowSpec/Runtime, Live authorization, credentials, deployment, cryptographic RBAC, database/queue/distributed/object-store writers, and any deployable application/service.
+
+## 10. Integration v3 approved contract
+
+The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-256 `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9`. Platform and Promotion owner approvals bind that exact hash. The contract reuses accepted v1/v2 policy, case, review, status, closure, freshness, Validation, and Backtest evidence contracts; only the Evaluation and Decision result vocabularies widen.
+
+`PG-POS-01` implements the additive pure core: the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` is remotely reachable; an acceptance receipt remains pending. No runtime publication or integrated positive receipt is claimed. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.

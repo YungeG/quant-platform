@@ -1,0 +1,94 @@
+{
+  "contract_id": "integration-v3-positive-promotion-v1",
+  "schema_version": 1,
+  "status": "frozen",
+  "predecessor": {
+    "contract": "overall/integration-v2.md",
+    "receipt": "implementation/fi-02-receipt.md",
+    "platform_revision": "92f320affa1c41afdadab1cb1c0a7ec6b7672105"
+  },
+  "ownership": {
+    "promotion": [
+      "positive eligibility evaluation",
+      "deterministic shadow_ready decision",
+      "governed evidence, freshness, and review semantics"
+    ],
+    "unchanged": {
+      "foundation": "generic CAS, append, receipts, and checkpoints",
+      "validation": "ValidationReport and validation conclusion",
+      "backtest": "simulation economics, evidence, analysis, and public refs"
+    }
+  },
+  "reused_artifacts": [
+    "PromotionPolicy@1",
+    "PromotionCase@1",
+    "PromotionReview@1",
+    "EvidenceStatusSnapshot@1",
+    "ValidationReport@1"
+  ],
+  "schemas": {
+    "PromotionEvaluation@2": [
+      "promotion_case_ref",
+      "evidence_status_snapshot_ref",
+      "review_log_checkpoint",
+      "result",
+      "reason_codes"
+    ],
+    "PromotionDecision@2": [
+      "promotion_evaluation_ref",
+      "decider_ref",
+      "decision",
+      "rationale",
+      "limitations"
+    ]
+  },
+  "positive_policy": {
+    "required_validation_result": "supported",
+    "other_result_is_fail_closed": "PROMOTION_POLICY_NOT_POSITIVE"
+  },
+  "evaluation_results": [
+    "NOT_ELIGIBLE",
+    "NEEDS_MORE_EVIDENCE",
+    "ELIGIBLE"
+  ],
+  "eligible_requires": [
+    "supported ValidationReport",
+    "policy satisfied",
+    "all governed refs current and fresh",
+    "no forbidden limitations",
+    "exact required review-role cover",
+    "distinct reviewers excluding the case opener",
+    "all review verdicts approve",
+    "empty reason_codes"
+  ],
+  "decision_mapping": {
+    "NOT_ELIGIBLE": "PromotionPolicy@1.decision_for_not_eligible",
+    "NEEDS_MORE_EVIDENCE": "needs_more_evidence",
+    "ELIGIBLE": "shadow_ready"
+  },
+  "shadow_ready": {
+    "evidence_only": true,
+    "may_be_cited_by_future_shadow_proposal": true,
+    "creates_shadow_spec": false,
+    "starts_runtime": false,
+    "authorizes_live_or_deployment": false,
+    "grants_credentials_or_order_routing": false
+  },
+  "compatibility": {
+    "PromotionEvaluation@1_unchanged": true,
+    "PromotionDecision@1_unchanged": true,
+    "POSITIVE_PATH_DEFERRED_preserved": true,
+    "backtest_changes": 0
+  },
+  "exclusions": [
+    "ShadowSpec or Shadow runtime",
+    "Live authorization or deployment",
+    "credentials, secrets, broker access, or order routing",
+    "cryptographic actor authority or RBAC",
+    "decision supersession",
+    "new Validation methods or report vocabulary",
+    "model loading, inference, registry, tuning, or search",
+    "Backtest schema, code, fixture, revision, or runtime change",
+    "database, queue, service, or distributed worker"
+  ]
+}

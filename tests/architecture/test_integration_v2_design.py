@@ -199,13 +199,25 @@ def test_pg_model_receipt_pins_all_governed_model_revisions() -> None:
     validation_entry = subprocess.check_output(
         ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
     ).split()
-    promotion_entry = subprocess.check_output(
-        ["git", "ls-files", "-s", "promotion-gate"], cwd=ROOT, text=True
-    ).split()
+    promotion_revision = subprocess.check_output(
+        ["git", "-C", "promotion-gate", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
 
     assert research_entry[:2] == ["160000", PG_RESEARCH_SHA]
     assert validation_entry[:2] == ["160000", PG_VALIDATION_SHA]
-    assert promotion_entry[:2] == ["160000", PG_MODEL_SHA]
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "promotion-gate",
+            "merge-base",
+            "--is-ancestor",
+            PG_MODEL_SHA,
+            promotion_revision,
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
     assert PG_RESEARCH_SHA in receipt
     assert PG_VALIDATION_SHA in receipt
     assert PG_MODEL_SHA in receipt
