@@ -4,7 +4,7 @@
 - **Predecessor:** [Integration v2](integration-v2.md) and [`FI-02`](../implementation/fi-02-receipt.md)
 - **Contract approval:** [`V3-CON-01`](../implementation/v3-contract-positive-promotion-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** approved contract and accepted pure core; runtime publication revision published, package/integration acceptance pending
+- **Status:** approved contract and accepted pure core/runtime; integrated supported-evidence acceptance pending
 
 ## 1. Outcome and ceiling
 
@@ -91,7 +91,7 @@ The mapping is deterministic. `decider_ref` remains provenance in the trusted lo
 
 `V3-CON-01` is approved by Platform and Promotion owners against the exact protected fixture hash. The approval freezes this contract but does not claim package implementation or a positive integrated receipt.
 
-[`PG-POS-01`](../implementation/pg-pos-01-receipt.md) accepts the additive pure core and proves the three result mappings, unchanged v1 behavior, fail-closed malformed inputs, and structural absence of Shadow/Live/deployment capabilities. `PG-POS-RUNTIME-01` publishes `PromotionEvaluation@2` and `PromotionDecision@2` through an additive runtime interface while preserving the v1 runtime; its package acceptance and integrated positive evidence remain pending.
+[`PG-POS-01`](../implementation/pg-pos-01-receipt.md) accepts the additive pure core and proves the three result mappings, unchanged v1 behavior, fail-closed malformed inputs, and structural absence of Shadow/Live/deployment capabilities. [`PG-POS-RUNTIME-01`](../implementation/pg-pos-runtime-01-receipt.md) accepts publication of `PromotionEvaluation@2` and `PromotionDecision@2` through an additive runtime interface while preserving the v1 runtime; integrated positive evidence remains pending.
 
 ## 8. Explicit exclusions
 

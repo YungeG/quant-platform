@@ -167,7 +167,7 @@ The operation shares the existing private orchestration path, publishes schema v
 uv run pytest -q -p no:cacheprovider promotion-gate/tests
 ```
 
-Required evidence covers all three v2 mappings, exact replay, non-positive preflight, cross-version no-fork behavior, public-root export, unchanged v1 runtime, and absence of operational authority. Published implementation revision: `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`; package acceptance remains separate.
+Required evidence covers all three v2 mappings, exact replay, non-positive preflight, cross-version no-fork behavior, public-root export, unchanged v1 runtime, and absence of operational authority. Accepted implementation revision: `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`; evidence is recorded in [`PG-POS-RUNTIME-01`](../pg-pos-runtime-01-receipt.md).
 
 ### Exclusions
 
