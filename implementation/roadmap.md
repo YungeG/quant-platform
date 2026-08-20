@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 and v2 are released; Integration v3 positive Promotion contract, core, runtime, and real supported-evidence fan-in are accepted.
+> **Status:** Integration v1 and v2 are released; Integration v3 positive Promotion is accepted and ready for release at `integration-v3`.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -64,6 +64,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-POS-01` | DONE | pure positive evaluation/decision core accepted in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md) at Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` |
 | `PG-POS-RUNTIME-01` | DONE | additive `@2` Evaluation/Decision runtime accepted in [`pg-pos-runtime-01-receipt.md`](pg-pos-runtime-01-receipt.md) at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03` |
 | `PG-POS-THIN-01` | DONE | real supported ValidationReport → replay-stable `shadow_ready` accepted in [`pg-pos-thin-01-receipt.md`](pg-pos-thin-01-receipt.md) at Platform revision `f042b6e0a35f6c0bc0064ca60538e40555452863` |
+| `FI-03` | DONE | whole-Platform positive Promotion golden accepted in [`fi-03-receipt.md`](fi-03-receipt.md) at Platform revision `e5ef7093265206c6896972825fdbd0a86fd1a28c` |
 
 ## 3. Execution DAG
 
@@ -110,12 +111,12 @@ MB-CORE-01 + existing Foundation/SV ledger ──┴─→ RP-MODEL-01 ┤
                                                             FI-02
 ```
 
-Integration v3 currently contains its approved contract, pure core, and runtime node:
+Integration v3 closes this acyclic positive-governance DAG:
 
 ```text
 FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]
                                       └─→ PG-POS-RUNTIME-01 [DONE]
-                                                └─→ PG-POS-THIN-01 [DONE]
+                                                └─→ PG-POS-THIN-01 [DONE] ─→ FI-03 [DONE]
 ```
 
 The graphs are acyclic:
@@ -160,6 +161,7 @@ The graphs are acyclic:
 | `PG-POS-01` | approved V3 contract + accepted PG-CORE-01 | focused positive/negative/v1-compatibility evidence | Promotion integration core and core tests only |
 | `PG-POS-RUNTIME-01` | accepted PG-POS-01 + existing Promotion ledger/runtime | v2 publication/replay/no-fork/v1-compatibility evidence | Promotion runtime/public root/shell tests only |
 | `PG-POS-THIN-01` | accepted PG-POS-RUNTIME-01 + real Research/Backtest/Validation/admission seam | supported-report/threshold/admission/replay evidence | root integration test and receipt only |
+| `FI-03` | all v3 receipts + remote package pins | fresh-clone full suite, lock, provenance, replay | release receipt/status/tag only |
 
 ## 5. Plan index
 
@@ -203,7 +205,8 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 1 | `V3-CON-01` | `PG-POS-01` | root contract/docs/tests only | APPROVED |
 | 2 | `PG-POS-01` | `PG-POS-RUNTIME-01` | Promotion integration core/tests | DONE |
 | 3 | `PG-POS-RUNTIME-01` | `PG-POS-THIN-01` | Promotion runtime/public root/shell tests | DONE |
-| 4 | `PG-POS-THIN-01` | Integration v3 positive governance closure | root integration test/receipt | DONE |
+| 4 | `PG-POS-THIN-01` | `FI-03` | root integration test/receipt | DONE |
+| 5 | `FI-03` | Integration v3 release | release receipt/status/tag | DONE |
 
 ## 7. Integration v1 accepted
 
@@ -243,8 +246,8 @@ PromotionDecision = needs_more_evidence
 
 V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loading/inference, multiple model plans, tuning/range/adaptive search, walk-forward/stress/capacity/bootstrap/selection-bias methods, positive Promotion, ShadowSpec/Runtime, Live authorization, credentials, deployment, cryptographic RBAC, database/queue/distributed/object-store writers, and any deployable application/service.
 
-## 10. Integration v3 approved contract
+## 10. Integration v3 accepted
 
 The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-256 `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9`. Platform and Promotion owner approvals bind that exact hash. The contract reuses accepted v1/v2 policy, case, review, status, closure, freshness, Validation, and Backtest evidence contracts; only the Evaluation and Decision result vocabularies widen.
 
-`PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. [`PG-POS-THIN-01`](pg-pos-thin-01-receipt.md) accepts that the real Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.
+`PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. [`PG-POS-THIN-01`](pg-pos-thin-01-receipt.md) accepts that the real Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`. [`FI-03`](fi-03-receipt.md) accepts the whole-Platform remote-clone golden at revision `e5ef7093265206c6896972825fdbd0a86fd1a28c`. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.

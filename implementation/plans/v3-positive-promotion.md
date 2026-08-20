@@ -4,13 +4,13 @@
 - **Mutable status authority:** [Roadmap §2](../roadmap.md#2-status-registry)
 - **Protected fixture:** [`integration-v3-positive-promotion-v1.json`](../../tests/contracts/integration-v3-positive-promotion-v1.json)
 
-This plan owns the approved contract, additive pure core/runtime, and real supported-evidence fan-in.
+This plan owns the approved contract, additive pure core/runtime, real supported-evidence fan-in, and whole-Platform release acceptance.
 
 ## Execution DAG
 
 ```text
 FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 ─→ PG-POS-RUNTIME-01
-                                                        └─→ PG-POS-THIN-01
+                                                        └─→ PG-POS-THIN-01 ─→ FI-03
 ```
 
 ## `V3-CON-01` — positive Promotion governance contract
@@ -224,3 +224,45 @@ Required evidence covers the real supported report, exact threshold observation,
 ### Exclusions
 
 New Validation methods, positive model-quality interpretation, ShadowSpec/runtime, Live/deployment, RBAC, decision supersession, credentials/order routing, storage infrastructure, and any Backtest change.
+
+## `FI-03` — whole-Platform positive governance golden
+
+### Outcome
+
+One remote-pinned recursive clone proves the accepted Integration v3 contract, pure core, runtime publication, real supported-evidence fan-in, and replay closure from the same Platform revision.
+
+### Dependencies
+
+- accepted `V3-CON-01`, `PG-POS-01`, `PG-POS-RUNTIME-01`, and `PG-POS-THIN-01` receipts;
+- remotely reachable Foundation, Research, Validation, Promotion, and Backtest pins;
+- unchanged root workspace and lock.
+
+### Interface
+
+FI-03 adds no package interface. It owns the whole-Platform golden, release receipt, status closure, and `integration-v3` release tag.
+
+### Invariants
+
+1. Every leaf receipt names the exact frozen contract or implementation revision it accepts.
+2. A fresh recursive clone checks out every recorded submodule revision and passes `uv lock --check` without `PYTHONPATH` or editable/path overrides.
+3. The full suite proves v1/v2 negative behavior and v3 positive behavior together.
+4. Replay creates no second economic or governance action.
+5. The release adds no operational authority or Backtest change.
+
+### Write set
+
+- `implementation/fi-03-receipt.md`;
+- roadmap, README, overall status, architecture guard, and release tag only.
+
+### Acceptance
+
+```bash
+uv lock --check
+uv run pytest -q -p no:cacheprovider
+```
+
+The same commands must pass in a fresh remote recursive clone at the exact golden revision with empty `git status --short`.
+
+### Exclusions
+
+Any package implementation, Shadow/Live/deployment capability, RBAC, decision supersession, infrastructure, or Backtest change.

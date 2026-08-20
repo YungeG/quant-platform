@@ -22,7 +22,7 @@
 
 ## Current status
 
-Integration v1 and Integration v2 are accepted, published, and tagged `integration-v1` and `integration-v2`. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding without adding a plugin framework or deployment path. The Integration v3 positive Promotion contract, core, runtime, and real supported-evidence fan-in are accepted. `shadow_ready` remains evidence only; Shadow/Live/deployment remain excluded. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
+Integration v1, v2, and v3 are accepted, published, and tagged `integration-v1`, `integration-v2`, and `integration-v3`. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding. V3 adds only evidence-level positive Promotion. `shadow_ready` remains evidence only; Shadow/Live/deployment remain excluded. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
 
 P00-CON-01 is immutable. P00-CON-02 approval details live in its [proposal](implementation/p00-contract-v2.md), while mutable gate state lives only in the roadmap registry. The narrow rule remains unchanged: existing static capture plus retirement evidence satisfies `P00-LEG-01`/`P00-CUT-01`, and hermetic replay is not a P00-PLAT prerequisite.
 
@@ -35,7 +35,7 @@ Research Platform core + optional ModelBuild provenance
 → accepted model-bound Backtest public evidence and analysis
 → Strategy Validation
 → Promotion Gate
-→ rejected | needs_more_evidence
+→ rejected | needs_more_evidence | shadow_ready
 ```
 
 Feature/model byte formats, callable/plugin/framework ABI, actual model loading/inference, tuning/search, `shadow_ready`, ShadowSpec, Live authorization, deployment, and a second historical simulator remain outside v2.
