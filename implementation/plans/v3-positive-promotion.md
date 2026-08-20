@@ -4,12 +4,13 @@
 - **Mutable status authority:** [Roadmap §2](../roadmap.md#2-status-registry)
 - **Protected fixture:** [`integration-v3-positive-promotion-v1.json`](../../tests/contracts/integration-v3-positive-promotion-v1.json)
 
-This plan owns the approved contract, additive pure core, and additive runtime publication. Integrated supported-evidence acceptance remains a separate future node.
+This plan owns the approved contract, additive pure core/runtime, and real supported-evidence fan-in.
 
 ## Execution DAG
 
 ```text
 FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 ─→ PG-POS-RUNTIME-01
+                                                        └─→ PG-POS-THIN-01
 ```
 
 ## `V3-CON-01` — positive Promotion governance contract
@@ -172,3 +173,54 @@ Required evidence covers all three v2 mappings, exact replay, non-positive prefl
 ### Exclusions
 
 Real supported Validation evidence, integrated positive acceptance, ShadowSpec/runtime, Live/deployment, RBAC, decision supersession, credentials/order routing, storage infrastructure, and any Backtest change.
+
+## `PG-POS-THIN-01` — real supported-evidence acceptance
+
+### Outcome
+
+The existing Research → Backtest → Validation chain produces one real `supported` ValidationReport under a precommitted OOS threshold, and the accepted positive Promotion runtime publishes `PromotionDecision@2(shadow_ready)` from that report.
+
+### Dependencies
+
+- accepted `PG-POS-RUNTIME-01`;
+- accepted v1 Research, Backtest public seam/admission, and Validation runtime;
+- existing real OOS analysis `simple_period_return = -0.1`, `trade_count = 1`;
+- no new Backtest capability or package change.
+
+### Interface
+
+This is an integration acceptance node only. It composes existing public interfaces:
+
+```text
+execute_experiment
+→ validate_candidate(OOS threshold = -0.2)
+→ Backtest evidence admission
+→ evaluate_positive_case
+→ PromotionDecision@2(shadow_ready)
+```
+
+### Invariants
+
+1. The Validation threshold is declared before the OOS run; Promotion does not reinterpret the metric.
+2. The report is `supported` because `-0.1 >= -0.2` with one trade, not because evidence is rewritten or zero-filled.
+3. The exact completed publication, analysis, and metric-profile refs are admitted before Promotion.
+4. Evaluation and Decision refs use schema version 2 and replay exactly.
+5. Research, Validation, admission, Promotion, and economic-run replay creates no new entries or runs.
+6. No Backtest code, schema, fixture, or gitlink change.
+
+### Write set
+
+- `tests/integration/test_integration_v3.py`;
+- root roadmap/plan/receipt and architecture guard only.
+
+### Acceptance
+
+```bash
+uv run pytest -q -p no:cacheprovider tests/integration/test_integration_v3.py
+```
+
+Required evidence covers the real supported report, exact threshold observation, admitted Backtest refs, `ELIGIBLE → shadow_ready`, schema version 2 publication, whole-flow replay, and unchanged economic run count.
+
+### Exclusions
+
+New Validation methods, positive model-quality interpretation, ShadowSpec/runtime, Live/deployment, RBAC, decision supersession, credentials/order routing, storage infrastructure, and any Backtest change.

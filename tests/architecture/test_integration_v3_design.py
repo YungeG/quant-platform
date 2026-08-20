@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v3.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
 PLAN = ROOT / "implementation/plans/v3-positive-promotion.md"
+INTEGRATION_TEST = ROOT / "tests/integration/test_integration_v3.py"
 FIXTURE = ROOT / "tests/contracts/integration-v3-positive-promotion-v1.json"
 APPROVAL = ROOT / "implementation/v3-contract-positive-promotion-v1.md"
 PG_POS_RECEIPT = ROOT / "implementation/pg-pos-01-receipt.md"
@@ -65,7 +66,7 @@ def test_v3_positive_promotion_contract_is_frozen_and_approved() -> None:
     assert "`shadow_ready` grants no operational capability" in contract
 
 
-def test_v3_roadmap_records_accepted_core_and_runtime() -> None:
+def test_v3_roadmap_records_accepted_runtime_and_thin_candidate() -> None:
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
     receipt = PG_POS_RECEIPT.read_text(encoding="utf-8")
@@ -83,9 +84,13 @@ def test_v3_roadmap_records_accepted_core_and_runtime() -> None:
     assert registry.count("| `V3-CON-01` | APPROVED |") == 1
     assert registry.count("| `PG-POS-01` | DONE |") == 1
     assert registry.count("| `PG-POS-RUNTIME-01` | DONE |") == 1
+    assert registry.count("| `PG-POS-THIN-01` | READY_FOR_ACCEPTANCE |") == 1
     assert "PG-POS-RUNTIME-01 [DONE]" in roadmap
+    assert "PG-POS-THIN-01 [READY_FOR_ACCEPTANCE]" in roadmap
     assert "evaluate_positive(case, policy, status_snapshot, review_result)" in plan
     assert "evaluate_positive_case(validation_report_ref" in plan
+    assert "validate_candidate(OOS threshold = -0.2)" in plan
+    assert INTEGRATION_TEST.is_file()
     assert promotion_entry[:2] == ["160000", PG_POS_RUNTIME_SHA]
     assert backtest_entry[:2] == ["160000", ACCEPTED_BACKTEST_SHA]
     assert subprocess.run(
