@@ -15,6 +15,7 @@ PG_POS_RECEIPT = ROOT / "implementation/pg-pos-01-receipt.md"
 FIXTURE_SHA = "2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9"
 ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
 PG_POS_SHA = "de10a535b8c6a4da79a3b0f29e1dddd925d23586"
+PG_POS_RUNTIME_SHA = "7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03"
 PLATFORM_IMPLEMENTATION_SHA = "5e309f87edbbf5460b2c1e2d3664d22b67791c47"
 
 
@@ -62,7 +63,7 @@ def test_v3_positive_promotion_contract_is_frozen_and_approved() -> None:
     assert "`shadow_ready` grants no operational capability" in contract
 
 
-def test_v3_roadmap_records_approved_contract_and_accepted_core() -> None:
+def test_v3_roadmap_records_accepted_core_and_runtime_candidate() -> None:
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
     receipt = PG_POS_RECEIPT.read_text(encoding="utf-8")
@@ -78,10 +79,25 @@ def test_v3_roadmap_records_approved_contract_and_accepted_core() -> None:
 
     assert registry.count("| `V3-CON-01` | APPROVED |") == 1
     assert registry.count("| `PG-POS-01` | DONE |") == 1
-    assert "FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]" in roadmap
+    assert registry.count("| `PG-POS-RUNTIME-01` | READY_FOR_ACCEPTANCE |") == 1
+    assert "PG-POS-RUNTIME-01 [READY_FOR_ACCEPTANCE]" in roadmap
     assert "evaluate_positive(case, policy, status_snapshot, review_result)" in plan
-    assert promotion_entry[:2] == ["160000", PG_POS_SHA]
+    assert "evaluate_positive_case(validation_report_ref" in plan
+    assert promotion_entry[:2] == ["160000", PG_POS_RUNTIME_SHA]
     assert backtest_entry[:2] == ["160000", ACCEPTED_BACKTEST_SHA]
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "promotion-gate",
+            "merge-base",
+            "--is-ancestor",
+            PG_POS_SHA,
+            PG_POS_RUNTIME_SHA,
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
     assert subprocess.run(
         ["git", "merge-base", "--is-ancestor", PLATFORM_IMPLEMENTATION_SHA, "HEAD"],
         cwd=ROOT,

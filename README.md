@@ -22,7 +22,7 @@
 
 ## Current status
 
-Integration v1 and Integration v2 are accepted, published, and tagged `integration-v1` and `integration-v2`. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding without adding a plugin framework or deployment path. The evidence-only Integration v3 positive Promotion contract and additive pure core are accepted; runtime publication and integrated positive acceptance remain pending. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
+Integration v1 and Integration v2 are accepted, published, and tagged `integration-v1` and `integration-v2`. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding without adding a plugin framework or deployment path. The evidence-only Integration v3 positive Promotion contract and additive pure core are accepted; the runtime publication revision is published pending package acceptance, while integrated positive acceptance remains pending. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
 
 P00-CON-01 is immutable. P00-CON-02 approval details live in its [proposal](implementation/p00-contract-v2.md), while mutable gate state lives only in the roadmap registry. The narrow rule remains unchanged: existing static capture plus retirement evidence satisfies `P00-LEG-01`/`P00-CUT-01`, and hermetic replay is not a P00-PLAT prerequisite.
 

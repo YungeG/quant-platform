@@ -27,7 +27,7 @@ Provider execution remains an external seam. Deferring it does not require the P
 - A CAS object is not evidence until exact owner-log publication. A failed append means no authorized sample read.
 - Only completed Backtest publication reaches analysis. Missing metrics are missing/inconclusive, never zero.
 - V2 adds one immutable Feature/Trainer recipe pair and one ModelBuildPlan; it adds no plugin/framework ABI, model bytes/loader/inference, tuning/search, or multiple model plans.
-- Positive Promotion, Shadow/Live authorization, deployment, database, queue, distributed writer, and generic DAG remain outside v1/v2. The approved v3 contract and additive Promotion core add only an evidence-level positive decision; they authorize no operational capability.
+- Positive Promotion, Shadow/Live authorization, deployment, database, queue, distributed writer, and generic DAG remain outside v1/v2. The approved v3 contract, additive core, and additive runtime publish only an evidence-level positive decision; they authorize no operational capability.
 
 ## Plan map
 
@@ -43,7 +43,7 @@ Provider execution remains an external seam. Deferring it does not require the P
 | [V2 Research model build](v2-research-model-build.md) | `MB-CORE-01`, `RP-MODEL-01` | Research model declarations/runtime and receipts |
 | [V2 Backtest model seam](v2-backtest-model.md) | `BT-MODEL-01`, `V2-SEAM-01` | Backtest owner seam; root pin/integration receipt |
 | [V2 downstream fan-in](v2-fan-in.md) | `SV-MODEL-01`, `PG-MODEL-01`, `FI-02` | Validation/Promotion extensions and final golden |
-| [V3 positive Promotion](v3-positive-promotion.md) | `V3-CON-01`, `PG-POS-01` | approved root contract; Promotion pure core only |
+| [V3 positive Promotion](v3-positive-promotion.md) | `V3-CON-01`, `PG-POS-01`, `PG-POS-RUNTIME-01` | approved root contract; Promotion core/runtime only |
 
 Provider-owner requirements are packaged separately in the [Backtest Provider Handoff](../backtest-provider-handoff.md). They are not duplicated into module plans.
 

@@ -4,12 +4,12 @@
 - **Mutable status authority:** [Roadmap §2](../roadmap.md#2-status-registry)
 - **Protected fixture:** [`integration-v3-positive-promotion-v1.json`](../../tests/contracts/integration-v3-positive-promotion-v1.json)
 
-This plan owns the approved contract and the additive pure Promotion core. Runtime publication and integrated acceptance remain separate future nodes.
+This plan owns the approved contract, additive pure core, and additive runtime publication. Integrated supported-evidence acceptance remains a separate future node.
 
 ## Execution DAG
 
 ```text
-FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01
+FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 ─→ PG-POS-RUNTIME-01
 ```
 
 ## `V3-CON-01` — positive Promotion governance contract
@@ -115,3 +115,60 @@ Required evidence covers `ELIGIBLE → shadow_ready`, all existing negative mapp
 ### Exclusions
 
 Promotion runtime/publication, public shell exports, integrated supported evidence, ShadowSpec/runtime, Live/deployment, RBAC, decision supersession, and any Backtest change.
+
+## `PG-POS-RUNTIME-01` — additive positive Promotion publication
+
+### Outcome
+
+One additive runtime operation publishes `PromotionEvaluation@2` and `PromotionDecision@2` from the accepted positive core while the existing `evaluate_case()` continues to publish only negative `@1` artifacts.
+
+### Dependencies
+
+- accepted `PG-POS-01` pure core;
+- existing `PromotionLedger`, Foundation publication, replay, and governed-closure runtime;
+- no sibling implementation or Backtest dependency.
+
+### Interface
+
+```text
+evaluate_positive_case(validation_report_ref, policy, actors, foundation, fixture_evidence)
+  -> PublishedPositiveDecision
+```
+
+The operation shares the existing private orchestration path, publishes schema version 2 only for Evaluation and Decision, and leaves Policy, Case, status, reviews, and snapshot schemas unchanged.
+
+### Invariants
+
+1. `evaluate_case()` and `PublishedNegativeDecision` retain v1 behavior and schema versions.
+2. Positive replay returns the exact existing `@2` refs without new artifact, status, or review entries.
+3. One PromotionCase cannot fork into both v1 and v2 decision chains.
+4. A non-positive policy fails before Policy or Case publication.
+5. `shadow_ready` is only the Decision value; no operational field or capability is introduced.
+6. No ledger semantic, sibling import, or Backtest change.
+
+### Failure precedence
+
+1. non-positive policy preflight → `PROMOTION_POLICY_NOT_POSITIVE` with no publication;
+2. accepted graph/publication/review/status failures → no Evaluation or Decision;
+3. existing cross-version decision chain → `PROMOTION_CASE_INVALID` with no second chain;
+4. accepted positive core mapping → one immutable `@2` Evaluation and Decision.
+
+### Write set
+
+- `promotion-gate/src/crypto_quant_promotion/integration.py` for accepted `@2` ref parsing;
+- `promotion-gate/src/crypto_quant_promotion/runtime.py`;
+- `promotion-gate/src/crypto_quant_promotion/__init__.py`;
+- `promotion-gate/tests/test_promotion_shell.py`;
+- narrow structural compatibility update in `promotion-gate/tests/test_integrated_promotion.py`.
+
+### Acceptance
+
+```bash
+uv run pytest -q -p no:cacheprovider promotion-gate/tests
+```
+
+Required evidence covers all three v2 mappings, exact replay, non-positive preflight, cross-version no-fork behavior, public-root export, unchanged v1 runtime, and absence of operational authority. Published implementation revision: `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`; package acceptance remains separate.
+
+### Exclusions
+
+Real supported Validation evidence, integrated positive acceptance, ShadowSpec/runtime, Live/deployment, RBAC, decision supersession, credentials/order routing, storage infrastructure, and any Backtest change.
