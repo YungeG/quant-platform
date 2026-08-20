@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1 and v2 are released; Integration v3 contract/core/runtime are accepted and its real supported-evidence fan-in awaits acceptance.
+> **Status:** Integration v1 and v2 are released; Integration v3 positive Promotion contract, core, runtime, and real supported-evidence fan-in are accepted.
 
 This file is the sole mutable status registry and release DAG. Normative schemas/state rules live in [Integration v1](../overall/integration-v1.md) and additive [Integration v2](../overall/integration-v2.md); node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -63,7 +63,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `V3-CON-01` | APPROVED | protected fixture `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9` and Platform/Promotion owner approvals recorded in [`v3-contract-positive-promotion-v1.md`](v3-contract-positive-promotion-v1.md) |
 | `PG-POS-01` | DONE | pure positive evaluation/decision core accepted in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md) at Promotion revision `de10a535b8c6a4da79a3b0f29e1dddd925d23586` |
 | `PG-POS-RUNTIME-01` | DONE | additive `@2` Evaluation/Decision runtime accepted in [`pg-pos-runtime-01-receipt.md`](pg-pos-runtime-01-receipt.md) at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03` |
-| `PG-POS-THIN-01` | READY_FOR_ACCEPTANCE | real supported ValidationReport produces replay-stable `shadow_ready`; Platform implementation revision and receipt pending |
+| `PG-POS-THIN-01` | DONE | real supported ValidationReport → replay-stable `shadow_ready` accepted in [`pg-pos-thin-01-receipt.md`](pg-pos-thin-01-receipt.md) at Platform revision `f042b6e0a35f6c0bc0064ca60538e40555452863` |
 
 ## 3. Execution DAG
 
@@ -115,7 +115,7 @@ Integration v3 currently contains its approved contract, pure core, and runtime 
 ```text
 FI-02 ─→ V3-CON-01 [APPROVED] ─→ PG-POS-01 [DONE]
                                       └─→ PG-POS-RUNTIME-01 [DONE]
-                                                └─→ PG-POS-THIN-01 [READY_FOR_ACCEPTANCE]
+                                                └─→ PG-POS-THIN-01 [DONE]
 ```
 
 The graphs are acyclic:
@@ -203,7 +203,7 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 1 | `V3-CON-01` | `PG-POS-01` | root contract/docs/tests only | APPROVED |
 | 2 | `PG-POS-01` | `PG-POS-RUNTIME-01` | Promotion integration core/tests | DONE |
 | 3 | `PG-POS-RUNTIME-01` | `PG-POS-THIN-01` | Promotion runtime/public root/shell tests | DONE |
-| 4 | `PG-POS-THIN-01` | Integration v3 positive governance closure | root integration test/receipt | READY_FOR_ACCEPTANCE |
+| 4 | `PG-POS-THIN-01` | Integration v3 positive governance closure | root integration test/receipt | DONE |
 
 ## 7. Integration v1 accepted
 
@@ -247,4 +247,4 @@ V2 excludes feature/model byte formats, callable/plugin/framework ABI, model loa
 
 The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-256 `2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9`. Platform and Promotion owner approvals bind that exact hash. The contract reuses accepted v1/v2 policy, case, review, status, closure, freshness, Validation, and Backtest evidence contracts; only the Evaluation and Decision result vocabularies widen.
 
-`PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. `PG-POS-THIN-01` now proves the real accepted Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`; its receipt remains pending. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.
+`PG-POS-01` accepts the additive pure core in [`pg-pos-01-receipt.md`](pg-pos-01-receipt.md): the accepted v1 evaluator remains negative-only, while `evaluate_positive` converts only its sole `POSITIVE_PATH_DEFERRED` result to `ELIGIBLE` and `decide_positive` maps that result to `shadow_ready`. [`PG-POS-RUNTIME-01`](pg-pos-runtime-01-receipt.md) accepts publication of the corresponding `@2` artifacts at Promotion revision `7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03`. [`PG-POS-THIN-01`](pg-pos-thin-01-receipt.md) accepts that the real Backtest analysis `-0.1` with one trade satisfies a precommitted Validation threshold `-0.2`, yields a `supported` report, and reaches replay-stable `shadow_ready`. `shadow_ready` remains evidence only and grants no Shadow, Live, deployment, credential, or order capability.

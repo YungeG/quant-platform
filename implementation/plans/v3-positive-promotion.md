@@ -219,7 +219,7 @@ execute_experiment
 uv run pytest -q -p no:cacheprovider tests/integration/test_integration_v3.py
 ```
 
-Required evidence covers the real supported report, exact threshold observation, admitted Backtest refs, `ELIGIBLE → shadow_ready`, schema version 2 publication, whole-flow replay, and unchanged economic run count.
+Required evidence covers the real supported report, exact threshold observation, admitted Backtest refs, `ELIGIBLE → shadow_ready`, schema version 2 publication, whole-flow replay, and unchanged economic run count. Accepted Platform implementation revision: `f042b6e0a35f6c0bc0064ca60538e40555452863`; evidence is recorded in [`PG-POS-THIN-01`](../pg-pos-thin-01-receipt.md).
 
 ### Exclusions
 
