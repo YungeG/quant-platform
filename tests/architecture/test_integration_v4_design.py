@@ -81,7 +81,8 @@ def test_v4_roadmap_records_only_the_approved_contract() -> None:
 
     assert registry.count("| `V4-CON-01` | APPROVED |") == 1
     assert "FI-03 ─→ V4-CON-01 [APPROVED]" in roadmap
-    assert "future Shadow package implementation plan" in roadmap
+    assert "implementation deliberately deferred" in roadmap
+    assert "future Shadow implementation only after a concrete runtime requirement" in roadmap
     assert "ShadowSpec@1(" in plan
     assert "**ShadowSpec**" in glossary
     assert "SHADOW-" not in roadmap

@@ -4,7 +4,7 @@
 - **Mutable status authority:** [Roadmap §2](../roadmap.md#2-status-registry)
 - **Protected fixture:** [`integration-v4-shadow-spec-v1.json`](../../tests/contracts/integration-v4-shadow-spec-v1.json)
 
-This plan owns only the approved contract node. Shadow package/runtime implementation requires a separate future node and package seam.
+This plan owns only the approved contract node. Shadow package/runtime implementation is deliberately deferred until a concrete observation-runtime requirement exists; any future work requires a separate node and package seam.
 
 ## Execution DAG
 

@@ -4,7 +4,7 @@
 - **Predecessor:** [Integration v3](integration-v3.md) and [`FI-03`](../implementation/fi-03-receipt.md)
 - **Contract approval:** [`V4-CON-01`](../implementation/v4-contract-shadow-spec-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** approved contract; not implemented
+- **Status:** approved contract; implementation deliberately deferred until a concrete Shadow runtime requirement exists
 
 ## 1. Outcome and ceiling
 
@@ -83,7 +83,7 @@ This forces a new positive Promotion evaluation before scheduling a window beyon
 
 ## 7. Contract acceptance
 
-`V4-CON-01` is approved by Platform, Promotion, and Shadow owners against the exact protected fixture hash. Approval freezes the contract but does not authorize a package implementation or Shadow runtime.
+`V4-CON-01` is approved by Platform, Promotion, and Shadow owners against the exact protected fixture hash. Approval freezes the contract but does not authorize a package implementation or Shadow runtime. The implementation is deliberately deferred until a concrete observation-runtime requirement exists.
 
 The first implementation node, when separately defined and authorized, must prove exact decision linkage, limitation rejection, time/freshness bounds, owner-log publication, replay, and structural absence of operational fields.
 

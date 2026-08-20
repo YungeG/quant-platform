@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract is approved and awaits a Shadow package seam.
+> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract is approved, with implementation deliberately deferred.
 
 This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), and additive [Integration v3](../overall/integration-v3.md); the [Integration v4](../overall/integration-v4.md) contract is a candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -23,7 +23,7 @@ V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Back
 
 The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `PromotionDecision@2(shadow_ready)` as evidence-level governance values. `PG-POS-01` implements their pure mapping, `PG-POS-RUNTIME-01` publishes the `@2` artifacts, and `PG-POS-THIN-01` binds one real supported ValidationReport without changing any Backtest contract or authorizing Shadow runtime, Live operation, or deployment.
 
-The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability.
+The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability; implementation is deliberately deferred until a concrete observation-runtime requirement exists.
 
 ## 2. Status registry
 
@@ -222,7 +222,7 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
-| 1 | `V4-CON-01` | future Shadow package implementation plan | root contract/docs/tests only | APPROVED |
+| 1 | `V4-CON-01` | future Shadow implementation only after a concrete runtime requirement | root contract/docs/tests only | APPROVED |
 
 ## 7. Integration v1 accepted
 
@@ -272,4 +272,4 @@ The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-25
 
 The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`. Platform, Promotion, and Shadow owner approvals bind that exact hash. It adds only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`, owned by a future Shadow module and published in `shadow.artifacts.v1` through existing Domain/Foundation mechanics.
 
-No Shadow package or implementation is claimed yet. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
+Shadow package/runtime implementation is deliberately deferred until a concrete observation-runtime requirement exists. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
