@@ -17,7 +17,8 @@ PG_POS_RUNTIME_RECEIPT = ROOT / "implementation/pg-pos-runtime-01-receipt.md"
 PG_POS_THIN_RECEIPT = ROOT / "implementation/pg-pos-thin-01-receipt.md"
 FI_03_RECEIPT = ROOT / "implementation/fi-03-receipt.md"
 FIXTURE_SHA = "2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9"
-ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
+HISTORICAL_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
+CURRENT_BACKTEST_GITLINK_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 PG_POS_SHA = "de10a535b8c6a4da79a3b0f29e1dddd925d23586"
 PG_POS_RUNTIME_SHA = "7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03"
 PLATFORM_IMPLEMENTATION_SHA = "5e309f87edbbf5460b2c1e2d3664d22b67791c47"
@@ -100,7 +101,7 @@ def test_v3_roadmap_records_accepted_runtime_and_thin_fan_in() -> None:
     assert "validate_candidate(OOS threshold = -0.2)" in plan
     assert INTEGRATION_TEST.is_file()
     assert promotion_entry[:2] == ["160000", PG_POS_RUNTIME_SHA]
-    assert backtest_entry[:2] == ["160000", ACCEPTED_BACKTEST_SHA]
+    assert backtest_entry[:2] == ["160000", CURRENT_BACKTEST_GITLINK_SHA]
     assert subprocess.run(
         [
             "git",
@@ -149,7 +150,7 @@ def test_v3_roadmap_records_accepted_runtime_and_thin_fan_in() -> None:
         FIXTURE_SHA,
         PLATFORM_THIN_IMPLEMENTATION_SHA,
         PG_POS_RUNTIME_SHA,
-        ACCEPTED_BACKTEST_SHA,
+        HISTORICAL_BACKTEST_SHA,
         "1 passed",
         "320 passed",
         "Status:** ACCEPTED",
@@ -160,7 +161,7 @@ def test_v3_roadmap_records_accepted_runtime_and_thin_fan_in() -> None:
         FI_03_GOLDEN_SHA,
         V3_LOCK_SHA,
         PG_POS_RUNTIME_SHA,
-        ACCEPTED_BACKTEST_SHA,
+        HISTORICAL_BACKTEST_SHA,
         "320 passed",
         "Status:** ACCEPTED",
     ):

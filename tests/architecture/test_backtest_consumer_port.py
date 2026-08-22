@@ -11,7 +11,9 @@ import pytest
 
 from tests.support.backtest_consumer_port import (
     CONTRACT_PATH,
+    CONTRACT_V2_PATH,
     FAILURE_PRECEDENCE,
+    FAILURE_PRECEDENCE_V2,
     InMemoryBacktestConsumerPort,
     PortFailure,
     load_contract_fixture,
@@ -89,6 +91,290 @@ def test_contract_fixture_freezes_the_consumer_surface_and_encodings() -> None:
 
     protected_hash = hashlib.sha256(PROTECTED_P00.read_bytes()).hexdigest()
     assert protected_hash == "aebb1be1894d739b06856e012e4343d7835fc1ed0306d8c28a4bfb1d8025b782"
+
+
+def test_v2_contract_fixture_freezes_exact_shape_and_backtest_golden_values() -> None:
+    contract = load_contract_fixture(CONTRACT_V2_PATH)
+
+    assert CONTRACT_V2_PATH == (
+        PLATFORM_ROOT / "tests/contracts/backtest-consumer-port-v2.json"
+    )
+    assert hashlib.sha256(CONTRACT_V2_PATH.read_bytes()).hexdigest() == (
+        "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8"
+    )
+    assert list(contract) == [
+        "contract_id",
+        "schema_version",
+        "status",
+        "test_support_only",
+        "operations",
+        "terminal_statuses",
+        "failure_precedence",
+        "encodings",
+        "cases",
+    ]
+    assert contract["contract_id"] == "BT-PORT-02"
+    assert contract["schema_version"] == 2
+    assert contract["status"] == "frozen"
+    assert contract["test_support_only"] is True
+    assert contract["operations"] == [
+        "run",
+        "derive",
+        "load_completed",
+        "load_completed_v3",
+        "load_terminal",
+        "load_analysis",
+        "load_analysis_v2",
+    ]
+    assert contract["terminal_statuses"] == ["BLOCKED", "FAILED", "CANCELLED"]
+    assert contract["failure_precedence"] == list(FAILURE_PRECEDENCE_V2)
+    assert contract["encodings"] == load_contract_fixture()["encodings"]
+    assert len(contract["cases"]) == 1
+
+    case = contract["cases"][0]
+    assert list(case) == [
+        "case_id",
+        "request_spec",
+        "run",
+        "completed_v3",
+        "derive",
+        "analysis_v2",
+    ]
+    assert case["case_id"] == "decision_grade_completed_v3"
+    assert case["request_spec"] == {"fixture_case": "decision_grade_completed_v3"}
+    assert list(case["run"]) == ["kind", "ref"]
+    assert case["run"]["kind"] == "completed_v3"
+    assert list(case["completed_v3"]) == [
+        "publication_ref",
+        "semantic_run_id",
+        "execution_result_hash",
+        "result_grade",
+        "rebuild_verification_ref",
+        "proof_publication_manifest_ref",
+    ]
+    assert list(case["derive"]) == ["metric_profile_ref", "analysis_ref"]
+    assert list(case["analysis_v2"]) == [
+        "analysis_ref",
+        "metric_profile_ref",
+        "source_publication_ref",
+        "source_execution_result_hash",
+        "simple_period_return",
+        "trade_count",
+        "result_grade",
+    ]
+    assert case["run"]["ref"] == case["completed_v3"]["publication_ref"]
+    assert case["completed_v3"]["publication_ref"] == {
+        "type": "backtest_canonical_publication_ref_v2",
+        "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "canonical_publication_manifest",
+            "schema_version": 2,
+            "content_hash": (
+                "sha256:bedebcbaaf59f40a6ff797bc9e3f23cb2eeac5e5984dcc75bf98d1796ec37d01"
+            ),
+        },
+    }
+    assert case["completed_v3"]["semantic_run_id"] == (
+        "run_978a2650090b81d853bec35921173c628162a487eac9878347bc1ffe3c4cc609"
+    )
+    assert case["completed_v3"]["execution_result_hash"] == (
+        "sha256:882a42741e0b682dfa1c7221f080b73ffac3bd9afcb3ae6dbf2b3773a74dabd1"
+    )
+    assert case["completed_v3"]["result_grade"] == "decision_grade"
+    assert case["completed_v3"]["rebuild_verification_ref"] == {
+        "type": "artifact_ref",
+        "artifact_type": "deterministic_rebuild_verification",
+        "schema_version": 1,
+        "content_hash": (
+            "sha256:cf7c30f15c511488538c87422a961048e69b27cc1a2c6ba10b8d830f2fcbebf0"
+        ),
+    }
+    assert case["completed_v3"]["proof_publication_manifest_ref"] == {
+        "type": "artifact_ref",
+        "artifact_type": (
+            "deterministic_rebuild_verification_publication_manifest"
+        ),
+        "schema_version": 1,
+        "content_hash": (
+            "sha256:8caaae753a18556bc0fdc017381bae0973c4b73398637257433b62fecd796a59"
+        ),
+    }
+    assert case["derive"]["metric_profile_ref"]["content_hash"] == (
+        "sha256:bced4dbef8bbf6e1ec9821ae3b68e8c6ce2bbed953f95fe1214c8e21676dbd6a"
+    )
+    assert case["derive"]["analysis_ref"] == case["analysis_v2"]["analysis_ref"]
+    assert case["derive"]["analysis_ref"] == {
+        "type": "analysis_artifact_ref_v2",
+        "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "backtest_analysis",
+            "schema_version": 2,
+            "content_hash": (
+                "sha256:f620d21d6372814d63f77e4f0a3506d2cb44bdc5a62c42f71b8abdccdfc5f50a"
+            ),
+        },
+    }
+    assert case["analysis_v2"]["source_publication_ref"] == case["run"]["ref"]
+    assert case["analysis_v2"]["source_execution_result_hash"] == (
+        case["completed_v3"]["execution_result_hash"]
+    )
+    assert case["analysis_v2"]["simple_period_return"] == "0.02392"
+    assert case["analysis_v2"]["trade_count"] == 1
+    assert case["analysis_v2"]["result_grade"] == "decision_grade"
+    assert not any(type(value) is float for value in _all_values(contract))
+
+
+def test_v2_exact_journey_and_adjacent_v1_dispatch_are_stable() -> None:
+    v2_port = InMemoryBacktestConsumerPort(contract_path=CONTRACT_V2_PATH)
+    v2_case = v2_port.case("decision_grade_completed_v3")
+
+    completed_ref = v2_port.run(v2_case["request_spec"])
+    completed = v2_port.load_completed_v3(completed_ref)
+    analysis_ref = v2_port.derive(
+        completed_ref, v2_case["derive"]["metric_profile_ref"]
+    )
+    analysis = v2_port.load_analysis_v2(analysis_ref)
+
+    assert completed == v2_case["completed_v3"]
+    assert analysis_ref == v2_case["derive"]["analysis_ref"]
+    assert analysis == v2_case["analysis_v2"]
+    assert analysis["source_publication_ref"] == completed_ref
+    assert analysis["source_execution_result_hash"] == completed["execution_result_hash"]
+    assert analysis["result_grade"] == completed["result_grade"]
+
+    v1_port = InMemoryBacktestConsumerPort()
+    v1_case = v1_port.case("adverse_completed")
+    v1_completed_ref = v1_port.run(v1_case["request_spec"])
+    assert v1_port.load_completed(v1_completed_ref) == v1_case["completed"]
+    v1_analysis_ref = v1_port.derive(
+        v1_completed_ref, v1_case["derive"]["metric_profile_ref"]
+    )
+    assert v1_port.load_analysis(v1_analysis_ref) == v1_case["analysis"]
+
+
+def test_v2_refs_fail_closed_without_unwrap_cross_version_or_downgrade() -> None:
+    v2_port = InMemoryBacktestConsumerPort(contract_path=CONTRACT_V2_PATH)
+    v2_case = v2_port.case("decision_grade_completed_v3")
+    v2_completed_ref = v2_case["completed_v3"]["publication_ref"]
+    v2_analysis_ref = v2_case["analysis_v2"]["analysis_ref"]
+    v1_port = InMemoryBacktestConsumerPort()
+    v1_case = v1_port.case("adverse_completed")
+    v1_completed_ref = v1_case["completed"]["publication_ref"]
+    v1_analysis_ref = v1_case["analysis"]["analysis_ref"]
+
+    for action in (
+        lambda: v2_port.load_completed(v2_completed_ref),
+        lambda: v2_port.load_completed_v3(v1_completed_ref),
+        lambda: v2_port.load_analysis(v2_analysis_ref),
+        lambda: v2_port.load_analysis_v2(v1_analysis_ref),
+        lambda: v2_port.load_completed_v3(v2_completed_ref["artifact_ref"]),
+    ):
+        _assert_failure("PORT_REF_TYPE_MISMATCH", action)
+
+    unknown_wrapper = deepcopy(v2_completed_ref)
+    unknown_wrapper["type"] = "backtest_canonical_publication_ref_v3"
+    _assert_failure(
+        "PORT_REF_TYPE_MISMATCH",
+        lambda: v2_port.load_completed_v3(unknown_wrapper),
+    )
+    unknown_version = deepcopy(v2_completed_ref)
+    unknown_version["artifact_ref"]["schema_version"] = 3
+    _assert_failure(
+        "PORT_REF_TYPE_MISMATCH",
+        lambda: v2_port.load_completed_v3(unknown_version),
+    )
+    raw_manifest_v2 = deepcopy(v2_completed_ref["artifact_ref"])
+    _assert_failure(
+        "PORT_REF_TYPE_MISMATCH",
+        lambda: v2_port.load_completed_v3(raw_manifest_v2),
+    )
+    _assert_failure(
+        "PORT_REF_NOT_FOUND",
+        lambda: v2_port.load_terminal(raw_manifest_v2),
+    )
+
+    no_downgrade = InMemoryBacktestConsumerPort(contract_path=CONTRACT_V2_PATH)
+    no_downgrade.inject_failures(
+        v2_completed_ref, "PORT_COMPLETED_VERSION_MISMATCH"
+    )
+    _assert_failure(
+        "PORT_COMPLETED_VERSION_MISMATCH",
+        lambda: no_downgrade.run(v2_case["request_spec"]),
+    )
+
+
+def test_v2_records_links_and_failure_precedence_fail_closed() -> None:
+    contract = load_contract_fixture(CONTRACT_V2_PATH)
+    case = _case(contract, "decision_grade_completed_v3")
+    completed_ref = deepcopy(case["completed_v3"]["publication_ref"])
+    analysis_ref = deepcopy(case["analysis_v2"]["analysis_ref"])
+
+    port = InMemoryBacktestConsumerPort(contract)
+    port.inject_failures(
+        completed_ref,
+        "PORT_RETENTION_UNAVAILABLE",
+        "PORT_COMPLETED_VERSION_MISMATCH",
+        "PORT_STATIC_PROOF_MISMATCH",
+        "PORT_MANIFEST_INVALID",
+        "PORT_EVIDENCE_TAMPERED",
+    )
+    _assert_failure(
+        "PORT_EVIDENCE_TAMPERED", lambda: port.load_completed_v3(completed_ref)
+    )
+
+    completed_port = InMemoryBacktestConsumerPort(contract)
+    completed_port.inject_failures(
+        completed_ref,
+        "PORT_STATIC_PROOF_MISMATCH",
+        "PORT_COMPLETED_VERSION_MISMATCH",
+        "PORT_RETENTION_UNAVAILABLE",
+    )
+    _assert_failure(
+        "PORT_STATIC_PROOF_MISMATCH",
+        lambda: completed_port.load_completed_v3(completed_ref),
+    )
+
+    analysis_port = InMemoryBacktestConsumerPort(contract)
+    analysis_port.inject_failures(
+        analysis_ref,
+        "PORT_ANALYSIS_VERSION_MISMATCH",
+        "PORT_RETENTION_UNAVAILABLE",
+    )
+    _assert_failure(
+        "PORT_ANALYSIS_VERSION_MISMATCH",
+        lambda: analysis_port.load_analysis_v2(analysis_ref),
+    )
+
+    malformed = load_contract_fixture(CONTRACT_V2_PATH)
+    _case(malformed, "decision_grade_completed_v3")["completed_v3"]["extra"] = True
+    _assert_failure(
+        "PORT_MANIFEST_INVALID",
+        lambda: InMemoryBacktestConsumerPort(malformed).load_completed_v3(completed_ref),
+    )
+
+    forged = load_contract_fixture(CONTRACT_V2_PATH)
+    forged_case = _case(forged, "decision_grade_completed_v3")
+    forged_case["analysis_v2"]["source_execution_result_hash"] = "sha256:" + "0" * 64
+    _assert_failure(
+        "PORT_ANALYSIS_LINK_MISMATCH",
+        lambda: InMemoryBacktestConsumerPort(forged).load_analysis_v2(analysis_ref),
+    )
+
+
+def test_v1_fault_and_malformed_link_dispositions_remain_exact() -> None:
+    port = InMemoryBacktestConsumerPort()
+    completed_ref = port.case("adverse_completed")["completed"]["publication_ref"]
+    with pytest.raises(ValueError):
+        port.inject_failures(completed_ref, "PORT_STATIC_PROOF_MISMATCH")
+
+    contract = load_contract_fixture()
+    case = _case(contract, "adverse_completed")
+    analysis_ref = deepcopy(case["analysis"]["analysis_ref"])
+    case["completed"].pop("publication_ref")
+    _assert_failure(
+        "PORT_REF_TYPE_MISMATCH",
+        lambda: InMemoryBacktestConsumerPort(contract).load_analysis(analysis_ref),
+    )
 
 
 def test_completed_evidence_alone_derives_exact_verified_analysis() -> None:
@@ -491,3 +777,6 @@ def test_support_is_shared_test_only_and_imports_no_provider_or_sibling() -> Non
     decoded = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
     expected_contract = load_contract_fixture()
     assert decoded == expected_contract
+    decoded_v2 = json.loads(CONTRACT_V2_PATH.read_text(encoding="utf-8"))
+    expected_contract_v2 = load_contract_fixture(CONTRACT_V2_PATH)
+    assert decoded_v2 == expected_contract_v2

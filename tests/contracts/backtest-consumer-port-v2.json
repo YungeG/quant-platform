@@ -1,0 +1,128 @@
+{
+  "contract_id": "BT-PORT-02",
+  "schema_version": 2,
+  "status": "frozen",
+  "test_support_only": true,
+  "operations": [
+    "run",
+    "derive",
+    "load_completed",
+    "load_completed_v3",
+    "load_terminal",
+    "load_analysis",
+    "load_analysis_v2"
+  ],
+  "terminal_statuses": [
+    "BLOCKED",
+    "FAILED",
+    "CANCELLED"
+  ],
+  "failure_precedence": [
+    "PORT_REF_TYPE_MISMATCH",
+    "PORT_REF_NOT_FOUND",
+    "PORT_EVIDENCE_TAMPERED",
+    "PORT_MANIFEST_INVALID",
+    "PORT_STATIC_PROOF_MISMATCH",
+    "PORT_COMPLETED_VERSION_MISMATCH",
+    "PORT_ANALYSIS_VERSION_MISMATCH",
+    "PORT_RETENTION_UNAVAILABLE",
+    "PORT_TERMINAL_NOT_ANALYZABLE",
+    "PORT_ANALYSIS_LINK_MISMATCH"
+  ],
+  "encodings": {
+    "decimal_string": "canonical ordinary decimal JSON string; no exponent, negative zero, or trailing fractional zero"
+  },
+  "cases": [
+    {
+      "case_id": "decision_grade_completed_v3",
+      "request_spec": {
+        "fixture_case": "decision_grade_completed_v3"
+      },
+      "run": {
+        "kind": "completed_v3",
+        "ref": {
+          "type": "backtest_canonical_publication_ref_v2",
+          "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "canonical_publication_manifest",
+            "schema_version": 2,
+            "content_hash": "sha256:bedebcbaaf59f40a6ff797bc9e3f23cb2eeac5e5984dcc75bf98d1796ec37d01"
+          }
+        }
+      },
+      "completed_v3": {
+        "publication_ref": {
+          "type": "backtest_canonical_publication_ref_v2",
+          "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "canonical_publication_manifest",
+            "schema_version": 2,
+            "content_hash": "sha256:bedebcbaaf59f40a6ff797bc9e3f23cb2eeac5e5984dcc75bf98d1796ec37d01"
+          }
+        },
+        "semantic_run_id": "run_978a2650090b81d853bec35921173c628162a487eac9878347bc1ffe3c4cc609",
+        "execution_result_hash": "sha256:882a42741e0b682dfa1c7221f080b73ffac3bd9afcb3ae6dbf2b3773a74dabd1",
+        "result_grade": "decision_grade",
+        "rebuild_verification_ref": {
+          "type": "artifact_ref",
+          "artifact_type": "deterministic_rebuild_verification",
+          "schema_version": 1,
+          "content_hash": "sha256:cf7c30f15c511488538c87422a961048e69b27cc1a2c6ba10b8d830f2fcbebf0"
+        },
+        "proof_publication_manifest_ref": {
+          "type": "artifact_ref",
+          "artifact_type": "deterministic_rebuild_verification_publication_manifest",
+          "schema_version": 1,
+          "content_hash": "sha256:8caaae753a18556bc0fdc017381bae0973c4b73398637257433b62fecd796a59"
+        }
+      },
+      "derive": {
+        "metric_profile_ref": {
+          "type": "artifact_ref",
+          "artifact_type": "backtest_metric_profile",
+          "schema_version": 1,
+          "content_hash": "sha256:bced4dbef8bbf6e1ec9821ae3b68e8c6ce2bbed953f95fe1214c8e21676dbd6a"
+        },
+        "analysis_ref": {
+          "type": "analysis_artifact_ref_v2",
+          "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "backtest_analysis",
+            "schema_version": 2,
+            "content_hash": "sha256:f620d21d6372814d63f77e4f0a3506d2cb44bdc5a62c42f71b8abdccdfc5f50a"
+          }
+        }
+      },
+      "analysis_v2": {
+        "analysis_ref": {
+          "type": "analysis_artifact_ref_v2",
+          "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "backtest_analysis",
+            "schema_version": 2,
+            "content_hash": "sha256:f620d21d6372814d63f77e4f0a3506d2cb44bdc5a62c42f71b8abdccdfc5f50a"
+          }
+        },
+        "metric_profile_ref": {
+          "type": "artifact_ref",
+          "artifact_type": "backtest_metric_profile",
+          "schema_version": 1,
+          "content_hash": "sha256:bced4dbef8bbf6e1ec9821ae3b68e8c6ce2bbed953f95fe1214c8e21676dbd6a"
+        },
+        "source_publication_ref": {
+          "type": "backtest_canonical_publication_ref_v2",
+          "artifact_ref": {
+            "type": "artifact_ref",
+            "artifact_type": "canonical_publication_manifest",
+            "schema_version": 2,
+            "content_hash": "sha256:bedebcbaaf59f40a6ff797bc9e3f23cb2eeac5e5984dcc75bf98d1796ec37d01"
+          }
+        },
+        "source_execution_result_hash": "sha256:882a42741e0b682dfa1c7221f080b73ffac3bd9afcb3ae6dbf2b3773a74dabd1",
+        "simple_period_return": "0.02392",
+        "trade_count": 1,
+        "result_grade": "decision_grade"
+      }
+    }
+  ]
+}

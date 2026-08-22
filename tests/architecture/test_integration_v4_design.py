@@ -14,7 +14,7 @@ FIXTURE = ROOT / "tests/contracts/integration-v4-shadow-spec-v1.json"
 APPROVAL = ROOT / "implementation/v4-contract-shadow-spec-v1.md"
 FIXTURE_SHA = "0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7"
 INTEGRATION_V3_RELEASE_SHA = "3ea0be372d14501decbbfd0343b06488eb2dee28"
-ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
+CURRENT_BACKTEST_GITLINK_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 
 
 def test_v4_shadow_spec_contract_is_frozen_and_approved() -> None:
@@ -89,4 +89,4 @@ def test_v4_roadmap_records_only_the_approved_contract() -> None:
     assert subprocess.check_output(
         ["git", "rev-list", "-n", "1", "integration-v3"], cwd=ROOT, text=True
     ).strip() == INTEGRATION_V3_RELEASE_SHA
-    assert backtest_entry[:2] == ["160000", ACCEPTED_BACKTEST_SHA]
+    assert backtest_entry[:2] == ["160000", CURRENT_BACKTEST_GITLINK_SHA]
