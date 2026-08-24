@@ -162,7 +162,7 @@ Existing `ValidationPolicy`, `ValidationPlan`, `validate_candidate()`, CaseResul
 
 ### Acceptance
 
-Singleton development/decision-grade modes, mixed-mode rejection, exact proof-ref/view/link checks, V2 port failure precedence/no report, V1 parity, supported/rejected threshold behavior, and replay.
+Singleton development/decision-grade modes, mixed-mode rejection, exact proof-ref/view/link checks, V2 port failure precedence/no report, V1 parity, supported/rejected threshold behavior, and replay. Accepted evidence: [`SV-DG-01`](../sv-dg-01-receipt.md) at Validation revision `cd966d92dad2110af7d8b1bf580536f6c3cdb998`.
 
 ## `PG-DG-01` — V2 Promotion governance
 
