@@ -89,13 +89,13 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
     assert registry.count("| `V5-PIN-01` | DONE |") == 1
-    assert registry.count("| `DG-ADM-01` | IN_PROGRESS |") == 1
+    assert registry.count("| `DG-ADM-01` | READY_FOR_ACCEPTANCE |") == 1
     assert registry.count("| `RP-DG-01` | READY |") == 1
     for node in ("SV-DG-01", "PG-DG-01", "DG-THIN-01", "FI-04"):
         assert registry.count(f"| `{node}` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
     assert "V5-PIN-01 [DONE]" in roadmap
-    assert "DG-ADM-01 [IN_PROGRESS]" in roadmap
+    assert "DG-ADM-01 [READY_FOR_ACCEPTANCE]" in roadmap
     assert "RP-DG-01 [READY]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
