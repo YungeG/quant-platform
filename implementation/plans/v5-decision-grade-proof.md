@@ -11,10 +11,10 @@ This plan owns the approved contract and implementation nodes. Backtest compatib
 
 ```text
 FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
-                           └─→ V5-PIN-01
-                                  ├─→ DG-ADM-01 ───────────────┐
-                                  └─→ RP-DG-01 ─→ SV-DG-01 ───┼─→ PG-DG-01
-                                                              └─→ DG-THIN-01 ─→ FI-04
+                           └─→ V5-PIN-01 [DONE]
+                                  ├─→ DG-ADM-01 [DONE] ───────────────┐
+                                  └─→ RP-DG-01 [DONE] ─→ SV-DG-01 [DONE] ─┼─→ PG-DG-01 [DONE]
+                                                                      └─→ DG-THIN-01 [IN_PROGRESS] ─→ FI-04
 ```
 
 The approved/deferred V4 ShadowSpec contract is orthogonal and does not block this evidence lane.
@@ -183,7 +183,7 @@ Existing Promotion public operations and artifact schemas remain unchanged. Priv
 
 ### Acceptance
 
-V2 ref identity/signature, Admission@2 event/schema resolution, @1/@2 substitution rejection, decision-grade policy, positive/negative decisions, V1 parity, and replay.
+V2 ref identity/signature, Admission@2 event/schema resolution, @1/@2 substitution rejection, decision-grade policy, positive/negative decisions, V1 parity, and replay. Accepted evidence: [`PG-DG-01`](../pg-dg-01-receipt.md) at Promotion revision `8e6dddf5da0494b57cca6990d5024fe4198e6b44`.
 
 ## `DG-THIN-01` — real decision-grade fan-in
 

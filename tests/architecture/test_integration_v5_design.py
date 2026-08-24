@@ -16,6 +16,7 @@ PIN_RECEIPT = ROOT / "implementation/v5-pin-01-receipt.md"
 ADMISSION_RECEIPT = ROOT / "implementation/dg-adm-01-receipt.md"
 RESEARCH_RECEIPT = ROOT / "implementation/rp-dg-01-receipt.md"
 VALIDATION_RECEIPT = ROOT / "implementation/sv-dg-01-receipt.md"
+PROMOTION_RECEIPT = ROOT / "implementation/pg-dg-01-receipt.md"
 BT_PORT_02 = ROOT / "tests/contracts/backtest-consumer-port-v2.json"
 FIXTURE_SHA = "1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695"
 BT_PORT_02_SHA = "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8"
@@ -27,6 +28,7 @@ BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
 SV_DG_SHA = "cd966d92dad2110af7d8b1bf580536f6c3cdb998"
+PG_DG_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
 
 
 def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
@@ -86,6 +88,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     admission_receipt = ADMISSION_RECEIPT.read_text(encoding="utf-8")
     research_receipt = RESEARCH_RECEIPT.read_text(encoding="utf-8")
     validation_receipt = VALIDATION_RECEIPT.read_text(encoding="utf-8")
+    promotion_receipt = PROMOTION_RECEIPT.read_text(encoding="utf-8")
     glossary = GLOSSARY.read_text(encoding="utf-8")
     registry = roadmap.split("## 2. Status registry", 1)[1].split(
         "## 3. Execution DAG", 1
@@ -99,6 +102,9 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     validation_entry = subprocess.check_output(
         ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
     ).split()
+    promotion_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "promotion-gate"], cwd=ROOT, text=True
+    ).split()
 
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
@@ -106,15 +112,16 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert registry.count("| `DG-ADM-01` | DONE |") == 1
     assert registry.count("| `RP-DG-01` | DONE |") == 1
     assert registry.count("| `SV-DG-01` | DONE |") == 1
-    assert registry.count("| `PG-DG-01` | IN_PROGRESS |") == 1
-    for node in ("DG-THIN-01", "FI-04"):
-        assert registry.count(f"| `{node}` | BLOCKED |") == 1
+    assert registry.count("| `PG-DG-01` | DONE |") == 1
+    assert registry.count("| `DG-THIN-01` | IN_PROGRESS |") == 1
+    assert registry.count("| `FI-04` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
     assert "V5-PIN-01 [DONE]" in roadmap
     assert "DG-ADM-01 [DONE]" in roadmap
     assert "RP-DG-01 [DONE]" in roadmap
     assert "SV-DG-01 [DONE]" in roadmap
-    assert "PG-DG-01 [IN_PROGRESS]" in roadmap
+    assert "PG-DG-01 [DONE]" in roadmap
+    assert "DG-THIN-01 [IN_PROGRESS]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
     assert BACKTEST_FANIN_SHA in plan
@@ -137,6 +144,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
     assert research_entry[:2] == ["160000", RP_DG_SHA]
     assert validation_entry[:2] == ["160000", SV_DG_SHA]
+    assert promotion_entry[:2] == ["160000", PG_DG_SHA]
     assert subprocess.check_output(
         ["git", "-C", "backtest", "merge-base", BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA],
         cwd=ROOT,
@@ -203,3 +211,14 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         "Status:** ACCEPTED",
     ):
         assert expected in validation_receipt
+    for expected in (
+        "7263625315b71103ca65d6a861792e0687b4e2bb",
+        PG_DG_SHA,
+        SV_DG_SHA,
+        RP_DG_SHA,
+        BACKTEST_FANIN_SHA,
+        "84 passed",
+        "25 passed",
+        "Status:** ACCEPTED",
+    ):
+        assert expected in promotion_receipt
