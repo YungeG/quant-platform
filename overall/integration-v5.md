@@ -1,11 +1,11 @@
-# Platform Integration v5 candidate — Decision-grade durable evidence
+# Platform Integration v5 — Decision-grade durable evidence
 
 - **Scope:** exact consumption and governance of Backtest canonical-v3 decision-grade evidence
 - **Predecessor:** [Integration v3](integration-v3.md), [`FI-03`](../implementation/fi-03-receipt.md), and protected [`BT-PORT-02`](../tests/contracts/backtest-consumer-port-v2.json)
 - **Orthogonal contract:** [Integration v4](integration-v4.md) remains approved and deliberately unimplemented
-- **Candidate approval:** [`V5-CON-01`](../implementation/v5-contract-decision-grade-proof-v1.md)
+- **Contract approval:** [`V5-CON-01`](../implementation/v5-contract-decision-grade-proof-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** frozen candidate bytes; not approved or implemented
+- **Status:** approved contract; implementation pending
 
 ## 1. Outcome and ceiling
 
@@ -132,11 +132,11 @@ No failure causes heuristic dispatch, v1 fallback, grade downgrade, fabricated p
 - Backtest remains pinned to the accepted DRP-03 code commit; later Backtest governance commits are docs-only.
 - No Backtest code, schema, fixture, branch, gitlink, or runtime change is required.
 
-## 9. Candidate acceptance
+## 9. Contract acceptance
 
-`V5-CON-01` may become approved only when Platform, Backtest, Validation, and Promotion owners approve the exact protected fixture hash. Approval freezes this contract but does not claim production integration.
+`V5-CON-01` is approved by Platform, Backtest, Validation, and Promotion owners against the exact protected fixture hash. Approval freezes this contract but does not claim implementation acceptance.
 
-The first implementation nodes, if separately authorized, must prove exact admission, provider dispatch, Validation decision-grade handling, Promotion governance, v1 compatibility, mutation precedence, replay, and clean-clone remote pinning.
+The implementation nodes must prove exact admission, provider dispatch, Validation decision-grade handling, Promotion governance, v1 compatibility, mutation precedence, replay, and clean-clone remote pinning.
 
 ## 10. Explicit exclusions
 

@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and the Integration v5 decision-grade durable-evidence contract candidate awaits owner approval.
+> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and the Integration v5 decision-grade durable-evidence contract is approved for implementation.
 
 This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), and approved/deferred [Integration v4](../overall/integration-v4.md); [Integration v5](../overall/integration-v5.md) is a contract candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -25,7 +25,7 @@ The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `Promot
 
 The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability; Shadow implementation deliberately deferred until a concrete observation-runtime requirement exists.
 
-The v5 candidate activates exact Backtest canonical-v3 `decision_grade` completion and analysis-v2 evidence through additive Admission@2, Research dispatch, Validation, and Promotion governance. It adds no Backtest change, proof decoder, provider qualification, or deployment authority.
+The approved v5 contract activates exact Backtest canonical-v3 `decision_grade` completion and analysis-v2 evidence through additive Admission@2, Research dispatch, Validation, and Promotion governance. It adds no Backtest change, proof decoder, provider qualification, or deployment authority.
 
 ## 2. Status registry
 
@@ -71,7 +71,14 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `FI-03` | DONE | whole-Platform positive Promotion golden accepted in [`fi-03-receipt.md`](fi-03-receipt.md) at Platform revision `e5ef7093265206c6896972825fdbd0a86fd1a28c` |
 | `V4-CON-01` | APPROVED | protected fixture `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7` and Platform/Promotion/Shadow owner approvals recorded in [`v4-contract-shadow-spec-v1.md`](v4-contract-shadow-spec-v1.md) |
 | `BT-PORT-02` | DONE | consumer-v2 fixture/support and exact Backtest pin accepted at Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`; Backtest G07 durable rebuild proof v2 is PASSED |
-| `V5-CON-01` | READY_FOR_APPROVAL | frozen candidate `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`; Platform, Backtest, Validation, and Promotion owner approvals pending |
+| `V5-CON-01` | APPROVED | protected fixture `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695` and Platform/Backtest/Validation/Promotion owner approvals recorded in [`v5-contract-decision-grade-proof-v1.md`](v5-contract-decision-grade-proof-v1.md) |
+| `V5-PIN-01` | IN_PROGRESS | root workspace/lock still pins old Backtest packages; exact cebb9b0 repin is the active lane |
+| `DG-ADM-01` | BLOCKED | requires V5-PIN-01 so Admission@2 public types import from the accepted revision |
+| `RP-DG-01` | BLOCKED | requires V5-PIN-01 before exact V2 runtime dispatch can execute |
+| `SV-DG-01` | BLOCKED | requires accepted RP-DG-01 provider/Candidate evidence |
+| `PG-DG-01` | BLOCKED | requires accepted DG-ADM-01 and SV-DG-01 contracts/evidence |
+| `DG-THIN-01` | BLOCKED | requires all V5 package leaves |
+| `FI-04` | BLOCKED | requires DG-THIN-01 and all V5 receipts |
 
 ## 3. Execution DAG
 
@@ -132,13 +139,17 @@ Integration v4 currently authorizes only its contract node:
 FI-03 ─→ V4-CON-01 [APPROVED]
 ```
 
-Integration v5 currently authorizes only its contract node:
+Integration v5 executes this acyclic DAG:
 
 ```text
-FI-03 + BT-PORT-02 ─→ V5-CON-01 [READY_FOR_APPROVAL]
+FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
+                           └─→ V5-PIN-01 [IN_PROGRESS]
+                                  ├─→ DG-ADM-01 ──────────────────┐
+                                  └─→ RP-DG-01 ─→ SV-DG-01 ──────┼─→ PG-DG-01
+                                                                 └─→ DG-THIN-01 ─→ FI-04
 ```
 
-V4 remains an orthogonal approved/deferred contract and does not block V5.
+V4 remains an orthogonal approved/deferred contract and does not block V5. One writer keeps DG-ADM and RP-DG serialized despite their disjoint logical seams.
 
 The graphs are acyclic:
 
@@ -186,6 +197,13 @@ The graphs are acyclic:
 | `V4-CON-01` | FI-03 + accepted PromotionDecision@2 chain | exact protected fixture plus Platform/Promotion/Shadow owner approvals | root contract/docs/tests only; no package write |
 | `BT-PORT-02` | Backtest G07 durable proof v2 + protected V1 consumer bytes | exact V1/V2 dispatch and immutable Backtest pin | Platform test support/fixture/gitlink only |
 | `V5-CON-01` | FI-03 + BT-PORT-02 + Backtest G07 PASSED | exact protected fixture plus Platform/Backtest/Validation/Promotion approvals | root contract/docs/tests only; no package write |
+| `V5-PIN-01` | approved V5 contract + immutable cebb9b0 package code | clean lock/import and exact package/gitlink equality | root pyproject/uv.lock only |
+| `DG-ADM-01` | V5-PIN-01 + Backtest repository V2 operations | V1/V2 admission/replay/substitution evidence | root admission support/tests only |
+| `RP-DG-01` | approved V5 contract + BT-PORT-02 | exact Trial/Analysis/Candidate V2 dispatch evidence | Research integration/runtime/tests |
+| `SV-DG-01` | RP-DG-01 + BT-PORT-02 | decision-grade completed/analysis/proof-view evidence | Validation integration/runtime/tests |
+| `PG-DG-01` | DG-ADM-01 + SV-DG-01 | V2 admission publication facts and decision-grade governance | Promotion core/ledger/runtime/tests |
+| `DG-THIN-01` | all V5 package leaves | real decision-grade fan-in/replay evidence | root integration test/receipt |
+| `FI-04` | all V5 receipts and package pins | fresh-clone full suite/lock/provenance | release receipt/status/tag only |
 
 ## 5. Plan index
 
@@ -243,7 +261,14 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
 | 1 | `BT-PORT-02` | `V5-CON-01` | Platform test support/fixture/gitlink | DONE |
-| 2 | `V5-CON-01` | no implementation node before approval | root contract/docs/tests only | READY_FOR_APPROVAL |
+| 2 | `V5-CON-01` | `V5-PIN-01` | root contract/docs/tests only | APPROVED |
+| 3 | `V5-PIN-01` | `DG-ADM-01`, `RP-DG-01` | root pyproject/uv.lock | IN_PROGRESS |
+| 4 | `DG-ADM-01` | `PG-DG-01`, `DG-THIN-01` | root admission support/tests | BLOCKED |
+| 5 | `RP-DG-01` | `SV-DG-01` | Research integration/runtime/tests | BLOCKED |
+| 6 | `SV-DG-01` | `PG-DG-01`, `DG-THIN-01` | Validation integration/runtime/tests | BLOCKED |
+| 7 | `PG-DG-01` | `DG-THIN-01` | Promotion core/ledger/runtime/tests | BLOCKED |
+| 8 | `DG-THIN-01` | `FI-04` | root integration test/receipt | BLOCKED |
+| 9 | `FI-04` | Integration v5 release | release receipt/status/tag | BLOCKED |
 
 ## 7. Integration v1 accepted
 
@@ -295,8 +320,8 @@ The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f03
 
 Shadow package/runtime implementation is deliberately deferred until a concrete observation-runtime requirement exists. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
 
-## 12. Integration v5 contract candidate
+## 12. Integration v5 approved contract
 
-The protected `integration-v5-decision-grade-proof-v1` fixture is frozen at SHA-256 `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`. It consumes protected `BT-PORT-02` SHA-256 `8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8`, Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`, and exact Backtest code pin `cebb9b033b7eeffbbff712715fc017708ac5a247`.
+The protected `integration-v5-decision-grade-proof-v1` fixture is frozen at SHA-256 `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`. Platform, Backtest, Validation, and Promotion owner approvals bind that exact hash. The contract consumes protected `BT-PORT-02` SHA-256 `8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8`, Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`, and exact Backtest code pin `cebb9b033b7eeffbbff712715fc017708ac5a247`.
 
-Platform, Backtest, Validation, and Promotion owner approvals remain pending. Until they bind the exact candidate hash, no production admission, Research, Validation, or Promotion implementation is authorized. The candidate preserves V1-V4, adds no proof decoder or grade synthesis, and requires no Backtest change.
+Implementation must preserve V1-V4, add no proof decoder or grade synthesis, and make no Backtest change.

@@ -19,7 +19,7 @@ PLATFORM_BT_PORT_02_SHA = "5948dd62f50d197f3e35d499a8e44e04b2257981"
 BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 
 
-def test_v5_decision_grade_candidate_is_frozen_but_not_approved() -> None:
+def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
     fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
     approval = APPROVAL.read_text(encoding="utf-8")
     contract = CONTRACT.read_text(encoding="utf-8")
@@ -62,12 +62,14 @@ def test_v5_decision_grade_candidate_is_frozen_but_not_approved() -> None:
     assert fixture["compatibility"]["backtest_changes"] == 0
     assert FIXTURE_SHA in approval
     assert BT_PORT_02_SHA in approval
-    assert approval.count("| — | PENDING | — |") == 4
-    assert "**Status:** AWAITING_APPROVAL" in approval
+    assert approval.count(
+        "| `YungeG` | APPROVED | `2026-08-24T02:48:28Z` |"
+    ) == 4
+    assert "**Status:** APPROVED" in approval
     assert "never decodes the proof artifacts" in contract
 
 
-def test_v5_roadmap_authorizes_only_contract_approval() -> None:
+def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
     glossary = GLOSSARY.read_text(encoding="utf-8")
@@ -79,12 +81,28 @@ def test_v5_roadmap_authorizes_only_contract_approval() -> None:
     ).split()
 
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
-    assert registry.count("| `V5-CON-01` | READY_FOR_APPROVAL |") == 1
-    assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [READY_FOR_APPROVAL]" in roadmap
-    assert "no implementation node before approval" in roadmap
+    assert registry.count("| `V5-CON-01` | APPROVED |") == 1
+    assert registry.count("| `V5-PIN-01` | IN_PROGRESS |") == 1
+    for node in (
+        "DG-ADM-01",
+        "RP-DG-01",
+        "SV-DG-01",
+        "PG-DG-01",
+        "DG-THIN-01",
+        "FI-04",
+    ):
+        assert registry.count(f"| `{node}` | BLOCKED |") == 1
+    assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
+    assert "V5-PIN-01 [IN_PROGRESS]" in roadmap
     assert "BacktestEvidenceAdmission@2(subject_ref)" in plan
+    assert "## `V5-PIN-01`" in plan
+    assert "## `DG-ADM-01`" in plan
+    assert "## `RP-DG-01`" in plan
+    assert "## `SV-DG-01`" in plan
+    assert "## `PG-DG-01`" in plan
+    assert "## `DG-THIN-01`" in plan
+    assert "## `FI-04`" in plan
     assert "**BacktestEvidenceAdmission**" in glossary
-    assert "DG-" not in roadmap
     assert subprocess.run(
         ["git", "merge-base", "--is-ancestor", PLATFORM_BT_PORT_02_SHA, "HEAD"],
         cwd=ROOT,
