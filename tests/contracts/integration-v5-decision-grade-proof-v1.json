@@ -1,0 +1,161 @@
+{
+  "contract_id": "integration-v5-decision-grade-proof-v1",
+  "schema_version": 1,
+  "status": "frozen",
+  "predecessor": {
+    "platform_revision": "5948dd62f50d197f3e35d499a8e44e04b2257981",
+    "integration_receipt": "implementation/fi-03-receipt.md",
+    "backtest_consumer_contract": "BT-PORT-02",
+    "backtest_consumer_fixture_sha256": "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8",
+    "backtest_revision": "cebb9b033b7eeffbbff712715fc017708ac5a247",
+    "backtest_governance": "G07-DURABLE-REBUILD-PROOF-V2 PASSED"
+  },
+  "orthogonal_contract": {
+    "contract": "overall/integration-v4.md",
+    "state": "approved_implementation_deferred"
+  },
+  "ownership": {
+    "backtest": [
+      "BacktestCanonicalPublicationRefV2",
+      "VerifiedCompletedPublicationV3",
+      "AnalysisArtifactRefV2",
+      "VerifiedBacktestAnalysisV2",
+      "durable proof verification and result grade"
+    ],
+    "platform_integration": [
+      "BacktestEvidenceAdmission@2",
+      "exact owner-log admission and first governance time"
+    ],
+    "research": [
+      "exact V1/V2 provider dispatch",
+      "TaskOutcome and StrategyCandidate ref retention"
+    ],
+    "validation": [
+      "single-grade policy mode",
+      "decision-grade completed/analysis link validation"
+    ],
+    "promotion": [
+      "V2 governed-ref and admission publication-fact resolution"
+    ],
+    "foundation": [
+      "unchanged generic CAS, append, receipts, checkpoints, and structural reads"
+    ]
+  },
+  "backtest_operations": {
+    "v1": [
+      "run",
+      "load_completed",
+      "derive",
+      "load_analysis"
+    ],
+    "v2": [
+      "run",
+      "load_completed_v3",
+      "derive",
+      "load_analysis_v2"
+    ],
+    "raw_artifact_ref_is_completed": false,
+    "heuristic_unwrap_allowed": false,
+    "cross_version_retry_or_downgrade_allowed": false
+  },
+  "completed_v3_fields": [
+    "publication_ref",
+    "semantic_run_id",
+    "execution_result_hash",
+    "result_grade",
+    "rebuild_verification_ref",
+    "proof_publication_manifest_ref"
+  ],
+  "analysis_v2_fields": [
+    "analysis_ref",
+    "metric_profile_ref",
+    "source_publication_ref",
+    "source_execution_result_hash",
+    "simple_period_return",
+    "trade_count",
+    "result_grade"
+  ],
+  "admission": {
+    "artifact": "BacktestEvidenceAdmission@2",
+    "fields": [
+      "subject_ref"
+    ],
+    "subject_variants": [
+      "BacktestCanonicalPublicationRefV2",
+      "AnalysisArtifactRefV2"
+    ],
+    "owner_log": "platform.backtest-evidence-admission.v1",
+    "completed_verifier": "load_completed_v3",
+    "analysis_verifier": "load_analysis_v2",
+    "metric_profile_path": "BacktestEvidenceAdmission@1",
+    "replay_idempotent": true,
+    "version_distinct_event_id": true
+  },
+  "research": {
+    "artifact_field_sets_changed": false,
+    "v2_nominal_refs_retained_exactly": true,
+    "completed_analysis_hash_and_grade_bound": true,
+    "v1_fallback_after_v2_failure": false
+  },
+  "validation": {
+    "policy_schema": "ValidationPolicy@1",
+    "plan_schema": "ValidationPlan@1",
+    "accepted_grade_modes": [
+      [
+        "development"
+      ],
+      [
+        "decision_grade"
+      ]
+    ],
+    "mixed_grade_mode_allowed": false,
+    "proof_refs_duplicated_in_case_evidence": false,
+    "v2_failure_produces_report": false
+  },
+  "promotion": {
+    "governed_ref_variants_added": [
+      "BacktestCanonicalPublicationRefV2",
+      "AnalysisArtifactRefV2"
+    ],
+    "publication_fact": "BacktestEvidenceAdmission@2",
+    "policy_accepts_decision_grade": true,
+    "evaluation_and_decision_schemas_unchanged": true,
+    "v1_v2_admission_substitution_allowed": false
+  },
+  "golden": {
+    "result_grade": "decision_grade",
+    "simple_period_return": "0.02392",
+    "trade_count": 1,
+    "completed_ref_type": "backtest_canonical_publication_ref_v2",
+    "completed_manifest_schema": 2,
+    "analysis_ref_type": "analysis_artifact_ref_v2",
+    "analysis_schema": 2
+  },
+  "failure_precedence": [
+    "BT_PORT_V2_FAILURE",
+    "ADMISSION_V2_INVALID",
+    "RESEARCH_V2_PROVENANCE_INVALID",
+    "VALIDATION_DECISION_GRADE_INVALID",
+    "V1_VALIDATION_FAILURE_PRECEDENCE",
+    "V3_PROMOTION_FAILURE_PRECEDENCE"
+  ],
+  "compatibility": {
+    "BT_PORT_01_unchanged": true,
+    "integration_v1_v4_unchanged": true,
+    "development_grade_behavior_unchanged": true,
+    "foundation_interfaces_changed": false,
+    "backtest_changes": 0
+  },
+  "exclusions": [
+    "provider qualification or trusted copied-tree origin",
+    "future or remote durability guarantee",
+    "Platform proof-artifact decoder or verifier",
+    "new metrics, Validation methods, or grade synthesis",
+    "ShadowSpec implementation or Shadow runtime",
+    "Live authorization or deployment",
+    "credentials, secrets, broker access, or order routing",
+    "organizational RBAC or decision supersession",
+    "database, queue, object store, scheduler, service, or distributed worker",
+    "Backtest schema, code, fixture, revision, branch, or runtime change"
+  ]
+}

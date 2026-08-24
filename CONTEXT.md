@@ -66,9 +66,15 @@ _Avoid_: Platform-created terminal, terminal wrapper, zero-return terminal
 
 **BacktestResultGrade**
 
-The single Backtest-owned grade vocabulary used by Research, Validation, and Promotion policy.
+The single Backtest-owned grade vocabulary used by Research, Validation, and Promotion policy. Accepted Platform flows currently distinguish `development`; the V5 candidate additively activates Backtest-owned `decision_grade` without synthesizing or downgrading grades.
 
-_Avoid_: module-specific grade domains
+_Avoid_: module-specific grade domains, Platform-computed grade
+
+**BacktestEvidenceAdmission**
+
+The integration-owned proof that an exact Backtest subject was semantically verified before entering Platform governance. Admission@1 owns v1 completion/analysis and the metric profile; the V5 candidate proposes Admission@2 for exact V2 completion/analysis refs in the same owner log.
+
+_Avoid_: Foundation semantic verification, nominal-ref unwrap, refreshed evidence age
 
 ## Research
 

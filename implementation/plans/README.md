@@ -45,6 +45,7 @@ Provider execution remains an external seam. Deferring it does not require the P
 | [V2 downstream fan-in](v2-fan-in.md) | `SV-MODEL-01`, `PG-MODEL-01`, `FI-02` | Validation/Promotion extensions and final golden |
 | [V3 positive Promotion](v3-positive-promotion.md) | `V3-CON-01`, `PG-POS-01`, `PG-POS-RUNTIME-01`, `PG-POS-THIN-01`, `FI-03` | approved contract; Promotion core/runtime, positive fan-in, and release |
 | [V4 ShadowSpec](v4-shadow-spec.md) | `V4-CON-01` | approved contract and approval receipt only |
+| [V5 decision-grade proof](v5-decision-grade-proof.md) | `V5-CON-01` | contract candidate and approval packet only |
 
 Provider-owner requirements are packaged separately in the [Backtest Provider Handoff](../backtest-provider-handoff.md). They are not duplicated into module plans.
 

@@ -1,8 +1,8 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; the Integration v4 immutable ShadowSpec contract is approved, with implementation deliberately deferred.
+> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and the Integration v5 decision-grade durable-evidence contract candidate awaits owner approval.
 
-This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), and additive [Integration v3](../overall/integration-v3.md); the [Integration v4](../overall/integration-v4.md) contract is a candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
+This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), and approved/deferred [Integration v4](../overall/integration-v4.md); [Integration v5](../overall/integration-v5.md) is a contract candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
 ## 1. Outcome and non-goals
 
@@ -23,7 +23,9 @@ V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Back
 
 The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `PromotionDecision@2(shadow_ready)` as evidence-level governance values. `PG-POS-01` implements their pure mapping, `PG-POS-RUNTIME-01` publishes the `@2` artifacts, and `PG-POS-THIN-01` binds one real supported ValidationReport without changing any Backtest contract or authorizing Shadow runtime, Live operation, or deployment.
 
-The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability; implementation is deliberately deferred until a concrete observation-runtime requirement exists.
+The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability; Shadow implementation deliberately deferred until a concrete observation-runtime requirement exists.
+
+The v5 candidate activates exact Backtest canonical-v3 `decision_grade` completion and analysis-v2 evidence through additive Admission@2, Research dispatch, Validation, and Promotion governance. It adds no Backtest change, proof decoder, provider qualification, or deployment authority.
 
 ## 2. Status registry
 
@@ -68,6 +70,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-POS-THIN-01` | DONE | real supported ValidationReport → replay-stable `shadow_ready` accepted in [`pg-pos-thin-01-receipt.md`](pg-pos-thin-01-receipt.md) at Platform revision `f042b6e0a35f6c0bc0064ca60538e40555452863` |
 | `FI-03` | DONE | whole-Platform positive Promotion golden accepted in [`fi-03-receipt.md`](fi-03-receipt.md) at Platform revision `e5ef7093265206c6896972825fdbd0a86fd1a28c` |
 | `V4-CON-01` | APPROVED | protected fixture `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7` and Platform/Promotion/Shadow owner approvals recorded in [`v4-contract-shadow-spec-v1.md`](v4-contract-shadow-spec-v1.md) |
+| `BT-PORT-02` | DONE | consumer-v2 fixture/support and exact Backtest pin accepted at Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`; Backtest G07 durable rebuild proof v2 is PASSED |
+| `V5-CON-01` | READY_FOR_APPROVAL | frozen candidate `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`; Platform, Backtest, Validation, and Promotion owner approvals pending |
 
 ## 3. Execution DAG
 
@@ -128,6 +132,14 @@ Integration v4 currently authorizes only its contract node:
 FI-03 ─→ V4-CON-01 [APPROVED]
 ```
 
+Integration v5 currently authorizes only its contract node:
+
+```text
+FI-03 + BT-PORT-02 ─→ V5-CON-01 [READY_FOR_APPROVAL]
+```
+
+V4 remains an orthogonal approved/deferred contract and does not block V5.
+
 The graphs are acyclic:
 
 - Validation owns the shared sample-ledger interface consumed by Research producers.
@@ -172,6 +184,8 @@ The graphs are acyclic:
 | `PG-POS-THIN-01` | accepted PG-POS-RUNTIME-01 + real Research/Backtest/Validation/admission seam | supported-report/threshold/admission/replay evidence | root integration test and receipt only |
 | `FI-03` | all v3 receipts + remote package pins | fresh-clone full suite, lock, provenance, replay | release receipt/status/tag only |
 | `V4-CON-01` | FI-03 + accepted PromotionDecision@2 chain | exact protected fixture plus Platform/Promotion/Shadow owner approvals | root contract/docs/tests only; no package write |
+| `BT-PORT-02` | Backtest G07 durable proof v2 + protected V1 consumer bytes | exact V1/V2 dispatch and immutable Backtest pin | Platform test support/fixture/gitlink only |
+| `V5-CON-01` | FI-03 + BT-PORT-02 + Backtest G07 PASSED | exact protected fixture plus Platform/Backtest/Validation/Promotion approvals | root contract/docs/tests only; no package write |
 
 ## 5. Plan index
 
@@ -224,6 +238,13 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | --- | --- | --- | --- | --- |
 | 1 | `V4-CON-01` | future Shadow implementation only after a concrete runtime requirement | root contract/docs/tests only | APPROVED |
 
+### Integration v5 ready queue
+
+| Priority | Node | Unblocks | Write set | State |
+| --- | --- | --- | --- | --- |
+| 1 | `BT-PORT-02` | `V5-CON-01` | Platform test support/fixture/gitlink | DONE |
+| 2 | `V5-CON-01` | no implementation node before approval | root contract/docs/tests only | READY_FOR_APPROVAL |
+
 ## 7. Integration v1 accepted
 
 P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
@@ -273,3 +294,9 @@ The protected `integration-v3-positive-promotion-v1` fixture is frozen at SHA-25
 The protected `integration-v4-shadow-spec-v1` fixture is frozen at SHA-256 `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7`. Platform, Promotion, and Shadow owner approvals bind that exact hash. It adds only `ShadowSpec@1(promotion_decision_ref, proposed_by_ref, observation_start, observation_end)`, owned by a future Shadow module and published in `shadow.artifacts.v1` through existing Domain/Foundation mechanics.
 
 Shadow package/runtime implementation is deliberately deferred until a concrete observation-runtime requirement exists. ShadowSpec remains an immutable observe-only proposal and grants no runtime, market-data, fill, position, capital, Live/deploy, credential, or order capability.
+
+## 12. Integration v5 contract candidate
+
+The protected `integration-v5-decision-grade-proof-v1` fixture is frozen at SHA-256 `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`. It consumes protected `BT-PORT-02` SHA-256 `8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8`, Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`, and exact Backtest code pin `cebb9b033b7eeffbbff712715fc017708ac5a247`.
+
+Platform, Backtest, Validation, and Promotion owner approvals remain pending. Until they bind the exact candidate hash, no production admission, Research, Validation, or Promotion implementation is authorized. The candidate preserves V1-V4, adds no proof decoder or grade synthesis, and requires no Backtest change.
