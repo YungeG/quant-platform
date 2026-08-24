@@ -57,6 +57,7 @@ from crypto_quant_trading import (
 
 _ROOT = Path(__file__).resolve().parents[2]
 _ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
+_CURRENT_BACKTEST_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 _VENUE = VenueId("synthetic")
 _USD = CurrencyId("USD")
 _INSTRUMENT = InstrumentId(_VENUE, "cash:btc-usd")
@@ -765,4 +766,17 @@ def test_binding_imports_only_public_package_roots() -> None:
     assert {name for name in imported if name.startswith("crypto_quant")} == (
         allowed_crypto_roots
     )
-    assert _ACCEPTED_BACKTEST_SHA in (_ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert _CURRENT_BACKTEST_SHA in (_ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "backtest",
+            "merge-base",
+            "--is-ancestor",
+            _ACCEPTED_BACKTEST_SHA,
+            _CURRENT_BACKTEST_SHA,
+        ],
+        cwd=_ROOT,
+        check=False,
+    ).returncode == 0

@@ -21,6 +21,7 @@ HISTORICAL_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
 CURRENT_BACKTEST_GITLINK_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 PG_POS_SHA = "de10a535b8c6a4da79a3b0f29e1dddd925d23586"
 PG_POS_RUNTIME_SHA = "7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03"
+CURRENT_PROMOTION_GITLINK_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
 PLATFORM_IMPLEMENTATION_SHA = "5e309f87edbbf5460b2c1e2d3664d22b67791c47"
 PLATFORM_RUNTIME_IMPLEMENTATION_SHA = "d691fd0a08254ba93afbd6e3c0491de2fd7ea06a"
 PLATFORM_THIN_IMPLEMENTATION_SHA = "f042b6e0a35f6c0bc0064ca60538e40555452863"
@@ -100,21 +101,25 @@ def test_v3_roadmap_records_accepted_runtime_and_thin_fan_in() -> None:
     assert "evaluate_positive_case(validation_report_ref" in plan
     assert "validate_candidate(OOS threshold = -0.2)" in plan
     assert INTEGRATION_TEST.is_file()
-    assert promotion_entry[:2] == ["160000", PG_POS_RUNTIME_SHA]
+    assert promotion_entry[:2] == ["160000", CURRENT_PROMOTION_GITLINK_SHA]
     assert backtest_entry[:2] == ["160000", CURRENT_BACKTEST_GITLINK_SHA]
-    assert subprocess.run(
-        [
-            "git",
-            "-C",
-            "promotion-gate",
-            "merge-base",
-            "--is-ancestor",
-            PG_POS_SHA,
-            PG_POS_RUNTIME_SHA,
-        ],
-        cwd=ROOT,
-        check=False,
-    ).returncode == 0
+    for ancestor, descendant in (
+        (PG_POS_SHA, PG_POS_RUNTIME_SHA),
+        (PG_POS_RUNTIME_SHA, CURRENT_PROMOTION_GITLINK_SHA),
+    ):
+        assert subprocess.run(
+            [
+                "git",
+                "-C",
+                "promotion-gate",
+                "merge-base",
+                "--is-ancestor",
+                ancestor,
+                descendant,
+            ],
+            cwd=ROOT,
+            check=False,
+        ).returncode == 0
     for implementation_revision in (
         PLATFORM_IMPLEMENTATION_SHA,
         PLATFORM_RUNTIME_IMPLEMENTATION_SHA,
