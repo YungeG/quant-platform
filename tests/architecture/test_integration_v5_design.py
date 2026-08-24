@@ -17,6 +17,8 @@ FIXTURE_SHA = "1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695"
 BT_PORT_02_SHA = "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8"
 PLATFORM_BT_PORT_02_SHA = "5948dd62f50d197f3e35d499a8e44e04b2257981"
 BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
+BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
+BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
 
 
 def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
@@ -82,7 +84,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
 
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
-    assert registry.count("| `V5-PIN-01` | IN_PROGRESS |") == 1
+    assert registry.count("| `V5-PIN-01` | BLOCKED |") == 1
     for node in (
         "DG-ADM-01",
         "RP-DG-01",
@@ -93,7 +95,11 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     ):
         assert registry.count(f"| `{node}` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
-    assert "V5-PIN-01 [IN_PROGRESS]" in roadmap
+    assert "V5-PIN-01 [BLOCKED: compatible Backtest fan-in]" in roadmap
+    assert BACKTEST_MODEL_SEAM_SHA in plan
+    assert BACKTEST_DRP_03_SHA in plan
+    assert BACKTEST_DIVERGENCE_SHA in plan
+    assert "combined descendant: none known" in plan
     assert "BacktestEvidenceAdmission@2(subject_ref)" in plan
     assert "## `V5-PIN-01`" in plan
     assert "## `DG-ADM-01`" in plan
@@ -109,3 +115,34 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         check=False,
     ).returncode == 0
     assert backtest_entry[:2] == ["160000", BACKTEST_DRP_03_SHA]
+    assert subprocess.check_output(
+        ["git", "-C", "backtest", "merge-base", BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA],
+        cwd=ROOT,
+        text=True,
+    ).strip() == BACKTEST_DIVERGENCE_SHA
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "backtest",
+            "merge-base",
+            "--is-ancestor",
+            BACKTEST_MODEL_SEAM_SHA,
+            BACKTEST_DRP_03_SHA,
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode != 0
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "backtest",
+            "merge-base",
+            "--is-ancestor",
+            BACKTEST_DRP_03_SHA,
+            BACKTEST_MODEL_SEAM_SHA,
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode != 0

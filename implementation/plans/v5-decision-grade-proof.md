@@ -5,7 +5,7 @@
 - **Protected fixture:** [`integration-v5-decision-grade-proof-v1.json`](../../tests/contracts/integration-v5-decision-grade-proof-v1.json)
 - **Backtest consumer authority:** [`BT-PORT-02`](../../tests/contracts/backtest-consumer-port-v2.json)
 
-This plan owns the approved contract node. Production implementation now proceeds only through separately tracked V5 nodes and exact write sets.
+This plan owns the approved contract node. Production implementation is `NOT_READY` until Backtest publishes one immutable fan-in revision descending from both accepted revisions below.
 
 ## Execution DAG
 
@@ -18,6 +18,17 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
 ```
 
 The approved/deferred V4 ShadowSpec contract is orthogonal and does not block this evidence lane.
+
+## Implementation readiness blocker
+
+```text
+model seam:   033344172b24847e73941bb97a06da0490527edf
+proof seam:   cebb9b033b7eeffbbff712715fc017708ac5a247
+merge base:   cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f
+combined descendant: none known
+```
+
+Repinning the root workspace to `cebb9b0` removes the accepted model-bound preparation API and breaks existing Research/Integration v2 tests. Remaining on `0333441` makes the V2 completion/analysis public types unavailable. `V5-PIN-01` is therefore blocked by a missing Backtest-owner compatibility fan-in; no Platform shim, mixed package revisions, editable/path override, or proof reimplementation is permitted.
 
 ## `V5-CON-01` — decision-grade durable evidence contract
 

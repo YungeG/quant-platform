@@ -30,6 +30,10 @@ All approvals bind the exact fixture hash above. Contract approval authorizes th
 - Preserve BT-PORT-01 and Integration v1-v4 unchanged.
 - Require no Backtest change.
 
+## Implementation blocker
+
+The accepted model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247` diverge at `cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f`. No known local or fetched remote revision descends from both. A Backtest-owner fan-in revision preserving both public surfaces is required before Platform package repinning or V5 implementation may resume.
+
 ## Exclusions
 
 Provider qualification, trusted copied-tree origin, future/remote durability guarantees, proof decoding, new metrics or Validation methods, grade synthesis, Shadow implementation, Live/deployment, credentials/order routing, RBAC, infrastructure, and any Backtest change remain outside this contract.

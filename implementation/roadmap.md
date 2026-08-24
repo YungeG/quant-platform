@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and the Integration v5 decision-grade durable-evidence contract is approved for implementation.
+> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and Integration v5 is approved but implementation-blocked on a compatible Backtest fan-in revision.
 
 This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), and approved/deferred [Integration v4](../overall/integration-v4.md); [Integration v5](../overall/integration-v5.md) is a contract candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -72,9 +72,9 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `V4-CON-01` | APPROVED | protected fixture `0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7` and Platform/Promotion/Shadow owner approvals recorded in [`v4-contract-shadow-spec-v1.md`](v4-contract-shadow-spec-v1.md) |
 | `BT-PORT-02` | DONE | consumer-v2 fixture/support and exact Backtest pin accepted at Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`; Backtest G07 durable rebuild proof v2 is PASSED |
 | `V5-CON-01` | APPROVED | protected fixture `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695` and Platform/Backtest/Validation/Promotion owner approvals recorded in [`v5-contract-decision-grade-proof-v1.md`](v5-contract-decision-grade-proof-v1.md) |
-| `V5-PIN-01` | IN_PROGRESS | root workspace/lock still pins old Backtest packages; exact cebb9b0 repin is the active lane |
-| `DG-ADM-01` | BLOCKED | requires V5-PIN-01 so Admission@2 public types import from the accepted revision |
-| `RP-DG-01` | BLOCKED | requires V5-PIN-01 before exact V2 runtime dispatch can execute |
+| `V5-PIN-01` | BLOCKED | no known Backtest revision descends from both accepted model seam `0333441` and durable-proof seam `cebb9b0` |
+| `DG-ADM-01` | BLOCKED | requires compatible V5-PIN-01 revision |
+| `RP-DG-01` | BLOCKED | requires compatible V5-PIN-01 revision |
 | `SV-DG-01` | BLOCKED | requires accepted RP-DG-01 provider/Candidate evidence |
 | `PG-DG-01` | BLOCKED | requires accepted DG-ADM-01 and SV-DG-01 contracts/evidence |
 | `DG-THIN-01` | BLOCKED | requires all V5 package leaves |
@@ -143,7 +143,7 @@ Integration v5 executes this acyclic DAG:
 
 ```text
 FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
-                           └─→ V5-PIN-01 [IN_PROGRESS]
+                           └─→ V5-PIN-01 [BLOCKED: compatible Backtest fan-in]
                                   ├─→ DG-ADM-01 ──────────────────┐
                                   └─→ RP-DG-01 ─→ SV-DG-01 ──────┼─→ PG-DG-01
                                                                  └─→ DG-THIN-01 ─→ FI-04
@@ -262,7 +262,7 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | --- | --- | --- | --- | --- |
 | 1 | `BT-PORT-02` | `V5-CON-01` | Platform test support/fixture/gitlink | DONE |
 | 2 | `V5-CON-01` | `V5-PIN-01` | root contract/docs/tests only | APPROVED |
-| 3 | `V5-PIN-01` | `DG-ADM-01`, `RP-DG-01` | root pyproject/uv.lock | IN_PROGRESS |
+| 3 | `V5-PIN-01` | `DG-ADM-01`, `RP-DG-01` | root pyproject/uv.lock | BLOCKED |
 | 4 | `DG-ADM-01` | `PG-DG-01`, `DG-THIN-01` | root admission support/tests | BLOCKED |
 | 5 | `RP-DG-01` | `SV-DG-01` | Research integration/runtime/tests | BLOCKED |
 | 6 | `SV-DG-01` | `PG-DG-01`, `DG-THIN-01` | Validation integration/runtime/tests | BLOCKED |
@@ -325,3 +325,5 @@ Shadow package/runtime implementation is deliberately deferred until a concrete 
 The protected `integration-v5-decision-grade-proof-v1` fixture is frozen at SHA-256 `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`. Platform, Backtest, Validation, and Promotion owner approvals bind that exact hash. The contract consumes protected `BT-PORT-02` SHA-256 `8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8`, Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`, and exact Backtest code pin `cebb9b033b7eeffbbff712715fc017708ac5a247`.
 
 Implementation must preserve V1-V4, add no proof decoder or grade synthesis, and make no Backtest change.
+
+`V5-PIN-01` is `BLOCKED`: accepted model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247` diverge at `cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f`, and no known revision descends from both. Backtest must publish one immutable compatibility fan-in before implementation resumes.

@@ -5,7 +5,7 @@
 - **Orthogonal contract:** [Integration v4](integration-v4.md) remains approved and deliberately unimplemented
 - **Contract approval:** [`V5-CON-01`](../implementation/v5-contract-decision-grade-proof-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** approved contract; implementation pending
+- **Status:** approved contract; implementation NOT_READY pending a compatible Backtest fan-in revision
 
 ## 1. Outcome and ceiling
 
@@ -137,6 +137,8 @@ No failure causes heuristic dispatch, v1 fallback, grade downgrade, fabricated p
 `V5-CON-01` is approved by Platform, Backtest, Validation, and Promotion owners against the exact protected fixture hash. Approval freezes this contract but does not claim implementation acceptance.
 
 The implementation nodes must prove exact admission, provider dispatch, Validation decision-grade handling, Promotion governance, v1 compatibility, mutation precedence, replay, and clean-clone remote pinning.
+
+Implementation is currently blocked: accepted model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247` diverge at `cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f`, and no known revision descends from both. Repinning to either one alone violates the contract's V1-V4 preservation requirement.
 
 ## 10. Explicit exclusions
 
