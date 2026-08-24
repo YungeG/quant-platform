@@ -5,7 +5,7 @@
 - **Orthogonal contract:** [Integration v4](integration-v4.md) remains approved and deliberately unimplemented
 - **Contract approval:** [`V5-CON-01`](../implementation/v5-contract-decision-grade-proof-v1.md)
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** approved contract; compatible Backtest fan-in accepted and implementation resumed
+- **Status:** accepted by [`FI-04`](../implementation/fi-04-receipt.md) and released as `integration-v5`
 
 ## 1. Outcome and ceiling
 
@@ -134,11 +134,11 @@ No failure causes heuristic dispatch, v1 fallback, grade downgrade, fabricated p
 
 ## 9. Contract acceptance
 
-`V5-CON-01` is approved by Platform, Backtest, Validation, and Promotion owners against the exact protected fixture hash. Approval freezes this contract but does not claim implementation acceptance.
+`V5-CON-01` is approved by Platform, Backtest, Validation, and Promotion owners against the exact protected fixture hash. Approval freezes the contract.
 
-The implementation nodes must prove exact admission, provider dispatch, Validation decision-grade handling, Promotion governance, v1 compatibility, mutation precedence, replay, and clean-clone remote pinning.
+[`V5-PIN-01`](../implementation/v5-pin-01-receipt.md), [`DG-ADM-01`](../implementation/dg-adm-01-receipt.md), [`RP-DG-01`](../implementation/rp-dg-01-receipt.md), [`SV-DG-01`](../implementation/sv-dg-01-receipt.md), [`PG-DG-01`](../implementation/pg-dg-01-receipt.md), and [`DG-THIN-01`](../implementation/dg-thin-01-receipt.md) accept the exact pin, admission, package, and real fan-in leaves. [`FI-04`](../implementation/fi-04-receipt.md) accepts the whole-Platform remote-clone golden and release closure.
 
-The previous revision blocker is closed by accepted Backtest fan-in `8de544e7794ee05b652355c9809b5454d7ace494`, which descends from both model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247`.
+Accepted Backtest fan-in `8de544e7794ee05b652355c9809b5454d7ace494` descends from both model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247`.
 
 ## 10. Explicit exclusions
 

@@ -14,7 +14,7 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
                            └─→ V5-PIN-01 [DONE]
                                   ├─→ DG-ADM-01 [DONE] ───────────────┐
                                   └─→ RP-DG-01 [DONE] ─→ SV-DG-01 [DONE] ─┼─→ PG-DG-01 [DONE]
-                                                                      └─→ DG-THIN-01 [DONE] ─→ FI-04 [IN_PROGRESS]
+                                                                      └─→ DG-THIN-01 [DONE] ─→ FI-04 [DONE]
 ```
 
 The approved/deferred V4 ShadowSpec contract is orthogonal and does not block this evidence lane.
@@ -212,4 +212,4 @@ One remote recursive clone proves all V5 leaf receipts, protected hashes, packag
 
 ### Acceptance
 
-Full local and fresh-clone suites, `uv lock --check`, remote reachability, empty clone status, protected V1-V5 hashes, and explicit exclusions.
+Full local and fresh-clone suites, `uv lock --check`, remote reachability, empty clone status, protected V1-V5 hashes, and explicit exclusions. Accepted evidence: [`FI-04`](../fi-04-receipt.md) at Platform golden revision `324f2fd08d8d9be4f4c32e222ee5bc63306ac81e`.
