@@ -5,7 +5,7 @@
 - **Protected fixture:** [`integration-v5-decision-grade-proof-v1.json`](../../tests/contracts/integration-v5-decision-grade-proof-v1.json)
 - **Backtest consumer authority:** [`BT-PORT-02`](../../tests/contracts/backtest-consumer-port-v2.json)
 
-This plan owns the approved contract node. Production implementation is `NOT_READY` until Backtest publishes one immutable fan-in revision descending from both accepted revisions below.
+This plan owns the approved contract and implementation nodes. Backtest compatibility fan-in `8de544e7794ee05b652355c9809b5454d7ace494` closes the prior revision blocker.
 
 ## Execution DAG
 
@@ -19,16 +19,17 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
 
 The approved/deferred V4 ShadowSpec contract is orthogonal and does not block this evidence lane.
 
-## Implementation readiness blocker
+## Compatibility fan-in evidence
 
 ```text
 model seam:   033344172b24847e73941bb97a06da0490527edf
 proof seam:   cebb9b033b7eeffbbff712715fc017708ac5a247
-merge base:   cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f
-combined descendant: none known
+fan-in:       8de544e7794ee05b652355c9809b5454d7ace494
+Backtest:     2438 passed
+Platform RP:  90 passed
 ```
 
-Repinning the root workspace to `cebb9b0` removes the accepted model-bound preparation API and breaks existing Research/Integration v2 tests. Remaining on `0333441` makes the V2 completion/analysis public types unavailable. `V5-PIN-01` is therefore blocked by a missing Backtest-owner compatibility fan-in; no Platform shim, mixed package revisions, editable/path override, or proof reimplementation is permitted.
+Both accepted seams are ancestors of the fan-in. Platform may now repin every Backtest-owned package and the gitlink to this exact revision; mixed revisions, editable/path overrides, and Platform proof reimplementation remain forbidden.
 
 ## `V5-CON-01` — decision-grade durable evidence contract
 
@@ -92,7 +93,7 @@ Production implementation, provider qualification, proof decoding, new metrics/m
 
 ### Outcome
 
-The root workspace, lock, and Backtest gitlink all resolve the same immutable DRP-03 code revision `cebb9b033b7eeffbbff712715fc017708ac5a247`, making the approved V2 public types available without editable/path overrides.
+The root workspace, lock, and Backtest gitlink all resolve accepted compatibility fan-in `8de544e7794ee05b652355c9809b5454d7ace494`, making both model-bound and durable-proof public surfaces available without editable/path overrides.
 
 ### Write set
 

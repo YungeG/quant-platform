@@ -19,6 +19,8 @@ PLATFORM_BT_PORT_02_SHA = "5948dd62f50d197f3e35d499a8e44e04b2257981"
 BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
 BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
+BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
+V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 
 
 def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
@@ -84,7 +86,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
 
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
-    assert registry.count("| `V5-PIN-01` | BLOCKED |") == 1
+    assert registry.count("| `V5-PIN-01` | READY_FOR_ACCEPTANCE |") == 1
     for node in (
         "DG-ADM-01",
         "RP-DG-01",
@@ -95,11 +97,12 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     ):
         assert registry.count(f"| `{node}` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
-    assert "V5-PIN-01 [BLOCKED: compatible Backtest fan-in]" in roadmap
+    assert "V5-PIN-01 [READY_FOR_ACCEPTANCE]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
-    assert BACKTEST_DIVERGENCE_SHA in plan
-    assert "combined descendant: none known" in plan
+    assert BACKTEST_FANIN_SHA in plan
+    assert "Backtest:     2438 passed" in plan
+    assert "Platform RP:  90 passed" in plan
     assert "BacktestEvidenceAdmission@2(subject_ref)" in plan
     assert "## `V5-PIN-01`" in plan
     assert "## `DG-ADM-01`" in plan
@@ -114,35 +117,32 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         cwd=ROOT,
         check=False,
     ).returncode == 0
-    assert backtest_entry[:2] == ["160000", BACKTEST_DRP_03_SHA]
+    assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
     assert subprocess.check_output(
         ["git", "-C", "backtest", "merge-base", BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA],
         cwd=ROOT,
         text=True,
     ).strip() == BACKTEST_DIVERGENCE_SHA
-    assert subprocess.run(
-        [
-            "git",
-            "-C",
-            "backtest",
-            "merge-base",
-            "--is-ancestor",
-            BACKTEST_MODEL_SEAM_SHA,
-            BACKTEST_DRP_03_SHA,
-        ],
-        cwd=ROOT,
-        check=False,
-    ).returncode != 0
-    assert subprocess.run(
-        [
-            "git",
-            "-C",
-            "backtest",
-            "merge-base",
-            "--is-ancestor",
-            BACKTEST_DRP_03_SHA,
-            BACKTEST_MODEL_SEAM_SHA,
-        ],
-        cwd=ROOT,
-        check=False,
-    ).returncode != 0
+    for capability_sha in (BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA):
+        assert subprocess.run(
+            [
+                "git",
+                "-C",
+                "backtest",
+                "merge-base",
+                "--is-ancestor",
+                capability_sha,
+                BACKTEST_FANIN_SHA,
+            ],
+            cwd=ROOT,
+            check=False,
+        ).returncode == 0
+
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert pyproject.count(BACKTEST_FANIN_SHA) == 5
+    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == V5_LOCK_SHA
+    assert BACKTEST_FANIN_SHA in lock
+    for superseded_pin in (BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA):
+        assert superseded_pin not in pyproject
+        assert superseded_pin not in lock

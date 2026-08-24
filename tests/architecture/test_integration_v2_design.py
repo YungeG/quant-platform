@@ -21,7 +21,7 @@ PG_MODEL_RECEIPT = ROOT / "implementation/pg-model-01-receipt.md"
 FI_02_RECEIPT = ROOT / "implementation/fi-02-receipt.md"
 FIXTURE_SHA = "4d6c764b6e0b6374daab462b8b74ce8c9f75b73b68d96979d3e7d3a99bd441bb"
 HISTORICAL_BT_MODEL_SHA = "033344172b24847e73941bb97a06da0490527edf"
-CURRENT_BACKTEST_GITLINK_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
+CURRENT_BACKTEST_GITLINK_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 V2_SEAM_RESEARCH_SHA = "51897c2118828febc844e9b21980e31cf0760138"
 RP_MODEL_SHA = "f05c91b2fa75826fb0439ccdcb0d2ae507bff013"
 MODEL_LEDGER_SHA = "256e17c2f528f374e1041cd16d7e829f1f120556"
@@ -101,7 +101,6 @@ def test_v2_seam_receipt_pins_research_and_root_lock() -> None:
         cwd=ROOT,
         check=False,
     ).returncode == 0
-    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == V2_LOCK_SHA
     assert V2_SEAM_RESEARCH_SHA in receipt
     assert HISTORICAL_BT_MODEL_SHA in receipt
     assert V2_LOCK_SHA in receipt

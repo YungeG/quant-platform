@@ -30,9 +30,9 @@ All approvals bind the exact fixture hash above. Contract approval authorizes th
 - Preserve BT-PORT-01 and Integration v1-v4 unchanged.
 - Require no Backtest change.
 
-## Implementation blocker
+## Compatibility fan-in
 
-The accepted model-seam revision `033344172b24847e73941bb97a06da0490527edf` and durable-proof revision `cebb9b033b7eeffbbff712715fc017708ac5a247` diverge at `cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f`. No known local or fetched remote revision descends from both. A Backtest-owner fan-in revision preserving both public surfaces is required before Platform package repinning or V5 implementation may resume.
+Backtest accepted and remotely published fan-in `8de544e7794ee05b652355c9809b5454d7ace494`. It descends from both accepted capability revisions, exposes all required public imports, passes the full Backtest suite (`2438 passed`), and passes the existing Platform Research suite when used as the package pin (`90 passed`).
 
 ## Exclusions
 
