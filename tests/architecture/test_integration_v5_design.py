@@ -13,6 +13,7 @@ GLOSSARY = ROOT / "CONTEXT.md"
 FIXTURE = ROOT / "tests/contracts/integration-v5-decision-grade-proof-v1.json"
 APPROVAL = ROOT / "implementation/v5-contract-decision-grade-proof-v1.md"
 PIN_RECEIPT = ROOT / "implementation/v5-pin-01-receipt.md"
+ADMISSION_RECEIPT = ROOT / "implementation/dg-adm-01-receipt.md"
 BT_PORT_02 = ROOT / "tests/contracts/backtest-consumer-port-v2.json"
 FIXTURE_SHA = "1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695"
 BT_PORT_02_SHA = "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8"
@@ -78,6 +79,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
     pin_receipt = PIN_RECEIPT.read_text(encoding="utf-8")
+    admission_receipt = ADMISSION_RECEIPT.read_text(encoding="utf-8")
     glossary = GLOSSARY.read_text(encoding="utf-8")
     registry = roadmap.split("## 2. Status registry", 1)[1].split(
         "## 3. Execution DAG", 1
@@ -89,14 +91,14 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
     assert registry.count("| `V5-PIN-01` | DONE |") == 1
-    assert registry.count("| `DG-ADM-01` | READY_FOR_ACCEPTANCE |") == 1
-    assert registry.count("| `RP-DG-01` | READY |") == 1
+    assert registry.count("| `DG-ADM-01` | DONE |") == 1
+    assert registry.count("| `RP-DG-01` | IN_PROGRESS |") == 1
     for node in ("SV-DG-01", "PG-DG-01", "DG-THIN-01", "FI-04"):
         assert registry.count(f"| `{node}` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
     assert "V5-PIN-01 [DONE]" in roadmap
-    assert "DG-ADM-01 [READY_FOR_ACCEPTANCE]" in roadmap
-    assert "RP-DG-01 [READY]" in roadmap
+    assert "DG-ADM-01 [DONE]" in roadmap
+    assert "RP-DG-01 [IN_PROGRESS]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
     assert BACKTEST_FANIN_SHA in plan
@@ -155,3 +157,10 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         "Status:** ACCEPTED",
     ):
         assert expected in pin_receipt
+    for expected in (
+        "bc396ab6763298bb3cec3e28edab9e2a72186d95",
+        BACKTEST_FANIN_SHA,
+        "22 passed",
+        "Status:** ACCEPTED",
+    ):
+        assert expected in admission_receipt

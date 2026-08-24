@@ -122,7 +122,7 @@ The integration-owned admission seam verifies V2 publication/analysis subjects w
 
 ### Acceptance
 
-Exact V2 verify/append/replay, V1 preservation, wrong-version/no-downgrade, repository-before-append, and first-governance-time tests.
+Exact V2 verify/append/replay, V1 preservation, wrong-version/no-downgrade, repository-before-append, and first-governance-time tests. Accepted evidence: [`DG-ADM-01`](../dg-adm-01-receipt.md) at Platform revision `bc396ab6763298bb3cec3e28edab9e2a72186d95`.
 
 ## `RP-DG-01` — Research exact V2 dispatch
 
