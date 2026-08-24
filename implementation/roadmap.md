@@ -77,8 +77,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `RP-DG-01` | DONE | Research decision-grade dispatch accepted in [`rp-dg-01-receipt.md`](rp-dg-01-receipt.md) at Research revision `1557ec1904de6f2a8f8a32c2f37ce038a0daa022` |
 | `SV-DG-01` | DONE | decision-grade Validation accepted in [`sv-dg-01-receipt.md`](sv-dg-01-receipt.md) at Validation revision `cd966d92dad2110af7d8b1bf580536f6c3cdb998` |
 | `PG-DG-01` | DONE | V2 admission publication facts and decision-grade governance accepted in [`pg-dg-01-receipt.md`](pg-dg-01-receipt.md) at Promotion revision `8e6dddf5da0494b57cca6990d5024fe4198e6b44` |
-| `DG-THIN-01` | IN_PROGRESS | all V5 package leaves are accepted; real decision-grade fan-in is the active lane |
-| `FI-04` | BLOCKED | requires DG-THIN-01 and all V5 receipts |
+| `DG-THIN-01` | DONE | real decision-grade fan-in accepted in [`dg-thin-01-receipt.md`](dg-thin-01-receipt.md) at Platform revision `2b21c8df40174d5a9a5b9def9a9646c34c587832` |
+| `FI-04` | IN_PROGRESS | all V5 leaves and receipts are accepted; release closure is the active lane |
 
 ## 3. Execution DAG
 
@@ -146,7 +146,7 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
                            └─→ V5-PIN-01 [DONE]
                                   ├─→ DG-ADM-01 [DONE] ────────────────┐
                                   └─→ RP-DG-01 [DONE] ─→ SV-DG-01 [DONE] ─┼─→ PG-DG-01 [DONE]
-                                                                 └─→ DG-THIN-01 [IN_PROGRESS] ─→ FI-04
+                                                                 └─→ DG-THIN-01 [DONE] ─→ FI-04 [IN_PROGRESS]
 ```
 
 V4 remains an orthogonal approved/deferred contract and does not block V5. One writer keeps DG-ADM and RP-DG serialized despite their disjoint logical seams.
@@ -267,8 +267,8 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 5 | `RP-DG-01` | `SV-DG-01` | Research integration/runtime/tests | DONE |
 | 6 | `SV-DG-01` | `PG-DG-01`, `DG-THIN-01` | Validation integration/runtime/tests | DONE |
 | 7 | `PG-DG-01` | `DG-THIN-01` | Promotion core/ledger/runtime/tests | DONE |
-| 8 | `DG-THIN-01` | `FI-04` | root integration test/receipt | IN_PROGRESS |
-| 9 | `FI-04` | Integration v5 release | release receipt/status/tag | BLOCKED |
+| 8 | `DG-THIN-01` | `FI-04` | root integration test/receipt | DONE |
+| 9 | `FI-04` | Integration v5 release | release receipt/status/tag | IN_PROGRESS |
 
 ## 7. Integration v1 accepted
 

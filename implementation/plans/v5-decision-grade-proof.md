@@ -14,7 +14,7 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
                            └─→ V5-PIN-01 [DONE]
                                   ├─→ DG-ADM-01 [DONE] ───────────────┐
                                   └─→ RP-DG-01 [DONE] ─→ SV-DG-01 [DONE] ─┼─→ PG-DG-01 [DONE]
-                                                                      └─→ DG-THIN-01 [IN_PROGRESS] ─→ FI-04
+                                                                      └─→ DG-THIN-01 [DONE] ─→ FI-04 [IN_PROGRESS]
 ```
 
 The approved/deferred V4 ShadowSpec contract is orthogonal and does not block this evidence lane.
@@ -198,7 +198,7 @@ One Platform integration test composes Research, V2 Backtest consumer, Admission
 
 ### Acceptance
 
-Golden values `0.02392`, one trade, decision_grade, exact proof refs, supported Validation, `shadow_ready`, immutable refs, no second run/admission/governance action, and no Backtest change.
+Golden values `0.02392`, one trade, decision_grade, exact proof refs, supported Validation, `shadow_ready`, immutable refs, no second run/admission/governance action, and no Backtest change. Accepted evidence: [`DG-THIN-01`](../dg-thin-01-receipt.md) at Platform revision `2b21c8df40174d5a9a5b9def9a9646c34c587832`.
 
 ## `FI-04` — whole-Platform V5 release
 

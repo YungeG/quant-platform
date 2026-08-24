@@ -17,6 +17,8 @@ ADMISSION_RECEIPT = ROOT / "implementation/dg-adm-01-receipt.md"
 RESEARCH_RECEIPT = ROOT / "implementation/rp-dg-01-receipt.md"
 VALIDATION_RECEIPT = ROOT / "implementation/sv-dg-01-receipt.md"
 PROMOTION_RECEIPT = ROOT / "implementation/pg-dg-01-receipt.md"
+THIN_RECEIPT = ROOT / "implementation/dg-thin-01-receipt.md"
+INTEGRATION_TEST = ROOT / "tests/integration/test_integration_v5.py"
 BT_PORT_02 = ROOT / "tests/contracts/backtest-consumer-port-v2.json"
 FIXTURE_SHA = "1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695"
 BT_PORT_02_SHA = "8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8"
@@ -29,6 +31,7 @@ V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
 SV_DG_SHA = "cd966d92dad2110af7d8b1bf580536f6c3cdb998"
 PG_DG_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
+DG_THIN_SHA = "2b21c8df40174d5a9a5b9def9a9646c34c587832"
 
 
 def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
@@ -89,6 +92,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     research_receipt = RESEARCH_RECEIPT.read_text(encoding="utf-8")
     validation_receipt = VALIDATION_RECEIPT.read_text(encoding="utf-8")
     promotion_receipt = PROMOTION_RECEIPT.read_text(encoding="utf-8")
+    thin_receipt = THIN_RECEIPT.read_text(encoding="utf-8")
     glossary = GLOSSARY.read_text(encoding="utf-8")
     registry = roadmap.split("## 2. Status registry", 1)[1].split(
         "## 3. Execution DAG", 1
@@ -113,15 +117,16 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert registry.count("| `RP-DG-01` | DONE |") == 1
     assert registry.count("| `SV-DG-01` | DONE |") == 1
     assert registry.count("| `PG-DG-01` | DONE |") == 1
-    assert registry.count("| `DG-THIN-01` | IN_PROGRESS |") == 1
-    assert registry.count("| `FI-04` | BLOCKED |") == 1
+    assert registry.count("| `DG-THIN-01` | DONE |") == 1
+    assert registry.count("| `FI-04` | IN_PROGRESS |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
     assert "V5-PIN-01 [DONE]" in roadmap
     assert "DG-ADM-01 [DONE]" in roadmap
     assert "RP-DG-01 [DONE]" in roadmap
     assert "SV-DG-01 [DONE]" in roadmap
     assert "PG-DG-01 [DONE]" in roadmap
-    assert "DG-THIN-01 [IN_PROGRESS]" in roadmap
+    assert "DG-THIN-01 [DONE]" in roadmap
+    assert "FI-04 [IN_PROGRESS]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
     assert BACKTEST_FANIN_SHA in plan
@@ -135,12 +140,14 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert "## `PG-DG-01`" in plan
     assert "## `DG-THIN-01`" in plan
     assert "## `FI-04`" in plan
+    assert INTEGRATION_TEST.is_file()
     assert "**BacktestEvidenceAdmission**" in glossary
-    assert subprocess.run(
-        ["git", "merge-base", "--is-ancestor", PLATFORM_BT_PORT_02_SHA, "HEAD"],
-        cwd=ROOT,
-        check=False,
-    ).returncode == 0
+    for implementation_sha in (PLATFORM_BT_PORT_02_SHA, DG_THIN_SHA):
+        assert subprocess.run(
+            ["git", "merge-base", "--is-ancestor", implementation_sha, "HEAD"],
+            cwd=ROOT,
+            check=False,
+        ).returncode == 0
     assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
     assert research_entry[:2] == ["160000", RP_DG_SHA]
     assert validation_entry[:2] == ["160000", SV_DG_SHA]
@@ -222,3 +229,15 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         "Status:** ACCEPTED",
     ):
         assert expected in promotion_receipt
+    for expected in (
+        DG_THIN_SHA,
+        PG_DG_SHA,
+        SV_DG_SHA,
+        RP_DG_SHA,
+        BACKTEST_FANIN_SHA,
+        "1 passed",
+        "6 passed",
+        "359 passed",
+        "Status:** ACCEPTED",
+    ):
+        assert expected in thin_receipt
