@@ -142,7 +142,7 @@ Existing `execute_experiment()` and artifact schemas remain unchanged. Private d
 
 ### Acceptance
 
-V2 completed→analysis journey, exact Candidate/outcome refs, decision-grade selection, V1 parity, raw-terminal dispatch, unknown/cross-version/no-fallback failures, and replay.
+V2 completed→analysis journey, exact Candidate/outcome refs, decision-grade selection, V1 parity, raw-terminal dispatch, unknown/cross-version/no-fallback failures, and replay. Accepted evidence: [`RP-DG-01`](../rp-dg-01-receipt.md) at Research revision `1557ec1904de6f2a8f8a32c2f37ce038a0daa022`.
 
 ## `SV-DG-01` — decision-grade Validation
 

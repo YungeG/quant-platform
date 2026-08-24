@@ -74,8 +74,8 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `V5-CON-01` | APPROVED | protected fixture `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695` and Platform/Backtest/Validation/Promotion owner approvals recorded in [`v5-contract-decision-grade-proof-v1.md`](v5-contract-decision-grade-proof-v1.md) |
 | `V5-PIN-01` | DONE | exact root package/lock/gitlink pin accepted in [`v5-pin-01-receipt.md`](v5-pin-01-receipt.md) at Platform revision `6e82e4dc1187752f021097e9d21aaa7cf7e3c96e` |
 | `DG-ADM-01` | DONE | Admission@2 accepted in [`dg-adm-01-receipt.md`](dg-adm-01-receipt.md) at Platform revision `bc396ab6763298bb3cec3e28edab9e2a72186d95` |
-| `RP-DG-01` | READY_FOR_ACCEPTANCE | Research revision `1557ec1904de6f2a8f8a32c2f37ce038a0daa022` passes exact V2 dispatch/no-fallback and full package tests; receipt pending |
-| `SV-DG-01` | BLOCKED | requires accepted RP-DG-01 provider/Candidate evidence |
+| `RP-DG-01` | DONE | Research decision-grade dispatch accepted in [`rp-dg-01-receipt.md`](rp-dg-01-receipt.md) at Research revision `1557ec1904de6f2a8f8a32c2f37ce038a0daa022` |
+| `SV-DG-01` | IN_PROGRESS | decision-grade Validation is the active single-writer package lane |
 | `PG-DG-01` | BLOCKED | requires accepted DG-ADM-01 and SV-DG-01 contracts/evidence |
 | `DG-THIN-01` | BLOCKED | requires all V5 package leaves |
 | `FI-04` | BLOCKED | requires DG-THIN-01 and all V5 receipts |
@@ -145,7 +145,7 @@ Integration v5 executes this acyclic DAG:
 FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
                            └─→ V5-PIN-01 [DONE]
                                   ├─→ DG-ADM-01 [DONE] ────────────────┐
-                                  └─→ RP-DG-01 [READY_FOR_ACCEPTANCE] ─→ SV-DG-01 ─┼─→ PG-DG-01
+                                  └─→ RP-DG-01 [DONE] ─→ SV-DG-01 [IN_PROGRESS] ─┼─→ PG-DG-01
                                                                  └─→ DG-THIN-01 ─→ FI-04
 ```
 
@@ -264,8 +264,8 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 2 | `V5-CON-01` | `V5-PIN-01` | root contract/docs/tests only | APPROVED |
 | 3 | `V5-PIN-01` | `DG-ADM-01`, `RP-DG-01` | root pyproject/uv.lock/gitlink | DONE |
 | 4 | `DG-ADM-01` | `PG-DG-01`, `DG-THIN-01` | root admission support/tests | DONE |
-| 5 | `RP-DG-01` | `SV-DG-01` | Research integration/runtime/tests | READY_FOR_ACCEPTANCE |
-| 6 | `SV-DG-01` | `PG-DG-01`, `DG-THIN-01` | Validation integration/runtime/tests | BLOCKED |
+| 5 | `RP-DG-01` | `SV-DG-01` | Research integration/runtime/tests | DONE |
+| 6 | `SV-DG-01` | `PG-DG-01`, `DG-THIN-01` | Validation integration/runtime/tests | IN_PROGRESS |
 | 7 | `PG-DG-01` | `DG-THIN-01` | Promotion core/ledger/runtime/tests | BLOCKED |
 | 8 | `DG-THIN-01` | `FI-04` | root integration test/receipt | BLOCKED |
 | 9 | `FI-04` | Integration v5 release | release receipt/status/tag | BLOCKED |
