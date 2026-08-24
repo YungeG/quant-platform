@@ -23,6 +23,7 @@ BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
 BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
 BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
+RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
 
 
 def test_v5_decision_grade_contract_is_frozen_and_approved() -> None:
@@ -87,18 +88,21 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     backtest_entry = subprocess.check_output(
         ["git", "ls-files", "-s", "backtest"], cwd=ROOT, text=True
     ).split()
+    research_entry = subprocess.check_output(
+        ["git", "ls-files", "-s", "research-platform"], cwd=ROOT, text=True
+    ).split()
 
     assert registry.count("| `BT-PORT-02` | DONE |") == 1
     assert registry.count("| `V5-CON-01` | APPROVED |") == 1
     assert registry.count("| `V5-PIN-01` | DONE |") == 1
     assert registry.count("| `DG-ADM-01` | DONE |") == 1
-    assert registry.count("| `RP-DG-01` | IN_PROGRESS |") == 1
+    assert registry.count("| `RP-DG-01` | READY_FOR_ACCEPTANCE |") == 1
     for node in ("SV-DG-01", "PG-DG-01", "DG-THIN-01", "FI-04"):
         assert registry.count(f"| `{node}` | BLOCKED |") == 1
     assert "FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]" in roadmap
     assert "V5-PIN-01 [DONE]" in roadmap
     assert "DG-ADM-01 [DONE]" in roadmap
-    assert "RP-DG-01 [IN_PROGRESS]" in roadmap
+    assert "RP-DG-01 [READY_FOR_ACCEPTANCE]" in roadmap
     assert BACKTEST_MODEL_SEAM_SHA in plan
     assert BACKTEST_DRP_03_SHA in plan
     assert BACKTEST_FANIN_SHA in plan
@@ -119,6 +123,7 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
         check=False,
     ).returncode == 0
     assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
+    assert research_entry[:2] == ["160000", RP_DG_SHA]
     assert subprocess.check_output(
         ["git", "-C", "backtest", "merge-base", BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA],
         cwd=ROOT,

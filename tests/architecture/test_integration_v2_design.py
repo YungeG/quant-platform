@@ -203,8 +203,21 @@ def test_pg_model_receipt_pins_all_governed_model_revisions() -> None:
         ["git", "-C", "promotion-gate", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
 
-    assert research_entry[:2] == ["160000", PG_RESEARCH_SHA]
+    assert research_entry[0] == "160000"
     assert validation_entry[:2] == ["160000", PG_VALIDATION_SHA]
+    assert subprocess.run(
+        [
+            "git",
+            "-C",
+            "research-platform",
+            "merge-base",
+            "--is-ancestor",
+            PG_RESEARCH_SHA,
+            research_entry[1],
+        ],
+        cwd=ROOT,
+        check=False,
+    ).returncode == 0
     assert subprocess.run(
         [
             "git",
