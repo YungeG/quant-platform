@@ -103,7 +103,7 @@ The root workspace, lock, and Backtest gitlink all resolve accepted compatibilit
 
 ### Acceptance
 
-Exact all-package SHA equality, `uv lock --check`, clean install/import of V2 public types, V1 protected hashes, and no mixed Backtest revisions.
+Exact all-package SHA equality, `uv lock --check`, clean install/import of V2 public types, V1 protected hashes, and no mixed Backtest revisions. Accepted evidence: [`V5-PIN-01`](../v5-pin-01-receipt.md) at Platform revision `6e82e4dc1187752f021097e9d21aaa7cf7e3c96e`.
 
 ## `DG-ADM-01` — exact Admission@2
 
