@@ -1,6 +1,6 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `HISTORICAL_SOURCE_CAPTURE_SUCCEEDED / HISTORICAL_DECLARATION_AND_FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `HISTORICAL_SOURCE_FACTS_AUDITED / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
 - **Checked:** 2026-08-25
 - **Scope:** 000651.SZ 2018–2023 source captures plus fixed 2023 declarations, normalization and current-only trio selection candidates
 
@@ -121,11 +121,13 @@ The snapshot contains the 2018 balance endpoint, 2019–2022 statement trios, fi
 
 The first real publication attempt failed atomically before final visibility because the range parent was absent; the reviewed head fix created the validated parent and the retry succeeded. No partial output survived.
 
+Historical official-report audit is recorded in [`quality-bband-historical-financial-declaration-audit.md`](quality-bband-historical-financial-declaration-audit.md). Unit and D&A facts are sufficient for declaration planning, but 2021 debt is not uniquely defensible: the issuer's explicit interest-bearing table omits separately labelled `企业借款及利息 2,731,680,114.20`. Both candidate debt reconciliations are retained and canonical 2021 debt must fail `DEBT_SCOPE_INCOMPLETE`.
+
 ## Next executable gates
 
 1. accept stacked PRs #1–#6;
-2. audit 2018–2022 statement units and financing/D&A notes;
-3. publish period-specific official metadata/unit/note declarations and availability candidates;
-4. normalize/select 2018–2022 and only then calculate multi-year source-bounded formula inputs.
+2. publish period-specific unit/D&A/debt declarations, preserving a typed 2021 debt failure;
+3. bind accepted Calendar/Session evidence before historical availability;
+4. normalize/select only supported periods; five complete ROIC observations remain blocked until 2021 debt is resolved.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.
