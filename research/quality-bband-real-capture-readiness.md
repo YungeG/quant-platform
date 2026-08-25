@@ -1,8 +1,8 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `CAPTURE_NORMALIZATION_AND_SELECTION_SUCCEEDED / MULTIYEAR_FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `HISTORICAL_SOURCE_CAPTURE_SUCCEEDED / HISTORICAL_DECLARATION_AND_FORMULA_AUTHORITY_BLOCKED`
 - **Checked:** 2026-08-25
-- **Scope:** first credentialed QB-FIN-SENTINEL-02 capture, fixed declarations, source-bounded normalization and current-only trio selection candidates
+- **Scope:** 000651.SZ 2018–2023 source captures plus fixed 2023 declarations, normalization and current-only trio selection candidates
 
 ## Repository state
 
@@ -13,6 +13,7 @@
 | Backtest PR #3 | <https://github.com/YungeG/quant-backtest/pull/3>, open stacked on PR #2 | declaration commit `b4124d5985a6f9cbd39221fd55286abf5608b6b8`; not accepted |
 | Backtest PR #4 | <https://github.com/YungeG/quant-backtest/pull/4>, open stacked on PR #3 | normalization commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; not accepted |
 | Backtest PR #5 | <https://github.com/YungeG/quant-backtest/pull/5>, open stacked on PR #4 | fixed trio-selection commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; not accepted |
+| Backtest PR #6 | <https://github.com/YungeG/quant-backtest/pull/6>, open stacked on PR #5 | historical-source head `64159f81fa6f831990690dd133587b96533a0362`; not accepted |
 | Platform research PR | <https://github.com/YungeG/quant-platform/pull/1>, open, mergeable | not accepted |
 | v1 commit | `e7e874fc58e0911b7df1cd0463387526afcb845d` | remotely reachable |
 | v2 commits | `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52` + `146cd227b2fc707726e133dbbd08cde356f21dcd` | remotely reachable |
@@ -100,11 +101,31 @@ Canonical readback, repeated normalization and credential-exclusion checks passe
 
 Canonical readback, repeated selection and credential-exclusion checks passed. The selected trio is fixed-current-consolidated only; it does not exercise generic comparative-adjustment or provider revision-chain resolution.
 
+## Published historical source candidate
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  source-snapshots/000651.SZ/2018-2022/v3-candidate-01
+```
+
+| Value | Identity |
+| --- | --- |
+| SourceSnapshot | `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b` |
+| Content tree | `sha256:d5375befd81c5fb1ab2832a48bb7c3d0b4fc7dcf9b4ea64700f837dc624ce3d9` |
+| Provenance | `sha256:5495fbee8d8668e324be8263f49f9f556ea6a4324b5f530c13a2176f148ad2e5` |
+| Receipt file | `sha256:0a24a2f0d89f07f750d08e18905c43b79cd85ea81581b1f27c86c7e8b99cfd44` |
+| Members | `19` |
+| Grade/deployment | `false` / `false` |
+
+The snapshot contains the 2018 balance endpoint, 2019–2022 statement trios, five official annual-report PDFs and one official CNINFO metadata response. Combined with the separate 2023 snapshot, raw source coverage now reaches six balance endpoints and five annual trios. Persisted rebuild/verify, file modes, receipt equality, staging cleanup and credential exclusion passed.
+
+The first real publication attempt failed atomically before final visibility because the range parent was absent; the reviewed head fix created the validated parent and the retry succeeded. No partial output survived.
+
 ## Next executable gates
 
-1. accept stacked PRs #1–#5;
-2. expand to six annual balance endpoints and five coherent annual statement trios;
-3. select each period at the exact Strategy Decision instant;
-4. only then calculate multi-year source-bounded formula inputs.
+1. accept stacked PRs #1–#6;
+2. audit 2018–2022 statement units and financing/D&A notes;
+3. publish period-specific official metadata/unit/note declarations and availability candidates;
+4. normalize/select 2018–2022 and only then calculate multi-year source-bounded formula inputs.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

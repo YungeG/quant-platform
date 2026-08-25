@@ -1,8 +1,9 @@
 # QB-FIN-HISTORY-SENTINEL-03 — Gree 2018–2022 historical financial source expansion
 
-- **Status:** `IMPLEMENTATION_AUTHORITY_FROZEN / APPROVED_FOR_STACKED_CANDIDATE / NOT_ACCEPTED`
+- **Status:** `STACKED_CANDIDATE_PUBLISHED / REAL_CAPTURE_SUCCEEDED / NOT_ACCEPTED`
 - **Owner:** Backtest G12A acquisition
 - **Base:** stacked PR #5 commit `5338d8046fa0f304d4a9590989c59ceffb51270b`
+- **Candidate:** Backtest PR [#6](https://github.com/YungeG/quant-backtest/pull/6), head `64159f81fa6f831990690dd133587b96533a0362`
 - **Existing 2023 source:** `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`
 - **Purpose:** add the minimum earlier source periods required for six balance endpoints and five annual statement trios
 - **Immutable probe:** `/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/probes/000651.SZ/2018-2022/v3-probe-01/probe-manifest.json`
@@ -465,14 +466,15 @@ Persist exactly the 19 raw members plus `acquisition-receipt.json`; no probe man
 Do not call shared `publish_directory`. V3 owns this exact same-filesystem algorithm:
 
 1. `_require_safe_output(final_dir)` exact-requires a fresh final path;
-2. staging sibling is `final_dir.parent / f".{final_dir.name}.staging-v3"`; exclusive staging creation is the cooperative v3 publisher lock and must fail if already present;
-3. create staging root mode `0700`;
-4. write all 19 members, then receipt last, each through exclusive create, file mode `0600`, flush and `os.fsync(file_fd)`;
-5. reopen every staged file and exact-compare bytes/hash; rebuild and verify SourceSnapshot from staged members;
-6. `os.fsync(staging_dir_fd)`;
-7. immediately re-run `_require_safe_output(final_dir)`, then call `os.rename(staging_dir, final_dir)` on the same filesystem;
-8. successful rename is the irreversible publication commit point; perform no fallible operation afterward and return the receipt;
-9. on any exception before the commit point, recursively remove staging and leave final absent.
+2. create missing `final_dir.parent` components with `mkdir(mode=0o700, parents=True, exist_ok=True)`, then re-run final-path validation;
+3. staging sibling is `final_dir.parent / f".{final_dir.name}.staging-v3"`; exact-validate it is absent, and exclusive staging creation is the cooperative v3 publisher lock;
+4. create staging root mode `0700`;
+5. write all 19 members, then receipt last, each through exclusive create, file mode `0600`, flush and `os.fsync(file_fd)`;
+6. reopen every staged file and exact-compare bytes/hash; rebuild and verify SourceSnapshot from staged members;
+7. `os.fsync(staging_dir_fd)`;
+8. immediately re-run `_require_safe_output(final_dir)`, then call `os.rename(staging_dir, final_dir)` on the same filesystem;
+9. successful rename is the irreversible publication commit point; perform no fallible operation afterward and return the receipt;
+10. on any exception before the commit point, recursively remove staging and leave final absent.
 
 The approved artifact root is single-writer except for cooperating v3 publishers, which serialize on the exact staging path. Concurrent creation by an uncooperative process between the final preflight and rename is outside this candidate's authority boundary. Tests must pause before rename and prove the final directory is invisible, verify a second v3 publisher fails on staging, and verify a destination appearing before the final preflight maps to `OUTPUT_PATH_INVALID`. Cleanup-on-error alone is not called atomic.
 
@@ -619,7 +621,37 @@ uv run --locked python -m tools.acquisition.cn_a_share_tushare_financial_history
 
 The output directory must not exist before execution. Never echo, trace or persist the environment value.
 
-## 17. Next handoff
+## 17. Implementation and capture evidence
+
+Stacked Backtest PR [#6](https://github.com/YungeG/quant-backtest/pull/6):
+
+- base: `research/qb-fin-selection-v1` / PR #5;
+- initial commit: `8248afe`;
+- safe missing-parent fix/head: `64159f81fa6f831990690dd133587b96533a0362`;
+- focused: `27 passed`;
+- adjacent acquisition + SourceSnapshot: `170 passed`;
+- broad regression: `2559 passed, 3 skipped, 3 deselected`; only exact PR #3/#4/#5 predecessor write-set guards were deselected;
+- independent review: `ACCEPTED`, no findings after credential, callback-mutation, precedence and output-parent fixes;
+- LSP/lens: clean; four path warnings were dispositioned false-positive because paths/URLs are frozen internal allowlists.
+
+Real approved-proxy candidate:
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  source-snapshots/000651.SZ/2018-2022/v3-candidate-01
+```
+
+- members: `19` plus receipt;
+- SourceSnapshot: `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`;
+- content tree: `sha256:d5375befd81c5fb1ab2832a48bb7c3d0b4fc7dcf9b4ea64700f837dc624ce3d9`;
+- provenance: `sha256:5495fbee8d8668e324be8263f49f9f556ea6a4324b5f530c13a2176f148ad2e5`;
+- receipt file SHA-256: `sha256:0a24a2f0d89f07f750d08e18905c43b79cd85ea81581b1f27c86c7e8b99cfd44`;
+- persisted reconstruction/verification, exact member/file count, file modes, CLI receipt equality, staging cleanup and credential exclusion passed;
+- source-bounded `true`; revision closure/decision-grade/deployment remain `false`.
+
+The first real attempt failed atomically with `PUBLICATION_FAILURE` because the range parent directory did not yet exist. Final and staging directories remained absent. The head fix creates the validated parent before repeated no-clobber checks; independent review accepted the delta and the second attempt succeeded.
+
+## 18. Next handoff
 
 After v3 source publication:
 
