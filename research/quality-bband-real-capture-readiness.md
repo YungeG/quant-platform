@@ -1,8 +1,8 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `CAPTURE_SUCCEEDED / NORMALIZATION_AND_FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `CAPTURE_AND_NORMALIZATION_SUCCEEDED / PRESENTATION_AND_FORMULA_AUTHORITY_BLOCKED`
 - **Checked:** 2026-08-25
-- **Scope:** first credentialed QB-FIN-SENTINEL-02 capture only
+- **Scope:** first credentialed QB-FIN-SENTINEL-02 capture, fixed declarations and source-bounded normalization candidate
 
 ## Repository state
 
@@ -10,6 +10,8 @@
 | --- | --- | --- |
 | Backtest PR #1 | <https://github.com/YungeG/quant-backtest/pull/1>, open, mergeable | not accepted |
 | Backtest PR #2 | <https://github.com/YungeG/quant-backtest/pull/2>, open stacked on PR #1 | proxy correction pushed at `146cd227b2fc707726e133dbbd08cde356f21dcd`; not accepted |
+| Backtest PR #3 | <https://github.com/YungeG/quant-backtest/pull/3>, open stacked on PR #2 | declaration commit `b4124d5985a6f9cbd39221fd55286abf5608b6b8`; not accepted |
+| Backtest PR #4 | <https://github.com/YungeG/quant-backtest/pull/4>, open stacked on PR #3 | normalization commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; not accepted |
 | Platform research PR | <https://github.com/YungeG/quant-platform/pull/1>, open, mergeable | not accepted |
 | v1 commit | `e7e874fc58e0911b7df1cd0463387526afcb845d` | remotely reachable |
 | v2 commits | `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52` + `146cd227b2fc707726e133dbbd08cde356f21dcd` | remotely reachable |
@@ -57,19 +59,34 @@ The snapshot was rebuilt from persisted members and exact provenance, then passe
 - Balance sheet: two `report_type=1` rows. Economic fields are identical; only `update_flag` differs (`0` versus `1`). Raw rows remain retained.
 - Cash flow: one `report_type=1` row.
 
-Formula-input gaps:
+Raw nulls remain evidence:
 
-- balance: `bond_payable`, `st_bonds_payable` are null;
-- cash flow: `use_right_asset_dep`, `lt_amort_deferred_exp` are null;
-- official publication and unit declarations are not yet published.
+- balance: `bond_payable`, `st_bonds_payable` are null in the provider rows and resolve to exact declared `0.00` values only under declaration `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007`;
+- cash flow: `use_right_asset_dep`, `lt_amort_deferred_exp` remain null; the declaration proves right-of-use depreciation is already included and adds no duplicate amount.
 
-Nulls cannot be silently converted to zero. Therefore the snapshot is valid source evidence but not yet formula-ready.
+## Published normalized candidate
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  normalized-observation-sets/000651.SZ/20231231/v1-candidate-01
+```
+
+| Value | Identity |
+| --- | --- |
+| Observation set | `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c` |
+| Canonical file | `sha256:857a57058d790f83b8d227e6afb676b13d2f3ab2a784b132e3c1bc7486468ef0` |
+| Income revision | `sha256:8957590f45f32ed9b285e940f2fa0c0524cb28377e86c745ab39aa3875ba63e8` |
+| Balance revision | `sha256:3e64ee623ca3676f1ec10daf56588dceabdd77a41ba0419d4c9010241313f45d` |
+| Cash-flow revision | `sha256:71f4428e79d3bd7638cc9c1d98c1471f9802e9a90d25f7fa06b739bc57f0f986` |
+| Grade/deployment | `false` / `false` |
+
+Canonical readback, repeated normalization and credential-exclusion checks passed. This is still one issuer/one period, source-bounded and revision-closure-incomplete.
 
 ## Next executable gates
 
-1. publish source-bound publication-confirmation and statement-unit declarations;
-2. normalize source-bound statement revisions;
-3. resolve whether null debt/D&A fields are officially zero/not applicable or require additional source-note evidence;
-4. only then run presentation selection and formula-input calculations.
+1. accept stacked PRs #1–#4;
+2. run point-in-time presentation selection over the normalized revisions;
+3. expand to six annual balance endpoints and five coherent annual statement trios;
+4. only then calculate multi-year source-bounded formula inputs.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

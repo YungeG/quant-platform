@@ -1,6 +1,6 @@
 # QB-FIN-DOC-01 — Financial document declarations v1
 
-- **Status:** `CONTRACT_FROZEN_FOR_REVIEW / DECLARATIONS_NOT_PUBLISHED`
+- **Status:** `CANDIDATE_PUBLISHED / STACKED_PR_OPEN / NOT_ACCEPTED`
 - **Owner:** Backtest G12 data-governance reviewer
 - **Raw source prerequisite:** stacked PR #2 five-member SourceSnapshot
 - **Consumers:** QB-FIN-AVAIL-01 and QB-FIN-FIELDS-01
@@ -186,4 +186,4 @@ formula-ready normalized statements = unavailable
 
 ## 10. Readiness decision
 
-The declaration contracts are frozen for review and the required SourceSnapshot now exists. Publishing real declarations still requires PR #2 acceptance or explicit candidate-declaration authority plus a named Backtest G12 data-governance reviewer.
+The fixed aggregate declaration implementation is open stacked PR [`YungeG/quant-backtest#3`](https://github.com/YungeG/quant-backtest/pull/3). A real source-bound candidate was published with declaration hash `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007`; it remains unaccepted and non-decision-grade.

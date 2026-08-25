@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. The fixed-singleton raw-financial acquisition sentinel is open PR #1, and the availability, revision, presentation and ordinary-industrial field contracts are frozen for review. Full strategy implementation still cannot start because broad source authority, accepted formula-ready capture/unit evidence, general A-share coverage, a portfolio authority artifact and repository-owner approvals are missing.
+The research design is approved for continued planning. Fixed-scope acquisition, declarations and normalization are published as stacked Backtest PRs #1–#4, and the availability, revision, presentation and ordinary-industrial field contracts are frozen for review. Full strategy implementation still cannot start because the stack is unaccepted, only one issuer/period is normalized, broad source authority, general A-share coverage, a portfolio authority artifact and repository-owner approvals are missing.
 
 ## Outcome
 
@@ -39,7 +39,9 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C14 | `implementation/plans/quality-bband-financial-presentation-selection-v1.md` | Latest visible eligible presentation and coherent statement trio are separate point-in-time feature-input authority. |
 | C15 | `implementation/plans/quality-bband-industrial-financial-field-mapping-v1.md` | PR #1 fields are insufficient for formula authority; official CNY-yuan unit evidence and expanded raw fields are required. |
 | C16 | `implementation/plans/quality-bband-financial-source-sentinel-v2.md` | Additive v2 successor is open stacked PR #2 and remains acquisition-only/unaccepted. |
-| C17 | `research/quality-bband-real-capture-readiness.md` | Approved-proxy credentialed capture succeeded and produced verified five-member SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`; null formula fields and missing declarations still block normalization/features. |
+| C17 | `research/quality-bband-real-capture-readiness.md` | Approved-proxy capture produced verified five-member SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`. |
+| C18 | `implementation/plans/quality-bband-financial-declaration-implementation-v1.md` | Stacked PR #3 and real declaration candidate `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007` resolve fixed-report publication/unit/debt/D&A semantics but remain unaccepted/non-decision-grade. |
+| C19 | `implementation/plans/quality-bband-financial-normalization-implementation-v1.md` | Stacked PR #4 publishes exact source-bounded revisions and observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`; closure/decision-grade/deployment remain false. |
 
 ## Ownership
 
@@ -220,7 +222,7 @@ Candidate acceptance tiers:
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
 2. **Availability authority:** the policy is frozen, but PR #1 lacks official publication metadata/confirmation and therefore emits no `available_at`.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; provider terminal-set closure remains unavailable.
-4. **Formula input:** the real v2 capture exists, but null bond/D&A fields and no official unit declaration prevent formula-ready input.
+4. **Formula input:** the real v2 capture, declaration and normalized one-year observation set exist, but point-in-time presentation selection and five-year coverage do not.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
@@ -229,13 +231,13 @@ Candidate acceptance tiers:
 10. **Profile qualification:** multi-instrument ordinary-A-share account scope is not accepted.
 11. **Scenario ref:** `a-share.domestic-cash.daily-next-open.base-cost.v1` is a proposed identity, not a published ref.
 12. **Metric limitation:** formal Validation cannot enforce drawdown or benchmark-relative excess.
-13. **Permissions:** commit/push and PR creation were authorized for QB-FIN-SENTINEL-01 only; no merge, credential-use or broader Backtest publication authority exists.
+13. **Permissions:** commit/push, stacked PR creation and approved-proxy artifact publication were authorized; no merge, acceptance, deployment or real-trading authority was granted.
 
 ## Readiness decision
 
 `NOT_READY`.
 
-The source-discovery, financial contract-freeze and stacked acquisition implementation lanes are complete. PRs #1 and #2 await **Backtest-owner review/acceptance**. QB-DATA-01 and QB-PREP-01 remain blocked; no Builder or Strategy execution writer should start.
+The source-discovery, financial contract-freeze and fixed-scope acquisition/declaration/normalization candidate lanes are complete. PRs #1–#4 await **Backtest-owner review/acceptance**. Point-in-time presentation selection may proceed only as the next fixed-scope stacked candidate; broad QB-DATA-01 and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
@@ -246,5 +248,7 @@ The source-discovery, financial contract-freeze and stacked acquisition implemen
 - **First decision:** accept PR #1 and publish its governance receipt, or reject it with contract-level changes.
 - **Stacked successor:** PR [`YungeG/quant-backtest#2`](https://github.com/YungeG/quant-backtest/pull/2), head `146cd227b2fc707726e133dbbd08cde356f21dcd`, base PR #1; 23 focused and 150 adjacent tests after proxy correction, independent review clean.
 - **Real capture:** verified SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5` at the approved artifact root.
-- **Second decision:** accept PR #2 and publish source-bound confirmation/unit declarations.
-- **Acceptance gate:** PRs #1/#2 acceptance, declarations and normalized nonambiguous statement evidence; none grants Strategy, Validation or deployment authority.
+- **Declarations:** stacked PR [`YungeG/quant-backtest#3`](https://github.com/YungeG/quant-backtest/pull/3), commit `b4124d5985a6f9cbd39221fd55286abf5608b6b8`; real candidate declaration `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007`.
+- **Normalization:** stacked PR [`YungeG/quant-backtest#4`](https://github.com/YungeG/quant-backtest/pull/4), commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; real observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`.
+- **Second decision:** accept PRs #2–#4 and review a fixed-scope point-in-time presentation-selection candidate.
+- **Acceptance gate:** accepted acquisition/declarations/normalization plus selected coherent statement evidence; none grants Strategy, Validation or deployment authority.

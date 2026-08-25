@@ -1,6 +1,6 @@
 # QB-FIN-NOTES-01 — Financing-liability and D&A note declarations v1
 
-- **Status:** `CONTRACT_FROZEN_FOR_REVIEW / DECLARATIONS_NOT_PUBLISHED`
+- **Status:** `CANDIDATE_PUBLISHED / STACKED_PR_OPEN / NOT_ACCEPTED`
 - **Owner:** Backtest G12 data-governance reviewer
 - **SourceSnapshot:** `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`
 - **Source audit:** [`research/quality-bband-real-capture-line-item-audit.md`](../../research/quality-bband-real-capture-line-item-audit.md)
@@ -190,4 +190,4 @@ No partial debt/D&A authority is returned.
 
 ## 8. Readiness decision
 
-The note-declaration contracts are frozen for review. Candidate declarations can be published only by a named Backtest G12 data-governance reviewer against the exact real SourceSnapshot. Formula normalization remains blocked until then.
+The note facts are included in the aggregate candidate implemented by stacked PR [`YungeG/quant-backtest#3`](https://github.com/YungeG/quant-backtest/pull/3). Real declaration hash `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007` remains source-bounded, unaccepted and non-decision-grade. Formula normalization may proceed only as another stacked candidate.
