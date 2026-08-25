@@ -1,6 +1,6 @@
 # BT-TRADIFI-01 Full Implementation Packet
 
-Status: **NOT_READY — BT-TRADIFI-AMEND-01 awaits explicit owner approval**
+Status: **READY — BT-TRADIFI-AMEND-01 approved by the Platform owner**
 
 ## Outcome
 
@@ -222,4 +222,4 @@ No fallback, alias, forward fill, future-open sizing, fabricated terminal, zero 
 
 ## Open decision
 
-Explicit owner approval of `BT-TRADIFI-AMEND-01` is required before further source/bundle/preparation or Engine/input coding. Existing accepted commits `af45a2f`, `315d8f7`, and `3e8c913` remain valid inputs.
+None. `BT-TRADIFI-AMEND-01` is approved. Existing accepted commits `af45a2f`, `315d8f7`, and `3e8c913` remain valid inputs. The next sentinel is a new execution-input round-trip proving TradFi `fill_liquidity_role="taker"` changes only the new schema identity while legacy bytes remain fixed.

@@ -1,6 +1,6 @@
 # BT-TRADIFI-AMEND-01 target ownership and durable execution-role amendment
 
-- **Status:** CANDIDATE — owner approval required
+- **Status:** APPROVED — implementation authorized by the Platform owner
 - **Amends:** [`tradifi-perpetual-capability-contract.md`](tradifi-perpetual-capability-contract.md)
 - **Reason:** implementation discovery proved four approved assumptions incompatible with existing Backtest architecture
 - **Existing accepted commits retained:** `af45a2f`, `315d8f7`, `3e8c913`
