@@ -43,7 +43,7 @@ The missing seam is an accepted **public Binance USD-M `TRADIFI_PERPETUAL` Bar p
 - **Dataset revision:** `koruusdt-factor-dataset-v1:sha256:066c775e60ba402b631b406fd8138da200d7e30a136e0efb7c2c13b196680d64`
 - **Manifest:** `research/koruusdt/data/manifest.json`
 - **Raw/aligned snapshot:** `research/koruusdt/data/`
-- **Corporate-action exclusion:** every bar overlapping `2026-07-15T00:15:00.000000Z` through `2026-07-15T09:35:00.000000Z`
+- **Corporate-action boundary:** discovery begins at `2026-07-15T10:00:00.000000Z`, after the documented adjustment/resumption; no authoritative Trial may use pre-adjustment or split-window bars
 
 This revision is suitable for planning and exploratory comparison only. Before execution, an accepted provider must publish a retained immutable MarketBundle covering the same semantics.
 
@@ -51,7 +51,7 @@ This revision is suitable for planning and exploratory comparison only. Before e
 
 | Role | Interval |
 | --- | --- |
-| Discovery/selection | `[2026-06-22T14:00:00.000000Z, 2026-08-24T11:00:00.000000Z)` |
+| Discovery/selection | `[2026-07-15T10:00:00.000000Z, 2026-08-24T11:00:00.000000Z)` |
 | Frozen future holdout | `[2026-08-24T11:00:00.000000Z, 2026-10-05T00:00:00.000000Z)` |
 
 The existing descriptive check observed the full pinned snapshot, so no interval inside that snapshot can honestly serve as an untouched holdout. The future holdout above is precommitted now and must be published with `role = HOLDOUT` and `selection_observed = false`. Its observations must not be used for feature work, parameter changes, manual selection, or date revision. There is no adaptive extension or result-driven date change.
@@ -61,7 +61,7 @@ The existing descriptive check observed the full pinned snapshot, so no interval
 | Purpose | Required source |
 | --- | --- |
 | Range/signal | completed KORUUSDT 1-hour mark-price bars |
-| Entry/exit fill reference | next eligible KORUUSDT trade-price Bar open after the decision |
+| Entry/exit fill reference | first retained KORUUSDT aggregate-trade event at or after the next eligible hourly boundary; event time and availability equal retained trade time |
 | Valuation, margin, liquidation | purpose-specific historical mark observations |
 | Basis guard | `log(mark_close / index_close)` from exact completed hourly mark and index observations available before decision time |
 | Funding | Funding Rate History publication, exact availability time, settlement slot, and associated funding mark |
@@ -88,12 +88,12 @@ For each continuous interval in which both accepted cash-market calendars are cl
    - long when the last completed mark close is in the bottom 25% of the range;
    - short when it is in the top 25% of the range;
    - decide only after that Bar completes;
-   - fill only at the next eligible trade-price Bar open.
+   - fill only at the first retained aggregate-trade event at or after the next eligible hourly boundary.
 6. Evaluate exits only after a Bar completes; no intrabar stop/limit or OHLC-path inference is permitted:
    - for a long, decide to exit when the completed mark close is at/above the midpoint or at/below `range_low - range_width`;
    - for a short, decide to exit when the completed mark close is at/below the midpoint or at/above `range_high + range_width`;
    - also decide to exit after `max_hold_hours`, or when the next Bar would overlap either cash-market session.
-7. Every exit fills only at the next eligible trade-price Bar open. The boundary exit must be scheduled early enough that this next-open fill occurs before either cash market opens. Never carry a position into an open cash-market session.
+7. Every exit fills only at the first retained aggregate-trade event at or after the next eligible hourly boundary. The boundary exit must be scheduled early enough that this fill occurs before either cash market opens. Never carry a position into an open cash-market session.
 
 ### Explicit parameter combinations
 
@@ -126,13 +126,14 @@ There are no ranges to expand during execution and no adaptive parameter search.
 
 - **Seeds:** `(0,)`; the strategy is deterministic and no other seed is permitted.
 - **Scenario ref:** unavailable until a contract publishes an exact ref for one `koruusdt_both_cash_markets_closed_v1` scenario binding the `XKRX`/`ARCX` calendar revisions, split exclusion, completed-close basis formula, and no-carry boundary. This unavailable exact ref is an execution blocker.
-- **Strategy ref:** unavailable until an exact `koruusdt_closed_market_range_v1` strategy-definition ref is published. It must bind every rule above, including close-triggered/next-open exits.
-- **Backtest template ref:** unavailable until the missing public preparation contract publishes an exact Binance USD-M TradFi hourly next-eligible-open template ref. No intrabar execution capability is requested.
+- **Strategy ref:** unavailable until an exact `koruusdt_closed_market_range_v1` strategy-definition ref is published. It must bind every rule above, including close-triggered/next-event exits.
+- **Strategy parameter-set refs:** eight unavailable exact artifact refs, one for each canonical row in the frozen parameter table. Every Trial supplies the common strategy ref plus exactly one parameter-set ref; Backtest must not decode parameters from `experiment_id`.
+- **Backtest template ref:** unavailable until the missing public preparation contract publishes an exact Binance USD-M TradFi hourly first-retained-trade-event template ref and simulation profile. No intrabar execution capability is requested.
 - **Metric profile ref:** exact existing canonical ref `{"type":"artifact_ref","artifact_type":"backtest_metric_profile","schema_version":1,"content_hash":"sha256:bced4dbef8bbf6e1ec9821ae3b68e8c6ce2bbed953f95fe1214c8e21676dbd6a"}` (`simple_period_return.fill_count.v1`).
 - **Fee profile ref:** unavailable exact historical KORUUSDT taker-fee schedule ref; no rebate or BNB discount is assumed. This is an execution blocker.
-- **Slippage profile refs:** public `DeterministicBpsSlippageModel` plus an unavailable exact `SlippageCalibrationRef` applicable to KORUUSDT, 1-hour next-open fills, and 1,000 USDT notional. The calibration ref is an execution blocker; zero slippage is forbidden.
+- **Slippage profile refs:** public `DeterministicBpsSlippageModel` plus an unavailable exact `SlippageCalibrationRef` applicable to KORUUSDT, 1-hour decisions, first-retained-trade-event fills, and 1,000 USDT target notional. The calibration ref is an execution blocker; zero slippage is forbidden.
 - **Budget:** `max_trials = 8`; one data slice, one seed, one scenario, one metric profile. Research may create exactly 8 Trial tasks and 8 Analysis tasks.
-- **Account/sizing identity to bind in the future profile:** one-way USDT account, no multi-assets or hedge mode, 10,000 USDT initial capacity, fixed 1,000 USDT target notional, effective leverage 1x. Quantity is determined at the accepted next-open reference and rounded **down** to the historical quantity step; a result below historical minimum quantity/notional produces no order. These are research bounds, not live instructions.
+- **Account/sizing identity to bind in the future profile:** one-way USDT account, no multi-assets or hedge mode, 10,000 USDT synthetic initial equity, fixed 1,000 USDT target notional, effective leverage 1x. Quantity is determined causally from the completed decision-time mark close and rounded **down** to the historical quantity step; realized fill notional may drift at the later retained-trade event, and a result below historical minimum quantity/notional produces no order. Synthetic equity is distinct from Binance account order/exposure-capacity evidence. These are research bounds, not live instructions.
 
 ### Predeclared SelectionPolicy
 
@@ -175,7 +176,7 @@ No Platform Experiment, Candidate, Backtest publication, Analysis, or Validation
 
 ## 5. Limitations and blockers
 
-- Only about two months of observed Binance history are available, with few independent cash-market regimes; the precommitted future holdout has not yet been captured.
+- The admissible post-adjustment discovery interval contains only about forty days of Binance history and few independent cash-market regimes; the precommitted future holdout has not yet been captured.
 - The sample contains one major split/contract adjustment.
 - External factor inputs are secondary Yahoo data; they cannot establish decision grade.
 - Minute/order-book data and an accepted slippage calibration are absent.
