@@ -1,8 +1,8 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `HISTORICAL_SOURCE_FACTS_AUDITED / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
-- **Checked:** 2026-08-25
-- **Scope:** 000651.SZ 2018–2023 source captures plus fixed 2023 declarations, normalization and current-only trio selection candidates
+- **Status:** `HISTORICAL_CALENDAR_EVIDENCE_FROZEN / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
+- **Checked:** 2026-08-26
+- **Scope:** 000651.SZ 2018–2023 source/declaration candidates plus fixed 2023 normalization/selection and finite SZSE Calendar/Session evidence
 
 ## Repository state
 
@@ -133,11 +133,19 @@ Published historical declaration candidate:
 
 It contains four canonical declaration files for 2018–2020/2022, one canonical 2021 failure/conflict file and a manifest. Manifest SHA-256 is `sha256:a424edd19abc9b17d54f40bfc0e1c6f90e04690d7ba4c6bb10a99982e9531726`; readback, identities, file modes and credential exclusion passed.
 
+## Frozen historical Calendar/Session evidence
+
+[`quality-bband-szse-calendar-session-authority-v1.md`](quality-bband-szse-calendar-session-authority-v1.md) exact-records official SZSE holiday notices, archived rules and daily market-overview response hashes. It freezes the five finite next-session planning boundaries and the `09:30 Asia/Shanghai` continuous-auction open.
+
+The 2019 annual notice's original `2019-05-02` reopen is not controlling: the official `2019-04-18` adjustment moved the effective Labour Day reopen to `2019-05-06`. The Gree 2018-report boundary remains `2019-04-30` because that is the first session strictly after its `2019-04-29` publication date.
+
+No accepted Backtest historical availability artifact exists yet.
+
 ## Next executable gates
 
 1. accept stacked PRs #1–#7;
-2. bind accepted Calendar/Session evidence before historical availability;
-3. normalize/select 2018–2020/2022 only; preserve 2021 as unavailable;
+2. freeze and implement historical normalization for 2018–2020/2022 with exact Calendar/Session binding;
+3. preserve 2021 as unavailable;
 4. five complete ROIC observations remain blocked until competent authority resolves 2021 debt.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

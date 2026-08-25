@@ -317,7 +317,7 @@ A later declaration/availability step must:
 4. use an accepted Frozen SZSE Calendar and SessionModel;
 5. select the first declared trading-session open strictly after the official date.
 
-Candidate next-session dates, pending accepted Calendar evidence, are:
+The finite official evidence frozen in [`quality-bband-szse-calendar-session-authority-v1.md`](../../research/quality-bband-szse-calendar-session-authority-v1.md) fixes these next-session planning values:
 
 | Official date | Candidate next session | Candidate UTC open |
 | --- | --- | --- |
@@ -327,7 +327,7 @@ Candidate next-session dates, pending accepted Calendar evidence, are:
 | `2022-04-30` | `2022-05-05` | `UtcInstant(1651714200000000000)` |
 | `2023-04-29` | `2023-05-04` | `UtcInstant(1683163800000000000)` |
 
-These candidates are not acquisition output and are not accepted availability authority.
+These values are not acquisition output and no accepted historical availability operation exists. A successor must exact-bind the frozen notice/rule/daily-statistics identities; the 2021 lane additionally terminates with `DEBT_SCOPE_INCOMPLETE` before normalization.
 
 ## 10. Credential and transport boundary
 

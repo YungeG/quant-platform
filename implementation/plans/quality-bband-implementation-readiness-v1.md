@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. Fixed-scope acquisition, declarations, normalization and current-only trio selection are published as stacked Backtest PRs #1–#5, and the availability, revision, presentation and ordinary-industrial field contracts are frozen for review. Full strategy implementation still cannot start because the stack is unaccepted, only one issuer/period is selected, broad source authority, general A-share coverage, a portfolio authority artifact and repository-owner approvals are missing.
+The research design is approved for continued planning. Fixed-scope acquisition, declaration, 2023 normalization/selection and historical declaration work is published as stacked Backtest PRs #1–#7; finite 2019–2023 SZSE Calendar/Session evidence is frozen. Full strategy implementation still cannot start because the stack is unaccepted, historical normalization/selection is incomplete, one period has `DEBT_SCOPE_INCOMPLETE`, and broad source/general A-share/portfolio authority is missing.
 
 ## Outcome
 
@@ -34,7 +34,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C9 | Existing immutable Integration v1-v5 and fixed-singleton receipts | Existing public signatures, bytes, hashes, grades and fixed-singleton route must not change. |
 | C10 | `research/quality-bband-financial-governance-source-matrix.md` | Raw statements and known official documents are finite-capture candidates only; no reviewed source supplies full availability, revision or terminal-set closure. |
 | C11 | `implementation/plans/quality-bband-financial-source-sentinel-v1.md` | One exact `000651.SZ`/2023 annual-report SourceSnapshot acquisition tool is PR #1 and terminates before Bundle/Strategy authority. |
-| C12 | `implementation/plans/quality-bband-financial-availability-policy-v1.md` | Current PR lacks official publication metadata/confirmation, so its availability outcome is blocked. |
+| C12 | `implementation/plans/quality-bband-financial-availability-policy-v1.md` | Official date-only evidence maps only to the first exact later Session open; fixed historical results require immutable Calendar/Session binding. |
 | C13 | `implementation/plans/quality-bband-financial-revision-lineage-v1.md` | Tushare has no provider revision closure; source-bound identities must not impersonate provider revisions. |
 | C14 | `implementation/plans/quality-bband-financial-presentation-selection-v1.md` | Latest visible eligible presentation and coherent statement trio are separate point-in-time feature-input authority. |
 | C15 | `implementation/plans/quality-bband-industrial-financial-field-mapping-v1.md` | PR #1 fields are insufficient for formula authority; official CNY-yuan unit evidence and expanded raw fields are required. |
@@ -46,6 +46,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C21 | `implementation/plans/quality-bband-financial-history-source-sentinel-v3.md` | Stacked PR #6 publishes 19-member historical SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`, completing raw fixed-issuer 2018–2022 source coverage only. |
 | C22 | `research/quality-bband-historical-financial-declaration-audit.md` | Audits 2018–2022 unit/debt/D&A facts; 2021 has two incompatible debt scopes and must return `DEBT_SCOPE_INCOMPLETE`. |
 | C23 | `implementation/plans/quality-bband-historical-financial-declaration-implementation-v1.md` | Stacked PR #7 publishes exact declarations for 2018–2020/2022 and canonical 2021 `DEBT_SCOPE_INCOMPLETE` evidence; no 2021 declaration exists. |
+| C24 | `research/quality-bband-szse-calendar-session-authority-v1.md` | Official SZSE notices, rules and daily-statistics hashes freeze the finite 2019–2023 next-session dates and `09:30 Asia/Shanghai` boundary; no general Calendar provider is claimed. |
 
 ## Ownership
 
@@ -224,9 +225,9 @@ Candidate acceptance tiers:
 ## Open decisions / blockers
 
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
-2. **Availability authority:** the policy is frozen, but PR #1 lacks official publication metadata/confirmation and therefore emits no `available_at`.
+2. **Availability authority:** the finite historical Calendar/Session evidence is frozen, but no accepted Backtest operation exact-binds it into historical `available_at` results and no general Calendar provider exists.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; provider terminal-set closure remains unavailable.
-4. **Formula input:** period declarations now exist for 2018–2020/2022 plus the selected 2023 trio, but historical normalization/selection and Calendar authority do not; 2021 debt remains `DEBT_SCOPE_INCOMPLETE` with no declaration.
+4. **Formula input:** period declarations exist for 2018–2020/2022 plus the selected 2023 trio, but historical normalization/selection does not; 2021 debt remains `DEBT_SCOPE_INCOMPLETE` with no declaration.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
@@ -241,7 +242,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope acquisition/declaration/normalization/selection/history-source and historical declaration lanes are complete. PRs #1–#7 await **Backtest-owner review/acceptance**. The next safe lane is historical normalization for supported periods while preserving the 2021 typed stop; broad QB-DATA-01 and QB-PREP-01 remain blocked.
+The fixed-scope acquisition/declaration/2023-normalization/selection/history-source, historical declaration and finite Calendar/Session evidence lanes are complete. PRs #1–#7 await **Backtest-owner review/acceptance**. The next safe lane is the historical normalization packet for supported periods with exact Calendar binding and the 2021 typed stop; broad QB-DATA-01 and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
@@ -256,5 +257,5 @@ The fixed-scope acquisition/declaration/normalization/selection/history-source a
 - **Normalization:** stacked PR [`YungeG/quant-backtest#4`](https://github.com/YungeG/quant-backtest/pull/4), commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; real observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`.
 - **Selection:** stacked PR [`YungeG/quant-backtest#5`](https://github.com/YungeG/quant-backtest/pull/5), commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; real selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`.
 - **History source:** stacked PR [`YungeG/quant-backtest#6`](https://github.com/YungeG/quant-backtest/pull/6), head `64159f81fa6f831990690dd133587b96533a0362`; real 2018–2022 SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`.
-- **Second decision:** accept PRs #2–#6 and authorize period-specific 2018–2022 official statement/unit/note declarations.
+- **Second decision:** accept PRs #2–#7 and authorize fixed-scope historical normalization with exact Calendar/Session identity binding.
 - **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.

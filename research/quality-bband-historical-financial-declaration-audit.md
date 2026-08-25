@@ -132,9 +132,9 @@ Use the cash-flow-supplement intangible-amortization values captured by Tushare,
 
 ## 8. Official publication-date facts
 
-The v3 raw CNINFO metadata exact-binds:
+The v3 raw CNINFO metadata exact-binds the official dates. Official SZSE notice, trading-rule and daily-statistics evidence is frozen in [`quality-bband-szse-calendar-session-authority-v1.md`](quality-bband-szse-calendar-session-authority-v1.md):
 
-| Period | Official date | Candidate next-session open, pending accepted Calendar |
+| Period | Official date | Frozen next-session planning boundary |
 | --- | --- | --- |
 | `20181231` | `2019-04-29` | `UtcInstant(1556587800000000000)` / 2019-04-30 09:30 Asia/Shanghai |
 | `20191231` | `2020-04-30` | `UtcInstant(1588728600000000000)` / 2020-05-06 09:30 |
@@ -142,7 +142,7 @@ The v3 raw CNINFO metadata exact-binds:
 | `20211231` | `2022-04-30` | `UtcInstant(1651714200000000000)` / 2022-05-05 09:30 |
 | `20221231` | `2023-04-29` | `UtcInstant(1683163800000000000)` / 2023-05-04 09:30 |
 
-These values are candidate declarations only. No accepted multi-year Frozen SZSE Calendar/SessionModel evidence is yet bound, so historical `available_at` results remain blocked.
+The Calendar/Session facts are now sufficient for a fixed-scope implementation packet, but no accepted Backtest operation has emitted these historical `available_at` values. The 2021 lane remains stopped earlier by `DEBT_SCOPE_INCOMPLETE`.
 
 ## 9. Fail-closed decisions
 
@@ -152,7 +152,7 @@ These values are candidate declarations only. No accepted multi-year Frozen SZSE
 4. 2021 `企业借款及利息 2,731,680,114.20` conflicts with its omission from the issuer's explicit interest-bearing table. It cannot be silently included or excluded; 2021 must return `DEBT_SCOPE_INCOMPLETE`. 2022 enterprise borrowing/interest is included because the issuer explicitly includes it.
 5. 2022 provider `free_cashflow` conflict is advisory-only and cannot select or invalidate canonical FCF inputs.
 6. Opening-balance standard transitions are retained as audit facts; the existing frozen formula still uses selected closing capital for year `Y-1`. No undocumented opening-capital substitution is authorized.
-7. Historical availability remains blocked until exact Calendar/Session declarations are accepted.
+7. Historical availability remains blocked until a Backtest-owned operation exact-binds the frozen Calendar/Session source identities and emits canonical results.
 8. This audit does not prove provider revision closure, comparative-presentation closure or full-market applicability.
 
 ## 10. Next implementation boundary
@@ -161,7 +161,7 @@ A period-specific declaration implementation may bind document/unit/D&A facts fo
 
 - existing 2023 declaration/normalization/selection identities;
 - all raw row hashes/update flags/advisory conflicts;
-- historical official metadata and candidate availability as non-accepted until Calendar authority exists;
+- historical official metadata and frozen Calendar/Session planning boundaries as non-accepted until the Backtest-owned implementation exists;
 - no formulas or Strategy features in the declaration/normalization lane.
 
 Until a competent source resolves the 2021 debt conflict, five complete ROIC observations remain blocked even if the other historical periods normalize successfully.

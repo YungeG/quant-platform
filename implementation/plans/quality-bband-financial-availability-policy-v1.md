@@ -1,10 +1,11 @@
 # QB-FIN-AVAIL-01 — A-share financial-statement availability policy v1
 
-- **Status:** `CONTRACT_FROZEN_FOR_REVIEW / CURRENT_SNAPSHOT_BLOCKED`
+- **Status:** `CONTRACT_FROZEN / HISTORICAL_CALENDAR_EVIDENCE_FROZEN / IMPLEMENTATION_PENDING`
 - **Owner:** Backtest Market Bundle Builder availability normalization
-- **Input prerequisite:** QB-FIN-SENTINEL-01 SourceSnapshot plus competent publication evidence
-- **Consumer:** future `financial_statement_observations@1` Builder sentinel
+- **Input prerequisite:** exact SourceSnapshot/declaration evidence plus competent publication and Calendar/Session authority
+- **Consumer:** `financial_statement_observations@1` fixed-scope normalization sentinels
 - **Source matrix:** [`research/quality-bband-financial-governance-source-matrix.md`](../../research/quality-bband-financial-governance-source-matrix.md)
+- **Finite Calendar evidence:** [`research/quality-bband-szse-calendar-session-authority-v1.md`](../../research/quality-bband-szse-calendar-session-authority-v1.md)
 
 ## 1. Outcome
 
@@ -27,7 +28,8 @@ It never substitutes acquisition time for historical availability, guesses an in
 | V2 | `backtest/CONTEXT.md` definitions of Provider Availability, Acquisition and Assessment Time | These times are separate authorities and cannot substitute for one another. |
 | V3 | `research/quality-bband-financial-governance-source-matrix.md` | Tushare `ann_date`/`f_ann_date` are day-granular; exact public time and revision closure are absent. |
 | V4 | SZSE 2024 holiday notice | `2024-05-01` through `2024-05-05` were closed and `2024-05-06` reopened: <https://www.szse.cn/disclosure/notice/t20231226_605108.html>. |
-| V5 | G11B point-in-time observation contract | Availability cutoff uses complete immutable evidence; unavailable or future facts fail closed. |
+| V5 | [`quality-bband-szse-calendar-session-authority-v1.md`](../../research/quality-bband-szse-calendar-session-authority-v1.md) | Exact official SZSE notices, archived rules and daily market statistics freeze the five 2019–2023 next-session opens and the `09:30 Asia/Shanghai` continuous-auction boundary. |
+| V6 | G11B point-in-time observation contract | Availability cutoff uses complete immutable evidence; unavailable or future facts fail closed. |
 
 ## 3. Evidence classes
 
@@ -177,29 +179,18 @@ Builder event phase/source-sequence composition is out of scope for this policy 
 
 Every failure returns no `available_at` and writes no observation/Bundle publication.
 
-## 9. Exact Gree sentinel decision
+## 9. Exact Gree decisions
 
-Current PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) retains:
+### 2023 report
 
-- Tushare rows with date `20240430`;
-- CNINFO report PDF `1219928418.PDF`;
-- exact report hash `sha256:32ebc475a2291ce4f1b5c1a9f9da55227e03192f07e75041e976c29d213ec8aa`.
+Stacked Backtest PRs #2–#4 retain and exact-bind:
 
-It does **not** retain official publication metadata or an official confirmation member. Therefore its exact V1 availability outcome is:
+- CNINFO annual report `1219928418.PDF`, `sha256:32ebc475a2291ce4f1b5c1a9f9da55227e03192f07e75041e976c29d213ec8aa`;
+- retrospective confirmation `1220300051.PDF`, `302155` bytes, `sha256:a78a67865a7ea989c4fd8b053fad1aa75f36d22c10d14387800ff16b698dbc60`;
+- official date-only publication `2024-04-30`;
+- the 2024 SZSE Labour Day closure and `2024-05-06` reopen.
 
-```text
-OFFICIAL_PUBLICATION_AUTHORITY_MISSING
-available_at = null
-Builder normalization = terminated
-```
-
-A candidate retrospective confirmation is CNINFO document `1220300051.PDF`, which states that the issuer disclosed the 2023 annual report on `2024-04-30`:
-
-- URL: `https://static.cninfo.com.cn/finalpage/2024-06-08/1220300051.PDF`;
-- bytes: `302155`;
-- SHA-256: `sha256:a78a67865a7ea989c4fd8b053fad1aa75f36d22c10d14387800ff16b698dbc60`.
-
-If an accepted successor SourceSnapshot retains that confirmation, exact document binding is approved, and an accepted Calendar/SessionModel proves the 2024 Labour Day closure, the date-only candidate boundary is:
+PR #4 therefore publishes the source-bounded candidate boundary:
 
 ```text
 2024-05-06T09:30:00+08:00
@@ -207,7 +198,21 @@ If an accepted successor SourceSnapshot retains that confirmation, exact documen
 = UtcInstant(1714959000000000000)
 ```
 
-This candidate value is not yet an accepted `available_at`.
+The PR and candidate remain unaccepted and non-decision-grade.
+
+### 2018–2022 report history
+
+The finite official evidence frozen in [`quality-bband-szse-calendar-session-authority-v1.md`](../../research/quality-bband-szse-calendar-session-authority-v1.md) fixes these planning values:
+
+| Report period | Official date | First strictly later session | Candidate `available_at_utc` |
+| --- | --- | --- | --- |
+| `20181231` | `2019-04-29` | `2019-04-30 09:30 Asia/Shanghai` | `UtcInstant(1556587800000000000)` |
+| `20191231` | `2020-04-30` | `2020-05-06 09:30 Asia/Shanghai` | `UtcInstant(1588728600000000000)` |
+| `20201231` | `2021-04-29` | `2021-04-30 09:30 Asia/Shanghai` | `UtcInstant(1619746200000000000)` |
+| `20211231` | `2022-04-30` | `2022-05-05 09:30 Asia/Shanghai` | `UtcInstant(1651714200000000000)` |
+| `20221231` | `2023-04-29` | `2023-05-04 09:30 Asia/Shanghai` | `UtcInstant(1683163800000000000)` |
+
+No historical `available_at` artifact exists yet. A Backtest-owned implementation must exact-bind the frozen source identities. The `20211231` lane terminates earlier with `DEBT_SCOPE_INCOMPLETE` and cannot emit normalization output.
 
 ## 10. Compatibility and forbidden paths
 
@@ -236,4 +241,6 @@ A future pure implementation must prove:
 
 ## 12. Readiness decision
 
-The policy contract is frozen for review. The current four-member SourceSnapshot remains unavailable for Builder normalization. The next safe data action is to freeze the financial revision lineage contract, then design a successor acquisition member for competent publication-date confirmation.
+The availability contract and the finite 2019–2023 Calendar/Session evidence are frozen. The evidence is sufficient to freeze historical normalization for `20181231`, `20191231`, `20201231` and `20221231`; `20211231` remains stopped by `DEBT_SCOPE_INCOMPLETE`.
+
+No general SZSE Calendar provider or accepted historical `available_at` implementation exists. The next safe action is the fixed-scope historical normalization implementation packet.
