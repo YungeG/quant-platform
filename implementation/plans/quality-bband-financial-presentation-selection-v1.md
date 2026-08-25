@@ -1,7 +1,8 @@
 # QB-FIN-SELECT-01 — Financial presentation selection v1
 
-- **Status:** `CONTRACT_FROZEN_FOR_REVIEW / NO_EXECUTABLE_INPUTS`
+- **Status:** `CONTRACT_FROZEN / FIXED_SCOPE_INPUT_EXISTS / GENERAL_SELECTOR_NOT_IMPLEMENTED`
 - **Owner:** Strategy Feature Manifest / pure financial feature-input selection
+- **Fixed-scope packet:** [`quality-bband-financial-presentation-selection-implementation-v1.md`](quality-bband-financial-presentation-selection-implementation-v1.md)
 - **Revision prerequisite:** [`quality-bband-financial-revision-lineage-v1.md`](quality-bband-financial-revision-lineage-v1.md)
 - **Availability prerequisite:** [`quality-bband-financial-availability-policy-v1.md`](quality-bband-financial-availability-policy-v1.md)
 
@@ -155,15 +156,14 @@ The feature manifest, not this selector, decides ROIC/ROCE/FCF/leverage formulas
 
 ## 11. Current decision
 
-No credentialed financial SourceSnapshot, accepted availability result or normalized statement revisions exist yet. Therefore:
+A real source-bounded current-consolidated trio now exists in observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`, published by stacked Backtest PR #4. It is one issuer/one period, provider-revision-closure-incomplete and unaccepted.
 
 ```text
-trio selection = unavailable
-quality features = unavailable
+fixed current-only trio selection candidate = implementable
+comparative/adjustment chain policy = unexercised
+five-year quality features = unavailable
 strategy execution = blocked
 ```
-
-PR #1 and the preceding contracts define the path but provide no real economic input values.
 
 ## 12. Acceptance
 
@@ -184,4 +184,4 @@ A future pure selector implementation must prove:
 
 ## 13. Readiness decision
 
-The presentation-selection contract is frozen for review. The next independent blocker is the ordinary-industrial raw field/unit and formula-input mapping. Builder sentinel design remains blocked until PR #1 acceptance, real capture, availability authority and normalized revisions exist.
+The general presentation-selection contract remains frozen and unimplemented. QB-FIN-SELECT-IMPL-01 is ready for a minimal stacked fixed-scope candidate over PR #4; it must not claim generic comparative-adjustment or revision-chain coverage. Five-year formula execution remains blocked by missing annual periods and accepted stack authority.

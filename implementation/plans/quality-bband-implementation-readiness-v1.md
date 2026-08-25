@@ -42,6 +42,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C17 | `research/quality-bband-real-capture-readiness.md` | Approved-proxy capture produced verified five-member SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`. |
 | C18 | `implementation/plans/quality-bband-financial-declaration-implementation-v1.md` | Stacked PR #3 and real declaration candidate `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007` resolve fixed-report publication/unit/debt/D&A semantics but remain unaccepted/non-decision-grade. |
 | C19 | `implementation/plans/quality-bband-financial-normalization-implementation-v1.md` | Stacked PR #4 publishes exact source-bounded revisions and observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`; closure/decision-grade/deployment remain false. |
+| C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Freeze a minimal PR #4-stacked current-only trio selector; generic comparative-adjustment and revision-chain coverage remain explicitly out of scope. |
 
 ## Ownership
 
