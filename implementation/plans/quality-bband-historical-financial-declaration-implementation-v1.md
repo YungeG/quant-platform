@@ -384,7 +384,7 @@ Architecture protection algorithm:
 
 1. parse `git ls-tree -r -z BASE` into exact `(mode,type,blob,path)` entries;
 2. require every base path exists and no deletion is staged/committed;
-3. compare current `git hash-object -- path` with the base blob and current index mode from `git ls-files -s` with the base mode; preserve regular/executable/symlink modes and symlink target bytes;
+3. compare current index mode from `git ls-files -s` with the base mode; for `100644`/`100755`, compare `git hash-object -- path` with the base blob; for `120000`, hash `os.readlink(path).encode()` through `git hash-object --stdin` and compare that link-target blob; reject any other mode;
 4. require `git diff --name-only BASE..HEAD` plus `git status --short --untracked-files=all` to contain only, and collectively exactly, the three allowed new paths;
 5. the temporary Platform fixture link is outside the Backtest worktree and is created/removed by the orchestrator command, so it never enters this status/diff set.
 
@@ -452,6 +452,8 @@ uv run --locked pytest -q \
   tests/bundle_builder \
   tests/architecture/test_gree_historical_financial_document_declarations_v1_boundary.py
 ```
+
+Create the candidate worktree directly under `/home/ygguo/agent-projs/ai-crypt/` as `/home/ygguo/agent-projs/ai-crypt/backtest-qb-fin-historical-declarations`; the sibling layout is required by the fixture command below.
 
 Broad regression uses the exact temporary Platform fixture link:
 
