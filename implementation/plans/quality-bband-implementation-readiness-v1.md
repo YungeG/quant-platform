@@ -43,6 +43,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C18 | `implementation/plans/quality-bband-financial-declaration-implementation-v1.md` | Stacked PR #3 and real declaration candidate `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007` resolve fixed-report publication/unit/debt/D&A semantics but remain unaccepted/non-decision-grade. |
 | C19 | `implementation/plans/quality-bband-financial-normalization-implementation-v1.md` | Stacked PR #4 publishes exact source-bounded revisions and observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`; closure/decision-grade/deployment remain false. |
 | C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Stacked PR #5 publishes fixed current-only trio selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`; generic comparative-adjustment and revision-chain coverage remain out of scope. |
+| C21 | `implementation/plans/quality-bband-financial-history-source-sentinel-v3.md` | Freeze the minimum fixed-issuer 2018–2022 acquisition successor needed to combine with 2023 into six balance endpoints and five annual trios; acquisition remains source-bounded only. |
 
 ## Ownership
 
