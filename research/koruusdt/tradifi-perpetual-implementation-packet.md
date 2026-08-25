@@ -1,6 +1,6 @@
 # BT-TRADIFI-01 Full Implementation Packet
 
-Status: **READY — capability contract approved by the Platform owner**
+Status: **NOT_READY — BT-TRADIFI-AMEND-01 awaits explicit owner approval**
 
 ## Outcome
 
@@ -21,6 +21,7 @@ Backtest exposes one additive public preparation interface that accepts exact KO
 | B7 | `backtest/docs/research/binance-usdm-margin-tiers-primary-sources.md` | Historical finite tier coverage and separate selected leverage |
 | P1 | `backtest/packages/backtest-runtime/src/crypto_quant_backtest/__init__.py` | Only public-root exports are callable by Platform |
 | P2 | `backtest/packages/backtest-runtime/src/crypto_quant_backtest/execution.py` | Existing next-eligible model and `FullFillBuilder` hashes/behavior remain unchanged |
+| A1 | `research/koruusdt/tradifi-perpetual-capability-amendment-01.md` | Bundle-owned target streams, SourceSnapshot retention, KORU source modules, and versioned durable fill-liquidity input path |
 
 ## Ownership
 
@@ -37,13 +38,16 @@ Backtest exposes one additive public preparation interface that accepts exact KO
 2. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/binance_usdm_tradifi_profile.py`
 3. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/binance_usdm_tradifi_preparation.py`
 4. `backtest/packages/market-bundle-builder/src/crypto_quant_bundle_builder/binance_usdm_tradifi_execution_bundle_v1.py`
+5. KORU source-bounded aggregate-trade, mark/index, and funding-history normalizer modules
 
 ### Additive shared-file edits
 
 1. `backtest/packages/trading-kernel/src/crypto_quant_trading/profiles/binance_usdm/__init__.py`
 2. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/__init__.py`
 3. `backtest/packages/market-bundle-builder/src/crypto_quant_bundle_builder/__init__.py`
-4. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/execution.py` — add a separate role-aware builder; do not edit `FullFillBuilder` behavior or canonical output.
+4. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/execution.py` — existing additive role-aware builder retained; do not edit `FullFillBuilder` behavior or canonical output.
+5. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/engine.py` — select legacy or role-aware builder from the new versioned execution plan.
+6. `backtest/packages/backtest-runtime/src/crypto_quant_backtest/execution_inputs.py` — add a new durable schema/materializer/decoder version while preserving legacy bytes.
 
 ### Tests and docs
 
@@ -52,7 +56,7 @@ Backtest exposes one additive public preparation interface that accepts exact KO
 - one public-preparation integrated test and replay test;
 - one Backtest acceptance receipt and implementation-plan update.
 
-No `Fill` schema, generic Engine request schema, Research, Validation, Foundation, Promotion, or existing MarketBundle schema edit is planned.
+No `Fill`, Research, Validation, Foundation, Promotion, or existing MarketBundle schema edit is planned. A new additive execution-plan/input schema version is now required; every legacy schema and byte identity remains unchanged.
 
 ## Flow and seam
 
@@ -72,8 +76,9 @@ Research TrialExecution
        -> verify exact MarketBundleRef + BuildArtifactManifest
        -> resolve separate TradFi instrument model
        -> resolve one post-adjustment G10B-F evidence band
+       -> decode one preparation-authority event
+       -> select/verify the bundle-owned target stream mapped to parameter ref
        -> qualify calendars/funding/account/fees/slippage
-       -> build exact strategy + parameter target stream
        -> compose TradFi market/simulation/account profiles
        -> register request + materialize existing execution input bundle
        -> publish request/input artifacts
@@ -90,14 +95,17 @@ Research TrialExecution
 | `BinanceUsdmTradifiProfileCompositionRequest` | add | Exact single-band TradFi instrument + G10B-F resolutions, calendars, timeline, simulation authority | composer |
 | `BinanceUsdmTradifiProfileComposer` | add | Produce `crypto.binance_usdm.tradifi.v1` market profile and standard account profile without calling ordinary G10G composer | resolver registry |
 | `BinanceUsdmTradifiSimulationProfile` | add | Bind `bar.next_eligible_trade_event.tradifi.v1`, exact slippage calibration, latency, liquidity, closeout, liquidation components | registry/runtime |
-| `LiquidityRoleFullFillBuilder` | add | Reuse accepted decision/slippage validation, construct the existing `Fill` with caller-frozen exact liquidity role `taker` | TradFi case builder |
+| `LiquidityRoleFullFillBuilder` | added (`315d8f7`) | Reuse accepted decision/slippage validation, construct the existing `Fill` with caller-frozen exact liquidity role `taker` | TradFi Engine path |
+| `ResolvedBarExecutionV2` or equivalent new version | add after amendment approval | Persist exact optional fill-liquidity role without changing legacy plan bytes | Engine/input materializer |
+| new execution-input materializer/decoder version | add after amendment approval | Round-trip role-aware TradFi execution plans and durable rebuild identity | runtime/rebuild |
+| `TradifiPreparationAuthorityEvent` | add after amendment approval | Bind profile request, strategy ref, eight parameter-to-target mappings, calendars/unit refs, SourceSnapshots, normalization hashes | preparation decoder |
 | `BinanceUsdmTradifiBarRequestIntent` | add | Experiment/window/account/currency/seed/bundle/strategy/parameter refs and development grade | public preparation |
 | `BinanceUsdmTradifiProviderInputs` | add | Caller-owned base `BuildArtifactManifest` and 10,000 USDT synthetic initial equity | public preparation |
 | `BinanceUsdmTradifiPreparationFailureCode` | add | Structured preparation failures in contract precedence | caller/tests |
 | `BinanceUsdmTradifiPreparationFailure` | add | Canonical failure identity and evidence subjects | caller/tests |
 | `prepare_binance_usdm_tradifi_bar_backtest` | add | Deep public seam; returns prepared execution or structured failure, no network | Research provider adapter |
 | `BinanceUsdmTradifiExecutionBundleRequest` | add | Frozen post-adjustment source revisions, coverage, calendars, corporate-action provenance, account evidence | bundle builder |
-| `build_binance_usdm_tradifi_execution_bundle_v1` | add | Retain exact source bytes/checksums/gaps and publish one immutable MarketBundleRef | preparation/data owner |
+| `build_binance_usdm_tradifi_execution_bundle_v1` | add | Bind retained SourceSnapshot refs/checksums/gaps, project required streams, compute eight targets, publish one immutable MarketBundleRef | preparation/data owner |
 
 ### Existing symbols explicitly preserved
 
@@ -153,7 +161,7 @@ No fallback, alias, forward fill, future-open sizing, fabricated terminal, zero 
 - Existing public preparation signatures/outputs remain unchanged.
 - Existing `FullFillBuilder` continues emitting `liquidity="full"`; only the new builder emits `taker`.
 - Existing `Fill` schema already carries optional liquidity; no schema migration.
-- Existing execution-input bundle codecs remain unchanged unless implementation proves a new serialized type enters the bundle; any such discovery makes the packet `NOT_READY` and requires a contract amendment.
+- Existing execution-input bundle codecs remain unchanged; a separate new version persists `fill_liquidity_role` for TradFi cases and changes only new-case bytes/identity.
 - No retry/downgrade between ordinary and TradFi profiles.
 - Replay preserves prepared refs, semantic run ID, target stream, profile digest, and source capture time.
 
@@ -214,4 +222,4 @@ No fallback, alias, forward fill, future-open sizing, fabricated terminal, zero 
 
 ## Open decision
 
-None. `BT-TRADIFI-CON-01` is approved. The first implementation sentinel is the new TradFi instrument model test proving exact KORU acceptance while the existing `PERPETUAL` component hash stays unchanged.
+Explicit owner approval of `BT-TRADIFI-AMEND-01` is required before further source/bundle/preparation or Engine/input coding. Existing accepted commits `af45a2f`, `315d8f7`, and `3e8c913` remain valid inputs.
