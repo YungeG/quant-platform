@@ -1,6 +1,6 @@
 # BT-TRADIFI-01 Full Implementation Packet
 
-Status: **READY — BT-TRADIFI-AMEND-01 approved by the Platform owner**
+Status: **READY — BT-TRADIFI-DISPATCH-01 approved by the Platform owner**
 
 ## Outcome
 
@@ -22,6 +22,7 @@ Backtest exposes one additive public preparation interface that accepts exact KO
 | P1 | `backtest/packages/backtest-runtime/src/crypto_quant_backtest/__init__.py` | Only public-root exports are callable by Platform |
 | P2 | `backtest/packages/backtest-runtime/src/crypto_quant_backtest/execution.py` | Existing next-eligible model and `FullFillBuilder` hashes/behavior remain unchanged |
 | A1 | `research/koruusdt/tradifi-perpetual-capability-amendment-01.md` | Bundle-owned target streams, SourceSnapshot retention, KORU source modules, and versioned durable fill-liquidity input path |
+| A2 | `research/koruusdt/tradifi-perpetual-dispatch-amendment-02.md` | Production derivative financial dispatcher, exact selector, durable profile-wire codec, and multi-order derivative Case planner |
 
 ## Ownership
 
@@ -222,4 +223,4 @@ No fallback, alias, forward fill, future-open sizing, fabricated terminal, zero 
 
 ## Open decision
 
-None. `BT-TRADIFI-AMEND-01` is approved. Existing accepted commits `af45a2f`, `315d8f7`, and `3e8c913` remain valid inputs. The next sentinel is a new execution-input round-trip proving TradFi `fill_liquidity_role="taker"` changes only the new schema identity while legacy bytes remain fixed.
+None. `BT-TRADIFI-DISPATCH-01` is approved. The next sentinel is exact production dispatcher selection: a sealed TradFi derivative Case must select the derivative dispatcher while every ordinary/cash Case retains its existing dispatcher and hashes.
