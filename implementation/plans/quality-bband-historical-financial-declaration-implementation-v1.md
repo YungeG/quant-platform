@@ -1,8 +1,9 @@
 # QB-FIN-HISTORY-DECL-IMPL-01 — Gree 2018–2022 period declarations
 
-- **Status:** `IMPLEMENTATION_AUTHORITY_FROZEN / APPROVED_FOR_STACKED_CANDIDATE / NOT_ACCEPTED`
+- **Status:** `STACKED_CANDIDATE_PUBLISHED / REAL_CANDIDATE_PUBLISHED / NOT_ACCEPTED`
 - **Owner:** Backtest Market Bundle Builder
 - **Base:** stacked PR #6 head `64159f81fa6f831990690dd133587b96533a0362`
+- **Candidate:** Backtest PR [#7](https://github.com/YungeG/quant-backtest/pull/7), commit `25b8dd12a8a62530ce2467e13d1bd0b55b34b0cf`
 - **SourceSnapshot:** `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`
 - **Audit:** [`research/quality-bband-historical-financial-declaration-audit.md`](../../research/quality-bband-historical-financial-declaration-audit.md)
 - **Reviewed at:** `UtcInstant(1787668131165592196)`
@@ -473,12 +474,25 @@ uv run --locked pytest -q \
   --deselect tests/architecture/test_gree_2023_financial_document_declarations_v1_boundary.py::test_declaration_candidate_write_set_is_exact \
   --deselect tests/architecture/test_gree_2023_financial_statement_normalization_v1_boundary.py::test_normalization_candidate_write_set_is_exact \
   --deselect tests/architecture/test_gree_2023_financial_statement_trio_selection_v1_boundary.py::test_selection_candidate_write_set_is_exact \
-  --deselect tests/architecture/test_g12a_tushare_financial_history_sentinel_v3_boundary.py::test_v3_write_set_is_exact
+  --deselect tests/architecture/test_g12a_tushare_financial_history_sentinel_v3_boundary.py::test_v3_base_is_byte_identical_and_write_set_is_exact
 ```
 
 No broad `-k` exclusion.
 
-## 17. Real candidate publication
+## 17. Implementation evidence
+
+Stacked Backtest PR [#7](https://github.com/YungeG/quant-backtest/pull/7):
+
+- base: `research/qb-fin-history-v3` / PR #6;
+- commit: `25b8dd12a8a62530ce2467e13d1bd0b55b34b0cf`;
+- focused: `14 passed, 1 skipped`;
+- real opt-in: `1 passed`;
+- Builder-wide: `364 passed, 4 skipped`;
+- broad regression: `2572 passed, 4 skipped, 4 deselected`; only exact PR #3–#6 predecessor write-set guards were deselected;
+- independent review: `ACCEPTED`, no remaining findings;
+- LSP/lens: clean.
+
+## 18. Real candidate publication
 
 Publication is an orchestrator one-off after review, candidate commit, adjacent/broad validation and stacked PR creation; it is not production-module I/O.
 
@@ -535,6 +549,21 @@ Every value file is canonical bytes from `to_canonical_dict()`. Manifest body:
 
 Publish through a sibling temporary directory, canonical readback/hash checks and same-filesystem rename; no overwrite. Credential scan must pass even though no credential is required. Persisted files are mode `0600`.
 
-## 18. Next handoff
+Published candidate:
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  declarations/000651.SZ/2018-2022/v1-candidate-01
+```
+
+- 2018 file SHA-256: `sha256:ba540f6176a2ae0a1ea928f1bbb5bf29632b47467ba9d7b144ad0db657ec4d33`;
+- 2019 file SHA-256: `sha256:072a8c0634eeb77dba1a7661249a8a76bf1da698547cdd07b4749d60deaed5ba`;
+- 2020 file SHA-256: `sha256:f632561c6b3597ca95cccd3a2d1bd5cd1eb60fc4196135acab90f50e71e41514`;
+- 2022 file SHA-256: `sha256:e834c628f696dac046ddb246b965360f40918703b9794e48838e6eae0714c1c9`;
+- 2021 failure file SHA-256: `sha256:420ede22b086a0fc462c57b1fa69c2046c485dd75efa411f85289ba3124683a6`;
+- manifest file SHA-256: `sha256:a424edd19abc9b17d54f40bfc0e1c6f90e04690d7ba4c6bb10a99982e9531726`;
+- canonical readback, declaration/failure/conflict/file hashes, mode `0600` and credential exclusion passed.
+
+## 19. Next handoff
 
 After declaration candidate publication, historical normalization may proceed for 2018–2020 and 2022. The 2021 period must remain unavailable until competent source authority resolves the financing-scope conflict. Therefore five complete ROIC observations and formal strategy execution remain blocked.

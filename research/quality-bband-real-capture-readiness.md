@@ -14,6 +14,7 @@
 | Backtest PR #4 | <https://github.com/YungeG/quant-backtest/pull/4>, open stacked on PR #3 | normalization commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; not accepted |
 | Backtest PR #5 | <https://github.com/YungeG/quant-backtest/pull/5>, open stacked on PR #4 | fixed trio-selection commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; not accepted |
 | Backtest PR #6 | <https://github.com/YungeG/quant-backtest/pull/6>, open stacked on PR #5 | historical-source head `64159f81fa6f831990690dd133587b96533a0362`; not accepted |
+| Backtest PR #7 | <https://github.com/YungeG/quant-backtest/pull/7>, open stacked on PR #6 | historical-declaration commit `25b8dd12a8a62530ce2467e13d1bd0b55b34b0cf`; not accepted |
 | Platform research PR | <https://github.com/YungeG/quant-platform/pull/1>, open, mergeable | not accepted |
 | v1 commit | `e7e874fc58e0911b7df1cd0463387526afcb845d` | remotely reachable |
 | v2 commits | `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52` + `146cd227b2fc707726e133dbbd08cde356f21dcd` | remotely reachable |
@@ -121,13 +122,22 @@ The snapshot contains the 2018 balance endpoint, 2019–2022 statement trios, fi
 
 The first real publication attempt failed atomically before final visibility because the range parent was absent; the reviewed head fix created the validated parent and the retry succeeded. No partial output survived.
 
-Historical official-report audit is recorded in [`quality-bband-historical-financial-declaration-audit.md`](quality-bband-historical-financial-declaration-audit.md). Unit and D&A facts are sufficient for declaration planning, but 2021 debt is not uniquely defensible: the issuer's explicit interest-bearing table omits separately labelled `企业借款及利息 2,731,680,114.20`. Both candidate debt reconciliations are retained and canonical 2021 debt must fail `DEBT_SCOPE_INCOMPLETE`.
+Historical official-report audit is recorded in [`quality-bband-historical-financial-declaration-audit.md`](quality-bband-historical-financial-declaration-audit.md). Unit and D&A facts are sufficient, but 2021 debt is not uniquely defensible: the issuer's explicit interest-bearing table omits separately labelled `企业借款及利息 2,731,680,114.20`. Both candidate debt reconciliations are retained and canonical 2021 debt fails `DEBT_SCOPE_INCOMPLETE`.
+
+Published historical declaration candidate:
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  declarations/000651.SZ/2018-2022/v1-candidate-01
+```
+
+It contains four canonical declaration files for 2018–2020/2022, one canonical 2021 failure/conflict file and a manifest. Manifest SHA-256 is `sha256:a424edd19abc9b17d54f40bfc0e1c6f90e04690d7ba4c6bb10a99982e9531726`; readback, identities, file modes and credential exclusion passed.
 
 ## Next executable gates
 
-1. accept stacked PRs #1–#6;
-2. publish period-specific unit/D&A/debt declarations, preserving a typed 2021 debt failure;
-3. bind accepted Calendar/Session evidence before historical availability;
-4. normalize/select only supported periods; five complete ROIC observations remain blocked until 2021 debt is resolved.
+1. accept stacked PRs #1–#7;
+2. bind accepted Calendar/Session evidence before historical availability;
+3. normalize/select 2018–2020/2022 only; preserve 2021 as unavailable;
+4. five complete ROIC observations remain blocked until competent authority resolves 2021 debt.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

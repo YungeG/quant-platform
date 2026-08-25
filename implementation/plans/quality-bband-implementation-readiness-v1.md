@@ -45,7 +45,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Stacked PR #5 publishes fixed current-only trio selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`; generic comparative-adjustment and revision-chain coverage remain out of scope. |
 | C21 | `implementation/plans/quality-bband-financial-history-source-sentinel-v3.md` | Stacked PR #6 publishes 19-member historical SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`, completing raw fixed-issuer 2018–2022 source coverage only. |
 | C22 | `research/quality-bband-historical-financial-declaration-audit.md` | Audits 2018–2022 unit/debt/D&A facts; 2021 has two incompatible debt scopes and must return `DEBT_SCOPE_INCOMPLETE`. |
-| C23 | `implementation/plans/quality-bband-historical-financial-declaration-implementation-v1.md` | Freeze exact per-period declarations for 2018–2020/2022 and canonical 2021 debt-conflict failure evidence. |
+| C23 | `implementation/plans/quality-bband-historical-financial-declaration-implementation-v1.md` | Stacked PR #7 publishes exact declarations for 2018–2020/2022 and canonical 2021 `DEBT_SCOPE_INCOMPLETE` evidence; no 2021 declaration exists. |
 
 ## Ownership
 
@@ -226,7 +226,7 @@ Candidate acceptance tiers:
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
 2. **Availability authority:** the policy is frozen, but PR #1 lacks official publication metadata/confirmation and therefore emits no `available_at`.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; provider terminal-set closure remains unavailable.
-4. **Formula input:** raw 2018–2022 history and the selected 2023 trio exist, but period-specific declarations/normalization/selection do not; 2021 debt is independently blocked by `DEBT_SCOPE_INCOMPLETE`.
+4. **Formula input:** period declarations now exist for 2018–2020/2022 plus the selected 2023 trio, but historical normalization/selection and Calendar authority do not; 2021 debt remains `DEBT_SCOPE_INCOMPLETE` with no declaration.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
@@ -241,7 +241,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The source-discovery, financial contract-freeze and fixed-scope acquisition/declaration/normalization/selection/history-source lanes plus historical PDF audit are complete. PRs #1–#6 await **Backtest-owner review/acceptance**. The next safe lane is period-specific declarations that succeed for supported facts and fail closed for 2021 debt; broad QB-DATA-01 and QB-PREP-01 remain blocked.
+The fixed-scope acquisition/declaration/normalization/selection/history-source and historical declaration lanes are complete. PRs #1–#7 await **Backtest-owner review/acceptance**. The next safe lane is historical normalization for supported periods while preserving the 2021 typed stop; broad QB-DATA-01 and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
