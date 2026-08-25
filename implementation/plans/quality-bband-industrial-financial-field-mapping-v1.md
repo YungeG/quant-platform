@@ -1,6 +1,6 @@
 # QB-FIN-FIELDS-01 — Ordinary-industrial financial field mapping v1
 
-- **Status:** `CONTRACT_FROZEN_FOR_REVIEW / PR1_FIELD_SET_INSUFFICIENT / UNIT_AUTHORITY_BLOCKED`
+- **Status:** `CORRECTED_AFTER_REAL_CAPTURE / NOTE_DECLARATIONS_BLOCKED`
 - **Owner:** Strategy Feature Manifest + pure Builder line-item normalization
 - **Scope:** ordinary non-financial industrial issuers only (`comp_type=1`)
 - **Selection prerequisite:** [`quality-bband-financial-presentation-selection-v1.md`](quality-bband-financial-presentation-selection-v1.md)
@@ -62,14 +62,14 @@ Tushare `ebit` and `ebitda` may be captured as provider observations but are `AD
 | `total_hldr_eqy_exc_min_int` | equity excluding minority interests | reconciliation/shareholder evidence | required |
 | `minority_int` | minority interests | reconciliation | required |
 | `total_liab_hldr_eqy` | liabilities and equity total | balance reconciliation | required |
-| `st_borr` | short-term borrowings | interest-bearing debt | required; null fails |
-| `non_cur_liab_due_1y` | non-current liabilities due within one year | interest-bearing debt ceiling | required |
-| `lt_borr` | long-term borrowings | interest-bearing debt | required |
-| `bond_payable` | bonds payable | interest-bearing debt | required |
-| `st_bonds_payable` | short-term bonds payable | interest-bearing debt | required |
-| `lease_liab` | non-current lease liabilities | interest-bearing debt | required for post-adoption periods |
+| `st_borr` | short-term borrowings | debt reconciliation | required |
+| `non_cur_liab_due_1y` | non-current liabilities due within one year | debt reconciliation | required |
+| `lt_borr` | long-term borrowings | debt reconciliation | required |
+| `bond_payable` | bonds payable | debt reconciliation | nullable only under exact note declaration |
+| `st_bonds_payable` | short-term bonds payable | debt reconciliation | nullable only under exact note declaration |
+| `lease_liab` | non-current lease liabilities | debt reconciliation | required for post-adoption periods |
 
-`lt_payable`, `oth_cur_liab`, `oth_ncl`, `trading_fl` and other broad liabilities are not silently classified as debt. If official notes show material interest-bearing debt outside the frozen fields, v1 returns `DEBT_SCOPE_INCOMPLETE`.
+The standard balance fields do not by themselves define complete interest-bearing debt. `lt_payable`, `oth_cur_liab`, `oth_ncl`, `trading_fl` and other broad liabilities are not silently classified. Canonical debt requires a source-bound financing-liability note declaration; missing declaration returns `DEBT_SCOPE_INCOMPLETE`.
 
 ## 6. Cash-flow inputs
 
@@ -77,10 +77,10 @@ Tushare `ebit` and `ebitda` may be captured as provider observations but are `AD
 | --- | --- | --- | --- |
 | `n_cashflow_act` | net operating cash flow | FCF | required |
 | `c_pay_acq_const_fiolta` | cash paid to acquire/build fixed, intangible and other long-lived assets | capital expenditure | required |
-| `depr_fa_coga_dpba` | fixed/oil-gas/biological asset depreciation/depletion | D&A | required |
-| `use_right_asset_dep` | right-of-use asset depreciation | D&A | required when applicable |
+| `depr_fa_coga_dpba` | provider depreciation/depletion field | D&A through exact source-bound semantic declaration | required |
+| `use_right_asset_dep` | separate right-of-use depreciation observation | advisory/optional | never added when included in the declared combined depreciation line |
 | `amort_intang_assets` | intangible-asset amortization | D&A | required |
-| `lt_amort_deferred_exp` | long-term deferred-expense amortization | D&A | required |
+| `lt_amort_deferred_exp` | separate long-term deferred-expense amortization | advisory/optional | added only when official declaration proves a separate line |
 | `c_cash_equ_end_period` | ending cash and cash equivalents | cash reconciliation evidence | required |
 
 Tushare `free_cashflow` is `ADVISORY_ONLY` and cannot substitute for operating cash flow minus capital expenditure.
@@ -97,18 +97,11 @@ free_cash_flow
   = n_cashflow_act - capital_expenditure
 
 reported_depreciation_and_amortization
-  = depr_fa_coga_dpba
-  + use_right_asset_dep
-  + amort_intang_assets
-  + lt_amort_deferred_exp
+  = declared_combined_depreciation
+  + declared_separate_amortization_lines
 
 interest_bearing_debt
-  = st_borr
-  + non_cur_liab_due_1y
-  + lt_borr
-  + bond_payable
-  + st_bonds_payable
-  + lease_liab
+  = financing_liability_note_declaration.ending_interest_bearing_debt
 
 net_debt
   = interest_bearing_debt - money_cap
@@ -148,7 +141,7 @@ Five annual ROIC observations require six annual balance-sheet endpoints. No fir
 - `income_tax < 0` or `income_tax > total_profit`: effective-tax input unsupported; no clamp;
 - `EBITDA <= 0`: net-debt/EBITDA unavailable;
 - `average_invested_capital <= 0`: ROIC unavailable;
-- missing/null required value: fail, do not use zero;
+- missing/null required value: fail, except when an exact official note declaration proves zero/not-applicable for that field and report;
 - numeric zero remains valid unless a denominator/strictly-positive rule rejects it;
 - negative FCF/net debt/EBIT/NOPAT remain real outputs;
 - no winsorization, clipping, sector median, forward fill or TTM substitution in v1.
@@ -166,7 +159,7 @@ Before formulas:
 
 Any permitted reporting-rounding tolerance requires a later explicit unit/rounding contract. V1 does not invent epsilon.
 
-## 10. PR #1 delta
+## 10. Acquisition delta and real-capture correction
 
 PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) intentionally proves a smaller source-capture sentinel. Its field tuple is insufficient for canonical feature calculations.
 
@@ -176,7 +169,18 @@ Missing required fields include:
 - balance: `total_hldr_eqy_inc_min_int`, `minority_int`, `total_liab_hldr_eqy`, `st_bonds_payable`, `lease_liab`;
 - cash flow: `depr_fa_coga_dpba`, `use_right_asset_dep`, `amort_intang_assets`, `lt_amort_deferred_exp`.
 
-Captured provider `ebit`/`ebitda` cannot replace those omissions. PR #1 should remain the minimal G12A sentinel; a successor acquisition contract must add the fields before feature-ready capture.
+Captured provider `ebit`/`ebitda` cannot replace those omissions. PR #1 remains the minimal G12A sentinel; stacked PR #2 added the fields and produced real SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`.
+
+Real-capture audit found:
+
+- balance rows differ only by non-authoritative `update_flag`;
+- official ending bond balance is zero, but null→zero requires an exact note declaration;
+- standard balance fields do not exact-cover official `银行借款及其他` financing liabilities;
+- captured `depr_fa_coga_dpba` exactly equals the official combined fixed/investment-property/right-of-use depreciation line;
+- adding null `use_right_asset_dep` separately would double count;
+- no separate long-term deferred-expense amortization line appears in the official cash-flow supplement.
+
+These corrections are source-specific declaration rules, not provider-global null semantics.
 
 ## 11. Failure precedence
 
@@ -224,4 +228,4 @@ A future implementation must prove:
 
 ## 14. Readiness decision
 
-The ordinary-industrial field mapping is frozen for review. The current PR #1 is intentionally insufficient for formula-ready capture. The next data implementation must be an additive successor acquisition contract, not a silent widening or reinterpretation of PR #1.
+The real v2 capture corrected the generic mapping: standard debt fields are incomplete, and the captured depreciation field already equals the official combined line including right-of-use depreciation for this report. Formula execution now requires source-bound financing-liability and cash-flow line-item declarations; acquisition bytes remain immutable.

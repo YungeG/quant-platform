@@ -204,7 +204,7 @@ No Platform Research, Validation or Promotion source change belongs to QB-DATA-0
 
 The first acquisition sentinel is under review in [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1), remotely reachable commit `e7e874fc58e0911b7df1cd0463387526afcb845d`. It captures only `000651.SZ`, period `20231231`, the three raw Tushare statement responses and one exact CNINFO annual-report PDF. It stops at a verified source-bounded `SourceSnapshot`; it grants no Builder or Strategy authority.
 
-QB-FIN-SENTINEL-02 is open stacked PR [`YungeG/quant-backtest#2`](https://github.com/YungeG/quant-backtest/pull/2) at commit `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52`. It adds expanded formula inputs and raw official publication-confirmation evidence without modifying PR #1.
+QB-FIN-SENTINEL-02 is open stacked PR [`YungeG/quant-backtest#2`](https://github.com/YungeG/quant-backtest/pull/2) at head `146cd227b2fc707726e133dbbd08cde356f21dcd`. It adds expanded formula inputs and raw official publication-confirmation evidence through the approved proxy without modifying PR #1. A real five-member candidate SourceSnapshot now exists at `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`.
 
 After accepted acquisition, availability, revision, presentation, unit and field contracts exist, the first Builder sentinel remains:
 

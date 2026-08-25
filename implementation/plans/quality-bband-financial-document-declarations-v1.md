@@ -162,11 +162,11 @@ One failure returns no declaration and no availability/unit authority.
 
 ## 8. Current state
 
-PR #2 captures the required raw documents but has not been accepted or executed with credentials. Therefore:
+PR #2 remains unaccepted, but an authorized proxy capture produced verified SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5` with both exact PDF members. Therefore:
 
 ```text
-publication declaration = unavailable
-unit declaration = unavailable
+publication declaration = not yet published
+unit declaration = not yet published
 financial available_at = unavailable
 formula-ready normalized statements = unavailable
 ```
@@ -186,4 +186,4 @@ formula-ready normalized statements = unavailable
 
 ## 10. Readiness decision
 
-The declaration contracts are frozen for review. Publishing real declarations requires accepted PR #2, a credentialed five-member SourceSnapshot, and a named Backtest G12 data-governance reviewer.
+The declaration contracts are frozen for review and the required SourceSnapshot now exists. Publishing real declarations still requires PR #2 acceptance or explicit candidate-declaration authority plus a named Backtest G12 data-governance reviewer.

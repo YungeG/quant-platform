@@ -39,7 +39,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C14 | `implementation/plans/quality-bband-financial-presentation-selection-v1.md` | Latest visible eligible presentation and coherent statement trio are separate point-in-time feature-input authority. |
 | C15 | `implementation/plans/quality-bband-industrial-financial-field-mapping-v1.md` | PR #1 fields are insufficient for formula authority; official CNY-yuan unit evidence and expanded raw fields are required. |
 | C16 | `implementation/plans/quality-bband-financial-source-sentinel-v2.md` | Additive v2 successor is open stacked PR #2 and remains acquisition-only/unaccepted. |
-| C17 | `research/quality-bband-real-capture-readiness.md` | Current process has no `TUSHARE_TOKEN`; PRs #1/#2 are open/unaccepted and no output subroot is approved, so real capture is blocked. |
+| C17 | `research/quality-bband-real-capture-readiness.md` | Approved-proxy credentialed capture succeeded and produced verified five-member SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`; null formula fields and missing declarations still block normalization/features. |
 
 ## Ownership
 
@@ -220,9 +220,9 @@ Candidate acceptance tiers:
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
 2. **Availability authority:** the policy is frozen, but PR #1 lacks official publication metadata/confirmation and therefore emits no `available_at`.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; provider terminal-set closure remains unavailable.
-4. **Formula input:** stacked PR #2 adds required raw fields and confirmation bytes, but no real capture or official unit declaration exists.
+4. **Formula input:** the real v2 capture exists, but null bond/D&A fields and no official unit declaration prevent formula-ready input.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
-6. **Credentialed capture:** `TUSHARE_TOKEN` is absent from the current process; no permission/output root is frozen and no real financial SourceSnapshot exists.
+6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
 8. **Interface approval:** Backtest owner has not approved provisional capability/type/function names.
 9. **Target-stream producer:** exact owner module and public operation are not frozen.
@@ -244,6 +244,7 @@ The source-discovery, financial contract-freeze and stacked acquisition implemen
 - **Review set:** the three candidate files plus `implementation/plans/quality-bband-financial-source-sentinel-v1.md`.
 - **Evidence:** 33 focused tests; 344 final adjacent/architecture tests; prior 2463-test broad regression; exact live PDF hash check; independent review with no blocking/high/medium findings.
 - **First decision:** accept PR #1 and publish its governance receipt, or reject it with contract-level changes.
-- **Stacked successor:** PR [`YungeG/quant-backtest#2`](https://github.com/YungeG/quant-backtest/pull/2), commit `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52`, base PR #1; 22 focused, 149 adjacent and 2486 broad tests, independent review clean.
-- **Second decision:** accept PR #2 and separately authorize controlled `TUSHARE_TOKEN` use/output root when ready.
-- **Acceptance gate:** PRs #1/#2 acceptance plus a later real five-member v2 SourceSnapshot; none grants Bundle, Strategy, Validation or deployment authority.
+- **Stacked successor:** PR [`YungeG/quant-backtest#2`](https://github.com/YungeG/quant-backtest/pull/2), head `146cd227b2fc707726e133dbbd08cde356f21dcd`, base PR #1; 23 focused and 150 adjacent tests after proxy correction, independent review clean.
+- **Real capture:** verified SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5` at the approved artifact root.
+- **Second decision:** accept PR #2 and publish source-bound confirmation/unit declarations.
+- **Acceptance gate:** PRs #1/#2 acceptance, declarations and normalized nonambiguous statement evidence; none grants Strategy, Validation or deployment authority.

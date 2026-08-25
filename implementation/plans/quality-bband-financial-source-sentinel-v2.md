@@ -43,6 +43,9 @@ V2 uses a new request/receipt/schema/module and direct predecessor identity.
 | Annual-report bytes/hash | `3911496` / `sha256:32ebc475a2291ce4f1b5c1a9f9da55227e03192f07e75041e976c29d213ec8aa` |
 | Retrospective confirmation | CNINFO `1220300051.PDF` |
 | Confirmation bytes/hash | `302155` / `sha256:a78a67865a7ea989c4fd8b053fad1aa75f36d22c10d14387800ff16b698dbc60` |
+| Approved proxy | `xiaodefa.approved-tushare-proxy.v1` |
+| Allowed endpoints | `https://fast.xiaodefa.cn`, `https://tt.xiaodefa.cn` |
+| Credential channel | environment-only `TUSHARE_PROXY_TOKEN`, exact 56 non-whitespace characters, sent only as `x-api-key` header |
 | Purpose scope | `cn-a-share.financial-source-sentinel.fixed-singleton.v2` |
 | Grade/deployment | `false` / `false` |
 
@@ -61,7 +64,7 @@ Each request uses:
 }
 ```
 
-No `report_type`, `update_flag` or `is_calc` filter is allowed. Every returned row is retained in source order.
+No `report_type`, `update_flag` or `is_calc` filter is allowed. Every returned row is retained in source order. The canonical Tushare request body contains no credential; the approved proxy key is sent only through the existing `x-api-key` header seam.
 
 ## 5. Expanded exact field tuples
 
@@ -145,12 +148,16 @@ Builder fails if that declaration is absent or mismatched.
 
 ```python
 TushareCnAShareFinancialSourceSentinelRequestV2
-acquire_tushare_cn_a_share_financial_source_sentinel_v2(...)
+acquire_tushare_cn_a_share_financial_source_sentinel_v2(
+    *, token, endpoint, output_dir, post, get, time_ns, sleep
+)
 ```
 
-Reuse v1/common:
+Reuse v1/common and the accepted xiaodefa proxy transport:
 
-- exact credential confinement;
+- exact 56-character proxy credential confinement;
+- exact proxy endpoint allowlist and no redirects;
+- credential-free provider body plus `x-api-key` header;
 - POST/GET retry and redaction;
 - duplicate-key/non-finite rejection;
 - URL/redirect confinement;
@@ -190,6 +197,7 @@ The v2 receipt repeats v1 limitations and adds:
 - debt classification may remain incomplete;
 - no normalized revision, presentation selection or formula evidence;
 - no five-year history/full-market/terminal-set closure;
+- approved proxy transport does not prove provider completeness;
 - no decision/live/deployment authority.
 
 ## 12. Expected implementation write set after approval
@@ -220,11 +228,12 @@ The explicit stacked-successor lane is implemented and open as [`YungeG/quant-ba
 
 - base: `research/qb-fin-sentinel-v1` / PR #1;
 - head: `research/qb-fin-sentinel-v2`;
-- commit: `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52`;
-- focused tests: `22 passed`;
+- initial commit: `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52`;
+- approved-proxy correction/head: `146cd227b2fc707726e133dbbd08cde356f21dcd`;
+- focused tests after correction: `23 passed`;
 - final adjacent selection: `149 passed, 1 deselected`;
 - broad regression: `2486 passed, 7 deselected`;
 - independent review: no blocking, high or medium findings;
 - LSP clean; URL scanner warning dispositioned false-positive.
 
-PR #2 is not accepted or merged. Credentialed capture still requires explicit permission to use `TUSHARE_TOKEN` and an approved output root.
+PR #2 is not accepted or merged. The user authorized `/home/ygguo/.config/ai-crypt/xiaodefa-token` for `TUSHARE_PROXY_TOKEN` use and the candidate output root. A real five-member candidate capture succeeded through `https://fast.xiaodefa.cn` with SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`; detailed row/null evidence is recorded in the capture-readiness report.
