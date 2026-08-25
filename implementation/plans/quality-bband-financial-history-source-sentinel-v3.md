@@ -40,6 +40,7 @@ Get = Callable[[str], tuple[int, bytes, str]]
 class FinancialHistorySentinelV3FailureCode(str, Enum):
     INPUT_MISMATCH = "INPUT_MISMATCH"
     CREDENTIAL_INPUT_INVALID = "CREDENTIAL_INPUT_INVALID"
+    OUTPUT_PATH_INVALID = "OUTPUT_PATH_INVALID"
     PROVIDER_TRANSPORT_FAILURE = "PROVIDER_TRANSPORT_FAILURE"
     PROVIDER_RESPONSE_INVALID = "PROVIDER_RESPONSE_INVALID"
     PROVIDER_FIELDS_MISMATCH = "PROVIDER_FIELDS_MISMATCH"
@@ -105,12 +106,12 @@ Request `to_canonical_dict()` is exactly:
   "probe_manifest_file_sha256": "sha256:2240d65b0533f5cb0898d406d2113df3ea48e31b6cda3e500eba25ee2de2d1a0",
   "cninfo_metadata_endpoint": "https://www.cninfo.com.cn/new/hisAnnouncement/query",
   "cninfo_metadata_form": _CNINFO_FORM,
-  "annual_reports": _ANNUAL_REPORT_REQUEST_FACTS,
+  "annual_reports": _annual_report_request_facts(),
   "purpose_scope": "cn-a-share.financial-history-source-sentinel.000651.sz.2018-2022.v3",
 }
 ```
 
-`_CNINFO_FORM` and `_ANNUAL_REPORT_REQUEST_FACTS` are exact tuples in the order frozen below. Constructor exact-requires `schema_version == 3`; the acquisition operation also requires equality with a newly constructed default request to reject mutated exact-class instances.
+`_CNINFO_FORM` is an immutable tuple of tuples. `_ANNUAL_REPORT_FACTS` is an immutable tuple whose child tuples are `(period, announcement_id, url, member_key, byte_count, sha256)`. `_annual_report_request_facts()` returns a fresh tuple of fresh dictionaries on every call, preventing caller mutation from changing frozen module authority. Constructor exact-requires `schema_version == 3`; the acquisition operation also requires equality with a newly constructed default request to reject mutated exact-class instances.
 
 ## 4. Exact Tushare requests
 
@@ -207,7 +208,7 @@ sortType=
 isHLtitle=true
 ```
 
-`_CNINFO_FORM` is the exact ordered tuple of those 16 `(name, value)` pairs. Exact credential-free headers:
+`_CNINFO_FORM` is the exact ordered tuple of those 14 `(name, value)` pairs. Exact credential-free headers:
 
 ```python
 {
@@ -293,13 +294,13 @@ An advisory probe produced `8937` bytes / `sha256:3292c3b1bd89f01cb41e09401ad306
 | `20211231` | `https://static.cninfo.com.cn/finalpage/2022-04-30/1213262535.PDF` | `4110139` | `sha256:96065ec44285bce7a9c0cbee25dfeb2368ec4552d72f06ebf3ecab35136e2444` |
 | `20221231` | `https://static.cninfo.com.cn/finalpage/2023-04-29/1216702261.PDF` | `3765397` | `sha256:7cfc80c2badbf4cd74c5adc080d5072b02cd6c700b04fa7ca0ac44cb8b8fe987` |
 
-`_ANNUAL_REPORT_REQUEST_FACTS` is an exact period-ordered tuple of dictionaries with keys:
+`_ANNUAL_REPORT_FACTS` is the exact period-ordered immutable tuple of six-field child tuples described in section 3. `_annual_report_request_facts()` projects each child into a fresh dictionary with keys:
 
 ```text
 period,announcement_id,url,member_key,byte_count,sha256
 ```
 
-`member_key` is `response/cninfo/annual-report/{announcement_id}.pdf`. Exact host/path, redirect host/path, `%PDF-` prefix, byte count and SHA-256 are required.
+`member_key` is `response/cninfo/annual-report/{announcement_id}.pdf`. Requested/final URL or redirect mismatch maps to `OFFICIAL_DOCUMENT_TRANSPORT_FAILURE`; after a successful exact-URL response, `%PDF-` prefix, byte-count or SHA-256 mismatch maps to `ANNUAL_REPORT_MISMATCH`.
 
 `Get` exact-returns `(int_status, bytes_body, str_final_url)`. Production stdlib GET reuses v2's exact CNINFO host/path/redirect confinement and timeout `30`. Maximum `3` attempts; retry only statuses `429, 500, 502, 503, 504` or callback exceptions, sleeping `0.5` then `1.0` seconds. Redirect mismatch, malformed callback return, sleep failure, other non-`200` or exhaustion maps to `OFFICIAL_DOCUMENT_TRANSPORT_FAILURE`; a successful response with wrong PDF prefix/bytes/hash maps to `ANNUAL_REPORT_MISMATCH`.
 
@@ -399,9 +400,63 @@ declared_sha256,provider_revision_id
 
 `auth_mode="x-api-key"`; `observed_envelope={"has_more":False,"count":0}`; `declared_sha256=None`; `provider_revision_id=None`.
 
-`official_metadata` exact-contains endpoint, ordered form, exact headers, member key, attempts, response timestamp/bytes/hash, envelope summary, ordered five selected records and `declared_sha256=None`.
+`provider_requests` is an exact list of dictionaries. `official_metadata` is exactly:
 
-Each ordered `official_documents` item exact-contains period, requested URL, final URL, member key, attempts, response timestamp/bytes/hash and the equal frozen `declared_sha256`.
+```python
+{
+  "endpoint": _CNINFO_ENDPOINT,
+  "form": _CNINFO_FORM,
+  "headers": dict(_CNINFO_HEADERS),
+  "member_key": _CNINFO_MEMBER,
+  "attempts": attempts,
+  "response_received_at_epoch_nanoseconds": received_at,
+  "response_byte_count": len(source_bytes),
+  "response_sha256": sha256(source_bytes),
+  "observed_envelope": {
+    "has_more": False,
+    "total_announcement": total_announcement,
+    "total_record_num": total_record_num,
+    "total_securities": total_securities,
+    "total_pages": total_pages,
+  },
+  "selected_records": selected_records,
+  "declared_sha256": None,
+}
+```
+
+`selected_records` is an exact period-ordered list of dictionaries:
+
+```python
+{
+  "report_period": period,
+  "sec_code": raw["secCode"],
+  "org_id": raw["orgId"],
+  "announcement_id": raw["announcementId"],
+  "raw_announcement_title": raw["announcementTitle"],
+  "normalized_announcement_title": normalized_title,
+  "announcement_time_epoch_milliseconds": raw["announcementTime"],
+  "adjunct_url": raw["adjunctUrl"],
+  "adjunct_type": raw["adjunctType"],
+}
+```
+
+No other raw announcement fields enter receipt identity; the full provider record remains in the raw metadata member.
+
+`official_documents` is an exact period-ordered list whose items are:
+
+```python
+{
+  "report_period": period,
+  "requested_url": requested_url,
+  "final_url": final_url,
+  "member_key": member_key,
+  "attempts": attempts,
+  "response_received_at_epoch_nanoseconds": received_at,
+  "response_byte_count": len(source_bytes),
+  "response_sha256": sha256(source_bytes),
+  "declared_sha256": frozen_sha256,
+}
+```
 
 Persist exactly the 19 raw members plus `acquisition-receipt.json`; no probe manifest or 2023 bytes are copied into the output. PDF members use their frozen declared SHA-256; provider and metadata members use `declared_sha256=None`.
 
@@ -410,16 +465,16 @@ Persist exactly the 19 raw members plus `acquisition-receipt.json`; no probe man
 Do not call shared `publish_directory`. V3 owns this exact same-filesystem algorithm:
 
 1. `_require_safe_output(final_dir)` exact-requires a fresh final path;
-2. staging sibling is `final_dir.parent / f".{final_dir.name}.staging-v3"` and must also be absent;
+2. staging sibling is `final_dir.parent / f".{final_dir.name}.staging-v3"`; exclusive staging creation is the cooperative v3 publisher lock and must fail if already present;
 3. create staging root mode `0700`;
 4. write all 19 members, then receipt last, each through exclusive create, file mode `0600`, flush and `os.fsync(file_fd)`;
 5. reopen every staged file and exact-compare bytes/hash; rebuild and verify SourceSnapshot from staged members;
 6. `os.fsync(staging_dir_fd)`;
-7. `os.replace(staging_dir, final_dir)` while final remains absent;
-8. `os.fsync(parent_dir_fd)`;
-9. on any exception before rename, recursively remove staging and leave final absent; after successful rename, return the receipt.
+7. immediately re-run `_require_safe_output(final_dir)`, then call `os.rename(staging_dir, final_dir)` on the same filesystem;
+8. successful rename is the irreversible publication commit point; perform no fallible operation afterward and return the receipt;
+9. on any exception before the commit point, recursively remove staging and leave final absent.
 
-Tests must pause before rename and prove the final directory is invisible. Cleanup-on-error alone is not called atomic.
+The approved artifact root is single-writer except for cooperating v3 publishers, which serialize on the exact staging path. Concurrent creation by an uncooperative process between the final preflight and rename is outside this candidate's authority boundary. Tests must pause before rename and prove the final directory is invisible, verify a second v3 publisher fails on staging, and verify a destination appearing before the final preflight maps to `OUTPUT_PATH_INVALID`. Cleanup-on-error alone is not called atomic.
 
 ## 12. Failure precedence
 
@@ -427,7 +482,7 @@ Tests must pause before rename and prove the final directory is invisible. Clean
 | ---: | --- | --- |
 | 1 | request/callable/endpoint/output exact mismatch | `INPUT_MISMATCH` |
 | 2 | credential type/length/path conflict | `CREDENTIAL_INPUT_INVALID` |
-| 3 | unsafe or existing output | existing path/publication failure |
+| 3 | unsafe/existing final or staging output path | `OUTPUT_PATH_INVALID` |
 | 4 | proxy transport exhaustion | `PROVIDER_TRANSPORT_FAILURE` |
 | 5 | provider JSON/envelope invalid | `PROVIDER_RESPONSE_INVALID` |
 | 6 | provider exact field tuple mismatch | `PROVIDER_FIELDS_MISMATCH` |
@@ -435,9 +490,10 @@ Tests must pause before rename and prove the final directory is invisible. Clean
 | 8 | token found in any in-memory source/evidence | `CREDENTIAL_LEAK_DETECTED` |
 | 9 | CNINFO metadata transport exhaustion | `OFFICIAL_METADATA_TRANSPORT_FAILURE` |
 | 10 | metadata JSON/query/selected record mismatch | `OFFICIAL_METADATA_INVALID` |
-| 11 | annual-report URL/redirect/bytes/hash mismatch | `ANNUAL_REPORT_MISMATCH` |
-| 12 | SourceSnapshot freeze/verify failure | exact `SourceSnapshotFailureCode` |
-| 13 | staging/write/readback/fsync/rename failure | `PUBLICATION_FAILURE` |
+| 11 | annual-report transport/status/redirect/final-URL failure | `OFFICIAL_DOCUMENT_TRANSPORT_FAILURE` |
+| 12 | successful exact-URL annual-report response has wrong PDF prefix/bytes/hash | `ANNUAL_REPORT_MISMATCH` |
+| 13 | SourceSnapshot freeze/verify failure | exact `SourceSnapshotFailureCode` |
+| 14 | pre-commit staging/write/readback/fsync/rename failure | `PUBLICATION_FAILURE` |
 
 This is an exact **stage-local fail-fast** control flow, not a collect-all global ranking:
 
@@ -449,7 +505,7 @@ This is an exact **stage-local fail-fast** control flow, not a collect-all globa
 
 Provider spacing/retry/time callback failures map to `PROVIDER_TRANSPORT_FAILURE`; metadata equivalents map to `OFFICIAL_METADATA_TRANSPORT_FAILURE`; PDF equivalents map to `OFFICIAL_DOCUMENT_TRANSPORT_FAILURE`. Collaborator return types are exact-validated before use. The frozen request order is part of receipt identity, so no input-order noninterference claim is made for network execution.
 
-One failure publishes no smaller period subset and no receipt.
+Every reported failure occurs before the rename commit point and publishes no smaller period subset or receipt. After successful rename the operation returns success and cannot report `PUBLICATION_FAILURE`.
 
 ## 13. Required limitations
 
@@ -485,7 +541,7 @@ The architecture test obtains every tracked path from `git ls-tree -r --name-onl
 4. exact five PDF URL/redirect/byte/hash identities;
 5. token/path/transport/JSON/field/row/metadata/document precedence and redaction;
 6. one-period failure leaves no smaller output;
-7. persisted reopen/verify and input-order determinism;
+7. persisted reopen/verify; rebuilding the same member bytes with reversed `RawSourceMember` input yields the same canonical SourceSnapshot identity;
 8. existing 2023 snapshot and PRs #1–#5 protected bytes unchanged;
 9. no declaration/availability/normalization/selection/formula/Bundle output;
 10. focused plus opt-in real capture, adjacent acquisition/SourceSnapshot and broad regression;
@@ -501,7 +557,7 @@ CLI matches v2:
 --output-dir PATH
 ```
 
-Credential comes only from `TUSHARE_PROXY_TOKEN`; there is no token argument. `main()` uses the stdlib proxy/CNINFO/PDF collaborators, prints only sorted receipt JSON on success, and raises redacted `SystemExit("acquisition failed: <CODE>")` on failure.
+Credential comes only from `TUSHARE_PROXY_TOKEN`; there is no token argument. The acquisition operation wraps unsafe/existing path errors as `OUTPUT_PATH_INVALID` and all pre-commit staging errors as `PUBLICATION_FAILURE`. `main()` uses the stdlib proxy/CNINFO/PDF collaborators, prints only sorted receipt JSON on success, and catches only `FinancialHistorySentinelV3AcquisitionError` to raise redacted `SystemExit(f"acquisition failed: {error.code.value}")`.
 
 Focused:
 
