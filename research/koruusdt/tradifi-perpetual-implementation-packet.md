@@ -1,6 +1,6 @@
 # BT-TRADIFI-01 Full Implementation Packet
 
-Status: **NOT_READY — capability contract awaits explicit owner approval**
+Status: **READY — capability contract approved by the Platform owner**
 
 ## Outcome
 
@@ -214,4 +214,4 @@ No fallback, alias, forward fill, future-open sizing, fabricated terminal, zero 
 
 ## Open decision
 
-Explicit owner approval of `BT-TRADIFI-CON-01` is still missing. Until approved, no Backtest writer may start. After approval, the first implementation sentinel is the new TradFi instrument model test proving exact KORU acceptance while the existing `PERPETUAL` component hash stays unchanged.
+None. `BT-TRADIFI-CON-01` is approved. The first implementation sentinel is the new TradFi instrument model test proving exact KORU acceptance while the existing `PERPETUAL` component hash stays unchanged.

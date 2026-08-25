@@ -1,6 +1,6 @@
 # Binance USD-M TradFi perpetual Bar preparation capability candidate
 
-- **Status:** CANDIDATE — owner approval required before implementation
+- **Status:** APPROVED — implementation authorized by the Platform owner
 - **Initial instrument:** `KORUUSDT`
 - **Product identity:** exact Binance `TRADIFI_PERPETUAL`
 - **Grade ceiling:** `development`
@@ -257,7 +257,7 @@ Only after approval:
 - focused product, calendar, post-adjustment regime, funding, fee role, slippage, profile, preparation, replay, and mutation tests;
 - Backtest capability receipt and later Platform pin/consumer receipt.
 
-No change is authorized by this candidate itself.
+Approval authorizes the bounded implementation write set above; it does not accept code, evidence, or release revisions.
 
 ## 14. Implementation DAG
 
