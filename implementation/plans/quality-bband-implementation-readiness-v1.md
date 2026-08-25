@@ -45,6 +45,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Stacked PR #5 publishes fixed current-only trio selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`; generic comparative-adjustment and revision-chain coverage remain out of scope. |
 | C21 | `implementation/plans/quality-bband-financial-history-source-sentinel-v3.md` | Stacked PR #6 publishes 19-member historical SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`, completing raw fixed-issuer 2018–2022 source coverage only. |
 | C22 | `research/quality-bband-historical-financial-declaration-audit.md` | Audits 2018–2022 unit/debt/D&A facts; 2021 has two incompatible debt scopes and must return `DEBT_SCOPE_INCOMPLETE`. |
+| C23 | `implementation/plans/quality-bband-historical-financial-declaration-implementation-v1.md` | Freeze exact per-period declarations for 2018–2020/2022 and canonical 2021 debt-conflict failure evidence. |
 
 ## Ownership
 

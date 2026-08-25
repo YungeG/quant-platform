@@ -1,6 +1,6 @@
 # Quality + B-Band historical financial declaration audit
 
-- **Status:** `SOURCE_FACTS_AUDITED / 2021_DEBT_SCOPE_INCOMPLETE / DECLARATION_IMPLEMENTATION_NOT_FROZEN`
+- **Status:** `SOURCE_FACTS_AUDITED / 2021_DEBT_SCOPE_INCOMPLETE / DECLARATION_IMPLEMENTATION_PACKET_FROZEN`
 - **Checked:** 2026-08-25
 - **Issuer:** 珠海格力电器股份有限公司 / `000651.SZ` / `xshe:000651`
 - **Historical SourceSnapshot:** `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`
