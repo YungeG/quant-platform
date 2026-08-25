@@ -1,8 +1,8 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `CAPTURE_AND_NORMALIZATION_SUCCEEDED / PRESENTATION_AND_FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `CAPTURE_NORMALIZATION_AND_SELECTION_SUCCEEDED / MULTIYEAR_FORMULA_AUTHORITY_BLOCKED`
 - **Checked:** 2026-08-25
-- **Scope:** first credentialed QB-FIN-SENTINEL-02 capture, fixed declarations and source-bounded normalization candidate
+- **Scope:** first credentialed QB-FIN-SENTINEL-02 capture, fixed declarations, source-bounded normalization and current-only trio selection candidates
 
 ## Repository state
 
@@ -12,6 +12,7 @@
 | Backtest PR #2 | <https://github.com/YungeG/quant-backtest/pull/2>, open stacked on PR #1 | proxy correction pushed at `146cd227b2fc707726e133dbbd08cde356f21dcd`; not accepted |
 | Backtest PR #3 | <https://github.com/YungeG/quant-backtest/pull/3>, open stacked on PR #2 | declaration commit `b4124d5985a6f9cbd39221fd55286abf5608b6b8`; not accepted |
 | Backtest PR #4 | <https://github.com/YungeG/quant-backtest/pull/4>, open stacked on PR #3 | normalization commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; not accepted |
+| Backtest PR #5 | <https://github.com/YungeG/quant-backtest/pull/5>, open stacked on PR #4 | fixed trio-selection commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; not accepted |
 | Platform research PR | <https://github.com/YungeG/quant-platform/pull/1>, open, mergeable | not accepted |
 | v1 commit | `e7e874fc58e0911b7df1cd0463387526afcb845d` | remotely reachable |
 | v2 commits | `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52` + `146cd227b2fc707726e133dbbd08cde356f21dcd` | remotely reachable |
@@ -82,11 +83,28 @@ Raw nulls remain evidence:
 
 Canonical readback, repeated normalization and credential-exclusion checks passed. This is still one issuer/one period, source-bounded and revision-closure-incomplete.
 
+## Published trio-selection candidate
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  trio-selections/000651.SZ/20231231/v1-candidate-01
+```
+
+| Value | Identity |
+| --- | --- |
+| Request | `sha256:6c8e38908cbc77f0ba4bfac62d8381235489e667b592fd2702fa37833e49cc7d` |
+| Selection | `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c` |
+| Canonical file | `sha256:b07c00e6608b4c6b95dfdce830593d304de743dd39dffffe2eb9a5c033f6c74a` |
+| Decision instant | `UtcInstant(1714959000000000000)` |
+| Grade/deployment | `false` / `false` |
+
+Canonical readback, repeated selection and credential-exclusion checks passed. The selected trio is fixed-current-consolidated only; it does not exercise generic comparative-adjustment or provider revision-chain resolution.
+
 ## Next executable gates
 
-1. accept stacked PRs #1–#4;
-2. run point-in-time presentation selection over the normalized revisions;
-3. expand to six annual balance endpoints and five coherent annual statement trios;
+1. accept stacked PRs #1–#5;
+2. expand to six annual balance endpoints and five coherent annual statement trios;
+3. select each period at the exact Strategy Decision instant;
 4. only then calculate multi-year source-bounded formula inputs.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

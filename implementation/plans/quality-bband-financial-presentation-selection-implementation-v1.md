@@ -1,8 +1,9 @@
 # QB-FIN-SELECT-IMPL-01 — Gree 2023 statement-trio selection packet
 
-- **Status:** `READY_FOR_STACKED_CANDIDATE / NOT_ACCEPTED`
+- **Status:** `STACKED_CANDIDATE_PUBLISHED / NOT_ACCEPTED`
 - **Owner:** Backtest Market Bundle Builder
 - **Base:** stacked PR #4 commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`
+- **Candidate:** Backtest PR [#5](https://github.com/YungeG/quant-backtest/pull/5), commit `5338d8046fa0f304d4a9590989c59ceffb51270b`
 - **Input observation set:** `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`
 - **Policy key:** `qb-fin-select-01.gree-fixed-current-consolidated.v1`
 
@@ -322,6 +323,32 @@ uv run --locked pytest -q \
 
 Those two inherited predecessor guards intentionally assert that no stacked successor files exist. All other tests run. The selector boundary separately proves PRs #1–#4 files are byte-identical and the selector write set is exact. Record the two deselections explicitly; do not add a broader `-k` exclusion.
 
-## 12. Next handoff
+## 12. Implementation evidence
+
+Stacked Backtest PR [#5](https://github.com/YungeG/quant-backtest/pull/5):
+
+- base: `research/qb-fin-normalization-v1` / PR #4;
+- commit: `5338d8046fa0f304d4a9590989c59ceffb51270b`;
+- focused: `8 passed, 1 skipped`;
+- real opt-in normalization-to-selection: `1 passed`;
+- Builder-wide: `352 passed, 3 skipped`;
+- broad regression: `2533 passed, 3 skipped, 2 deselected`; only the exact PR #3/#4 predecessor write-set guards were deselected;
+- independent review: `ACCEPTED`, no remaining findings;
+- LSP/lens: clean.
+
+Published real fixed-scope candidate:
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  trio-selections/000651.SZ/20231231/v1-candidate-01
+```
+
+- request hash: `sha256:6c8e38908cbc77f0ba4bfac62d8381235489e667b592fd2702fa37833e49cc7d`;
+- selection hash: `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`;
+- selection file SHA-256: `sha256:b07c00e6608b4c6b95dfdce830593d304de743dd39dffffe2eb9a5c033f6c74a`;
+- canonical readback, repeated selection and credential-exclusion checks passed;
+- source-bounded `true`; closure/decision-grade/deployment remain `false`.
+
+## 13. Next handoff
 
 After candidate acceptance, the selector proves only one visible annual trio. Formula research still requires six annual balance endpoints and five annual trios. Generic comparative-adjustment/chain resolution requires a separate policy version and source evidence that actually contains those cases.

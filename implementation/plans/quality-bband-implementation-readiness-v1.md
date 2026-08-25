@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. Fixed-scope acquisition, declarations and normalization are published as stacked Backtest PRs #1–#4, and the availability, revision, presentation and ordinary-industrial field contracts are frozen for review. Full strategy implementation still cannot start because the stack is unaccepted, only one issuer/period is normalized, broad source authority, general A-share coverage, a portfolio authority artifact and repository-owner approvals are missing.
+The research design is approved for continued planning. Fixed-scope acquisition, declarations, normalization and current-only trio selection are published as stacked Backtest PRs #1–#5, and the availability, revision, presentation and ordinary-industrial field contracts are frozen for review. Full strategy implementation still cannot start because the stack is unaccepted, only one issuer/period is selected, broad source authority, general A-share coverage, a portfolio authority artifact and repository-owner approvals are missing.
 
 ## Outcome
 
@@ -42,7 +42,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C17 | `research/quality-bband-real-capture-readiness.md` | Approved-proxy capture produced verified five-member SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5`. |
 | C18 | `implementation/plans/quality-bband-financial-declaration-implementation-v1.md` | Stacked PR #3 and real declaration candidate `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007` resolve fixed-report publication/unit/debt/D&A semantics but remain unaccepted/non-decision-grade. |
 | C19 | `implementation/plans/quality-bband-financial-normalization-implementation-v1.md` | Stacked PR #4 publishes exact source-bounded revisions and observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`; closure/decision-grade/deployment remain false. |
-| C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Freeze a minimal PR #4-stacked current-only trio selector; generic comparative-adjustment and revision-chain coverage remain explicitly out of scope. |
+| C20 | `implementation/plans/quality-bband-financial-presentation-selection-implementation-v1.md` | Stacked PR #5 publishes fixed current-only trio selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`; generic comparative-adjustment and revision-chain coverage remain out of scope. |
 
 ## Ownership
 
@@ -223,7 +223,7 @@ Candidate acceptance tiers:
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
 2. **Availability authority:** the policy is frozen, but PR #1 lacks official publication metadata/confirmation and therefore emits no `available_at`.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; provider terminal-set closure remains unavailable.
-4. **Formula input:** the real v2 capture, declaration and normalized one-year observation set exist, but point-in-time presentation selection and five-year coverage do not.
+4. **Formula input:** the real v2 capture, declaration, normalized one-year observation set and fixed current-only trio selection exist, but five-year coverage does not.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
@@ -238,7 +238,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The source-discovery, financial contract-freeze and fixed-scope acquisition/declaration/normalization candidate lanes are complete. PRs #1–#4 await **Backtest-owner review/acceptance**. Point-in-time presentation selection may proceed only as the next fixed-scope stacked candidate; broad QB-DATA-01 and QB-PREP-01 remain blocked.
+The source-discovery, financial contract-freeze and fixed-scope acquisition/declaration/normalization/selection candidate lanes are complete. PRs #1–#5 await **Backtest-owner review/acceptance**. The next safe research lane is finite multi-year capture/normalization expansion; broad QB-DATA-01 and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
@@ -251,5 +251,6 @@ The source-discovery, financial contract-freeze and fixed-scope acquisition/decl
 - **Real capture:** verified SourceSnapshot `sha256:dec0abb1828f8b87256347e72b6ccfe2f84a2ca13f36aa1415c9a53e96a0c7d5` at the approved artifact root.
 - **Declarations:** stacked PR [`YungeG/quant-backtest#3`](https://github.com/YungeG/quant-backtest/pull/3), commit `b4124d5985a6f9cbd39221fd55286abf5608b6b8`; real candidate declaration `sha256:59e09eb542a6e2ec480a7b8ed322d9ae9106416460f0999216fd5564f7278007`.
 - **Normalization:** stacked PR [`YungeG/quant-backtest#4`](https://github.com/YungeG/quant-backtest/pull/4), commit `fa58e68d7b51ee5517e5a14c87c3590d1bda2976`; real observation set `sha256:632206f85bcff71dbcccfd20a3593e14fb895b33bd138ac25bbf9b947e4a4a7c`.
-- **Second decision:** accept PRs #2–#4 and review a fixed-scope point-in-time presentation-selection candidate.
-- **Acceptance gate:** accepted acquisition/declarations/normalization plus selected coherent statement evidence; none grants Strategy, Validation or deployment authority.
+- **Selection:** stacked PR [`YungeG/quant-backtest#5`](https://github.com/YungeG/quant-backtest/pull/5), commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; real selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`.
+- **Second decision:** accept PRs #2–#5 and authorize finite six-endpoint/five-trio source expansion.
+- **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.
