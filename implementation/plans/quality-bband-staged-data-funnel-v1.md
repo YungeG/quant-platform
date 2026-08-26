@@ -79,7 +79,7 @@ Only the exact eligible set may enter S2.
 
 The logical S2 scope is the union of all S1-eligible issuer/report periods required by annual decision dates and financial lookbacks. Each annual S2 qualification becomes effective only at its conservative financial availability boundary and remains the active financial roster until the next accepted annual S2 boundary.
 
-When an approved provider endpoint cannot batch-filter the exact Instrument set, acquisition may retain declared full-market period or announcement-date-slice `SOURCE_SUPERSET` snapshots. A separate deterministic extraction manifest must then exact-bind the S1 expected set, select only matching Instrument/period rows, count every extra source row and fail on any missing expected member. Provider extras never enter S2 scope or define eligibility.
+When an approved provider endpoint cannot batch-filter the exact Instrument set, acquisition may retain declared full-market period or announcement-date-slice `SOURCE_SUPERSET` snapshots. A separate deterministic extraction manifest must then exact-bind the S1 expected set, select only matching Instrument/period rows and count every extra source row. A statement member may be terminal-covered only by an accepted `official_annual_report_nonfiling_declaration@1` under QB-S2-NONFILE-01; provider zero rows never qualify. Every expected member lacking either retained statement evidence or an accepted declaration fails. Provider extras never enter S2 scope or define eligibility.
 
 ### Minimum authoritative fields
 
@@ -103,7 +103,7 @@ No unrelated full-report field expansion is required.
 - `FINANCIAL_HARD_FILTER_FAILED`; or
 - `UNRESOLVED_DECISION_MATERIAL`.
 
-Missing source/lineage/payload blocks S2 and emits no downstream scope. A complete invariant hard failure may stop later data acquisition for that issuer/date.
+Missing source/lineage/payload blocks S2 and emits no downstream scope, except that a competent-source confirmed annual-report non-filing may exact-cover the three expected statement kinds and emit `UNRESOLVED_DECISION_MATERIAL` from its conservative availability boundary under QB-S2-NONFILE-01. A complete invariant hard failure may stop later data acquisition for that issuer/date.
 
 ## 6. S3 — governance and valuation qualification
 
@@ -166,7 +166,7 @@ Successful final composition proves that every broad member followed one legal p
 
 1. malformed/foreign upstream manifest blocks before source I/O;
 2. normalized/extracted stage scope must equal the exact prior-stage output set;
-3. in `EXACT_SCOPE` acquisition, provider rows outside scope fail; in explicitly approved `SOURCE_SUPERSET` acquisition, extras are retained and audited but excluded only by the deterministic extraction manifest; missing expected members always fail;
+3. in `EXACT_SCOPE` acquisition, provider rows outside scope fail; in explicitly approved `SOURCE_SUPERSET` acquisition, extras are retained and audited but excluded only by the deterministic extraction manifest; an expected statement member requires retained statement evidence or accepted QB-S2-NONFILE-01 terminal coverage, otherwise it fails;
 4. zero rows never imply threshold failure or event absence;
 5. stage publication is atomic and immutable;
 6. no downstream stage starts after an upstream block;
@@ -199,6 +199,7 @@ Forbidden:
 - using current data to define historical S0/S1 membership;
 - screening with market cap, share price or convenience fields not in the frozen Strategy;
 - removing an issuer because official documents are difficult to acquire;
+- treating an official non-filing declaration as numeric data, an implicit threshold failure or a forced exit;
 - using a preliminary provider ratio as a final hard-filter fact;
 - claiming final full-market support from any partial stage.
 
