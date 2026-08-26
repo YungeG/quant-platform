@@ -92,17 +92,18 @@ Status revisions retain at least normal matching, suspension/resumption, risk-wa
 
 ## 5. Closure declarations and reports
 
-Successful QB-DATA publication exact-binds:
+S0 broad lightweight publication exact-binds:
 
 - `InstrumentCatalogCoverageReport`;
 - `UniverseCoverageReport`;
 - provisional `IndustryMembershipCoverageReportV1`;
-- `TradeStatusCoverageReport`;
-- `CorporateActionCoverageReport`.
+- `TradeStatusCoverageReport`.
+
+S4 exact-binds `CorporateActionCoverageReport` for a deterministic pre-run scope: every Instrument with any S3-qualified entry session, covered from required warmup through Fold end/terminal continuation horizon. This conservatively covers every possible held path without reading realized holdings. Final composite QB-DATA authority binds both S0 and S4 reports and their exact scope equations.
 
 Each report binds:
 
-- Bundle ref and coverage interval;
+- owning stage-manifest ref and coverage interval;
 - catalog body/hash;
 - source and closure declaration refs;
 - exact relevant and terminal revision hashes;
@@ -152,14 +153,13 @@ Future action knowledge cannot alter a prior BOLL, trend, volume or valuation ob
 
 ## 8. Coverage ranges
 
-Each Fold manifest must declare separately:
+Each stage/Fold manifest declares only its consumed ranges:
 
-- economic evaluation interval;
-- bar/signal warmup interval;
-- financial lookback interval;
-- Universe/listing/industry/status coverage interval;
-- corporate-action observation and lifecycle interval;
-- held-position accounting interval.
+- S0 Universe/listing/board/industry/status interval;
+- S2 financial lookback and annual decision intervals;
+- S3 governance and valuation-history intervals;
+- S4 bar/signal warmup, corporate-action lifecycle and held-position accounting intervals;
+- final economic evaluation interval.
 
 Coverage must include every instant actually queried or consumed. Evaluation start is not automatically sufficient for the 120-session signal window or five-year financial history.
 
@@ -195,15 +195,15 @@ The documented public Tushare interfaces do not currently provide this closure. 
 
 ## 11. Sentinel and acceptance order
 
-1. freeze G12B normalized schemas and declaration bodies;
-2. obtain one finite licensed/competent full-market source slice;
-3. publish exact catalog/listing/board/industry/status/action revisions;
-4. build deterministic closure reports and mutation tests;
-5. verify G11C point-in-time membership parity and G08F/G08G action semantics through test-only mappings;
-6. prove unsupported-action failure on a consumed signal/holding path;
-7. independently review hashes, closure, survivorship labels and predecessor bytes;
-8. only then authorize the public multi-stock preparation seam.
+1. implement one source-bounded S0 lightweight capture with all qualification flags false;
+2. obtain/freeze competent S0 catalog/listing/board/industry/status closure;
+3. derive and exact-cover S1 structural eligibility;
+4. implement conditional S2 financial and S3 governance/valuation scopes;
+5. implement S4 market/action closure for the exact pre-run union of all Instruments with any S3-qualified session through the frozen continuation horizon;
+6. verify G11C membership parity and G08F/G08G action semantics through test-only mappings;
+7. prove unsupported-action failure on a consumed signal/holding path;
+8. independently review every stage hash/scope equation and only then authorize public multi-stock preparation.
 
 ## 12. Readiness decision
 
-The contract is frozen; data authority is not. Full-market strategy execution remains blocked until a real immutable source closes historical Universe, industry, status and corporate-action inventories for both Fold manifests.
+The staged contract is frozen; data authority is not. S0 source-bounded plumbing may proceed, while formal strategy execution remains blocked until competent S0 and consumed S4 source closure exists for both Fold manifests.

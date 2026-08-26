@@ -31,7 +31,7 @@ One issuer/decision manifest exact-binds:
 
 - Strategy/build identity and parameter set;
 - decision `SimulationInstant`;
-- MarketBundle, catalog, Universe, eligibility and coverage refs;
+- final composite QB-DATA authority plus relevant S1 structural, S2 financial, S3 governance/valuation and S4 market/action manifest refs;
 - issuer Instrument identity;
 - quality/continuation/entry disposition refs;
 - exact source observation/revision refs;
@@ -218,7 +218,7 @@ Fields include:
 
 - Strategy/build/parameter identity;
 - decision instant;
-- MarketBundle/Universe/eligibility/holding refs;
+- final composite/S1–S4/eligibility/holding refs;
 - available slots and active volume multiple;
 - exact entry-candidate Instrument set;
 - ordered factor definitions and formula version;
@@ -237,7 +237,7 @@ A blocked assessment emits an immutable failure artifact/witness but no successf
 
 1. manifest/input/strategy/version mismatch;
 2. MarketBundle, Universe, eligibility or holding-ref mismatch;
-3. candidate-set duplicate/omission/foreign Instrument;
+3. candidate set differs from exact S4 `ENTRY_ELIGIBLE_POINT`/`ENTRY_ELIGIBLE_INTERVAL` non-held output or contains duplicate/foreign Instruments;
 4. missing or invalid source/feature interpretation domain;
 5. factor formula, direction or Decimal-domain failure;
 6. interpretation-domain/group inconsistency;

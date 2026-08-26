@@ -53,16 +53,17 @@ No second simulator, private Backtest composition, custom profit-and-loss calcul
 | C28 | `research/quality-bband-reasoned-ambiguity-policy-v1.md` | Authorizes Research continuation only when every evidence-supported interpretation yields the same qualification/trade decision; exact ranking blocks on overlapping intervals and source artifacts remain unchanged. |
 | C29 | `research/quality-bband-gree-governance-audit-v1.md` | Fixed issuer passes audit and severe-issuer-penalty gates; no controlling shareholder makes that pledge predicate N.A., while largest-shareholder full pledge and acquisitions remain advisories. |
 | C30 | `implementation/plans/quality-bband-gree-valuation-source-sentinel-v1.md` and `research/quality-bband-gree-valuation-assessment-v1.md` | Stacked PR #9 publishes valid SourceSnapshot `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30`; annual and TTM PE interpretations both pass the fixed threshold, but no peer ranking exists. |
-| C31 | `implementation/plans/quality-bband-missing-data-eligibility-policy-v1.md` | Separates unconditional QB-DATA coverage, quality qualification, holding continuation, breakout entry and no-target-on-block semantics. |
+| C31 | `implementation/plans/quality-bband-missing-data-eligibility-policy-v1.md` | Separates stage-local QB-DATA exact-cover, structural/quality qualification, holding continuation, breakout entry and no-target-on-block semantics. |
 | C32 | `implementation/plans/quality-bband-universe-corporate-action-coverage-v1.md` | Freezes broad listed ordinary-A-share Universe, downstream structural filtering, industry/status/action closure and point-in-time action semantics; real source closure is missing. |
 | C33 | `implementation/plans/quality-bband-feature-ranking-manifest-v1.md` | Freezes prospective canonical annual PE, three-factor equal-weight midrank scoring, correlated interpretation domains, actual-holding slot reservation and invariant T-close top-K selection. |
 | C34 | `research/quality-bband-full-market-data-infeasibility-v1.md` | Concludes no formal Fold A/B economic run is honest under current public authority; strategy is untested/not rejected, while PR review and formal data procurement may continue. |
+| C35 | `implementation/plans/quality-bband-staged-data-funnel-v1.md` | User-approved S0→S4 staged exact-cover funnel reduces heavy acquisition only through deterministic prior-stage manifests; first allowed implementation is non-authoritative S0 lightweight capture. |
 
 ## Ownership
 
 - **Orchestrator:** current Platform planning session.
 - **Planning worktree:** `/home/ygguo/agent-projs/ai-crypt/platform-a-share-strategy` / `research/a-share-strategy`.
-- **Implementation worktrees:** fixed-scope PR worktrees exist for PRs #1–#9; no general QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
+- **Implementation worktrees:** fixed-scope PR worktrees exist for PRs #1–#9; one additive S0 lightweight acquisition writer is now authorized, but no S1–S4, final QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
 - **Data acquisition/Builder owner:** Backtest repository owner.
 - **Backtest public PREP owner:** Backtest Runtime repository owner.
 - **Platform integration owner:** Platform repository owner after accepted Backtest SHA exists.
@@ -84,9 +85,13 @@ accepted Backtest A-share route
 After:
 
 ```text
-Backtest-owned finite acquisition
-→ G12A SourceSnapshot
-→ QB-DATA pure Bundle construction + coverage
+Backtest-owned staged acquisition
+→ S0 lightweight SourceSnapshot/manifest
+→ S1 structural eligibility
+→ S2 minimal financial authority/qualification
+→ S3 governance + valuation authority/qualification
+→ S4 market + corporate-action authority
+→ final QB-DATA pure composition + coverage
 → retained cn_a_share_portfolio_development_authority@1
 → deterministic public target-stream build
 → prepare_cn_a_share_portfolio_development_backtest
@@ -103,9 +108,10 @@ Backtest-owned finite acquisition
 
 | Symbol | Action | Exact responsibility | Consumer |
 | --- | --- | --- | --- |
-| `CnAShareQualityResearchBundleDeclarationV1` | add after contract approval | Freeze coverage, catalog, source members, closure refs and capabilities. | Builder operation. |
-| `CnAShareQualityResearchBundleOutcomeV1` | add | Exactly one result/failure; constructor recomputes identity. | G12C/D publication lane. |
-| `build_cn_a_share_quality_research_bundle_v1` | add | Pure normalization, exact cover and Bundle construction. | Acquisition/governance caller. |
+| provisional S0–S4 stage manifests | add incrementally | Bind exact upstream/output sets, stage source refs, closure equations and limitations. | Next stage/final composer. |
+| `CnAShareQualityResearchBundleDeclarationV1` | add after contract approval | Bind ordered S0–S4 manifests, final catalog/capabilities and derive closure/source identities from those manifests. | Final Builder composition. |
+| `CnAShareQualityResearchBundleOutcomeV1` | add | Exactly one final result/failure; constructor recomputes identity. | G12C/D publication lane. |
+| `build_cn_a_share_quality_research_bundle_v1` | add | Pure stage-ref validation, final exact cover and Bundle composition. | Acquisition/governance caller. |
 | financial/audit/governance/valuation observation payloads | add | Preserve raw normalized point-in-time facts and revisions only. | MarketBundle observation views. |
 | financial/governance/valuation coverage reports | add | Mechanical exact-cover and structured failure. | Portfolio authority qualification. |
 
@@ -140,8 +146,8 @@ Backtest-owned finite acquisition
 
 | Value/artifact | Exact type/schema | Identity/preimage | Consumer |
 | --- | --- | --- | --- |
-| Fold A source | future `SourceSnapshot@1` | Exact source bytes, member paths/hashes, acquisition receipt and limitations. | QB-DATA. |
-| Fold B source | independent `SourceSnapshot@1` | Must not reuse Fold A identity. | QB-DATA. |
+| Fold A staged sources/manifests | future S0–S4 snapshots/refs | Each stage binds exact prior output scope, source bytes/hashes, closure equation and limitations. | Final QB-DATA composer. |
+| Fold B staged sources/manifests | independent S0–S4 snapshots/refs | Must not reuse Fold A identities or scopes silently. | Final QB-DATA composer. |
 | Research Bundle | future G12D `MarketBundleRef` | Manifest exact-cover of catalog/capability streams and content hashes. | Portfolio authority/PREP. |
 | Portfolio authority | `cn_a_share_portfolio_development_authority@1` | Bundle/catalog/coverage/Profile/Build/account/grade/limitations refs. | Public PREP. |
 | Strategy feature manifest | `quality_feature_manifest@1` | Raw observation refs, formula versions, Strategy code Build ref. | Target stream. |
@@ -239,7 +245,7 @@ Candidate acceptance tiers:
 3. **Revision/selection authority:** contracts are frozen but unaccepted; historical presentation selection and provider terminal-set closure remain unavailable.
 4. **Formula input:** the exact point-valued 2021/2022 ROIC inputs remain unavailable, but the frozen narrow/broad interval yields a five-year median range `118.8062%–127.2984%`; the `20%` financial-quality threshold is invariant and may continue under C28. Exact ranking remains interval-sensitive.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
-6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
+6. **Credentialed capture:** user approved one source-bounded S0 lightweight broad-catalog capture through the approved proxy; S1–S4 heavy/Fold acquisition remains blocked on exact upstream scope and contracts.
 7. **Universe/action coverage:** QB-UNIV-CA-01 is frozen, but general catalog/listing/industry/status/action source closure and Backtest-owned schemas remain blocked.
 8. **Ranking encoding:** QB-RANK-01 is frozen for planning, but canonical constrained-domain/proof-witness encoding and peer manifests are absent.
 9. **Interface approval:** Backtest owner has not approved provisional capability/type/function names.
@@ -253,7 +259,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope financial/governance/valuation research lane and the missing-data, Universe/action and interval-ranking planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. The fixed issuer passes frozen thresholds with retained intervals and advisories, but broad QB-DATA-01 source closure, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is currently executable; non-economic PR review and data-authority procurement remain available.
+The fixed-scope financial/governance/valuation lane and staged S0→S4 planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. One non-authoritative S0 lightweight capture may now proceed to test funnel plumbing and estimate scope; broad source closure, S1–S4 accepted manifests, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is executable.
 
 ## Next owner and first action
 

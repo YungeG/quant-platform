@@ -1,6 +1,6 @@
 # QB-DATA-01 — Quality + B-Band A-share data contract v1
 
-- **Status:** `NOT_READY / SOURCE_AUTHORITY_BLOCKED`
+- **Status:** `STAGED_FUNNEL_FROZEN / NOT_READY / SOURCE_AUTHORITY_BLOCKED`
 - **Owner:** Backtest G12 acquisition + Market Bundle Builder
 - **Consumer:** future A-share portfolio preparation operation
 - **Strategy scope:** `cn-a-share.quality-bband-breakout.manual4.v1`
@@ -12,12 +12,13 @@
 - **Presentation selection:** [`quality-bband-financial-presentation-selection-v1.md`](quality-bband-financial-presentation-selection-v1.md)
 - **Industrial field mapping:** [`quality-bband-industrial-financial-field-mapping-v1.md`](quality-bband-industrial-financial-field-mapping-v1.md)
 - **Formula-input acquisition successor:** [`quality-bband-financial-source-sentinel-v2.md`](quality-bband-financial-source-sentinel-v2.md)
+- **Staged funnel:** [`quality-bband-staged-data-funnel-v1.md`](quality-bband-staged-data-funnel-v1.md)
 
 ## 1. Outcome
 
-Publish one immutable, retained A-share research Bundle per Fold that supplies the raw point-in-time market, financial and governance observations required by the quality filter and B-Band entry rule, without placing provider acquisition, feature calculation or strategy policy inside Backtest Runtime.
+Publish one immutable final A-share research authority per Fold by composing exact-covered staged manifests: broad lightweight authority, structural eligibility, minimal financial qualification, governance/valuation qualification, then market/corporate-action coverage. Provider acquisition, feature calculation and strategy policy remain outside Backtest Runtime.
 
-The data module is deep: callers provide one declaration, one exact source snapshot and one catalog; the Builder owns normalization, identity, exact-cover validation, publication bytes and structured failure.
+Each stage is deep and atomic: callers provide one exact upstream manifest plus scoped source snapshots; the Builder owns normalization, identity, stage exact-cover, publication bytes and structured failure. The final declaration binds stage refs rather than requiring every heavy capability for every broad-Universe Instrument.
 
 ## 2. Authority
 
@@ -39,15 +40,17 @@ The data module is deep: callers provide one declaration, one exact source snaps
 
 ## 3. External seam
 
-Proposed Builder interface; names remain provisional until Backtest owner approval:
+Proposed final-composition Builder interface; names remain provisional until Backtest owner approval:
 
 ```python
 build_cn_a_share_quality_research_bundle_v1(
     declaration: CnAShareQualityResearchBundleDeclarationV1,
-    source_snapshot: SourceSnapshot,
+    stage_manifests: tuple[ArtifactRef, ...],
     instrument_catalog: InstrumentCatalog,
 ) -> CnAShareQualityResearchBundleOutcomeV1
 ```
+
+Stage-specific builders consume one exact upstream manifest and one or more scoped SourceSnapshots. Their names and schemas remain Backtest-owned provisional vocabulary.
 
 Properties:
 
@@ -65,15 +68,12 @@ Properties:
 1. `bundle_key`;
 2. `coverage_start` and `coverage_end_exclusive`;
 3. exact `instrument_catalog_hash`;
-4. exact source member keys grouped by capability;
-5. `listing_universe_closure_declaration_ref`;
-6. `industry_closure_declaration_ref`;
-7. corporate-action closure declaration ref;
-8. financial-statement terminal-set declaration ref;
-9. governance terminal-set declaration ref;
-10. valuation observation declaration ref;
-11. required capability tuple;
-12. schema version `1`.
+4. exact ordered S0–S4 stage-manifest refs/hashes;
+5. required final capability tuple;
+6. source limitations/result-grade ceiling;
+7. schema version `1`.
+
+Source-member, closure-declaration and stage-scope identities are derived exclusively from the stage manifests. If any caller-supplied compatibility projection repeats them, exact equality is mandatory.
 
 The declaration contains no provider token, local path, current timestamp, Strategy parameters, selected stocks, Backtest request identity or result-grade claim.
 
@@ -127,7 +127,7 @@ Each label becomes usable only after G12D publication returns an exact `MarketBu
 
 ## 8. Coverage reports
 
-One successful publication requires exact reports for the existing names and the provisionally named industry report:
+Final composite publication requires the reports below. Each upstream stage requires only the reports/capabilities declared for its exact prior-stage output scope:
 
 - `InstrumentCatalogCoverageReport`;
 - `UniverseCoverageReport`;
@@ -196,8 +196,8 @@ No Platform Research, Validation or Promotion source change belongs to QB-DATA-0
 
 `NOT_READY` until all are true:
 
-1. accepted provider/source contracts exist for broad statements, audit opinions, penalties and pledge history; the current public-source finding is only `SOURCE_BOUNDED_ONLY` or `MISSING`;
-2. exact finite source captures exist for Fold A and B;
+1. accepted provider/source contracts exist for every consumed stage; current public sources remain `SOURCE_BOUNDED_ONLY` or `MISSING`;
+2. exact finite stage captures/manifests exist for Fold A and B with complete S0→S4 scope equations;
 3. catalog, Universe, industry, status and corporate-action prerequisite contracts are accepted;
 4. financial/governance payload schemas, availability rules and closure declarations are approved;
 5. one clean Builder candidate proves deterministic publication/reopen and coverage failures;
@@ -217,4 +217,4 @@ financial_statement_observations@1 member and require
 FINANCIAL_PAYLOAD_INCOMPLETE with no publication files.
 ```
 
-The next safe work is Backtest-owner review/acceptance of stacked PRs #1 and #2, followed by separately authorized credentialed v2 capture—not Builder or Strategy execution.
+The next safe additive work is the user-approved S0 source-bounded lightweight catalog sentinel described by QB-DATA-STAGE-01. It may estimate funnel scope and test plumbing, but all historical completeness/survivorship/decision-grade flags remain false. Builder/Strategy execution remains unauthorized.

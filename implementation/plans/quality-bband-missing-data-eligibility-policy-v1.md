@@ -1,14 +1,14 @@
 # QB-ELIG-01 — Quality + B-Band missing-data eligibility policy v1
 
-- **Status:** `CONTRACT_FROZEN / INDEPENDENT_REVIEW_CORRECTIONS_APPLIED / PLAN_ONLY / GENERAL_MARKET_AUTHORITY_MISSING`
-- **Scope:** downstream quality qualification, holding continuation and new-entry eligibility after successful QB-DATA Bundle construction
+- **Status:** `STAGED_FUNNEL_AMENDED / CONTRACT_FROZEN / PLAN_ONLY / GENERAL_MARKET_AUTHORITY_MISSING`
+- **Scope:** alternating staged QB-DATA authority and deterministic structural/quality/entry qualification
 - **Consumer:** future quality, continuation, entry and ranking manifests
 
 ## 1. Outcome
 
 Missing evidence is never converted to zero, a low score, an automatic threshold failure or a silently removed stock.
 
-QB-DATA coverage remains unconditional: a successful Bundle must exact-cover the independently constructed point-in-time Universe and all declared financial, governance, valuation, industry, status, price and corporate-action capabilities. Downstream short-circuiting may avoid unnecessary Strategy feature calculation; it may not waive source acquisition, coverage reporting or Bundle exact-cover.
+QB-DATA exact-cover remains unconditional within each approved stage. S0 exact-covers the broad independent Universe; every later data stage exact-covers only the deterministic qualified output set from its prior Strategy stage. Missing provider rows never define scope, and no stage may silently omit an expected issuer.
 
 Quality qualification, existing-holding continuation and new-entry signal selection are separate decisions. A stock is never bought merely because it is high quality, and a retained holding is never sold merely because it has no fresh breakout, has become expensive or ranks below a new candidate.
 
@@ -36,33 +36,32 @@ The portfolio authority must exact-bind the approved industry report alongside U
 
 A provider-covered financial subset, bar-presence subset, current constituent list, current industry classification or current controller field must never define historical Universe membership.
 
-## 3. Two separate failure layers
+## 3. Alternating authority and Strategy stages
 
-### Layer A — QB-DATA Bundle construction
+The staged sequence is frozen in [`quality-bband-staged-data-funnel-v1.md`](quality-bband-staged-data-funnel-v1.md):
 
-The failure precedence and atomic semantics in [`quality-bband-data-contract-v1.md`](quality-bband-data-contract-v1.md) remain unchanged. Missing/foreign/conflicting source, revision, coverage or publication authority returns its existing atomic QB-DATA failure. No Bundle and no Strategy manifest is emitted.
+```text
+S0 lightweight broad authority
+→ S1 structural qualification
+→ S2 minimal financial authority + qualification
+→ S3 governance/valuation authority + qualification
+→ S4 market/action authority + entry/holding decisions
+→ final composite authority
+```
 
-The Bundle layer may carry explicit source-bounded candidate intervals or N.A. declarations when their schemas and source coverage are mechanically complete. It may not silently fabricate an exact point.
+Data stages preserve existing QB-DATA failure precedence and atomic semantics. Strategy stages are pure deterministic transformations over accepted upstream manifests. Missing/foreign/conflicting source authority blocks the active data stage and emits no downstream scope; exact hard-filter failures may legally reduce the next stage's scope only after complete prior-stage closure.
 
-### Layer B — Strategy decisions
-
-Only after Bundle success may Strategy perform:
-
-1. quality qualification for the independently defined Universe;
-2. continuation/exit assessment for existing holdings;
-3. new-entry filter, signal and ranking for available slots.
-
-Downstream short-circuiting does not weaken Layer A.
+Stage payloads may carry explicit source-bounded candidate intervals or N.A. declarations when their schemas and source coverage are mechanically complete. They may not silently fabricate an exact point.
 
 ## 4. Quality qualification
 
 Quality stages are:
 
-1. structural scope: ordinary沪深主板, non-financial, listed at least five years;
-2. five-year financial-quality hard filters;
-3. audit, severe-penalty/fraud and controlling-shareholder-pledge hard filters.
+1. S1 structural scope over S0: ordinary沪深主板, non-financial, listed at least five years;
+2. financial-quality hard filters after S2 exact-covers every S1 survivor;
+3. audit, severe-penalty/fraud and controlling-shareholder-pledge hard filters after S3 exact-covers every financial survivor.
 
-A complete decision-invariant failure at an earlier quality stage ends later quality feature calculation for that issuer. Required Bundle coverage has already been established and is not skipped.
+A complete decision-invariant failure at an earlier quality stage ends later feature calculation and legally removes that issuer/date from the next data-stage request scope. The active stage's own expected scope must still be exact-covered.
 
 Every Universe member receives exactly one quality disposition:
 
@@ -132,24 +131,24 @@ Each quality-qualified non-held issuer receives one entry disposition:
 | `ENTRY_ELIGIBLE_INTERVAL` | every entry predicate passes, but rank features remain intervals | yes, as intervals |
 | `UNRESOLVED_DECISION_MATERIAL` | interpretations change entry/trade eligibility | no; blocks the decision date |
 
-Missing signal data is not `NO_ENTRY_SIGNAL`; it is a Layer A market-coverage failure.
+Missing signal data is not `NO_ENTRY_SIGNAL`; it is an S4 market-coverage failure.
 
 ## 7. Missing-data and ambiguity matrix
 
 | Situation | Required treatment |
 | --- | --- |
 | Fewer than five complete fiscal years because complete listing history proves recent listing | `STRUCTURALLY_OUT_OF_SCOPE` |
-| Five years should exist, but required report/source/availability evidence is absent | Layer A QB-DATA failure; no Bundle |
+| Five years should exist, but required report/source/availability evidence is absent | active data-stage QB-DATA failure; no downstream manifest |
 | Report/declaration exact-proves a line item or predicate is not applicable | use the report-specific value or N.A. predicate |
-| Provider null has no report-specific meaning | Layer A payload/revision failure; never null→zero |
+| Provider null has no report-specific meaning | active data-stage payload/revision failure; never null→zero |
 | Exact value fails a quality or entry hard filter | corresponding `*_FILTER_FAILED` disposition |
 | Interval lies wholly on the failing side | decision-invariant filter failure; retain interval and mark evidence mode `INTERVAL_DECISION_INVARIANT` |
 | Interval lies wholly on the passing side | interval-qualified disposition if later predicates pass |
 | Interval straddles a hard threshold, exit condition or trade predicate | `UNRESOLVED_DECISION_MATERIAL` |
 | Complete OHLCV proves no breakout | `NO_ENTRY_SIGNAL` |
-| Provider/search returns zero rows for penalty, pledge, correction or corporate action | bounded observation only; cannot close Layer A absence authority |
+| Provider/search returns zero rows for penalty, pledge, correction or corporate action | bounded observation only; cannot close the active data stage's absence authority |
 | Complete competent-source declaration proves no event in a closed interval | use explicit no-event result |
-| Current/final Universe, industry or controller state is projected backward | Layer A identity/coverage failure |
+| Current/final Universe, industry or controller state is projected backward | S0/S3 identity or coverage failure |
 
 ## 8. Manifest closure
 
@@ -185,11 +184,11 @@ K = min(available_slots, entry_eligible_count)
 - If admissible interpretations change top-`K` membership, return `RANKING_AMBIGUOUS`.
 - T+1 failure for a selected name leaves the slot in cash; no lower-ranked same-open replacement is authorized.
 
-An empty or thin new-entry set is legitimate only after Layer A success, complete quality/continuation/entry closure and no unresolved ambiguity. Thresholds are never loosened to fill positions.
+An empty or thin new-entry set is legitimate only after every consumed S0–S4 stage succeeds, complete quality/continuation/entry closure exists and no unresolved ambiguity remains. Thresholds are never loosened to fill positions.
 
 ## 10. Blocked decisions publish no target
 
-`UNRESOLVED_DECISION_MATERIAL`, `RANKING_AMBIGUOUS` or any upstream authority failure publishes:
+`UNRESOLVED_DECISION_MATERIAL`, `RANKING_AMBIGUOUS` or any active-stage authority failure publishes:
 
 ```text
 no TargetSnapshot
@@ -201,9 +200,9 @@ It must not publish an empty complete snapshot: under the existing complete-snap
 
 ## 11. Failure precedence
 
-### Bundle layer
+### Data-stage failures
 
-QB-DATA retains its existing order unchanged:
+Every active S0/S2/S3/S4 data stage retains the existing QB-DATA order unchanged:
 
 1. `INPUT_TYPE_MISMATCH`;
 2. `CATALOG_IDENTITY_MISMATCH`;
@@ -218,9 +217,11 @@ QB-DATA retains its existing order unchanged:
 11. `BUNDLE_EXACT_COVER_MISMATCH`;
 12. `PUBLICATION_INTEGRITY_FAILURE`.
 
-### Strategy layer after Bundle success
+### Strategy-stage failures
 
-1. manifest/Bundle/Universe identity mismatch;
+After each required upstream data-stage success, S1/financial/governance-entry/ranking transformations use:
+
+1. manifest/stage/Universe identity mismatch;
 2. quality/continuation/entry disposition closure mismatch;
 3. `UNRESOLVED_DECISION_MATERIAL` in quality, exit or entry eligibility;
 4. `RANKING_AMBIGUOUS` for T-close top-`K` membership;

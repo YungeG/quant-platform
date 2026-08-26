@@ -72,9 +72,9 @@ Even with data, execution is still blocked by:
 - no accepted T+1 selected-name gap/tradability/lot transport;
 - no public multi-stock A-share PREP operation or qualified Profile.
 
-## 4. Why more bounded capture is not the next useful action
+## 4. Bounded capture boundary after staged-funnel approval
 
-A larger approved-proxy Tushare pull could preserve more returned bytes, but it cannot create the missing provider/source properties:
+An unscoped heavy approved-proxy Tushare pull could preserve more returned bytes, but it cannot create the missing provider/source properties:
 
 - historical-as-of identity;
 - correction/supersession lineage;
@@ -82,7 +82,9 @@ A larger approved-proxy Tushare pull could preserve more returned bytes, but it 
 - competent no-event authority;
 - corporate-action lifecycle closure.
 
-It would therefore remain nonauthority input and would not unlock the required public Platform/Backtest flow. Under the current contract, broad capture before source qualification would add cost and artifacts without changing the decision.
+It would therefore remain nonauthority input and would not unlock the required public Platform/Backtest flow.
+
+The user-approved exception is one staged S0 lightweight catalog capture. It may preserve returned broad identity/listing/company bytes, test exact stage plumbing and estimate structural-funnel scope while keeping historical completeness, survivorship, revision closure and decision-grade flags false. S1–S4 acquisition must wait for exact prior-stage manifests; this exception does not change the no-economic-run decision.
 
 ## 5. Forbidden substitutes
 
@@ -125,4 +127,4 @@ current next executable economic run = none
 stop reason = genuine data/authority infeasibility under current constraints
 ```
 
-No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic owner review of PRs #1–#9 and formal data-source qualification/procurement may proceed now. Further strategy tuning, broad bounded capture or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.
+No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic PR review, data-source qualification/procurement and the approved S0 lightweight source-bounded plumbing capture may proceed now. Further strategy tuning, unscoped heavy capture or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.
