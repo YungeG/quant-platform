@@ -66,13 +66,14 @@ Properties:
 2. `coverage_start` and `coverage_end_exclusive`;
 3. exact `instrument_catalog_hash`;
 4. exact source member keys grouped by capability;
-5. listing/Universe closure declaration ref;
-6. corporate-action closure declaration ref;
-7. financial-statement terminal-set declaration ref;
-8. governance terminal-set declaration ref;
-9. valuation observation declaration ref;
-10. required capability tuple;
-11. schema version `1`.
+5. `listing_universe_closure_declaration_ref`;
+6. `industry_closure_declaration_ref`;
+7. corporate-action closure declaration ref;
+8. financial-statement terminal-set declaration ref;
+9. governance terminal-set declaration ref;
+10. valuation observation declaration ref;
+11. required capability tuple;
+12. schema version `1`.
 
 The declaration contains no provider token, local path, current timestamp, Strategy parameters, selected stocks, Backtest request identity or result-grade claim.
 
@@ -85,10 +86,11 @@ Reuse existing accepted capabilities where applicable:
 - `universe@1` after G12K general coverage is accepted;
 - `corporate_actions@1` after lifecycle closure is accepted.
 
-New provisional source capabilities:
+New provisional source capabilities; exact public names remain subject to Backtest-owner approval:
 
 | Capability | Purpose | Minimum payload authority |
 | --- | --- | --- |
+| `industry_membership_revision@1` | Point-in-time official industry classification used by structural eligibility | Instrument, classification-standard identity, category code, effective/available interval, revision/supersedes identity and source hash. |
 | `financial_statement_observations@1` | Raw point-in-time annual/quarterly statements | Instrument, statement kind, accounting period, announcement/available instant, revision/supersedes identity, source hash, required line items. |
 | `audit_opinion_observations@1` | Audit and report-quality facts | Instrument, report identity, opinion kind, announcement/available instant, revision and source. |
 | `issuer_governance_observations@1` | Penalty/fraud/pledge/major capital-allocation facts | Competent issuer/source identity, Instrument, fact kind, effective and available instant, revision and source. |
@@ -125,10 +127,11 @@ Each label becomes usable only after G12D publication returns an exact `MarketBu
 
 ## 8. Coverage reports
 
-One successful publication requires exact reports for:
+One successful publication requires exact reports for the existing names and the provisionally named industry report:
 
 - `InstrumentCatalogCoverageReport`;
 - `UniverseCoverageReport`;
+- `IndustryMembershipCoverageReportV1`;
 - `TradeStatusCoverageReport`;
 - `RuleCoverageReport`;
 - `PriceStreamCoverageReport`;
@@ -195,7 +198,7 @@ No Platform Research, Validation or Promotion source change belongs to QB-DATA-0
 
 1. accepted provider/source contracts exist for broad statements, audit opinions, penalties and pledge history; the current public-source finding is only `SOURCE_BOUNDED_ONLY` or `MISSING`;
 2. exact finite source captures exist for Fold A and B;
-3. catalog, Universe and corporate-action prerequisite contracts are accepted;
+3. catalog, Universe, industry, status and corporate-action prerequisite contracts are accepted;
 4. financial/governance payload schemas, availability rules and closure declarations are approved;
 5. one clean Builder candidate proves deterministic publication/reopen and coverage failures;
 6. Backtest owner approves the capability names and write set.

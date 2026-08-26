@@ -25,14 +25,14 @@ The Universe authority must independently exact-bind:
 - listing-age facts;
 - applicable status/risk-warning coverage.
 
-Industry history is a distinct future Bundle capability:
+Industry history is a distinct future Bundle capability. Provisional planning vocabulary, pending Backtest-owner approval:
 
 ```text
 industry_membership_revision@1
 IndustryMembershipCoverageReportV1
 ```
 
-The portfolio authority must exact-bind that report alongside Universe coverage. QB-UNIV-CA-01 must freeze its schema before implementation.
+The portfolio authority must exact-bind the approved industry report alongside Universe coverage. QB-UNIV-CA-01 freezes required semantics; G12B must approve exact schema/name before implementation.
 
 A provider-covered financial subset, bar-presence subset, current constituent list, current industry classification or current controller field must never define historical Universe membership.
 
@@ -40,7 +40,7 @@ A provider-covered financial subset, bar-presence subset, current constituent li
 
 ### Layer A — QB-DATA Bundle construction
 
-Existing [`quality-bband-data-contract-v1.md`](quality-bband-data-contract-v1.md) remains unchanged. Missing/foreign/conflicting source, revision, coverage or publication authority returns its existing atomic QB-DATA failure. No Bundle and no Strategy manifest is emitted.
+The failure precedence and atomic semantics in [`quality-bband-data-contract-v1.md`](quality-bband-data-contract-v1.md) remain unchanged. Missing/foreign/conflicting source, revision, coverage or publication authority returns its existing atomic QB-DATA failure. No Bundle and no Strategy manifest is emitted.
 
 The Bundle layer may carry explicit source-bounded candidate intervals or N.A. declarations when their schemas and source coverage are mechanically complete. It may not silently fabricate an exact point.
 
