@@ -154,7 +154,19 @@ calendar_authority_id: str
 source_availability_id: str
 ```
 
-All IDs are canonical SHA-256. The canonical availability body uses `source_publication_date="2015-04-04"`, canonical UtcInstant dictionaries and the exact PDF member key. `availability_id = canonical_sha256(body_without_availability_id)` and must reconstruct. `publication_boundary_at` is the first exact later accepted exchange-session open after the date-only publication. `available_at = max(source_visibility_at, publication_boundary_at)` and all instants reconstruct exactly. The candidate target is 2015-04-07 09:30 Asia/Shanghai (`1428370200000000000` epoch ns), but real publication requires an accepted Calendar/Session authority and availability identity. This packet does not hard-code that instant as authority.
+All IDs are canonical SHA-256. The canonical availability body uses `source_publication_date="2015-04-04"`, canonical UtcInstant dictionaries and the exact PDF member key. `availability_id = canonical_sha256(body_without_availability_id)` and must reconstruct.
+
+v1 deliberately uses a later conservative source-bounded boundary already covered by accepted candidates rather than inventing 2015 Calendar authority:
+
+```text
+source_visibility_at = 2017-05-02 09:30 Asia/Shanghai
+publication_boundary_at = 2017-05-02 09:30 Asia/Shanghai
+available_at = 1493688600000000000 epoch ns
+calendar_authority_id = sha256:22585fa4c2070d87544f0ba977be757770aeeaad5bead30188317c1794680ee8
+source_availability_id = sha256:8195e9d9e99949802c829f218929bdbf740b336152d83ad789a060e0355d116e
+```
+
+The calendar identity is the accepted annual-roster SourceSnapshot containing the 2017-05-02 primary screen; the source identity is the accepted official-remediation SourceSnapshot. All three instants and both authority IDs must equal these literals. This is conservative source-bounded development availability, not formal general Calendar authority. It is available at the 2017 screen open and before that screen's T-close.
 
 ## 6. Backfill result
 
@@ -267,7 +279,8 @@ build_pan_hai_2014_official_balance_backfill_v1
 5. availability hash/formula/causality failure maps to revision mismatch;
 6. result reconstructs byte-identically and covers exactly one `O` key;
 7. result keeps payload/scope qualification false and emits no provider row fiction;
-8. pure module has no I/O/network/clock/PDF/publication imports.
+8. pure module has no I/O/network/clock/PDF/publication imports;
+9. optional real-fixture gate `QB_OFFICIAL_S2_REMEDIATION_ROOT` reconstructs the accepted SourceSnapshot and succeeds without monkeypatching source/availability authority constants.
 
 ## 11. Nonclaims
 
