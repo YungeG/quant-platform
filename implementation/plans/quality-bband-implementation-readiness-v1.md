@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. Fixed-scope acquisition, declaration, 2023 normalization/selection, historical declaration and historical normalization work is published as stacked Backtest PRs #1–#8. Full strategy implementation still cannot start because the stack is unaccepted, historical presentation/formula input is incomplete, one period has `DEBT_SCOPE_INCOMPLETE`, and broad source/general A-share/portfolio authority is missing.
+The research design is approved for continued planning. Fixed-scope financial and valuation acquisition, declaration, normalization and selection work is published as stacked Backtest PRs #1–#9. Full strategy implementation still cannot start because the stack is unaccepted, one source period remains `DEBT_SCOPE_INCOMPLETE`, exact feature/rank values remain interval-sensitive, and broad immutable data, Universe/action, execution-feasibility and public portfolio authority are missing.
 
 ## Outcome
 
@@ -48,15 +48,20 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C23 | `implementation/plans/quality-bband-historical-financial-declaration-implementation-v1.md` | Stacked PR #7 publishes exact declarations for 2018–2020/2022 and canonical 2021 `DEBT_SCOPE_INCOMPLETE` evidence; no 2021 declaration exists. |
 | C24 | `research/quality-bband-szse-calendar-session-authority-v1.md` | Official SZSE notices, rules and daily-statistics hashes freeze the finite 2019–2023 next-session dates and `09:30 Asia/Shanghai` boundary; no general Calendar provider is claimed. |
 | C25 | `implementation/plans/quality-bband-historical-financial-normalization-implementation-v1.md` | Stacked PR #8 publishes four supported historical observation sets and the canonical 2021 typed stop while retaining the 2022 advisory FCF conflict; valid manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`. |
-| C26 | `research/quality-bband-historical-formula-coverage-v1.md` | Proves only 2019/2020/2023 ROIC inputs are complete; 2021 failure removes same-year formulas and 2022 prior capital, so the five-year feature is unavailable and further formula code is deferred. |
+| C26 | `research/quality-bband-historical-formula-coverage-v1.md` | Exact point-valued five-year ROIC is unavailable, but retained 2021 debt interpretations support a bounded median interval and invariant `ROIC >= 20%` qualification. |
 | C27 | `research/quality-bband-2021-debt-scope-resolution-v1.md` | Official 2022 evidence does not exact-resolve 2021, but supports the broad interpretation; both debt candidates are retained and the quality threshold is invariant. |
 | C28 | `research/quality-bband-reasoned-ambiguity-policy-v1.md` | Authorizes Research continuation only when every evidence-supported interpretation yields the same qualification/trade decision; exact ranking blocks on overlapping intervals and source artifacts remain unchanged. |
+| C29 | `research/quality-bband-gree-governance-audit-v1.md` | Fixed issuer passes audit and severe-issuer-penalty gates; no controlling shareholder makes that pledge predicate N.A., while largest-shareholder full pledge and acquisitions remain advisories. |
+| C30 | `implementation/plans/quality-bband-gree-valuation-source-sentinel-v1.md` and `research/quality-bband-gree-valuation-assessment-v1.md` | Stacked PR #9 publishes valid SourceSnapshot `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30`; annual and TTM PE interpretations both pass the fixed threshold, but no peer ranking exists. |
+| C31 | `implementation/plans/quality-bband-missing-data-eligibility-policy-v1.md` | Separates unconditional QB-DATA coverage, quality qualification, holding continuation, breakout entry and no-target-on-block semantics. |
+| C32 | `implementation/plans/quality-bband-universe-corporate-action-coverage-v1.md` | Freezes broad listed ordinary-A-share Universe, downstream structural filtering, industry/status/action closure and point-in-time action semantics; real source closure is missing. |
+| C33 | `implementation/plans/quality-bband-feature-ranking-manifest-v1.md` | Freezes prospective canonical annual PE, three-factor equal-weight midrank scoring, correlated interpretation domains, actual-holding slot reservation and invariant T-close top-K selection. |
 
 ## Ownership
 
 - **Orchestrator:** current Platform planning session.
 - **Planning worktree:** `/home/ygguo/agent-projs/ai-crypt/platform-a-share-strategy` / `research/a-share-strategy`.
-- **Implementation worktrees:** not created until packet becomes `READY`.
+- **Implementation worktrees:** fixed-scope PR worktrees exist for PRs #1–#9; no general QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
 - **Data acquisition/Builder owner:** Backtest repository owner.
 - **Backtest public PREP owner:** Backtest Runtime repository owner.
 - **Platform integration owner:** Platform repository owner after accepted Backtest SHA exists.
@@ -234,19 +239,20 @@ Candidate acceptance tiers:
 4. **Formula input:** the exact point-valued 2021/2022 ROIC inputs remain unavailable, but the frozen narrow/broad interval yields a five-year median range `118.8062%–127.2984%`; the `20%` financial-quality threshold is invariant and may continue under C28. Exact ranking remains interval-sensitive.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
-7. **Universe/action coverage:** general G12K remains blocked.
-8. **Interface approval:** Backtest owner has not approved provisional capability/type/function names.
-9. **Target-stream producer:** exact owner module and public operation are not frozen.
-10. **Profile qualification:** multi-instrument ordinary-A-share account scope is not accepted.
-11. **Scenario ref:** `a-share.domestic-cash.daily-next-open.base-cost.v1` is a proposed identity, not a published ref.
-12. **Metric limitation:** formal Validation cannot enforce drawdown or benchmark-relative excess.
-13. **Permissions:** commit/push, stacked PR creation and approved-proxy artifact publication were authorized; no merge, acceptance, deployment or real-trading authority was granted.
+7. **Universe/action coverage:** QB-UNIV-CA-01 is frozen, but general catalog/listing/industry/status/action source closure and Backtest-owned schemas remain blocked.
+8. **Ranking encoding:** QB-RANK-01 is frozen for planning, but canonical constrained-domain/proof-witness encoding and peer manifests are absent.
+9. **Interface approval:** Backtest owner has not approved provisional capability/type/function names.
+10. **Target-stream producer:** exact owner module and public operation are not frozen; T+1 selected-name gap/tradability/lot behavior has no accepted transport.
+11. **Profile qualification:** multi-instrument ordinary-A-share account scope is not accepted.
+12. **Scenario ref:** `a-share.domestic-cash.daily-next-open.base-cost.v1` is a proposed identity, not a published ref.
+13. **Metric limitation:** formal Validation cannot enforce drawdown or benchmark-relative excess.
+14. **Permissions:** commit/push, stacked PR creation and approved-proxy artifact publication were authorized; no merge, acceptance, deployment or real-trading authority was granted.
 
 ## Readiness decision
 
 `NOT_READY`.
 
-The fixed-scope acquisition/declaration/2023-normalization/selection/history-source, historical declaration, Calendar/Session, historical normalization, formula coverage, 2021 source-resolution and ambiguity-policy lanes are complete. PRs #1–#8 await **Backtest-owner review/acceptance**. Fixed-issuer financial-quality research may continue with interval evidence; broad QB-DATA-01, governance/valuation authority and QB-PREP-01 remain blocked.
+The fixed-scope financial/governance/valuation research lane and the missing-data, Universe/action and interval-ranking planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. The fixed issuer passes frozen quality/governance/valuation thresholds with retained intervals and advisories, but broad QB-DATA-01 source closure, peer ranking, execution feasibility and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
@@ -262,5 +268,6 @@ The fixed-scope acquisition/declaration/2023-normalization/selection/history-sou
 - **Selection:** stacked PR [`YungeG/quant-backtest#5`](https://github.com/YungeG/quant-backtest/pull/5), commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; real selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`.
 - **History source:** stacked PR [`YungeG/quant-backtest#6`](https://github.com/YungeG/quant-backtest/pull/6), head `64159f81fa6f831990690dd133587b96533a0362`; real 2018–2022 SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`.
 - **Historical normalization:** stacked PR [`YungeG/quant-backtest#8`](https://github.com/YungeG/quant-backtest/pull/8), commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`; valid historical manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`.
-- **Second decision:** accept PRs #2–#8 and the reasoned-ambiguity policy for Research use; exact source values remain unresolved and interval-sensitive ranking must fail closed.
+- **Valuation source:** stacked PR [`YungeG/quant-backtest#9`](https://github.com/YungeG/quant-backtest/pull/9), commit `5b99e50826a526cfd81ea8a28d2a1d1bf3daf52c`; valid SourceSnapshot `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30` and invalid candidate 01 retained separately.
+- **Second decision:** accept PRs #2–#9 and the reasoned-ambiguity policy for Research use; exact source values remain unresolved and interval-sensitive ranking must fail closed.
 - **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.
