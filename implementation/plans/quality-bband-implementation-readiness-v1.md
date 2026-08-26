@@ -17,7 +17,7 @@ immutable point-in-time A-share data
 → supported | rejected | inconclusive
 ```
 
-No second simulator, private Backtest composition, custom PnL, Shadow/Live capability or deployment authority is part of the outcome.
+No second simulator, private Backtest composition, custom profit-and-loss calculation, Shadow/Live capability or deployment authority is part of the outcome.
 
 ## Authority
 
@@ -56,6 +56,7 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C31 | `implementation/plans/quality-bband-missing-data-eligibility-policy-v1.md` | Separates unconditional QB-DATA coverage, quality qualification, holding continuation, breakout entry and no-target-on-block semantics. |
 | C32 | `implementation/plans/quality-bband-universe-corporate-action-coverage-v1.md` | Freezes broad listed ordinary-A-share Universe, downstream structural filtering, industry/status/action closure and point-in-time action semantics; real source closure is missing. |
 | C33 | `implementation/plans/quality-bband-feature-ranking-manifest-v1.md` | Freezes prospective canonical annual PE, three-factor equal-weight midrank scoring, correlated interpretation domains, actual-holding slot reservation and invariant T-close top-K selection. |
+| C34 | `research/quality-bband-full-market-data-infeasibility-v1.md` | Concludes no formal Fold A/B economic run is honest under current public authority; strategy is untested/not rejected, while PR review and formal data procurement may continue. |
 
 ## Ownership
 
@@ -252,7 +253,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope financial/governance/valuation research lane and the missing-data, Universe/action and interval-ranking planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. The fixed issuer passes frozen quality/governance/valuation thresholds with retained intervals and advisories, but broad QB-DATA-01 source closure, peer ranking, execution feasibility and QB-PREP-01 remain blocked.
+The fixed-scope financial/governance/valuation research lane and the missing-data, Universe/action and interval-ranking planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. The fixed issuer passes frozen thresholds with retained intervals and advisories, but broad QB-DATA-01 source closure, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is currently executable; non-economic PR review and data-authority procurement remain available.
 
 ## Next owner and first action
 

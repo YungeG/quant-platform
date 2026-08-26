@@ -147,11 +147,11 @@ Therefore the contradiction no longer blocks continued fixed-issuer financial-qu
 
 This policy does not supply:
 
-- accepted PR #1–#8 authority;
+- accepted PR #1–#9 authority;
 - full-market financial coverage;
-- audit-opinion, penalty, pledge or merger-history authority;
-- historical valuation inputs;
-- immutable Universe/corporate-action coverage;
+- full-market audit-opinion, penalty, pledge and merger-history authority; fixed-issuer assessment is now recorded separately;
+- full-market historical valuation inputs; fixed-issuer candidate 02 and threshold assessment are recorded separately;
+- immutable Universe/industry/corporate-action coverage;
 - public multi-stock Backtest preparation;
 - Strategy, Validation, Live or deployment authority.
 
