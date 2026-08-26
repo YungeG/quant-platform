@@ -4,6 +4,7 @@
 - **Owner:** Backtest acquisition tooling
 - **Implementation base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** retain the one official FY2014 filing and fourteen official non-filing/terminal documents needed by QB-S2-NONFILE-01
+- **Authority snapshot:** Platform commit `8974f7d`, packet SHA-256 `29a18e4af2108598d2876f410a61efbeef6f7f850251b343a14adcfd80994d72`
 
 ## 1. Exact write set
 
