@@ -95,6 +95,8 @@ f004v = PDF
 
 All 26 other rows are retained extras. Response change fails; no pagination inference.
 
+The metadata URL is validated literally as HTTP. The retained PDF binding applies exactly one normalization: replace scheme `http` with `https` while requiring identical hostname `dataclouds.cninfo.com.cn`, port absence, path, empty query and empty fragment. Any other scheme/host/path change fails.
+
 ## 3. Exact PDFs
 
 | Member | HTTPS URL | Bytes | SHA-256 |
@@ -124,7 +126,14 @@ MAX_PDF_MEMBER_BYTES = 1 MiB
 MAX_TOTAL_BYTES = 4 MiB
 ```
 
-Retry statuses/delays equal PR #13; changed final URL fails before retry.
+Retry statuses/delays equal PR #13; changed final URL fails before retry. The supplement owns local allowlists and helpers:
+
+```text
+_post_with_retries(url: str, form: FormPairs, headers: HeaderPairs, post: Post, sleep: Sleep, *, total_remaining: int) -> (status, headers, bytes, final_url, attempts)
+_get_with_retries(url: str, headers: HeaderPairs, get: Get, sleep: Sleep, *, member_limit: int, total_remaining: int) -> (status, headers, bytes, final_url, attempts)
+```
+
+They reuse predecessor retryable-status/delay constants and semantic response/boundary helpers, but not predecessor frozen URL allowlists.
 
 ## 5. SourceSnapshot
 
@@ -147,14 +156,42 @@ Output has exactly eight regular files, all disk mode `0600`: six raw members pl
 type = "official_s2_remediation_supplement_source_receipt"
 schema_version = 1
 capture_key = "20260826-official-s2-remediation-supplement-candidate-01"
+acquired_at_epoch_nanoseconds
 logical_requests
 selected_cninfo_facts
 selected_neeq_fact
 metadata_extra_record_count = 37
 snapshot
 limitations
-false flags
+official_evidence_reviewed = false
+nonfiling_declarations_constructed = false
+financial_availability_qualified = false
+revision_closure_complete = false
+s2b_exact_cover_complete = false
+decision_grade_eligible = false
+deployment_authorized = false
 ```
+
+Each logical request entry has exact keys:
+
+```text
+logical_index
+request_kind = cninfo_metadata_post | neeq_metadata_get | pdf_get
+request_key
+member_key
+url
+ordered_form | null
+ordered_headers
+attempts
+status
+final_url
+response_headers
+response_sha256
+response_byte_count
+response_received_at_epoch_nanoseconds
+```
+
+Response headers retain only `Content-Type` and valid `Content-Length` when present. CNINFO selected facts use `announcement_id`, `title`, `announcement_time_epoch_milliseconds`, `adjunct_url`. The NEEQ selected fact uses exactly `seccode`, `secname`, `published_at`, `title`, `metadata_pdf_url`, `retained_pdf_url`.
 
 Limitations:
 
@@ -177,11 +214,14 @@ Production symbols:
 
 ```text
 MetadataRequest
+JsonGetRequest
 PdfRequest
 _NoRedirect imported from predecessor
 _METADATA_REQUESTS
 _PDF_REQUESTS
 _NEEQ_REQUEST
+_post_with_retries
+_get_with_retries
 _parse_cninfo_metadata
 _parse_neeq_metadata
 acquire_official_s2_remediation_supplement_source_v1
@@ -190,7 +230,20 @@ _parse_args
 main
 ```
 
-Exact injected signature mirrors PR #13 with Post/Get/Sleep/Clock. Reuse only accepted predecessor transport/safety helpers; no token/Tushare/provider-normalization/declaration imports.
+Exact injected operation:
+
+```text
+acquire_official_s2_remediation_supplement_source_v1(
+    *,
+    output_dir: Path,
+    post: Post,
+    get: Get,
+    sleep: Sleep,
+    clock: Clock,
+) -> dict[str, object]
+```
+
+Reuse only accepted predecessor transport boundary/safety helpers and constants; no token/Tushare/provider-normalization/declaration imports.
 
 Tests independently freeze forms, URLs, selected facts, totals/extras, PDF hashes, order, ceilings, provenance, receipt, eight-file layout, retries, redirect/proxy/security, bounded reads, snapshot reconstruction and atomic failures. Architecture guard freezes exact three-file write set and predecessor hashes.
 
