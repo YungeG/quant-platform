@@ -1,6 +1,6 @@
 # Platform glossary
 
-This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md) and additive [Integration v2](overall/integration-v2.md). Frozen pure-value terms remain defined by their module designs.
+This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md) and additive [Integration v2](overall/integration-v2.md), [Integration v3](overall/integration-v3.md), [Integration v5](overall/integration-v5.md), and [Integration v6](overall/integration-v6.md); Integration v4 remains an approved/deferred proposal. Frozen pure-value terms remain defined by their module designs.
 
 ## Evidence and storage
 
@@ -72,9 +72,21 @@ _Avoid_: module-specific grade domains, Platform-computed grade
 
 **BacktestEvidenceAdmission**
 
-The integration-owned proof that an exact Backtest subject was semantically verified before entering Platform governance. Admission@1 owns v1 completion/analysis and the metric profile; the V5 candidate proposes Admission@2 for exact V2 completion/analysis refs in the same owner log.
+The integration-owned proof that an exact Backtest subject was semantically verified before entering Platform governance. Admission@1 owns v1 completion/analysis and the metric profile; Integration v5 adds Admission@2 for exact V2 completion/analysis refs in the same owner log.
 
 _Avoid_: Foundation semantic verification, nominal-ref unwrap, refreshed evidence age
+
+**Backtest target stream**
+
+The v6 Backtest-owned `backtest_target_stream@1` input artifact. Its identity binds a producer-context ref and canonical precomputed target stream; its nominal ref is CAS/exact-read authority, not Platform owner-log evidence. Backtest economic identity uses the verified stream digest rather than the producer context or ref.
+
+_Avoid_: Research evidence, MarketBundle target stream, governed publication, semantic-run producer identity
+
+**Structural target materializer**
+
+The composition-root supplied object whose immutable decision-source `strategy_artifact` and exact `materialize_target(request)` method produce a canonical target result from only the cited immutable MarketBundle.
+
+_Avoid_: loader/plugin registry, network/current-data client, CAS publisher, prepared Backtest request, cache handle
 
 ## Research
 
@@ -154,9 +166,27 @@ _Avoid_: copied trial/outcome set, cross-Experiment family
 
 **StrategyCandidate**
 
-The selected trial, publication, and analysis provenance submitted to Validation.
+The selected trial, publication, and analysis provenance submitted to Validation. V6 `StrategyCandidate@3` additively selects exact TargetMaterializationEvidence and remains unsupported by Promotion until `TSR-PG-01`.
 
 _Avoid_: validated strategy, deployment authorization
+
+**TargetRecipe**
+
+The v6 Research declaration binding a target key, immutable decision-source strategy artifact, target schema hash, and named inputs. It declares what may be materialized; it is not executable code or a loader.
+
+_Avoid_: callback, module path, mutable parameter search
+
+**TargetBuildTask**
+
+The one-per-Trial Research task with kind/witness `TARGET_BUILD`. The existing integrated `TrialDeclaration@1`, not this task, remains the discovery reservation producer.
+
+_Avoid_: reservation replacement, Backtest run, target CAS artifact
+
+**Target materialization evidence**
+
+Research or Validation owner evidence linking the reserved consumer, recipe, request/input hashes, Backtest target ref/digest, and event count. Its publication is the module replay commit; a target CAS orphan alone is not evidence.
+
+_Avoid_: target payload copy, discovery-as-OOS substitution, economic result
 
 ## Validation
 
@@ -198,7 +228,7 @@ _Avoid_: the Frozen pure result
 
 **ValidationPlan**
 
-A pre-result immutable plan for one candidate and its required v1 checks.
+A pre-result immutable plan for one candidate and its required checks. V6 `ValidationPlan@2` additionally binds the exact target recipe and immutable strategy artifact while preserving every v1 byte.
 
 _Avoid_: result-tuned threshold, recommendation
 

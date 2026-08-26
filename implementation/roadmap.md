@@ -1,8 +1,8 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, and v3 are released; Integration v4 is approved/deferred, and Integration v5 implementation resumed after accepted Backtest fan-in `8de544e7`.
+> **Status:** Integration v1, v2, v3, and v5 are released; Integration v4 is approved/deferred; additive Integration v6 is approved with only `TSR-BT-01` READY.
 
-This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), and approved/deferred [Integration v4](../overall/integration-v4.md); [Integration v5](../overall/integration-v5.md) is a contract candidate only. Node instructions live in the [implementation plan map](plans/README.md#plan-map).
+This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), approved/deferred [Integration v4](../overall/integration-v4.md), released [Integration v5](../overall/integration-v5.md), and approved additive [Integration v6](../overall/integration-v6.md). Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
 ## 1. Outcome and non-goals
 
@@ -26,6 +26,8 @@ The approved v3 contract adds only `PromotionEvaluation@2(ELIGIBLE)` and `Promot
 The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` proposal that cites an accepted limitation-free `shadow_ready` decision and precommits a bounded future window. Contract approval alone authorizes no Shadow package/runtime or operational capability; Shadow implementation deliberately deferred until a concrete observation-runtime requirement exists.
 
 The approved v5 contract activates exact Backtest canonical-v3 `decision_grade` completion and analysis-v2 evidence through additive Admission@2, Research dispatch, Validation, and Promotion governance. It adds no Backtest change, proof decoder, provider qualification, or deployment authority.
+
+The approved v6 contract freezes a development-grade cash target-stream path: context-bound Backtest target CAS authority, an externally supplied structural materializer, exact Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, and Promotion fail-closed compatibility. Contract approval changes no package code or root pin and makes only `TSR-BT-01` READY.
 
 ## 2. Status registry
 
@@ -79,6 +81,15 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-DG-01` | DONE | V2 admission publication facts and decision-grade governance accepted in [`pg-dg-01-receipt.md`](pg-dg-01-receipt.md) at Promotion revision `8e6dddf5da0494b57cca6990d5024fe4198e6b44` |
 | `DG-THIN-01` | DONE | real decision-grade fan-in accepted in [`dg-thin-01-receipt.md`](dg-thin-01-receipt.md) at Platform revision `2b21c8df40174d5a9a5b9def9a9646c34c587832` |
 | `FI-04` | DONE | whole-Platform V5 golden accepted in [`fi-04-receipt.md`](fi-04-receipt.md) at Platform revision `324f2fd08d8d9be4f4c32e222ee5bc63306ac81e` |
+| `V6-CON-01` | APPROVED | Integration v6 fixture `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496` and all five owner approvals recorded in [`v6-contract-target-stream-research-v1.md`](v6-contract-target-stream-research-v1.md) |
+| `TSR-CON-01` | APPROVED | exact target-stream contract freeze governed by `V6-CON-01`; no implementation or pin change |
+| `TSR-BT-01` | READY | Backtest target repository, source-neutral timeline v2, value-embedding bundle@6, cash development preparation, and durable replay leaf |
+| `TSR-RP-01` | BLOCKED | waits for accepted `TSR-BT-01` public target authority and preparation receipt |
+| `TSR-SV-01` | BLOCKED | waits for accepted target-aware Research candidate provenance |
+| `TSR-FI-01` | BLOCKED | waits for clean Backtest, Research, and Validation leaf receipts/commits |
+| `TSR-PG-01` | DEFERRED | target-aware Candidate/Report versions fail closed until a separate Promotion contract |
+| `TSR-BIN-Q-01` | SEPARATE_H3 | Binance causal market qualification remains independently blocked |
+| `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
 
 ## 3. Execution DAG
 
@@ -149,7 +160,18 @@ FI-03 + BT-PORT-02 ─→ V5-CON-01 [APPROVED]
                                                                  └─→ DG-THIN-01 [DONE] ─→ FI-04 [DONE]
 ```
 
-V4 remains an orthogonal approved/deferred contract and does not block V5. One writer keeps DG-ADM and RP-DG serialized despite their disjoint logical seams.
+Integration v6 begins this acyclic target-stream DAG:
+
+```text
+FI-04 ─→ V6-CON-01 / TSR-CON-01 [APPROVED]
+                         └─→ TSR-BT-01 [READY]
+                                   └─→ TSR-RP-01 [BLOCKED]
+                                             └─→ TSR-SV-01 [BLOCKED]
+                                                       └─→ TSR-FI-01 [BLOCKED]
+                                                                 └─→ TSR-PG-01 [DEFERRED]
+```
+
+`TSR-BIN-Q-01` and `TSR-ASH-Q-01` remain separate qualification branches and do not feed the common development-grade fan-in. V4 remains an orthogonal approved/deferred contract and does not block V5 or V6. One writer keeps shared root contract/status edits serialized.
 
 The graphs are acyclic:
 
@@ -204,6 +226,12 @@ The graphs are acyclic:
 | `PG-DG-01` | DG-ADM-01 + SV-DG-01 | V2 admission publication facts and decision-grade governance | Promotion core/ledger/runtime/tests |
 | `DG-THIN-01` | all V5 package leaves | real decision-grade fan-in/replay evidence | root integration test/receipt |
 | `FI-04` | all V5 receipts and package pins | fresh-clone full suite/lock/provenance | release receipt/status/tag only |
+| `V6-CON-01` / `TSR-CON-01` | FI-04 + exact package baselines | exact protected fixture, five owner approvals, unchanged gitlinks/VCS pins/lock | root contract/docs/tests only; no package or pin write |
+| `TSR-BT-01` | approved v6 contract | target CAS identity/exact-read, timeline v2, bundle@6, cash preparation, replay, compatibility | isolated Backtest leaf only |
+| `TSR-RP-01` | accepted Backtest target authority | reservation/task/evidence/candidate exact-cover and replay | isolated Research leaf only |
+| `TSR-SV-01` | accepted target-aware candidate + Backtest authority | independent OOS evidence, substitution rejection, report/replay | isolated Validation leaf only |
+| `TSR-FI-01` | clean accepted Backtest/Research/Validation leaves | cross-module golden and exact dependency closure | root gitlinks/VCS pins/`uv.lock`/integration receipt only |
+| `TSR-PG-01` | separate future Promotion contract | unsupported-version rejection until approval | DEFERRED; no implementation write |
 
 ## 5. Plan index
 
@@ -270,6 +298,17 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | 8 | `DG-THIN-01` | `FI-04` | root integration test/receipt | DONE |
 | 9 | `FI-04` | Integration v5 release | release receipt/status/tag | DONE |
 
+### Integration v6 ready queue
+
+| Priority | Node | Unblocks | Write set | State |
+| --- | --- | --- | --- | --- |
+| 1 | `V6-CON-01` / `TSR-CON-01` | `TSR-BT-01` | root contract/docs/tests only | APPROVED |
+| 2 | `TSR-BT-01` | `TSR-RP-01` | isolated Backtest leaf | READY |
+| 3 | `TSR-RP-01` | `TSR-SV-01` | isolated Research leaf | BLOCKED |
+| 4 | `TSR-SV-01` | `TSR-FI-01` | isolated Validation leaf | BLOCKED |
+| 5 | `TSR-FI-01` | common v6 implementation closure | root gitlinks/VCS pins/lock/integration receipt | BLOCKED |
+| 6 | `TSR-PG-01` | target-aware Promotion | separate Promotion contract/leaf | DEFERRED |
+
 ## 7. Integration v1 accepted
 
 P00-PLAT, P00-BTA, and P00-SEAM are accepted. The authoritative receipts are:
@@ -325,3 +364,9 @@ Shadow package/runtime implementation is deliberately deferred until a concrete 
 The protected `integration-v5-decision-grade-proof-v1` fixture is frozen at SHA-256 `1bd5ec02c990b87521f26ef42f309dc4dadfe1a62a0739a649040a935e513695`. Platform, Backtest, Validation, and Promotion owner approvals bind that exact hash. The contract consumes protected `BT-PORT-02` SHA-256 `8884f7595a62995eaf296a7ad5f0518745146905da3e2fd69a92587a9423c4a8` and Platform revision `5948dd62f50d197f3e35d499a8e44e04b2257981`.
 
 Implementation must preserve V1-V4, add no proof decoder or grade synthesis, and make no new Backtest code change. Accepted Backtest fan-in `8de544e7794ee05b652355c9809b5454d7ace494` closes the prior revision blocker: both capability revisions are ancestors, public imports pass, and independent checks recorded `2438` Backtest tests plus `90` Platform Research tests green.
+
+## 13. Integration v6 approved contract
+
+The protected `integration-v6-target-stream-research-v1` fixture is frozen at SHA-256 `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496`. Platform, Backtest, Research, Validation, and Promotion owner approvals at `2026-08-26T03:14:51Z` bind that exact hash and its exact baseline SHAs.
+
+The contract is additive and development-grade only. It freezes context-bound Backtest target CAS authority, the exact structural materializer request/result, target-aware Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, root-only fan-in pin policy, and Promotion fail-closed behavior. Approval makes `TSR-BT-01` READY but claims no implementation, market qualification, decision-grade path, or Promotion support.

@@ -1,0 +1,299 @@
+{
+  "contract_id": "integration-v6-target-stream-research-v1",
+  "node_id": "TSR-CON-01",
+  "schema_version": 1,
+  "status": "frozen",
+  "approval": {
+    "approved_at": "2026-08-26T03:14:51Z",
+    "owners": {
+      "Platform": "YungeG",
+      "Backtest": "YungeG",
+      "Research": "YungeG",
+      "Validation": "YungeG",
+      "Promotion": "YungeG"
+    },
+    "binds_exact_fixture_hash": true
+  },
+  "baseline_shas": {
+    "platform": "04b01a1db1408ab7277a116f02ce706243ac1499",
+    "backtest": "8de544e7794ee05b652355c9809b5454d7ace494",
+    "foundation": "9d88ed67a84d06c558276f8bae2206b069bcec8f",
+    "research": "1557ec1904de6f2a8f8a32c2f37ce038a0daa022",
+    "validation": "cd966d92dad2110af7d8b1bf580536f6c3cdb998",
+    "promotion": "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
+  },
+  "root_baseline": {
+    "pyproject_sha256": "fd91992418122cbce414ff5fa0c39878290df1d49f69b9758d5ca1ec64806024",
+    "uv_lock_sha256": "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f",
+    "backtest_vcs_revision": "8de544e7794ee05b652355c9809b5454d7ace494",
+    "backtest_vcs_revision_occurrences": 5,
+    "contract_approval_changes_gitlinks_or_pins": false
+  },
+  "backtest_target_authority": {
+    "artifact_envelope": "backtest_target_stream@1",
+    "ref": {
+      "nominal_type": "BacktestTargetStreamRef",
+      "wire_fields": [
+        "type",
+        "artifact_ref"
+      ],
+      "wire_type": "backtest_target_stream_ref"
+    },
+    "payload_fields": [
+      "producer_context_ref",
+      "target_stream"
+    ],
+    "payload_types": {
+      "producer_context_ref": "ArtifactRef",
+      "target_stream": "PrecomputedTargetStream@1"
+    },
+    "repository": {
+      "class": "BacktestTargetStreamRepository",
+      "operations": [
+        "publish(producer_context_ref, target_stream) -> BacktestTargetStreamRef",
+        "load(ref) -> VerifiedBacktestTargetStream"
+      ],
+      "storage": "CAS/exact-read only",
+      "platform_owner_log": false
+    },
+    "verified_view": {
+      "type": "VerifiedBacktestTargetStream",
+      "fields": [
+        "ref",
+        "producer_context_ref",
+        "target_stream",
+        "digest"
+      ]
+    },
+    "identity": {
+      "equal_streams_with_different_producer_contexts_have_different_refs": true,
+      "semantic_request_and_run_bind": "target_stream_digest",
+      "semantic_request_and_run_exclude": [
+        "producer_context_ref",
+        "BacktestTargetStreamRef"
+      ]
+    }
+  },
+  "materializer": {
+    "supply": "composition_root_supplied_structural_object",
+    "property": "strategy_artifact: BuildArtifactRef(role=DECISION_SOURCE, immutable identity)",
+    "method": "materialize_target(request: Mapping[str, object]) -> Mapping[str, object]",
+    "request": {
+      "type": "target_materialization_request",
+      "schema_version": 1,
+      "fields": [
+        "type",
+        "schema_version",
+        "consumer_ref",
+        "target_recipe_ref",
+        "market_bundle_ref",
+        "dataset_revision",
+        "interval_start",
+        "interval_end",
+        "parameter_values",
+        "seed"
+      ]
+    },
+    "result": {
+      "type": "target_materialization_result",
+      "schema_version": 1,
+      "fields": [
+        "type",
+        "schema_version",
+        "request_hash",
+        "strategy_artifact",
+        "input_data_hash",
+        "target_stream"
+      ],
+      "contains_additional_refs_prepared_run_or_cache_handles": false
+    },
+    "reads": "immutable MarketBundle reads only",
+    "network_or_current_apis_allowed": false
+  },
+  "research": {
+    "target_recipe": {
+      "artifact": "TargetRecipe@1",
+      "fields": [
+        "target_key",
+        "strategy_artifact",
+        "target_schema_hash",
+        "input_names"
+      ]
+    },
+    "target_build_task": {
+      "artifact": "TargetBuildTask@1",
+      "fields": [
+        "experiment_ref",
+        "trial_declaration_ref",
+        "target_recipe_ref"
+      ],
+      "cardinality": "one per Trial",
+      "task_kind": "TARGET_BUILD",
+      "task_outcome_witness": "TARGET_BUILD"
+    },
+    "materialization_evidence": {
+      "artifact": "TargetMaterializationEvidence@1",
+      "fields": [
+        "target_build_task_ref",
+        "trial_declaration_ref",
+        "target_recipe_ref",
+        "materialization_request_hash",
+        "input_data_hash",
+        "target_stream_ref",
+        "target_stream_digest",
+        "event_count"
+      ]
+    },
+    "experiment_specs": {
+      "target_experiment": "ExperimentSpec@2",
+      "additive_field": "target_recipe_ref",
+      "ordinary_and_model_experiment_spec_v1_bytes_unchanged": true
+    },
+    "reservation_producer": "existing integrated TrialDeclaration@1",
+    "candidate": {
+      "artifact": "StrategyCandidate@3",
+      "additive_field": "selected_target_materialization_evidence_ref",
+      "candidate_family_fields_unchanged": true,
+      "experiment_execution_manifest_fields_unchanged": true,
+      "target_mode_dispatch": "exact"
+    }
+  },
+  "validation": {
+    "reservation_producer": "existing out_of_sample ValidationCase",
+    "plan": {
+      "artifact": "ValidationPlan@2",
+      "additive_bindings": [
+        "target_recipe_ref",
+        "strategy_artifact"
+      ]
+    },
+    "materialization_evidence": {
+      "artifact": "ValidationTargetMaterializationEvidence@1",
+      "fields": [
+        "validation_case_ref",
+        "candidate_ref",
+        "target_recipe_ref",
+        "materialization_request_hash",
+        "input_data_hash",
+        "target_stream_ref",
+        "target_stream_digest",
+        "event_count"
+      ]
+    },
+    "target_aware_case_result_schema_version": 2,
+    "target_aware_validation_report_schema_version": 2,
+    "new_operation": "validate_target_candidate",
+    "existing_validate_candidate_unchanged": true,
+    "all_v1_bytes_unchanged": true,
+    "discovery_target_ref_substitution_as_oos_valid": false,
+    "equal_stream_values_do_not_make_discovery_substitution_valid": true
+  },
+  "backtest_execution": {
+    "timeline": "DeterministicTimelineV2",
+    "cursor": "TimelineCursorV2",
+    "market_source": "market-only MarketBundleReader streams",
+    "target_source": "embedded verified target stream",
+    "timeline_identity_fields": [
+      "market_bundle_ref",
+      "sorted_market_stream_keys",
+      "target_stream_digest",
+      "window"
+    ],
+    "execution_input_bundle": {
+      "artifact": "backtest_execution_input_bundle@6",
+      "embeds": "canonical target stream value",
+      "embeds_target_ref": false,
+      "timeline_and_decision_injection": "source-neutral v2"
+    },
+    "protected_bytes_unchanged": {
+      "execution_input_bundle_versions": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "request_versions": [
+        1
+      ],
+      "completed": true,
+      "terminal": true,
+      "analysis": true,
+      "publication": true
+    },
+    "development_operation": {
+      "name": "prepare_cash_target_stream_backtest",
+      "inputs": [
+        "CashDevelopmentRequestIntent",
+        "CashDevelopmentProviderInputs",
+        "BacktestTargetStreamRef"
+      ],
+      "profile_specific": true,
+      "strategy_specific": false
+    },
+    "future_adapters": "qualified market adapters may reuse the same Backtest target/timeline authority but require separate contracts"
+  },
+  "promotion": {
+    "unsupported_until": "TSR-PG-01",
+    "unsupported_refs": [
+      "StrategyCandidate@3",
+      "ValidationReport@2"
+    ],
+    "failure_mode": "fail closed as unsupported",
+    "coercion_or_fallback": false
+  },
+  "failure_precedence": {
+    "high_level_groups": [
+      "public arg/type",
+      "reservation",
+      "materializer artifact/request/result",
+      "target publish/load/ref/tamper/retention/context/digest",
+      "evidence publication",
+      "preparation",
+      "Backtest terminal/provider",
+      "analysis/link",
+      "manifest/selection",
+      "Validation target substitution/holdout",
+      "report",
+      "Promotion unsupported"
+    ],
+    "preserve_module_specific_existing_precedence_inside_each_group": true
+  },
+  "replay_commit_points": {
+    "reservation": "idempotent",
+    "materialization_evidence_publication": "module commit preventing rematerialization",
+    "target_cas_orphan_is_research_or_validation_evidence": false,
+    "recovery_order": [
+      "first evidence/ref",
+      "prepared request/run"
+    ],
+    "forbidden_second_actions": [
+      "read",
+      "materialization",
+      "economic run",
+      "governance refresh"
+    ]
+  },
+  "repository_execution": {
+    "leaf_work": "isolated clean leaf branches/worktrees/commits",
+    "root_fan_in_only": [
+      "exact gitlinks",
+      "VCS pins",
+      "uv.lock"
+    ]
+  },
+  "initial_scope": {
+    "grade": "development",
+    "market_profile": "cash golden",
+    "targets": "fixed one-slice portfolio targets",
+    "metrics": [
+      "simple_period_return",
+      "trade_count"
+    ],
+    "model_combination": false,
+    "decision_grade": false,
+    "real_binance_qualification": false,
+    "real_a_share_qualification": false,
+    "promotion_support": false
+  }
+}
