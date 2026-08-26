@@ -3,7 +3,7 @@
 - **Status:** `IMPLEMENTATION_PACKET_FROZEN / PLAN_ONLY / SOURCE_CANDIDATE_ACCEPTED`
 - **Backtest base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** exact-cover the one missing provisional S2 key `(balancesheet_vip, xshe:000046, 20141231)` from the official audited annual report without impersonating a provider row or industrial qualification
-- **Authority snapshot:** Platform commit `650418f`, packet SHA-256 `3e3300d349f9517e72e9d6b687a7c17f6d90e11b7296a38c6b32f4949b91eb22`
+- **Authority snapshot:** Platform commit `650418f`, packet SHA-256 `3e3300d349f9517e72e9d6b687a7c17f6d90e11b7296a38c6b32f4949b91eb22`; conservative-availability amendment `43edeea` independently marked READY
 
 ## 1. Exact write set
 
