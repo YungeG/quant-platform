@@ -28,6 +28,39 @@ revised or become unavailable, so a later retrieval can legitimately produce
 different Yahoo artifacts and aligned values. The manifest hashes pin the
 retrieved snapshot, not future Yahoo responses.
 
+## Bounded execution-data capture
+
+Daily aggregate trades and 1-minute mark-price klines for the discovery window
+are captured separately from the frozen exploratory dataset and its base
+`data/manifest.json`:
+
+```bash
+uv run python research/koruusdt/capture_execution_data.py
+uv run python research/koruusdt/capture_execution_data.py --validate-only
+uv run pytest research/koruusdt/tests/test_capture_execution_data.py
+```
+
+The capture downloads and verifies official Binance USD-M daily ZIPs and
+`.CHECKSUM` files for 2026-07-15 through 2026-08-23. For 2026-08-24 it uses
+only REST requests whose inclusive `endTime` is
+`2026-08-24T10:59:59.999Z`. The full 2026-08-24 daily archive must never be
+downloaded: `[2026-08-24T11:00:00Z, ...)` is holdout data and must never be
+requested, retained, or used. If Binance rejects older aggregate-trade REST
+history, the capture records the unavailable half-open interval rather than
+substituting an archive or another feed. Aggregate-trade IDs are required to
+be contiguous over available coverage; provider raw-trade ID intervals are
+required to be increasing and non-overlapping, with every provider gap retained
+as explicit source evidence in the execution manifest.
+
+Official files retain provider filenames under `data/binance_usdm/`. Bounded
+REST pages and deterministic REST-derived standard-schema CSV/ZIP/checksum
+artifacts live under each source's `rest-bounded/2026-08-24/` directory and
+are explicitly labelled as REST-derived, not official archives. The separate
+`data/execution_data_manifest.json` binds the frozen base manifest, every new
+file, observed coverage, missing intervals, ID gaps, and the canonical
+execution-manifest hash. Downloads use resumable `.part` files and atomic
+publication; rerunning the command verifies already completed archives.
+
 ## Scope notes
 
 - Binance data comes from public USD-M `klines`, `markPriceKlines`,
