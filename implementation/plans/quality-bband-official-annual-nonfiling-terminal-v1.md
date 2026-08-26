@@ -5,6 +5,16 @@
 - **Backtest implementation base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** let competent-source confirmed annual-report non-filings exact-cover issuer-local S2 members without fabricated statements, silent issuer deletion, unrelated-issuer blocking or forced exits
 
+Approved authority snapshot: Platform commit `f236304`.
+
+| File at approved snapshot | SHA-256 |
+|---|---|
+| this packet | `5c98951acae7f38789976e1027d2eb26a73e2c1c58f5907c2b0c74467046e109` |
+| staged funnel | `2b7796c1066ab42a0e46b2b1ccde694ef5523dea899963689d7d29d507aa0185` |
+| missing-data policy | `7381d60369e6919d96859bd0f8c8fd39f99a8085f3103f7d9ddf9635873f6594` |
+| eight-issuer audit | `2a57e08ae15d4f1672ad4f740e9fcd23f3f382ecad51ddd3c9df18d5d9b0096a` |
+| prior S2B infeasibility decision | `379c69944bd38e790c85905e2d7cf71b9c8bae5d1cbe23e468f7db9787f52a6d` |
+
 ## 1. Approved behavior
 
 An accepted `official_annual_report_nonfiling_declaration@1`:
