@@ -94,13 +94,22 @@ terminal_confirmation = "NOT_FILED_THROUGH_LISTING_TERMINATION"
 ReviewedNonFilingDocumentV1
 ```
 
+`NonFilingEvidenceKind` is an exact string enum:
+
+```text
+POST_DEADLINE_NONFILING_CONFIRMATION
+PREDEADLINE_DEFINITIVE_INABILITY
+EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE
+TERMINAL_NONFILING_CONFIRMATION
+```
+
 Exact fields:
 
 ```text
 type: Literal["reviewed_nonfiling_document"]
 schema_version: Literal[1]
 role: INITIAL_NONFILING_PROOF | TERMINAL_CONFIRMATION
-evidence_kind: POST_DEADLINE_NONFILING_CONFIRMATION | PREDEADLINE_DEFINITIVE_INABILITY | EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE | TERMINAL_NONFILING_CONFIRMATION
+evidence_kind: NonFilingEvidenceKind
 authority: ISSUER | SSE | SZSE | CSRC | CSRC_BRANCH | NEEQ_SPONSOR
 member_key: str
 source_url: str
@@ -124,9 +133,18 @@ Rules:
 - `byte_count > 0`; reviewed pages are positive, strictly increasing and nonempty;
 - `content_hash` and byte count equal the verified snapshot member;
 - `EXACT_INSTANT` requires `published_at_epoch_nanoseconds`; `DATE_ONLY` requires null;
-- initial proof has one of the three initial evidence kinds and `supersedes_member_key=null`;
-- terminal confirmation has `TERMINAL_NONFILING_CONFIRMATION` and `supersedes_member_key` equal to the initial member key;
-- `PREDEADLINE_DEFINITIVE_INABILITY` is rejected when the reviewed excerpt/assertion is only prospective or qualified as expected/possible;
+Compatibility is exact:
+
+| role | evidence kind | allowed authority |
+|---|---|---|
+| `INITIAL_NONFILING_PROOF` | `POST_DEADLINE_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
+| `INITIAL_NONFILING_PROOF` | `PREDEADLINE_DEFINITIVE_INABILITY` | `ISSUER` |
+| `INITIAL_NONFILING_PROOF` | `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` | `SSE`, `SZSE` |
+| `TERMINAL_CONFIRMATION` | `TERMINAL_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
+
+Initial proof has `supersedes_member_key=null`; terminal confirmation supersedes the initial member. Enum/type failures map to `INPUT_TYPE_MISMATCH`; a valid enum with an incompatible role/authority maps to `FINANCIAL_REVISION_MISMATCH`.
+
+Natural-language classification is outside the pure Builder. The trusted review packet exclusively assigns `evidence_kind` and freezes the literal reviewed excerpt/assertions. The Builder validates the exact enum and compatibility matrix; it performs no linguistic heuristic. A document saying only `预计无法` must not be assigned `PREDEADLINE_DEFINITIVE_INABILITY` by the reviewed evidence producer.
 - exactly one of each role exists;
 - input order is ignored; canonical order is role order above, then publication boundary, then member key;
 - duplicate member keys or duplicate roles fail; no duplicate collapse is inferred.
@@ -245,6 +263,7 @@ Symbols:
 
 ```text
 NonFilingDocumentRole
+NonFilingEvidenceKind
 NonFilingAuthority
 ReviewedNonFilingDocumentV1
 OfficialNonFilingAvailabilityV1
@@ -334,7 +353,7 @@ Failure precedence is table order. Declaration reconstruction occurs before late
 
 1. input source-ref order does not change `declaration_id`;
 2. snapshot provenance or source-byte mutation fails;
-3. pre-deadline evidence cannot create an early declaration; unequivocal inability becomes usable only at the deadline boundary, while `预计`/possible wording fails;
+3. pre-deadline evidence cannot create an early declaration; reviewed `PREDEADLINE_DEFINITIVE_INABILITY` becomes usable only at the deadline boundary, and evidence-kind compatibility is exact;
 4. wrong API-kind mapping, missing key, duplicate terminal or statement overlap fails;
 5. later filing availability shortens the half-open interval without backfill;
 6. a non-held non-filer is excluded locally while unrelated ranking proceeds;
