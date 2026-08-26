@@ -49,7 +49,8 @@ No second simulator, private Backtest composition, custom PnL, Shadow/Live capab
 | C24 | `research/quality-bband-szse-calendar-session-authority-v1.md` | Official SZSE notices, rules and daily-statistics hashes freeze the finite 2019–2023 next-session dates and `09:30 Asia/Shanghai` boundary; no general Calendar provider is claimed. |
 | C25 | `implementation/plans/quality-bband-historical-financial-normalization-implementation-v1.md` | Stacked PR #8 publishes four supported historical observation sets and the canonical 2021 typed stop while retaining the 2022 advisory FCF conflict; valid manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`. |
 | C26 | `research/quality-bband-historical-formula-coverage-v1.md` | Proves only 2019/2020/2023 ROIC inputs are complete; 2021 failure removes same-year formulas and 2022 prior capital, so the five-year feature is unavailable and further formula code is deferred. |
-| C27 | `research/quality-bband-2021-debt-scope-resolution-v1.md` | Official 2022 comparative/current evidence supports but does not explicitly resolve the contradictory 2021 scope; no correction/inquiry answer was found, so `DEBT_SCOPE_INCOMPLETE` and fixed-issuer five-year infeasibility are confirmed. |
+| C27 | `research/quality-bband-2021-debt-scope-resolution-v1.md` | Official 2022 evidence does not exact-resolve 2021, but supports the broad interpretation; both debt candidates are retained and the quality threshold is invariant. |
+| C28 | `research/quality-bband-reasoned-ambiguity-policy-v1.md` | Authorizes Research continuation only when every evidence-supported interpretation yields the same qualification/trade decision; exact ranking blocks on overlapping intervals and source artifacts remain unchanged. |
 
 ## Ownership
 
@@ -230,7 +231,7 @@ Candidate acceptance tiers:
 1. **Source authority:** no accepted full-market statement, audit, penalty or pledge provider contract; reviewed public sources are `SOURCE_BOUNDED_ONLY` or `MISSING`.
 2. **Availability authority:** PR #8 exact-binds the finite historical Calendar/Session evidence, but remains unaccepted/non-decision-grade and no general Calendar provider exists.
 3. **Revision/selection authority:** contracts are frozen but unaccepted; historical presentation selection and provider terminal-set closure remain unavailable.
-4. **Formula input:** coverage is mechanically frozen: 2019/2020/2023 ROIC inputs are complete, 2021 is unavailable, and 2022 lacks the prior capital endpoint. The source-resolution attempt found no competent correction, so the fixed-issuer five-year feature is currently infeasible.
+4. **Formula input:** the exact point-valued 2021/2022 ROIC inputs remain unavailable, but the frozen narrow/broad interval yields a five-year median range `118.8062%–127.2984%`; the `20%` financial-quality threshold is invariant and may continue under C28. Exact ranking remains interval-sensitive.
 5. **First sentinel acceptance:** QB-FIN-SENTINEL-01 is open PR [`YungeG/quant-backtest#1`](https://github.com/YungeG/quant-backtest/pull/1) at commit `e7e874fc58e0911b7df1cd0463387526afcb845d`, but remains unmerged/unaccepted; no merge authority was granted.
 6. **Credentialed capture:** approved proxy capture succeeded; credentialed broad-market/Fold capture is still unauthorized and unavailable.
 7. **Universe/action coverage:** general G12K remains blocked.
@@ -245,7 +246,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope acquisition/declaration/2023-normalization/selection/history-source, historical declaration, Calendar/Session, historical normalization, formula coverage and 2021 source-resolution lanes are complete. PRs #1–#8 await **Backtest-owner review/acceptance**. No further fixed-issuer financial implementation is warranted without new competent 2021 evidence. Broad QB-DATA-01 and QB-PREP-01 remain blocked, and substituting another issuer or redesigning missing-data eligibility requires a new user/owner decision.
+The fixed-scope acquisition/declaration/2023-normalization/selection/history-source, historical declaration, Calendar/Session, historical normalization, formula coverage, 2021 source-resolution and ambiguity-policy lanes are complete. PRs #1–#8 await **Backtest-owner review/acceptance**. Fixed-issuer financial-quality research may continue with interval evidence; broad QB-DATA-01, governance/valuation authority and QB-PREP-01 remain blocked.
 
 ## Next owner and first action
 
@@ -261,5 +262,5 @@ The fixed-scope acquisition/declaration/2023-normalization/selection/history-sou
 - **Selection:** stacked PR [`YungeG/quant-backtest#5`](https://github.com/YungeG/quant-backtest/pull/5), commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; real selection `sha256:34d09c7649143ee784f95f25873dd462ee56fc37cae91fa8bc7a604ef37f890c`.
 - **History source:** stacked PR [`YungeG/quant-backtest#6`](https://github.com/YungeG/quant-backtest/pull/6), head `64159f81fa6f831990690dd133587b96533a0362`; real 2018–2022 SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`.
 - **Historical normalization:** stacked PR [`YungeG/quant-backtest#8`](https://github.com/YungeG/quant-backtest/pull/8), commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`; valid historical manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`.
-- **Second decision:** accept PRs #2–#8 and the fixed-issuer five-year formula infeasibility verdict, or explicitly authorize a new issuer/missing-data eligibility design; neither path may bridge the 2021 gap.
+- **Second decision:** accept PRs #2–#8 and the reasoned-ambiguity policy for Research use; exact source values remain unresolved and interval-sensitive ranking must fail closed.
 - **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.

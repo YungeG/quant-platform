@@ -1,17 +1,17 @@
 # Quality + B-Band historical selection/formula coverage v1
 
-- **Status:** `FIXED_ISSUER_COVERAGE_FROZEN / FIVE_YEAR_FEATURE_INFEASIBLE_CONFIRMED`
+- **Status:** `EXACT_SOURCE_GAP_RETAINED / THRESHOLD_DECISION_INVARIANT / CONTINUATION_ALLOWED`
 - **Checked:** 2026-08-26
 - **Scope:** `xshe:000651`, annual periods `20181231` through `20231231`
 - **Inputs:** Backtest PR #8 historical normalization candidate plus PR #5 2023 selection candidate
 
 ## 1. Decision
 
-Do not implement another historical selection or formula module yet.
+Do not rewrite the historical source/declaration/normalization artifacts. Apply [`quality-bband-reasoned-ambiguity-policy-v1.md`](quality-bband-reasoned-ambiguity-policy-v1.md) above them.
 
-The current normalized evidence is sufficient to prove exactly which annual formulas are mechanically available, but it cannot produce the complete five-year quality feature required by the strategy. More code would only serialize a known incomplete result; it would not remove the missing authority.
+The exact source layer still cannot produce one point-valued 2021 debt result. The finite narrow/broad candidates can nevertheless support downstream research when every candidate produces the same required decision.
 
-The controlling blocker remains `20211231 / DEBT_SCOPE_INCOMPLETE`.
+`20211231 / DEBT_SCOPE_INCOMPLETE` remains a source-exactness blocker, but it is not a blocker for the `ROIC >= 20%` financial-quality threshold.
 
 ## 2. Exact selected input map
 
@@ -46,12 +46,20 @@ Therefore one ROIC year requires the current annual trio plus the immediately pr
 | `2022` | available | `2021` unavailable | none | `PRIOR_CAPITAL_ENDPOINT_MISSING` |
 | `2023` | available | `2022` available | `2024-05-06 09:30 Asia/Shanghai` | complete input |
 
-Exact outcome:
+Exact source outcome:
 
 ```text
-complete ROIC inputs = 2019, 2020, 2023
-missing ROIC inputs = 2021, 2022
-required five-year sequence = unavailable
+complete exact ROIC inputs = 2019, 2020, 2023
+point-valued exact inputs missing = 2021, 2022
+```
+
+Ambiguity-qualified outcome:
+
+```text
+2021 ROIC interval = [118.8062%, 127.2984%]
+2022 ROIC interval = [75.0674%, 78.2238%]
+five-year median interval = [118.8062%, 127.2984%]
+ROIC >= 20% = invariant pass
 ```
 
 ## 4. Same-year formula coverage
@@ -76,42 +84,46 @@ The 2022 provider `free_cashflow` conflict does not block source-derived FCF bec
 
 ## 5. Strategy-quality consequence
 
-The strategy requires a complete five-year feature manifest. Current evidence cannot authorize:
+The point-valued exact five-year manifest remains unavailable. The ambiguity-qualified financial assessment can establish:
 
-- five-year ROIC median;
-- five-year cumulative FCF;
-- one coherent five-period quality score;
-- annual quality qualification or stock ranking.
-
-Four known operating-cash-flow observations are positive, but the missing 2021 period still prevents a complete five-period manifest. Missing authority is not treated as zero, failure, pass, forward fill or a vendor-ratio substitute.
+- five-year ROIC median is robustly above `20%`;
+- operating cash flow is positive `5/5` years;
+- cumulative source-derived FCF is `107,662,796,746.80 CNY` and positive;
+- 2023 net debt/EBITDA is `-0.8663154`, below `1.5`.
 
 ```text
-formal quality-filter result = unavailable
-formal Experiment execution = blocked
-fixed-issuer feasibility = conditional on resolving 2021 debt scope
+exact point-valued quality score = unavailable
+financial-quality threshold result = robust pass
+cross-sectional ranking value = interval
+ranking at an overlapping cutoff = blocked
+fixed-issuer financial research = may continue
 ```
+
+Audit-opinion, governance/penalty, pledge, valuation, Universe and execution authority remain separate blockers.
 
 ## 6. Failure propagation
 
 ```text
 2021 DEBT_SCOPE_INCOMPLETE
-→ no 2021 declaration
-→ no 2021 normalized set/trio
-→ 2021 same-year formulas unavailable
-→ 2022 ROIC prior-capital endpoint unavailable
-→ only three of five ROIC inputs complete
-→ five-year QualityFeatureManifest unavailable
+→ no exact 2021 declaration/set
+→ retain narrow and broad candidates
+→ calculate 2021/2022 ROIC under both
+→ threshold decision identical
+→ ambiguity-qualified robust pass
+→ exact point ranking remains interval-sensitive
 ```
 
 A 2021 balance-only exception is forbidden because PR #8 intentionally made the period atomic. Introducing one now would create a new architecture and weaken the accepted fail-closed boundary.
 
 ## 7. Next action
 
-The source-resolution attempt is recorded in [`quality-bband-2021-debt-scope-resolution-v1.md`](quality-bband-2021-debt-scope-resolution-v1.md). It found no explicit correction, comparative interest-bearing classification or issuer/exchange answer. The shortest productive path remains new competent authority, not more selection/formula code:
+The source-resolution attempt is recorded in [`quality-bband-2021-debt-scope-resolution-v1.md`](quality-bband-2021-debt-scope-resolution-v1.md). It found no explicit correction, so exact source artifacts remain unchanged.
 
-1. search the official 2021 annual report and competent issuer/exchange materials for an explicit classification of `企业借款及利息 2,731,680,114.20`;
-2. determine whether it belongs inside or outside canonical interest-bearing debt;
-3. publish a new declaration/normalization revision only if competent authority resolves the scope;
-4. otherwise preserve the confirmed fixed-issuer five-year quality-feature infeasibility and stop this financial lane before Backtest execution.
+Next:
+
+1. retain the broad interpretation as preferred and both candidates as evidence;
+2. carry the ROIC/median intervals into the future feature assessment;
+3. continue only while threshold and top-N membership are invariant across the interval;
+4. move to the next missing data authority rather than continuing to search the same exhausted source lane.
 
 No MarketBundle, Strategy, Validation, Live or deployment authority is granted.

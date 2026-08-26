@@ -1,6 +1,6 @@
 # Quality + B-Band 2021 debt-scope resolution attempt v1
 
-- **Status:** `UNRESOLVED / DEBT_SCOPE_INCOMPLETE_CONFIRMED / FIVE_YEAR_FEATURE_INFEASIBLE`
+- **Status:** `EXACT_VALUE_UNRESOLVED / BROAD_INTERPRETATION_PREFERRED / THRESHOLD_NONBLOCKING`
 - **Checked:** 2026-08-26
 - **Issuer/period:** `xshe:000651` / `20211231`
 - **Existing conflict:** `sha256:8cb5ef55e745b6e3858eef5bb1806ebf22c9123490764e79e68f2928ffb66c6f`
@@ -100,16 +100,16 @@ A later current-period classification, generic accounting definition, provider r
 
 ```text
 2021 canonical debt = unavailable
-failure = DEBT_SCOPE_INCOMPLETE
-five-year ROIC sequence = infeasible with current authority
-formal QualityFeatureManifest = unavailable
-strategy Experiment = blocked before execution
+source failure = DEBT_SCOPE_INCOMPLETE
+preferred research interpretation = broad
+retained interval = [43,561,695,281.25, 46,293,375,395.45]
+ROIC >= 20% decision = invariant pass
 ```
 
-The economically broad amount may be correct, but adopting it now would be an unauthorized accounting inference. Any future resolution must publish new declaration/normalization identities and cannot rewrite existing failure evidence.
+The broad amount is the most reasonable economic interpretation, but the narrow amount remains evidence. Under [`quality-bband-reasoned-ambiguity-policy-v1.md`](quality-bband-reasoned-ambiguity-policy-v1.md), Research may continue for decisions invariant across both candidates. Any future exact resolution must publish new declaration/normalization identities and cannot rewrite existing failure evidence.
 
 ## 7. Next decision
 
-No further implementation is warranted in this fixed-issuer financial lane unless new competent evidence appears.
+No source-layer rewrite is warranted unless new competent evidence appears.
 
-The strategy should now be recorded as **data-infeasible for formal five-year quality qualification** under the current source contract. This does not evaluate the BOLL/volume entry hypothesis; it means the required Darwin-style quality gate cannot be constructed without lookahead or unsupported accounting choices.
+The contradiction is recorded and carried forward as an interval. It does not block the fixed `20%` financial-quality threshold because all reasonable interpretations pass, but it can block future cross-sectional ranking if another issuer's score overlaps the interval.
