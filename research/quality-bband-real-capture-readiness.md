@@ -162,8 +162,8 @@ Manifest file SHA-256 is `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b
 ## Next executable gates
 
 1. accept stacked PRs #1–#8;
-2. freeze historical presentation selection/formula-input handling for the four valid sets;
-3. preserve 2021 as unavailable and do not bridge the gap heuristically;
-4. five complete ROIC observations remain blocked until competent authority resolves 2021 debt.
+2. use [`quality-bband-historical-formula-coverage-v1.md`](quality-bband-historical-formula-coverage-v1.md) as the controlling fixed-issuer coverage verdict;
+3. resolve the 2021 financing scope through competent official authority, or accept five-year feature infeasibility;
+4. do not implement additional selector/formula code or bridge the 2021 gap heuristically.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

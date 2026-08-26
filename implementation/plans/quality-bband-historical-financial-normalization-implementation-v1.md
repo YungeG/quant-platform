@@ -708,4 +708,4 @@ Published valid candidate:
 
 ## 20. Next handoff
 
-A separate historical presentation-selection/formula-input packet may consume the four valid sets while preserving the 2021 gap. PR #8 and all predecessors remain unaccepted; no Strategy, Validation or deployment authority is granted.
+[`research/quality-bband-historical-formula-coverage-v1.md`](../../research/quality-bband-historical-formula-coverage-v1.md) proves that only 2019/2020/2023 ROIC inputs are complete and that 2022 also loses its prior capital endpoint. Further selector/formula code is deferred until competent authority resolves 2021 debt scope. PR #8 and all predecessors remain unaccepted; no Strategy, Validation or deployment authority is granted.
