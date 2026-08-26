@@ -29,9 +29,12 @@ BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
 BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
 BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
+CURRENT_BACKTEST_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
+CURRENT_RP_SHA = "c06662449a8a13aed5824398b96bd21e889a9fee"
 SV_DG_SHA = "cd966d92dad2110af7d8b1bf580536f6c3cdb998"
+CURRENT_SV_SHA = "dad119842737fd06137914537fcc51df12996353"
 PG_DG_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
 DG_THIN_SHA = "2b21c8df40174d5a9a5b9def9a9646c34c587832"
 FI_GOLDEN_SHA = "324f2fd08d8d9be4f4c32e222ee5bc63306ac81e"
@@ -103,15 +106,6 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     registry = roadmap.split("## 2. Status registry", 1)[1].split(
         "## 3. Execution DAG", 1
     )[0]
-    backtest_entry = subprocess.check_output(
-        ["git", "ls-files", "-s", "backtest"], cwd=ROOT, text=True
-    ).split()
-    research_entry = subprocess.check_output(
-        ["git", "ls-files", "-s", "research-platform"], cwd=ROOT, text=True
-    ).split()
-    validation_entry = subprocess.check_output(
-        ["git", "ls-files", "-s", "strategy-validation"], cwd=ROOT, text=True
-    ).split()
     promotion_entry = subprocess.check_output(
         ["git", "ls-files", "-s", "promotion-gate"], cwd=ROOT, text=True
     ).split()
@@ -156,10 +150,26 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
             cwd=ROOT,
             check=False,
         ).returncode == 0
-    assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
-    assert research_entry[:2] == ["160000", RP_DG_SHA]
-    assert validation_entry[:2] == ["160000", SV_DG_SHA]
+    assert subprocess.check_output(
+        ["git", "-C", "backtest", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip() == CURRENT_BACKTEST_SHA
+    assert subprocess.check_output(
+        ["git", "-C", "research-platform", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip() == CURRENT_RP_SHA
+    assert subprocess.check_output(
+        ["git", "-C", "strategy-validation", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip() == CURRENT_SV_SHA
     assert promotion_entry[:2] == ["160000", PG_DG_SHA]
+    for path, accepted, current in (
+        ("backtest", BACKTEST_FANIN_SHA, CURRENT_BACKTEST_SHA),
+        ("research-platform", RP_DG_SHA, CURRENT_RP_SHA),
+        ("strategy-validation", SV_DG_SHA, CURRENT_SV_SHA),
+    ):
+        assert subprocess.run(
+            ["git", "-C", path, "merge-base", "--is-ancestor", accepted, current],
+            cwd=ROOT,
+            check=False,
+        ).returncode == 0
     assert subprocess.check_output(
         ["git", "-C", "backtest", "merge-base", BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA],
         cwd=ROOT,
@@ -182,9 +192,10 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
 
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
-    assert pyproject.count(BACKTEST_FANIN_SHA) == 5
-    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == V5_LOCK_SHA
-    assert BACKTEST_FANIN_SHA in lock
+    assert pyproject.count(CURRENT_BACKTEST_SHA) == 5
+    assert CURRENT_BACKTEST_SHA in lock
+    assert BACKTEST_FANIN_SHA not in pyproject
+    assert BACKTEST_FANIN_SHA not in lock
     for superseded_pin in (BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA):
         assert superseded_pin not in pyproject
         assert superseded_pin not in lock

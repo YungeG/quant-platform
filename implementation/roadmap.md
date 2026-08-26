@@ -1,6 +1,6 @@
 # Platform implementation roadmap
 
-> **Status:** Integration v1, v2, v3, and v5 are released; Integration v4 is approved/deferred; additive Integration v6 is approved with only `TSR-BT-01` READY.
+> **Status:** Integration v1, v2, v3, v5, and the additive v6 target-stream fan-in are accepted; Integration v4 and target-aware Promotion remain deferred.
 
 This file is the sole mutable status registry and release DAG. Accepted normative schemas/state rules live in [Integration v1](../overall/integration-v1.md), additive [Integration v2](../overall/integration-v2.md), additive [Integration v3](../overall/integration-v3.md), approved/deferred [Integration v4](../overall/integration-v4.md), released [Integration v5](../overall/integration-v5.md), and approved additive [Integration v6](../overall/integration-v6.md). Node instructions live in the [implementation plan map](plans/README.md#plan-map).
 
@@ -27,7 +27,7 @@ The approved v4 contract adds only an immutable observe-only `ShadowSpec@1` prop
 
 The approved v5 contract activates exact Backtest canonical-v3 `decision_grade` completion and analysis-v2 evidence through additive Admission@2, Research dispatch, Validation, and Promotion governance. It adds no Backtest change, proof decoder, provider qualification, or deployment authority.
 
-The approved v6 contract freezes a development-grade cash target-stream path: context-bound Backtest target CAS authority, an externally supplied structural materializer, exact Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, and Promotion fail-closed compatibility. Contract approval changes no package code or root pin and makes only `TSR-BT-01` READY.
+The approved v6 contract freezes a development-grade cash target-stream path: context-bound Backtest target CAS authority, an externally supplied structural materializer, exact Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, and Promotion fail-closed compatibility. `TSR-BT-01`, `TSR-RP-01`, `TSR-SV-01`, and root `TSR-FI-01` are accepted; `TSR-PG-01` remains deferred and fail-closed.
 
 ## 2. Status registry
 
@@ -81,12 +81,12 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `PG-DG-01` | DONE | V2 admission publication facts and decision-grade governance accepted in [`pg-dg-01-receipt.md`](pg-dg-01-receipt.md) at Promotion revision `8e6dddf5da0494b57cca6990d5024fe4198e6b44` |
 | `DG-THIN-01` | DONE | real decision-grade fan-in accepted in [`dg-thin-01-receipt.md`](dg-thin-01-receipt.md) at Platform revision `2b21c8df40174d5a9a5b9def9a9646c34c587832` |
 | `FI-04` | DONE | whole-Platform V5 golden accepted in [`fi-04-receipt.md`](fi-04-receipt.md) at Platform revision `324f2fd08d8d9be4f4c32e222ee5bc63306ac81e` |
-| `V6-CON-01` | APPROVED | Integration v6 fixture `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496` and all five owner approvals recorded in [`v6-contract-target-stream-research-v1.md`](v6-contract-target-stream-research-v1.md) |
+| `V6-CON-01` | APPROVED | Integration v6 fixture `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2` and all five owner approvals recorded in [`v6-contract-target-stream-research-v1.md`](v6-contract-target-stream-research-v1.md) |
 | `TSR-CON-01` | APPROVED | exact target-stream contract freeze governed by `V6-CON-01`; no implementation or pin change |
-| `TSR-BT-01` | READY | Backtest target repository, source-neutral timeline v2, value-embedding bundle@6, cash development preparation, and durable replay leaf |
-| `TSR-RP-01` | BLOCKED | waits for accepted `TSR-BT-01` public target authority and preparation receipt |
-| `TSR-SV-01` | BLOCKED | waits for accepted target-aware Research candidate provenance |
-| `TSR-FI-01` | BLOCKED | waits for clean Backtest, Research, and Validation leaf receipts/commits |
+| `TSR-BT-01` | DONE | Backtest target repository, source-neutral timeline v2, value-embedding bundle@6, cash development preparation, and durable replay accepted at `f73d068d24ffb7ecc0b7d78194fcbc96908d3c04` |
+| `TSR-RP-01` | DONE | target-aware Research provenance and replay accepted at `c06662449a8a13aed5824398b96bd21e889a9fee` |
+| `TSR-SV-01` | DONE | independent target-aware OOS Validation and replay accepted at `dad119842737fd06137914537fcc51df12996353` |
+| `TSR-FI-01` | DONE | root public-package golden, exact pins/lock, replay, and Promotion fail-closed accepted in [`tsr-fi-01-receipt.md`](tsr-fi-01-receipt.md) |
 | `TSR-PG-01` | DEFERRED | target-aware Candidate/Report versions fail closed until a separate Promotion contract |
 | `TSR-BIN-Q-01` | SEPARATE_H3 | Binance causal market qualification remains independently blocked |
 | `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
@@ -164,10 +164,10 @@ Integration v6 begins this acyclic target-stream DAG:
 
 ```text
 FI-04 ─→ V6-CON-01 / TSR-CON-01 [APPROVED]
-                         └─→ TSR-BT-01 [READY]
-                                   └─→ TSR-RP-01 [BLOCKED]
-                                             └─→ TSR-SV-01 [BLOCKED]
-                                                       └─→ TSR-FI-01 [BLOCKED]
+                         └─→ TSR-BT-01 [DONE]
+                                   └─→ TSR-RP-01 [DONE]
+                                             └─→ TSR-SV-01 [DONE]
+                                                       └─→ TSR-FI-01 [DONE]
                                                                  └─→ TSR-PG-01 [DEFERRED]
 ```
 
@@ -303,10 +303,10 @@ Keep one active writer. After V2-CON freezes, MB-CORE and Backtest owner work ma
 | Priority | Node | Unblocks | Write set | State |
 | --- | --- | --- | --- | --- |
 | 1 | `V6-CON-01` / `TSR-CON-01` | `TSR-BT-01` | root contract/docs/tests only | APPROVED |
-| 2 | `TSR-BT-01` | `TSR-RP-01` | isolated Backtest leaf | READY |
-| 3 | `TSR-RP-01` | `TSR-SV-01` | isolated Research leaf | BLOCKED |
-| 4 | `TSR-SV-01` | `TSR-FI-01` | isolated Validation leaf | BLOCKED |
-| 5 | `TSR-FI-01` | common v6 implementation closure | root gitlinks/VCS pins/lock/integration receipt | BLOCKED |
+| 2 | `TSR-BT-01` | `TSR-RP-01` | isolated Backtest leaf | DONE |
+| 3 | `TSR-RP-01` | `TSR-SV-01` | isolated Research leaf | DONE |
+| 4 | `TSR-SV-01` | `TSR-FI-01` | isolated Validation leaf | DONE |
+| 5 | `TSR-FI-01` | common v6 implementation closure | root gitlinks/VCS pins/lock/integration receipt | DONE |
 | 6 | `TSR-PG-01` | target-aware Promotion | separate Promotion contract/leaf | DEFERRED |
 
 ## 7. Integration v1 accepted
@@ -367,6 +367,6 @@ Implementation must preserve V1-V4, add no proof decoder or grade synthesis, and
 
 ## 13. Integration v6 approved contract
 
-The protected `integration-v6-target-stream-research-v1` fixture is frozen at SHA-256 `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496`. Platform, Backtest, Research, Validation, and Promotion owner approvals at `2026-08-26T03:14:51Z` bind that exact hash and its exact baseline SHAs.
+The protected `integration-v6-target-stream-research-v1` fixture is frozen at SHA-256 `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2`. Platform, Backtest, Research, Validation, and Promotion owner approvals at `2026-08-26T03:14:51Z` bind that exact hash and its exact baseline SHAs.
 
-The contract is additive and development-grade only. It freezes context-bound Backtest target CAS authority, the exact structural materializer request/result, target-aware Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, root-only fan-in pin policy, and Promotion fail-closed behavior. Approval makes `TSR-BT-01` READY but claims no implementation, market qualification, decision-grade path, or Promotion support.
+The contract is additive and development-grade only. It freezes context-bound Backtest target CAS authority, the exact structural materializer request/result, target-aware Research/Validation provenance, source-neutral timeline v2 and bundle@6 execution, replay commit points, root-only fan-in pin policy, and Promotion fail-closed behavior. Approval originally made `TSR-BT-01` READY. The accepted implementation now closes `TSR-BT-01`, `TSR-RP-01`, `TSR-SV-01`, and `TSR-FI-01` while adding no market qualification, decision-grade path, or Promotion support.

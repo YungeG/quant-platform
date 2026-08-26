@@ -1,14 +1,14 @@
 # Integration v6 target-stream research execution
 
 - **Contract maturity:** APPROVED
-- **Implementation readiness:** READY_FOR_TSR_BT_01
+- **Implementation status:** ACCEPTED through `TSR-FI-01`
 - **Node:** `TSR-CON-01`
 - **Normative contract:** [`overall/integration-v6.md`](../../overall/integration-v6.md)
 - **Approval:** [`implementation/v6-contract-target-stream-research-v1.md`](../v6-contract-target-stream-research-v1.md)
-- **Protected fixture:** [`tests/contracts/integration-v6-target-stream-research-v1.json`](../../tests/contracts/integration-v6-target-stream-research-v1.json), SHA-256 `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496`
+- **Protected fixture:** [`tests/contracts/integration-v6-target-stream-research-v1.json`](../../tests/contracts/integration-v6-target-stream-research-v1.json), SHA-256 `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2`
 - **Scope:** development-grade cash target-stream Research → Backtest → Validation only
 
-`TSR-CON-01` freezes names, fields, ownership, identity, ordering, replay, failure precedence, repository isolation, and compatibility. Approval makes `TSR-BT-01` READY; it does not claim implementation.
+`TSR-CON-01` freezes names, fields, ownership, identity, ordering, replay, failure precedence, repository isolation, and compatibility. Backtest `f73d068d24ffb7ecc0b7d78194fcbc96908d3c04`, Research `c06662449a8a13aed5824398b96bd21e889a9fee`, Validation `dad119842737fd06137914537fcc51df12996353`, and root [`TSR-FI-01`](../tsr-fi-01-receipt.md) are accepted.
 
 ## 1. Exact baselines
 
@@ -64,13 +64,13 @@ Reservation is idempotent. Evidence publication is the module commit preventing 
 ```text
 TSR-CON-01 [APPROVED]
         ↓
-TSR-BT-01 [READY]
+TSR-BT-01 [DONE]
         ↓
-TSR-RP-01 [BLOCKED]
+TSR-RP-01 [DONE]
         ↓
-TSR-SV-01 [BLOCKED]
+TSR-SV-01 [DONE]
         ↓
-TSR-FI-01 [BLOCKED]
+TSR-FI-01 [DONE]
         ↓
 TSR-PG-01 [DEFERRED]
 ```
@@ -81,7 +81,7 @@ Market qualification is separate: `TSR-BIN-Q-01` remains H3 and `TSR-ASH-Q-01` r
 
 ### `TSR-BT-01` — target authority and source-neutral cash preparation
 
-**State:** READY.
+**State:** DONE at `f73d068d24ffb7ecc0b7d78194fcbc96908d3c04`.
 
 **Consumes:** approved v6 contract and exact Backtest baseline.
 
@@ -93,7 +93,7 @@ Market qualification is separate: `TSR-BIN-Q-01` remains H3 and `TSR-ASH-Q-01` r
 
 ### `TSR-RP-01` — discovery target provenance
 
-**State:** BLOCKED on accepted `TSR-BT-01` receipt/commit.
+**State:** DONE at `c06662449a8a13aed5824398b96bd21e889a9fee`.
 
 **Produces:** exact target recipe/spec/task/evidence artifacts, one target-build task per Trial, reservation-before-materialization, exact target-mode dispatch, Candidate@3 selected evidence, and replay without second read/materialization/run.
 
@@ -103,7 +103,7 @@ Market qualification is separate: `TSR-BIN-Q-01` remains H3 and `TSR-ASH-Q-01` r
 
 ### `TSR-SV-01` — independent OOS target evidence
 
-**State:** BLOCKED on accepted `TSR-RP-01` candidate provenance and `TSR-BT-01` authority.
+**State:** DONE at `dad119842737fd06137914537fcc51df12996353`.
 
 **Produces:** ValidationPlan@2, independent post-reservation target materialization, ValidationTargetMaterializationEvidence@1, target-aware CaseResult@2/ValidationReport@2, and exact `validate_target_candidate(candidate_ref, policy, reservation_at, foundation, sample_ledger, materializer, backtest)`.
 
@@ -113,7 +113,7 @@ Market qualification is separate: `TSR-BIN-Q-01` remains H3 and `TSR-ASH-Q-01` r
 
 ### `TSR-FI-01` — root fan-in
 
-**State:** BLOCKED on clean accepted Backtest, Research, and Validation leaf commits/receipts.
+**State:** DONE; see [`tsr-fi-01-receipt.md`](../tsr-fi-01-receipt.md).
 
 **Produces:** one development-grade cash golden using fixed one-slice portfolio targets and `simple_period_return`/`trade_count`, exact cross-module provenance, replay proof, and root dependency closure.
 
@@ -156,4 +156,4 @@ No model combination, decision-grade execution, real Binance qualification, real
 
 ## 9. Completion rule
 
-The approved contract is complete and `TSR-BT-01` is READY. The v6 implementation is not complete until clean Backtest, Research, and Validation leaves plus root fan-in satisfy their receipts. No implementation claim is made by this plan revision.
+The approved contract and development-grade implementation are complete through `TSR-FI-01`. Target-aware Promotion, decision-grade execution, and market qualification remain outside this closure.

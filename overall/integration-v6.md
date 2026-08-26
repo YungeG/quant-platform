@@ -3,9 +3,9 @@
 - **Scope:** additive development-grade cash Research → Backtest → Validation execution from precomputed portfolio targets
 - **Predecessor:** [Integration v5](integration-v5.md) and [`FI-04`](../implementation/fi-04-receipt.md)
 - **Contract approval:** [`TSR-CON-01`](../implementation/v6-contract-target-stream-research-v1.md)
-- **Protected fixture:** [`integration-v6-target-stream-research-v1.json`](../tests/contracts/integration-v6-target-stream-research-v1.json), SHA-256 `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496`
+- **Protected fixture:** [`integration-v6-target-stream-research-v1.json`](../tests/contracts/integration-v6-target-stream-research-v1.json), SHA-256 `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2`
 - **Status authority:** [roadmap registry](../implementation/roadmap.md#2-status-registry)
-- **Status:** approved contract; `TSR-BT-01` is READY and no implementation is claimed
+- **Status:** accepted development-grade implementation through `TSR-FI-01`; target-aware Promotion deferred
 
 ## 1. Outcome and authority
 
@@ -237,6 +237,6 @@ Integration v1-v5 artifacts, schemas, requests, execution bundles, publications,
 
 ## 12. Contract acceptance
 
-`TSR-CON-01` is approved by Platform, Backtest, Research, Validation, and Promotion owners at `2026-08-26T03:14:51Z`. Every approval binds exact fixture SHA-256 `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496` and the fixture's exact baseline SHAs.
+`TSR-CON-01` is approved by Platform, Backtest, Research, Validation, and Promotion owners at `2026-08-26T03:14:51Z`. Every approval binds exact fixture SHA-256 `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2` and the fixture's exact baseline SHAs.
 
-Approval makes only `TSR-BT-01` READY. It is not an implementation or qualification claim.
+Approval originally made only `TSR-BT-01` READY. The accepted leaf revisions and root fan-in now close the development-grade implementation through `TSR-FI-01`; this remains no market qualification, decision-grade, or target-aware Promotion claim.

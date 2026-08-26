@@ -57,7 +57,7 @@ from crypto_quant_trading import (
 
 _ROOT = Path(__file__).resolve().parents[2]
 _ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
-_CURRENT_BACKTEST_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
+_CURRENT_BACKTEST_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
 _VENUE = VenueId("synthetic")
 _USD = CurrencyId("USD")
 _INSTRUMENT = InstrumentId(_VENUE, "cash:btc-usd")

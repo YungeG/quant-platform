@@ -9,6 +9,7 @@
 - [Integration v3 — positive Promotion governance contract](overall/integration-v3.md)
 - [Integration v4 — immutable ShadowSpec contract](overall/integration-v4.md)
 - [Integration v5 — decision-grade durable evidence](overall/integration-v5.md)
+- [Integration v6 — target-stream research execution](overall/integration-v6.md)
 - [Overall design](overall/design.md)
 - [Foundation](foundation/design.md)
 - [Research Platform](research-platform/design.md)
@@ -24,7 +25,7 @@
 
 ## Current status
 
-Integration v1, v2, v3, and v5 are accepted, published, and tagged `integration-v1`, `integration-v2`, `integration-v3`, and `integration-v5`. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding. V3 adds only evidence-level positive Promotion. V5 additively consumes Backtest canonical-v3 `decision_grade` evidence through exact Admission@2, Research, Validation, and Promotion seams. The Integration v4 immutable ShadowSpec contract is approved; Shadow implementation remains deliberately deferred. `shadow_ready` remains evidence only; Shadow/Live/deployment remain excluded. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
+Integration v1, v2, v3, and v5 are accepted, published, and tagged `integration-v1`, `integration-v2`, `integration-v3`, and `integration-v5`. V6 target-stream Research → independent OOS Validation is accepted through `TSR-FI-01`; it remains development-grade and Promotion fails closed on Candidate@3/Report@2. V2 adds immutable Feature/Trainer recipes, one optional ModelBuildPlan, and Backtest model identity binding. V3 adds only evidence-level positive Promotion. V5 additively consumes Backtest canonical-v3 `decision_grade` evidence through exact Admission@2, Research, Validation, and Promotion seams. The Integration v4 immutable ShadowSpec contract is approved; Shadow implementation remains deliberately deferred. `shadow_ready` remains evidence only; Shadow/Live/deployment remain excluded. The sole mutable node state is in the [implementation roadmap](implementation/roadmap.md#2-status-registry).
 
 P00-CON-01 is immutable. P00-CON-02 approval details live in its [proposal](implementation/p00-contract-v2.md), while mutable gate state lives only in the roadmap registry. The narrow rule remains unchanged: existing static capture plus retirement evidence satisfies `P00-LEG-01`/`P00-CUT-01`, and hermetic replay is not a P00-PLAT prerequisite.
 

@@ -13,6 +13,8 @@ PLAN = ROOT / "implementation/plans/target-stream-research.md"
 PLAN_README = ROOT / "implementation/plans/README.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
 GLOSSARY = ROOT / "CONTEXT.md"
+RECEIPT = ROOT / "implementation/tsr-fi-01-receipt.md"
+INTEGRATION_TEST = ROOT / "tests/integration/test_integration_v6.py"
 FIXTURE_SHA = "dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2"
 APPROVED_AT = "2026-08-26T03:14:51Z"
 BASELINES = {
@@ -25,6 +27,13 @@ BASELINES = {
 }
 PYPROJECT_SHA = "fd91992418122cbce414ff5fa0c39878290df1d49f69b9758d5ca1ec64806024"
 UV_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
+FANIN = {
+    "backtest": "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04",
+    "research": "c06662449a8a13aed5824398b96bd21e889a9fee",
+    "validation": "dad119842737fd06137914537fcc51df12996353",
+}
+FANIN_PYPROJECT_SHA = "450328a2eea02f9fb14e36c096b9d27c25df4c8194553ff4903983d97b72c4f2"
+FANIN_UV_LOCK_SHA = "e72bad448708f7075ee8205ba90452db469306a099c010810496b422f75dceb9"
 
 
 def _fixture() -> dict[str, object]:
@@ -36,6 +45,8 @@ def test_integration_v6_contract_is_frozen_and_exactly_approved() -> None:
     fixture = _fixture()
     approval = APPROVAL.read_text(encoding="utf-8")
     contract = CONTRACT.read_text(encoding="utf-8")
+    plan = PLAN.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
 
     assert fixture["contract_id"] == "integration-v6-target-stream-research-v1"
     assert fixture["node_id"] == "TSR-CON-01"
@@ -53,11 +64,14 @@ def test_integration_v6_contract_is_frozen_and_exactly_approved() -> None:
         "binds_exact_fixture_hash": True,
     }
     assert fixture["baseline_shas"] == BASELINES
-    assert FIXTURE_SHA in approval
+    assert approval.count(FIXTURE_SHA) == 1
+    assert contract.count(FIXTURE_SHA) == 2
+    assert plan.count(FIXTURE_SHA) == 1
+    assert roadmap.count(FIXTURE_SHA) == 2
     assert approval.count(f"| `YungeG` | APPROVED | `{APPROVED_AT}` |") == 5
     assert "**Status:** APPROVED" in approval
     assert "`TSR-BT-01` is READY" in approval
-    assert "no implementation is claimed" in contract
+    assert "Approval originally made only `TSR-BT-01` READY" in contract
 
 
 def test_integration_v6_target_materializer_and_module_wires_are_exact() -> None:
@@ -298,7 +312,7 @@ def test_integration_v6_execution_replay_precedence_and_scope_are_exact() -> Non
     }
 
 
-def test_integration_v6_status_and_root_baseline_remain_frozen() -> None:
+def test_integration_v6_status_and_root_fan_in_are_accepted() -> None:
     fixture = _fixture()
     roadmap = ROADMAP.read_text(encoding="utf-8")
     plan = PLAN.read_text(encoding="utf-8")
@@ -310,16 +324,17 @@ def test_integration_v6_status_and_root_baseline_remain_frozen() -> None:
 
     assert registry.count("| `V6-CON-01` | APPROVED |") == 1
     assert registry.count("| `TSR-CON-01` | APPROVED |") == 1
-    assert registry.count("| `TSR-BT-01` | READY |") == 1
-    assert registry.count("| `TSR-RP-01` | BLOCKED |") == 1
-    assert registry.count("| `TSR-SV-01` | BLOCKED |") == 1
-    assert registry.count("| `TSR-FI-01` | BLOCKED |") == 1
+    assert registry.count("| `TSR-BT-01` | DONE |") == 1
+    assert registry.count("| `TSR-RP-01` | DONE |") == 1
+    assert registry.count("| `TSR-SV-01` | DONE |") == 1
+    assert registry.count("| `TSR-FI-01` | DONE |") == 1
     assert registry.count("| `TSR-PG-01` | DEFERRED |") == 1
     assert "FI-04 ─→ V6-CON-01 / TSR-CON-01 [APPROVED]" in roadmap
-    assert "TSR-BT-01 [READY]" in roadmap
-    assert "READY_FOR_TSR_BT_01" in plan
-    assert "no implementation claim" in plan.lower()
-    assert "approved contract; Backtest leaf READY" in plan_readme
+    assert "TSR-FI-01 [DONE]" in roadmap
+    assert "ACCEPTED" in plan
+    assert "accepted fan-in" in plan_readme
+    assert RECEIPT.is_file()
+    assert INTEGRATION_TEST.is_file()
     assert "**Backtest target stream**" in glossary
     assert "**Target materialization evidence**" in glossary
 
@@ -330,19 +345,30 @@ def test_integration_v6_status_and_root_baseline_remain_frozen() -> None:
         "backtest_vcs_revision_occurrences": 5,
         "contract_approval_changes_gitlinks_or_pins": False,
     }
-    assert hashlib.sha256((ROOT / "pyproject.toml").read_bytes()).hexdigest() == PYPROJECT_SHA
-    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == UV_LOCK_SHA
-    assert (ROOT / "pyproject.toml").read_text(encoding="utf-8").count(
-        BASELINES["backtest"]
-    ) == 5
+    assert hashlib.sha256((ROOT / "pyproject.toml").read_bytes()).hexdigest() == FANIN_PYPROJECT_SHA
+    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == FANIN_UV_LOCK_SHA
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert pyproject.count(FANIN["backtest"]) == 5
+    assert BASELINES["backtest"] not in pyproject
+    assert BASELINES["backtest"] not in lock
 
     for path, key in (
         ("backtest", "backtest"),
-        ("foundation", "foundation"),
         ("research-platform", "research"),
         ("strategy-validation", "validation"),
-        ("promotion-gate", "promotion"),
     ):
+        current = subprocess.check_output(
+            ["git", "-C", path, "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+        assert current == FANIN[key]
+        assert subprocess.run(
+            ["git", "-C", path, "merge-base", "--is-ancestor", BASELINES[key], current],
+            cwd=ROOT,
+            check=False,
+        ).returncode == 0
+
+    for path, key in (("foundation", "foundation"), ("promotion-gate", "promotion")):
         entry = subprocess.check_output(
             ["git", "ls-files", "-s", path], cwd=ROOT, text=True
         ).split()
