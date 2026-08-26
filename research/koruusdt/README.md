@@ -30,36 +30,51 @@ retrieved snapshot, not future Yahoo responses.
 
 ## Bounded execution-data capture
 
-Daily aggregate trades and 1-minute mark-price klines for the discovery window
-are captured separately from the frozen exploratory dataset and its base
+Daily aggregate trades, 1-minute mark-price klines, the Backtest-authority
+1-hour mark/index price bars, and funding history for the discovery window are
+captured separately from the frozen exploratory dataset and its base
 `data/manifest.json`:
 
 ```bash
-uv run python research/koruusdt/capture_execution_data.py
+uv run python research/koruusdt/capture_execution_data.py --offline
 uv run python research/koruusdt/capture_execution_data.py --validate-only
 uv run pytest research/koruusdt/tests/test_capture_execution_data.py
 ```
 
-The capture downloads and verifies official Binance USD-M daily ZIPs and
-`.CHECKSUM` files for 2026-07-15 through 2026-08-23. For 2026-08-24 it uses
-only REST requests whose inclusive `endTime` is
-`2026-08-24T10:59:59.999Z`. The full 2026-08-24 daily archive must never be
-downloaded: `[2026-08-24T11:00:00Z, ...)` is holdout data and must never be
-requested, retained, or used. If Binance rejects older aggregate-trade REST
-history, the capture records the unavailable half-open interval rather than
-substituting an archive or another feed. Aggregate-trade IDs are required to
-be contiguous over available coverage; provider raw-trade ID intervals are
-required to be increasing and non-overlapping, with every provider gap retained
-as explicit source evidence in the execution manifest.
+The offline/resume capture validates every retained file before any possible
+network access. Official Binance USD-M daily ZIPs and `.CHECKSUM` files for
+2026-07-15 through 2026-08-23 are retained for aggregate trades, 1-minute mark
+prices, and provider-named 1-hour mark/index prices. A non-offline run may fetch
+only missing pre-holdout daily files after the complete preflight; official REST
+is not needed for completion.
 
-Official files retain provider filenames under `data/binance_usdm/`. Bounded
-REST pages and deterministic REST-derived standard-schema CSV/ZIP/checksum
-artifacts live under each source's `rest-bounded/2026-08-24/` directory and
-are explicitly labelled as REST-derived, not official archives. The separate
-`data/execution_data_manifest.json` binds the frozen base manifest, every new
-file, observed coverage, missing intervals, ID gaps, and the canonical
-execution-manifest hash. Downloads use resumable `.part` files and atomic
-publication; rerunning the command verifies already completed archives.
+The bounded 2026-08-24 1-minute mark REST page and its deterministic derivatives
+are reused byte-for-byte from commit `a61ef74` and hash-checked before use. The
+retained bounded aggregate-trade REST pages remain unchanged. No full
+2026-08-24 daily archive is downloaded or retained: `[2026-08-24T11:00:00Z,
+...)` is holdout data and must never be requested, retained, or used.
+
+The 2026-08-24 00:00-11:00 UTC 1-hour mark/index CSV/ZIP/checksum artifacts are
+deterministically selected from the exact rows and lexemes in the frozen,
+base-manifest-pinned `binance_mark_raw.csv` and `binance_index_raw.csv`.
+
+Funding authority is the accepted Backtest provider capture at
+`backtest/tests/fixtures/market_data/providers/binance_usdm/koru-funding-history-v1/`.
+Offline capture hash-checks `funding-history.json` and
+`acquisition-receipt.json`, then mirrors both byte-for-byte under
+`data/binance_usdm/fundingHistory/accepted-capture/`. The response contains 120
+ordered observations from 2026-07-15 16:00 UTC through 2026-08-24 08:00 UTC;
+every row has the exact provider field `rateType: "Regular"`, with no Special
+or missing values. The receipt binds the exact authority-window request and
+holdout-exclusive end. No funding type is inferred, and the base funding CSV is
+not an execution-data source.
+
+Official files retain provider filenames under `data/binance_usdm/`. Local
+price-bar derivations live under `priceBars/{mark,index}/1h/derived-bounded/`.
+`data/execution_data_manifest.json` provides exact file cover, row/coverage
+summaries, accepted-source hashes and paths, holdout checks, and a canonical
+self-hash. Repeated offline capture reproduces the same mirrored bytes and
+manifest hash.
 
 ## Scope notes
 
@@ -91,8 +106,17 @@ publication; rerunning the command verifies already completed archives.
 - Premium-index klines are basis/premium values, not prices, and are never
   split-scaled.
 
-## Limitation
+## Limitations
 
-Current accepted Backtest instrument metadata accepts only `PERPETUAL`, while
-`KORUUSDT` is reported as `TRADIFI_PERPETUAL` in Binance metadata. This dataset
-is exploratory only and cannot support an approved `KORUUSDT` Backtest run.
+- Official REST is currently unreachable. The Aug-24 1-hour mark/index
+  artifacts are transparent derivations from immutable frozen base
+  observations, not newly captured provider responses. Funding uses the
+  accepted provider response and acquisition receipt bytes already retained by
+  Backtest; offline regeneration does not refetch them.
+- Aggregate trades remain unavailable for
+  `[2026-08-24T00:00:00Z, 2026-08-24T06:34:20.640Z)` because the retained REST
+  capture could not access that history; the manifest and gap audit preserve
+  the impact rather than filling it from a holdout-day archive.
+- Current accepted Backtest instrument metadata accepts only `PERPETUAL`, while
+  `KORUUSDT` is reported as `TRADIFI_PERPETUAL` in Binance metadata. This
+  dataset remains exploratory and does not itself authorize deployment.

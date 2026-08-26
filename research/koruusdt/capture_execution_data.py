@@ -29,21 +29,47 @@ SYMBOL = "KORUUSDT"
 UTC = dt.timezone.utc
 DAY_MS = 86_400_000
 MINUTE_MS = 60_000
+HOUR_MS = 3_600_000
 DISCOVERY_START = dt.datetime(2026, 7, 15, tzinfo=UTC)
+AUTHORITY_START = dt.datetime(2026, 7, 15, 10, tzinfo=UTC)
 ARCHIVE_END_DATE = dt.date(2026, 8, 23)
 REST_DATE = dt.date(2026, 8, 24)
 HOLDOUT_START = dt.datetime(2026, 8, 24, 11, tzinfo=UTC)
 DISCOVERY_START_MS = int(DISCOVERY_START.timestamp() * 1000)
+AUTHORITY_START_MS = int(AUTHORITY_START.timestamp() * 1000)
 REST_START_MS = int(dt.datetime.combine(REST_DATE, dt.time(), UTC).timestamp() * 1000)
 HOLDOUT_START_MS = int(HOLDOUT_START.timestamp() * 1000)
 REST_END_MS = HOLDOUT_START_MS - 1
+RETAINED_AGG_COVERAGE_START_MS = 1_787_553_260_640
 BASE_ARCHIVE_URL = "https://data.binance.vision/data/futures/um/daily"
 FAPI_URL = "https://fapi.binance.com/fapi/v1"
+ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = Path(__file__).resolve().parent / "data"
 BASE_MANIFEST_NAME = "manifest.json"
 EXECUTION_MANIFEST_NAME = "execution_data_manifest.json"
 USER_AGENT = "koruusdt-bounded-discovery-capture/1"
 MAX_RETRIES = 5
+DERIVED_STATUS = "base_manifest_derived_raw_observations"
+ACCEPTED_FUNDING_STATUS = "accepted_source_capture_mirror"
+ACCEPTED_FUNDING_REPO_DIR = Path(
+    "backtest/tests/fixtures/market_data/providers/binance_usdm/"
+    "koru-funding-history-v1"
+)
+ACCEPTED_FUNDING_RESPONSE_SHA256 = (
+    "sha256:ace9f779682989befac94ffd1c835e7a6e97b2b8103e6ad347ec8dc38fa6c960"
+)
+ACCEPTED_FUNDING_RECEIPT_SHA256 = (
+    "sha256:74ea246da8d5b6aaf84ffce983cdb1f01a69533707683816dccc838f06b9d053"
+)
+ACCEPTED_FUNDING_FIRST_MS = 1_784_131_200_001
+ACCEPTED_FUNDING_LAST_MS = 1_787_558_400_001
+ACCEPTED_FUNDING_ROW_COUNT = 120
+A61_MARK_RETAINED_SHA256 = {
+    "KORUUSDT-1m-2026-08-24.discovery-bounded.csv": "sha256:f348bbef9dcd614eb6498501e116d8b83c06527c094f24fc67333551ef694da2",
+    "KORUUSDT-1m-2026-08-24.discovery-bounded.page-0001.json": "sha256:ea41a6aa90b93ea28e840c46d72e80b87da4f16b4c0afd8144c0444709e8388d",
+    "KORUUSDT-1m-2026-08-24.discovery-bounded.zip": "sha256:6274c0416b615f849ee544ea9c2a75dc97fc099be7ffa82bb3262ae48e3392e1",
+    "KORUUSDT-1m-2026-08-24.discovery-bounded.zip.CHECKSUM": "sha256:94fc2760b78a0a374904c901b7d7ce47fcf30d23c3018d4fe3490c85492fb5bf",
+}
 
 AGG_HEADER = (
     "agg_trade_id",
@@ -53,6 +79,20 @@ AGG_HEADER = (
     "last_trade_id",
     "transact_time",
     "is_buyer_maker",
+)
+PRICE_BAR_SOURCES = {
+    "mark": "markPriceKlines",
+    "index": "indexPriceKlines",
+}
+
+FROZEN_PRICE_HEADER = (
+    "open_time_utc",
+    "open",
+    "high",
+    "low",
+    "close",
+    "close_time_utc",
+    "volume",
 )
 MARK_HEADER = (
     "open_time",
@@ -133,6 +173,26 @@ def archive_path(data_dir: Path, kind: str, utc_date: dt.date) -> Path:
     return data_dir / "binance_usdm" / kind / "daily" / Path(archive_url(kind, utc_date)).name
 
 
+def price_archive_url(source: str, utc_date: dt.date) -> str:
+    endpoint = PRICE_BAR_SOURCES.get(source)
+    if endpoint is None:
+        raise ValueError(f"unsupported price-bar source: {source}")
+    filename = f"{SYMBOL}-1h-{utc_date.isoformat()}.zip"
+    return f"{BASE_ARCHIVE_URL}/{endpoint}/{SYMBOL}/1h/{filename}"
+
+
+def price_archive_path(data_dir: Path, source: str, utc_date: dt.date) -> Path:
+    return (
+        data_dir
+        / "binance_usdm"
+        / "priceBars"
+        / source
+        / "1h"
+        / "daily"
+        / Path(price_archive_url(source, utc_date)).name
+    )
+
+
 def daily_dates() -> Iterator[dt.date]:
     current = DISCOVERY_START.date()
     while current <= ARCHIVE_END_DATE:
@@ -208,21 +268,57 @@ def download_resumable_atomic(url: str, destination: Path, expected_sha256: str)
     raise AssertionError("unreachable")
 
 
-def capture_archives(data_dir: Path) -> dict[str, str]:
-    statuses: dict[str, str] = {}
-    for kind in ("aggTrades", "markPriceKlines"):
-        for utc_date in daily_dates():
-            url = archive_url(kind, utc_date)
-            destination = archive_path(data_dir, kind, utc_date)
-            checksum_path = destination.with_name(destination.name + ".CHECKSUM")
-            checksum_url = url + ".CHECKSUM"
-            checksum_bytes = fetch_bytes(checksum_url)
-            expected = parse_provider_checksum(checksum_bytes, destination.name)
-            atomic_write(checksum_path, checksum_bytes)
-            statuses[destination.relative_to(data_dir).as_posix()] = download_resumable_atomic(
-                url, destination, expected
+def _capture_archive(
+    data_dir: Path, url: str, destination: Path, statuses: dict[str, str]
+) -> None:
+    checksum_path = destination.with_name(destination.name + ".CHECKSUM")
+    if checksum_path.exists():
+        checksum_bytes = checksum_path.read_bytes()
+        checksum_status = "already_verified"
+    else:
+        checksum_bytes = fetch_bytes(url + ".CHECKSUM")
+        atomic_write(checksum_path, checksum_bytes)
+        checksum_status = "downloaded_official_checksum"
+    expected = parse_provider_checksum(checksum_bytes, destination.name)
+    statuses[destination.relative_to(data_dir).as_posix()] = download_resumable_atomic(
+        url, destination, expected
+    )
+    statuses[checksum_path.relative_to(data_dir).as_posix()] = checksum_status
+
+
+def capture_archives(data_dir: Path, *, offline: bool) -> dict[str, str]:
+    specs = []
+    for utc_date in daily_dates():
+        specs.extend(
+            (
+                (archive_url(kind, utc_date), archive_path(data_dir, kind, utc_date))
+                for kind in ("aggTrades", "markPriceKlines")
             )
-            statuses[checksum_path.relative_to(data_dir).as_posix()] = "downloaded_official_checksum"
+        )
+        specs.extend(
+            (price_archive_url(source, utc_date), price_archive_path(data_dir, source, utc_date))
+            for source in PRICE_BAR_SOURCES
+        )
+
+    statuses: dict[str, str] = {}
+    missing: list[tuple[str, Path]] = []
+    for url, destination in specs:
+        checksum_path = destination.with_name(destination.name + ".CHECKSUM")
+        if destination.exists() and not checksum_path.exists():
+            raise CaptureError(f"cannot validate existing archive without checksum: {destination}")
+        if destination.exists():
+            _validate_checksum_file(destination, checksum_path)
+            statuses[destination.relative_to(data_dir).as_posix()] = "already_verified"
+            statuses[checksum_path.relative_to(data_dir).as_posix()] = "already_verified"
+        else:
+            if checksum_path.exists():
+                parse_provider_checksum(checksum_path.read_bytes(), destination.name)
+            missing.append((url, destination))
+
+    if missing and offline:
+        raise CaptureError(f"offline capture is missing official archive: {missing[0][1]}")
+    for url, destination in missing:
+        _capture_archive(data_dir, url, destination, statuses)
     return statuses
 
 
@@ -267,6 +363,36 @@ def fetch_rest_page(endpoint: str, parameters: dict[str, int | str]) -> tuple[li
     raise AssertionError("unreachable")
 
 
+def fetch_raw_rest_page(
+    endpoint: str, parameters: dict[str, int | str]
+) -> tuple[list[Any], bytes, str]:
+    """Fetch a bounded page while retaining the provider's exact JSON lexemes."""
+    url = bounded_rest_url(endpoint, parameters)
+    for attempt in range(MAX_RETRIES):
+        try:
+            with _request(url) as response:
+                raw = response.read()
+        except urllib.error.HTTPError as error:
+            body = error.read()
+            if error.code not in (429, 500, 502, 503, 504) or attempt == MAX_RETRIES - 1:
+                raise CaptureError(
+                    f"GET {url} failed with HTTP {error.code}: {body[:300]!r}"
+                ) from error
+        except (OSError, TimeoutError) as error:
+            if attempt == MAX_RETRIES - 1:
+                raise CaptureError(f"GET {url} failed: {error}") from error
+        else:
+            try:
+                payload = json.loads(raw)
+            except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise CaptureError(f"GET {url} returned invalid JSON") from error
+            if not isinstance(payload, list):
+                raise CaptureError(f"GET {url} did not return a JSON array")
+            return payload, raw, url
+        time.sleep(2**attempt)
+    raise AssertionError("unreachable")
+
+
 def _clean_rest_directory(directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     for path in directory.iterdir():
@@ -274,9 +400,258 @@ def _clean_rest_directory(directory: Path) -> None:
             path.unlink()
 
 
+def _load_base_manifest(data_dir: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    path = data_dir / BASE_MANIFEST_NAME
+    manifest = json.loads(path.read_bytes())
+    if manifest.get("manifest_sha256") != manifest_sha256(manifest):
+        raise CaptureError("base manifest canonical hash mismatch")
+    artifacts = {
+        item["path"]: item
+        for item in manifest.get("artifacts", [])
+        if isinstance(item, dict) and isinstance(item.get("path"), str)
+    }
+    return manifest, artifacts
+
+
+def _base_source(manifest: dict[str, Any], source_id: str) -> dict[str, Any]:
+    matches = [
+        source
+        for source in manifest.get("sources", [])
+        if isinstance(source, dict) and source.get("source_id") == source_id
+    ]
+    if len(matches) != 1:
+        raise CaptureError(f"base manifest source is not unique: {source_id}")
+    return matches[0]
+
+
+def _frozen_rows(
+    data_dir: Path,
+    artifacts: dict[str, Any],
+    name: str,
+    header: tuple[str, ...],
+    time_column: str,
+    start_ms: int,
+    end_ms: int,
+) -> list[list[str]]:
+    path = data_dir / name
+    artifact = artifacts.get(name)
+    if not isinstance(artifact, dict) or artifact.get("sha256") != sha256_path(path):
+        raise CaptureError(f"base manifest artifact hash mismatch: {name}")
+    selected: list[list[str]] = []
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.reader(handle)
+        actual_header = tuple(next(reader, ()))
+        if actual_header != header:
+            raise CaptureError(f"frozen CSV header mismatch: {name}")
+        column = actual_header.index(time_column)
+        for row in reader:
+            if len(row) != len(header):
+                raise CaptureError(f"frozen CSV row width mismatch: {name}")
+            if time_column.endswith("_utc"):
+                timestamp = int(
+                    dt.datetime.fromisoformat(row[column].replace("Z", "+00:00")).timestamp()
+                    * 1000
+                )
+            else:
+                timestamp = int(row[column])
+            if start_ms <= timestamp < end_ms:
+                selected.append(row)
+    if not selected:
+        raise CaptureError(f"no bounded frozen rows selected: {name}")
+    return selected
+
+
+def _derivation_binding(
+    data_dir: Path,
+    base_manifest: dict[str, Any],
+    artifacts: dict[str, Any],
+    input_name: str,
+    source_id: str,
+) -> dict[str, Any]:
+    return {
+        "status": DERIVED_STATUS,
+        "input": {
+            "path": input_name,
+            "sha256": artifacts[input_name]["sha256"],
+        },
+        "base_manifest": {
+            "path": BASE_MANIFEST_NAME,
+            "file_sha256": sha256_path(data_dir / BASE_MANIFEST_NAME),
+            "manifest_sha256": base_manifest["manifest_sha256"],
+        },
+        "frozen_source_metadata": _base_source(base_manifest, source_id),
+    }
+
+
+def load_frozen_price_rows(
+    data_dir: Path,
+    base_manifest: dict[str, Any],
+    artifacts: dict[str, Any],
+    source: str,
+) -> tuple[list[list[str]], dict[str, Any]]:
+    name = f"binance_{source}_raw.csv"
+    rows = _frozen_rows(
+        data_dir,
+        artifacts,
+        name,
+        FROZEN_PRICE_HEADER,
+        "open_time_utc",
+        REST_START_MS,
+        HOLDOUT_START_MS,
+    )
+    binding = _derivation_binding(
+        data_dir,
+        base_manifest,
+        artifacts,
+        name,
+        f"binance_futures_{source}_price_kline",
+    )
+    return rows, binding
+
+
+def validate_funding_rows(
+    rows: list[dict[str, Any]], *, exact_cover: bool = False
+) -> dict[str, Any]:
+    previous_time: int | None = None
+    regular_count = 0
+    special_count = 0
+    missing_rate_type_count = 0
+    for row in rows:
+        if (
+            not isinstance(row, dict)
+            or row.get("symbol") != SYMBOL
+            or type(row.get("fundingTime")) is not int
+            or not isinstance(row.get("fundingRate"), str)
+            or not isinstance(row.get("markPrice"), str)
+        ):
+            raise CaptureError("fundingRate accepted response schema mismatch")
+        funding_time = row["fundingTime"]
+        if not AUTHORITY_START_MS <= funding_time < HOLDOUT_START_MS:
+            raise CaptureError("fundingRate row escaped exact authority interval")
+        if previous_time is not None and funding_time <= previous_time:
+            raise CaptureError("fundingRate observations are not ordered and unique")
+        rate_type = row.get("rateType")
+        if rate_type is None:
+            missing_rate_type_count += 1
+        elif rate_type == "Regular":
+            regular_count += 1
+        else:
+            special_count += 1
+        previous_time = funding_time
+    if not rows:
+        raise CaptureError("fundingRate accepted response has no observations")
+    summary = {
+        "row_count": len(rows),
+        "min_time_ms": rows[0]["fundingTime"],
+        "max_time_ms": rows[-1]["fundingTime"],
+        "rate_type_counts": {"Regular": regular_count},
+        "regular_rate_type_count": regular_count,
+        "special_rate_type_count": special_count,
+        "missing_rate_type_count": missing_rate_type_count,
+    }
+    if exact_cover and summary != {
+        "row_count": ACCEPTED_FUNDING_ROW_COUNT,
+        "min_time_ms": ACCEPTED_FUNDING_FIRST_MS,
+        "max_time_ms": ACCEPTED_FUNDING_LAST_MS,
+        "rate_type_counts": {"Regular": ACCEPTED_FUNDING_ROW_COUNT},
+        "regular_rate_type_count": ACCEPTED_FUNDING_ROW_COUNT,
+        "special_rate_type_count": 0,
+        "missing_rate_type_count": 0,
+    }:
+        raise CaptureError("accepted funding response does not have exact 120-row Regular cover")
+    return summary
+
+
+def _accepted_funding_source() -> tuple[
+    list[dict[str, Any]], bytes, bytes, dict[str, Any], dict[str, Any]
+]:
+    source_dir = ROOT / ACCEPTED_FUNDING_REPO_DIR
+    response_path = source_dir / "funding-history.json"
+    receipt_path = source_dir / "acquisition-receipt.json"
+    response_bytes = response_path.read_bytes()
+    receipt_bytes = receipt_path.read_bytes()
+    if sha256_bytes(response_bytes) != ACCEPTED_FUNDING_RESPONSE_SHA256:
+        raise CaptureError("accepted funding response source hash mismatch")
+    if sha256_bytes(receipt_bytes) != ACCEPTED_FUNDING_RECEIPT_SHA256:
+        raise CaptureError("accepted funding receipt source hash mismatch")
+    rows = json.loads(response_bytes)
+    receipt = json.loads(receipt_bytes)
+    if not isinstance(rows, list) or not isinstance(receipt, dict):
+        raise CaptureError("accepted funding capture JSON schema mismatch")
+    summary = validate_funding_rows(rows, exact_cover=True)
+    expected_request = {
+        "end_time_milliseconds": REST_END_MS,
+        "limit": 1000,
+        "start_time_milliseconds": AUTHORITY_START_MS,
+        "symbol": SYMBOL,
+    }
+    if (
+        receipt.get("status") != 200
+        or receipt.get("request") != expected_request
+        or receipt.get("record_count") != ACCEPTED_FUNDING_ROW_COUNT
+        or receipt.get("byte_count") != len(response_bytes)
+        or receipt.get("response_sha256") != ACCEPTED_FUNDING_RESPONSE_SHA256
+    ):
+        raise CaptureError("accepted funding receipt does not bind exact authority cover")
+    binding = {
+        "status": ACCEPTED_FUNDING_STATUS,
+        "original_repo_path": ACCEPTED_FUNDING_REPO_DIR.as_posix(),
+        "response_sha256": ACCEPTED_FUNDING_RESPONSE_SHA256,
+        "receipt_sha256": ACCEPTED_FUNDING_RECEIPT_SHA256,
+        "request_start_utc_inclusive": iso_ms(AUTHORITY_START_MS),
+        "request_end_utc_inclusive": iso_ms(REST_END_MS),
+        "row_count": summary["row_count"],
+        "min_time_ms": summary["min_time_ms"],
+        "min_time_utc": iso_ms(summary["min_time_ms"]),
+        "max_time_ms": summary["max_time_ms"],
+        "max_time_utc": iso_ms(summary["max_time_ms"]),
+        "rate_type_counts": summary["rate_type_counts"],
+        "special_rate_type_count": summary["special_rate_type_count"],
+        "missing_rate_type_count": summary["missing_rate_type_count"],
+    }
+    return rows, response_bytes, receipt_bytes, receipt, binding
+
+
+def mirror_accepted_funding_capture(
+    data_dir: Path,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    rows, response_bytes, receipt_bytes, _, binding = _accepted_funding_source()
+    directory = data_dir / "binance_usdm" / "fundingHistory" / "accepted-capture"
+    response_path = directory / "funding-history.json"
+    receipt_path = directory / "acquisition-receipt.json"
+    atomic_write(response_path, response_bytes)
+    atomic_write(receipt_path, receipt_bytes)
+
+    obsolete = (
+        data_dir
+        / "binance_usdm/fundingHistory/derived-bounded/"
+        f"{SYMBOL}-fundingRate-20260715T100000Z-20260824T105959Z.json"
+    )
+    if obsolete.exists():
+        obsolete.unlink()
+        obsolete.parent.rmdir()
+
+    source_prefix = f"repo:{ACCEPTED_FUNDING_REPO_DIR.as_posix()}"
+    return rows, [
+        {
+            "path": response_path,
+            "source_url": f"{source_prefix}/funding-history.json",
+            "row_count": len(rows),
+            "status": ACCEPTED_FUNDING_STATUS,
+            "accepted_source_binding": binding,
+        },
+        {
+            "path": receipt_path,
+            "source_url": f"{source_prefix}/acquisition-receipt.json",
+            "row_count": None,
+            "status": ACCEPTED_FUNDING_STATUS,
+            "accepted_source_binding": binding,
+        },
+    ], binding
+
+
 def capture_mark_rest(data_dir: Path) -> tuple[list[list[Any]], list[dict[str, Any]]]:
     directory = data_dir / "binance_usdm" / "markPriceKlines" / "rest-bounded" / REST_DATE.isoformat()
-    _clean_rest_directory(directory)
     payload, raw, url = fetch_rest_page(
         "markPriceKlines",
         {
@@ -288,6 +663,7 @@ def capture_mark_rest(data_dir: Path) -> tuple[list[list[Any]], list[dict[str, A
         },
     )
     path = directory / f"{SYMBOL}-1m-{REST_DATE.isoformat()}.discovery-bounded.page-0001.json"
+    _clean_rest_directory(directory)
     atomic_write(path, raw)
     return payload, [{"path": path, "source_url": url, "row_count": len(payload)}]
 
@@ -473,6 +849,47 @@ def write_rest_derivatives(
     return outputs
 
 
+def write_price_bar_derivatives(
+    data_dir: Path,
+    captures: dict[str, list[list[str]]],
+    bindings: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    outputs: list[dict[str, Any]] = []
+    for source, rows in captures.items():
+        directory = (
+            data_dir
+            / "binance_usdm"
+            / "priceBars"
+            / source
+            / "1h"
+            / "derived-bounded"
+            / REST_DATE.isoformat()
+        )
+        csv_name = f"{SYMBOL}-1h-{REST_DATE.isoformat()}.discovery-bounded.csv"
+        csv_value = _csv_bytes(FROZEN_PRICE_HEADER, rows)
+        csv_path = directory / csv_name
+        zip_path = directory / (csv_name.removesuffix(".csv") + ".zip")
+        checksum_path = zip_path.with_name(zip_path.name + ".CHECKSUM")
+        zip_value = deterministic_zip(csv_name, csv_value)
+        checksum_value = (
+            f"{hashlib.sha256(zip_value).hexdigest()}  {zip_path.name}\n".encode()
+        )
+        atomic_write(csv_path, csv_value)
+        atomic_write(zip_path, zip_value)
+        atomic_write(checksum_path, checksum_value)
+        for path in (csv_path, zip_path, checksum_path):
+            outputs.append(
+                {
+                    "path": path,
+                    "source_url": bindings[source]["frozen_source_metadata"]["endpoint"],
+                    "row_count": len(rows),
+                    "status": DERIVED_STATUS,
+                    "derivation_binding": bindings[source],
+                }
+            )
+    return outputs
+
+
 def _zip_csv_rows(path: Path) -> Iterator[list[str]]:
     with zipfile.ZipFile(path) as archive:
         members = [name for name in archive.namelist() if not name.endswith("/")]
@@ -616,6 +1033,79 @@ def validate_mark_archive(path: Path, utc_date: dt.date) -> dict[str, Any]:
     return {"row_count": count, "min_time_ms": first_time, "max_time_ms": last_time}
 
 
+def validate_price_bar_archive(
+    path: Path, utc_date: dt.date, source: str
+) -> dict[str, Any]:
+    day_start = int(dt.datetime.combine(utc_date, dt.time(), UTC).timestamp() * 1000)
+    expected = day_start
+    count = 0
+    first_time: int | None = None
+    last_time: int | None = None
+    for row_number, row in enumerate(_zip_csv_rows(path), 1):
+        if row_number == 1:
+            if tuple(row) != MARK_HEADER:
+                raise CaptureError(f"{path} {source} 1h header mismatch")
+            continue
+        if len(row) != 12:
+            raise CaptureError(f"{path} {source} 1h row does not have 12 columns")
+        try:
+            open_time = int(row[0])
+            close_time = int(row[6])
+            int(row[8])
+            for index in (1, 2, 3, 4, 5, 7, 9, 10, 11):
+                float(row[index])
+        except ValueError as error:
+            raise CaptureError(f"{path} {source} 1h numeric schema mismatch") from error
+        if open_time != expected or close_time != open_time + HOUR_MS - 1:
+            raise CaptureError(f"{path} does not have a complete 1h grid")
+        if open_time >= HOLDOUT_START_MS:
+            raise CaptureError(f"{path} contains a holdout {source} bar")
+        first_time = open_time if first_time is None else first_time
+        last_time = open_time
+        expected += HOUR_MS
+        count += 1
+    if count != 24 or expected != day_start + DAY_MS:
+        raise CaptureError(f"{path} does not contain exactly 24 one-hour bars")
+    return {"row_count": count, "min_time_ms": first_time, "max_time_ms": last_time}
+
+
+def validate_derived_price_rows(
+    rows: list[list[str]], source: str
+) -> dict[str, Any]:
+    expected = REST_START_MS
+    timestamps: list[int] = []
+    for row in rows:
+        if not isinstance(row, list) or len(row) != len(FROZEN_PRICE_HEADER):
+            raise CaptureError(f"derived {source} 1h schema mismatch")
+        try:
+            open_time = int(
+                dt.datetime.fromisoformat(row[0].replace("Z", "+00:00")).timestamp()
+                * 1000
+            )
+            close_time = int(
+                dt.datetime.fromisoformat(row[5].replace("Z", "+00:00")).timestamp()
+                * 1000
+            )
+            for value in row[1:5] + row[6:]:
+                float(value)
+        except ValueError as error:
+            raise CaptureError(f"derived {source} 1h schema mismatch") from error
+        if open_time != expected or close_time != open_time + HOUR_MS - 1:
+            raise CaptureError(f"derived {source} does not have the exact bounded 1h grid")
+        if open_time >= HOLDOUT_START_MS:
+            raise CaptureError(f"derived {source} contains a holdout bar")
+        timestamps.append(open_time)
+        expected += HOUR_MS
+    if expected != HOLDOUT_START_MS or len(rows) != 11:
+        raise CaptureError(f"derived {source} does not cover exact 00:00-11:00")
+    return {
+        "row_count": len(rows),
+        "min_time_ms": timestamps[0],
+        "max_time_ms": timestamps[-1],
+        "timestamps_ms": timestamps,
+    }
+
+
 def validate_rest_mark(rows: list[list[Any]]) -> dict[str, Any]:
     expected = REST_START_MS
     for row in rows:
@@ -681,8 +1171,10 @@ def _file_entry(
     provider_checksum: str | None,
     status: str,
     row_count: int | None,
+    derivation_binding: dict[str, Any] | None = None,
+    accepted_source_binding: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    result = {
         "path": path.relative_to(data_dir).as_posix(),
         "size_bytes": path.stat().st_size,
         "sha256": sha256_path(path),
@@ -691,6 +1183,11 @@ def _file_entry(
         "status": status,
         "row_count": row_count,
     }
+    if derivation_binding is not None:
+        result["derivation_binding"] = derivation_binding
+    if accepted_source_binding is not None:
+        result["accepted_source_binding"] = accepted_source_binding
+    return result
 
 
 def build_manifest(
@@ -701,68 +1198,152 @@ def build_manifest(
     agg_rows: list[dict[str, Any]],
     agg_page_files: list[dict[str, Any]],
     coverage_start_ms: int,
+    price_rows: dict[str, list[list[str]]],
+    price_page_files: dict[str, list[dict[str, Any]]],
+    funding_rows: list[dict[str, Any]],
+    funding_page_files: list[dict[str, Any]],
     derivative_files: list[dict[str, Any]],
 ) -> dict[str, Any]:
     files: list[dict[str, Any]] = []
     daily_agg: list[dict[str, Any]] = []
     daily_mark: list[dict[str, Any]] = []
+    daily_prices: dict[str, list[dict[str, Any]]] = {
+        source: [] for source in PRICE_BAR_SOURCES
+    }
     previous_ids: tuple[int, int, int, int] | None = None
     raw_id_gaps: list[dict[str, Any]] = []
     first_agg: dict[str, Any] | None = None
     last_agg: dict[str, Any] | None = None
+
+    def add_official_archive(
+        path: Path, url: str, row_count: int
+    ) -> None:
+        checksum_path = path.with_name(path.name + ".CHECKSUM")
+        provider_checksum = parse_provider_checksum(
+            checksum_path.read_bytes(), path.name
+        )
+        if sha256_path(path) != provider_checksum:
+            raise CaptureError(f"provider checksum mismatch after capture: {path}")
+        relative = path.relative_to(data_dir).as_posix()
+        files.append(
+            _file_entry(
+                data_dir,
+                path,
+                source_url=url,
+                provider_checksum=provider_checksum,
+                status=archive_statuses.get(relative, "verified"),
+                row_count=row_count,
+            )
+        )
+        files.append(
+            _file_entry(
+                data_dir,
+                checksum_path,
+                source_url=url + ".CHECKSUM",
+                provider_checksum=None,
+                status="official_provider_checksum",
+                row_count=None,
+            )
+        )
+
     for utc_date in daily_dates():
         agg_path = archive_path(data_dir, "aggTrades", utc_date)
         agg_summary, previous_ids = validate_agg_archive(
             agg_path, utc_date, previous_ids, raw_id_gaps
         )
-        agg_summary["utc_date"] = utc_date.isoformat()
-        agg_summary["min_time_utc"] = iso_ms(agg_summary["min_time_ms"])
-        agg_summary["max_time_utc"] = iso_ms(agg_summary["max_time_ms"])
+        agg_summary |= {
+            "utc_date": utc_date.isoformat(),
+            "min_time_utc": iso_ms(agg_summary["min_time_ms"]),
+            "max_time_utc": iso_ms(agg_summary["max_time_ms"]),
+        }
         daily_agg.append(agg_summary)
         first_agg = first_agg or agg_summary
         last_agg = agg_summary
+        add_official_archive(
+            agg_path, archive_url("aggTrades", utc_date), agg_summary["row_count"]
+        )
+
         mark_path = archive_path(data_dir, "markPriceKlines", utc_date)
         mark_summary = validate_mark_archive(mark_path, utc_date)
-        mark_summary["utc_date"] = utc_date.isoformat()
-        mark_summary["min_time_utc"] = iso_ms(mark_summary["min_time_ms"])
-        mark_summary["max_time_utc"] = iso_ms(mark_summary["max_time_ms"])
+        mark_summary |= {
+            "utc_date": utc_date.isoformat(),
+            "min_time_utc": iso_ms(mark_summary["min_time_ms"]),
+            "max_time_utc": iso_ms(mark_summary["max_time_ms"]),
+        }
         daily_mark.append(mark_summary)
-        for kind, path, summary in (
-            ("aggTrades", agg_path, agg_summary),
-            ("markPriceKlines", mark_path, mark_summary),
-        ):
-            url = archive_url(kind, utc_date)
-            checksum_path = path.with_name(path.name + ".CHECKSUM")
-            provider_checksum = parse_provider_checksum(checksum_path.read_bytes(), path.name)
-            if sha256_path(path) != provider_checksum:
-                raise CaptureError(f"provider checksum mismatch after capture: {path}")
-            files.append(
-                _file_entry(
-                    data_dir,
-                    path,
-                    source_url=url,
-                    provider_checksum=provider_checksum,
-                    status=archive_statuses.get(path.relative_to(data_dir).as_posix(), "verified"),
-                    row_count=summary["row_count"],
-                )
+        add_official_archive(
+            mark_path,
+            archive_url("markPriceKlines", utc_date),
+            mark_summary["row_count"],
+        )
+
+        for source in PRICE_BAR_SOURCES:
+            path = price_archive_path(data_dir, source, utc_date)
+            summary = validate_price_bar_archive(path, utc_date, source)
+            summary |= {
+                "utc_date": utc_date.isoformat(),
+                "min_time_utc": iso_ms(summary["min_time_ms"]),
+                "max_time_utc": iso_ms(summary["max_time_ms"]),
+            }
+            daily_prices[source].append(summary)
+            add_official_archive(
+                path, price_archive_url(source, utc_date), summary["row_count"]
             )
-            files.append(
-                _file_entry(
-                    data_dir,
-                    checksum_path,
-                    source_url=url + ".CHECKSUM",
-                    provider_checksum=None,
-                    status="official_provider_checksum",
-                    row_count=None,
-                )
-            )
+
     rest_mark_summary = validate_rest_mark(mark_rows)
-    rest_mark_summary["min_time_utc"] = iso_ms(rest_mark_summary["min_time_ms"])
-    rest_mark_summary["max_time_utc"] = iso_ms(rest_mark_summary["max_time_ms"])
+    rest_mark_summary |= {
+        "min_time_utc": iso_ms(rest_mark_summary["min_time_ms"]),
+        "max_time_utc": iso_ms(rest_mark_summary["max_time_ms"]),
+    }
     rest_agg_summary = validate_rest_agg(agg_rows, coverage_start_ms, raw_id_gaps)
     if rest_agg_summary["row_count"]:
-        rest_agg_summary["min_time_utc"] = iso_ms(rest_agg_summary["min_time_ms"])
-        rest_agg_summary["max_time_utc"] = iso_ms(rest_agg_summary["max_time_ms"])
+        rest_agg_summary |= {
+            "min_time_utc": iso_ms(rest_agg_summary["min_time_ms"]),
+            "max_time_utc": iso_ms(rest_agg_summary["max_time_ms"]),
+        }
+
+    derived_price_summaries = {
+        source: validate_derived_price_rows(rows, source)
+        for source, rows in price_rows.items()
+    }
+    if (
+        derived_price_summaries["mark"]["timestamps_ms"]
+        != derived_price_summaries["index"]["timestamps_ms"]
+    ):
+        raise CaptureError("derived mark/index 1h timestamps differ")
+    for summary in derived_price_summaries.values():
+        summary |= {
+            "min_time_utc": iso_ms(summary["min_time_ms"]),
+            "max_time_utc": iso_ms(summary["max_time_ms"]),
+        }
+        del summary["timestamps_ms"]
+
+    funding_summary = validate_funding_rows(funding_rows, exact_cover=True)
+    funding_binding = funding_page_files[0]["accepted_source_binding"]
+    funding_summary |= {
+        "min_time_utc": iso_ms(funding_summary["min_time_ms"]),
+        "max_time_utc": iso_ms(funding_summary["max_time_ms"]),
+        "selection_start_utc_inclusive": iso_ms(AUTHORITY_START_MS),
+        "selection_end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+        "selection_semantics": "accepted Binance response to an exact half-open authority-window request; funding observations are event rows",
+        "status": ACCEPTED_FUNDING_STATUS,
+        "provenance": "byte-exact mirror of the accepted Backtest funding response and acquisition receipt",
+        "no_network_request_performed": True,
+        "rateType_preserved_without_inference": True,
+        "original_repo_path": funding_binding["original_repo_path"],
+        "response_sha256": funding_binding["response_sha256"],
+        "receipt_sha256": funding_binding["receipt_sha256"],
+        "bounded_artifacts": [
+            {
+                "path": item["path"].relative_to(data_dir).as_posix(),
+                "row_count": item["row_count"],
+                "status": item["status"],
+            }
+            for item in funding_page_files
+        ],
+        "accepted_source_binding": funding_binding,
+    }
+
     for item in mark_page_files + agg_page_files:
         files.append(
             _file_entry(
@@ -770,8 +1351,33 @@ def build_manifest(
                 item["path"],
                 source_url=item["source_url"],
                 provider_checksum=None,
-                status="canonical_rest_response",
+                status=item["status"],
                 row_count=item["row_count"],
+            )
+        )
+    for source in PRICE_BAR_SOURCES:
+        for item in price_page_files[source]:
+            files.append(
+                _file_entry(
+                    data_dir,
+                    item["path"],
+                    source_url=item["source_url"],
+                    provider_checksum=None,
+                    status=item["status"],
+                    row_count=item["row_count"],
+                    derivation_binding=item["derivation_binding"],
+                )
+            )
+    for item in funding_page_files:
+        files.append(
+            _file_entry(
+                data_dir,
+                item["path"],
+                source_url=item["source_url"],
+                provider_checksum=None,
+                status=item["status"],
+                row_count=item["row_count"],
+                accepted_source_binding=item["accepted_source_binding"],
             )
         )
     for item in derivative_files:
@@ -785,10 +1391,18 @@ def build_manifest(
                 row_count=item["row_count"],
             )
         )
+
     assert first_agg is not None and last_agg is not None
     agg_total = sum(item["row_count"] for item in daily_agg) + rest_agg_summary["row_count"]
     mark_total = sum(item["row_count"] for item in daily_mark) + rest_mark_summary["row_count"]
-    missing_intervals = []
+    price_totals = {
+        source: sum(item["row_count"] for item in daily_prices[source])
+        + derived_price_summaries[source]["row_count"]
+        for source in PRICE_BAR_SOURCES
+    }
+    required_price_rows = (HOLDOUT_START_MS - AUTHORITY_START_MS) // HOUR_MS
+
+    missing_intervals: list[dict[str, Any]] = []
     gaps = raw_id_gaps
     if coverage_start_ms > REST_START_MS:
         missing_intervals.append(
@@ -828,11 +1442,87 @@ def build_manifest(
                     "associated_missing_interval": missing_intervals[0] if missing_intervals else None,
                 }
             )
+
+    datasets: dict[str, Any] = {
+        "aggTrades": {
+            "source": "official Binance USD-M daily archives through 2026-08-23 plus bounded Binance REST-derived rows for 2026-08-24",
+            "row_count": agg_total,
+            "observed": {
+                "min_time_ms": first_agg["min_time_ms"],
+                "min_time_utc": iso_ms(first_agg["min_time_ms"]),
+                "max_time_ms": rest_agg_summary.get("max_time_ms", last_agg["max_time_ms"]),
+                "max_time_utc": iso_ms(rest_agg_summary.get("max_time_ms", last_agg["max_time_ms"])),
+                "min_aggregate_trade_id": first_agg["min_aggregate_trade_id"],
+                "max_aggregate_trade_id": rest_agg_summary.get("max_aggregate_trade_id", last_agg["max_aggregate_trade_id"]),
+                "min_raw_trade_id": first_agg["min_raw_trade_id"],
+                "max_raw_trade_id": rest_agg_summary.get("max_raw_trade_id", last_agg["max_raw_trade_id"]),
+            },
+            "rest_2026_08_24": rest_agg_summary
+            | {
+                "covered_start_utc_inclusive": iso_ms(coverage_start_ms),
+                "covered_end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+                "provenance": "REST-derived; not an official archive",
+            },
+            "daily": daily_agg,
+        },
+        "markPriceKlines_1m": {
+            "source": "official Binance USD-M daily archives through 2026-08-23 plus exact bounded Binance REST-derived rows for 2026-08-24",
+            "row_count": mark_total,
+            "observed": {
+                "min_time_ms": daily_mark[0]["min_time_ms"],
+                "min_time_utc": iso_ms(daily_mark[0]["min_time_ms"]),
+                "max_time_ms": rest_mark_summary["max_time_ms"],
+                "max_time_utc": iso_ms(rest_mark_summary["max_time_ms"]),
+            },
+            "complete_grid": True,
+            "rest_2026_08_24": rest_mark_summary
+            | {
+                "provenance": "retained canonical bounded REST response and derivatives from commit a61ef74; not refetched",
+                "retained_from_commit": "a61ef74",
+            },
+            "daily": daily_mark,
+        },
+        "fundingRate": funding_summary,
+    }
+    for source, endpoint in PRICE_BAR_SOURCES.items():
+        summaries = daily_prices[source]
+        rest_summary = derived_price_summaries[source]
+        datasets[f"{endpoint}_1h"] = {
+            "source": f"official Binance USD-M {endpoint} 1h daily archives through 2026-08-23 plus exact bounded rows derived from the base-manifest-pinned binance_{source}_raw.csv for 2026-08-24",
+            "row_count": price_totals[source],
+            "retained_archive_interval": {
+                "start_utc_inclusive": iso_ms(DISCOVERY_START_MS),
+                "end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+                "row_count": price_totals[source],
+            },
+            "required_authority_interval": {
+                "semantics": "half-open completed 1h grid",
+                "start_utc_inclusive": iso_ms(AUTHORITY_START_MS),
+                "end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+                "row_count": required_price_rows,
+                "complete_grid": True,
+            },
+            "observed": {
+                "min_time_ms": summaries[0]["min_time_ms"],
+                "min_time_utc": iso_ms(summaries[0]["min_time_ms"]),
+                "max_time_ms": rest_summary["max_time_ms"],
+                "max_time_utc": iso_ms(rest_summary["max_time_ms"]),
+            },
+            "derived_2026_08_24": rest_summary
+            | {
+                "status": DERIVED_STATUS,
+                "provenance": "exact frozen base CSV observations; not an official archive or REST response",
+                "derivation_binding": price_page_files[source][0]["derivation_binding"],
+            },
+            "daily": summaries,
+        }
+
     manifest: dict[str, Any] = {
         "type": "koruusdt_execution_data_manifest",
-        "schema_version": 1,
+        "schema_version": 2,
         "instrument": SYMBOL,
-        "generated_at_utc": iso_ms(int(time.time() * 1000)),
+        "generated_at_utc": json.loads((data_dir / BASE_MANIFEST_NAME).read_bytes())["generated_at_utc"],
+        "generated_at_basis": "frozen base manifest generated_at_utc used as a deterministic offline regeneration marker",
         "base_manifest": {
             "path": BASE_MANIFEST_NAME,
             "sha256": sha256_path(data_dir / BASE_MANIFEST_NAME),
@@ -842,6 +1532,13 @@ def build_manifest(
             "start_utc_inclusive": iso_ms(DISCOVERY_START_MS),
             "end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
             "start_ms": DISCOVERY_START_MS,
+            "end_ms_exclusive": HOLDOUT_START_MS,
+        },
+        "backtest_authority_interval": {
+            "semantics": "half-open",
+            "start_utc_inclusive": iso_ms(AUTHORITY_START_MS),
+            "end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+            "start_ms": AUTHORITY_START_MS,
             "end_ms_exclusive": HOLDOUT_START_MS,
         },
         "holdout_protection": {
@@ -862,52 +1559,25 @@ def build_manifest(
                 if item["path"].endswith(".zip.CHECKSUM") and "/daily/" in item["path"]
             ),
             "canonical_rest_responses": sum(
-                item["size_bytes"] for item in files if item["status"] == "canonical_rest_response"
+                item["size_bytes"]
+                for item in files
+                if item["status"].endswith("canonical_rest_response")
             ),
             "rest_derived_artifacts": sum(
                 item["size_bytes"]
                 for item in files
-                if item["status"] in ("rest_derived_standard_schema", "locally_generated_checksum")
+                if item["status"].endswith("rest_derived_standard_schema")
+                or item["status"].endswith("locally_generated_checksum")
+                or item["status"] == DERIVED_STATUS
+            ),
+            "accepted_source_capture_mirrors": sum(
+                item["size_bytes"]
+                for item in files
+                if item["status"] == ACCEPTED_FUNDING_STATUS
             ),
             "all_manifest_bound_files": sum(item["size_bytes"] for item in files),
         },
-        "datasets": {
-            "aggTrades": {
-                "source": "official Binance USD-M daily archives through 2026-08-23 plus bounded Binance REST-derived rows for 2026-08-24",
-                "row_count": agg_total,
-                "observed": {
-                    "min_time_ms": first_agg["min_time_ms"],
-                    "min_time_utc": iso_ms(first_agg["min_time_ms"]),
-                    "max_time_ms": rest_agg_summary.get("max_time_ms", last_agg["max_time_ms"]),
-                    "max_time_utc": iso_ms(rest_agg_summary.get("max_time_ms", last_agg["max_time_ms"])),
-                    "min_aggregate_trade_id": first_agg["min_aggregate_trade_id"],
-                    "max_aggregate_trade_id": rest_agg_summary.get("max_aggregate_trade_id", last_agg["max_aggregate_trade_id"]),
-                    "min_raw_trade_id": first_agg["min_raw_trade_id"],
-                    "max_raw_trade_id": rest_agg_summary.get("max_raw_trade_id", last_agg["max_raw_trade_id"]),
-                },
-                "rest_2026_08_24": rest_agg_summary
-                | {
-                    "covered_start_utc_inclusive": iso_ms(coverage_start_ms),
-                    "covered_end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
-                    "provenance": "REST-derived; not an official archive",
-                },
-                "daily": daily_agg,
-            },
-            "markPriceKlines_1m": {
-                "source": "official Binance USD-M daily archives through 2026-08-23 plus exact bounded Binance REST-derived rows for 2026-08-24",
-                "row_count": mark_total,
-                "observed": {
-                    "min_time_ms": daily_mark[0]["min_time_ms"],
-                    "min_time_utc": iso_ms(daily_mark[0]["min_time_ms"]),
-                    "max_time_ms": rest_mark_summary["max_time_ms"],
-                    "max_time_utc": iso_ms(rest_mark_summary["max_time_ms"]),
-                },
-                "complete_grid": True,
-                "rest_2026_08_24": rest_mark_summary
-                | {"provenance": "REST-derived; not an official archive"},
-                "daily": daily_mark,
-            },
-        },
+        "datasets": datasets,
         "missing_intervals": missing_intervals,
         "gap_summary": {
             "gap_count": len(gaps),
@@ -928,12 +1598,22 @@ def build_manifest(
         "files": sorted(files, key=lambda item: item["path"]),
         "validation": {
             "archives_streamed": True,
+            "official_checksums_verified": True,
             "standard_binance_schemas": True,
             "no_row_at_or_after_holdout": True,
             "aggregate_trade_ids_contiguous_within_and_across_available_coverage": True,
             "raw_trade_id_intervals_strictly_increasing_non_overlapping": True,
             "raw_trade_id_gaps_recorded_as_source_evidence": True,
             "mark_price_complete_1m_grid": True,
+            "mark_and_index_price_complete_1h_authority_grid": True,
+            "mark_and_index_price_timestamps_exact": True,
+            "derived_rows_equal_base_manifest_artifacts": True,
+            "derived_artifacts_deterministic": True,
+            "funding_accepted_source_hashes_verified": True,
+            "funding_byte_exact_mirror_verified": True,
+            "funding_120_regular_no_special_or_missing": True,
+            "funding_ordered_unique_exact_interval_semantics": True,
+            "manifest_file_exact_cover": True,
         },
         "manifest_sha256": "",
     }
@@ -941,33 +1621,131 @@ def build_manifest(
     return manifest
 
 
-def load_rest_capture(data_dir: Path) -> tuple[list[list[Any]], list[dict[str, Any]], int]:
-    mark_directory = data_dir / "binance_usdm" / "markPriceKlines" / "rest-bounded" / REST_DATE.isoformat()
-    mark_pages = sorted(mark_directory.glob("*.page-*.json"))
-    if not mark_pages:
-        raise CaptureError("no bounded markPriceKlines REST page found")
-    mark_rows: list[list[Any]] = []
-    for path in mark_pages:
+def _load_json_pages(paths: Iterable[Path]) -> list[Any]:
+    rows: list[Any] = []
+    found = False
+    for path in paths:
+        found = True
         payload = json.loads(path.read_bytes())
         if not isinstance(payload, list):
             raise CaptureError(f"{path} is not a JSON array")
-        mark_rows.extend(payload)
-    agg_directory = data_dir / "binance_usdm" / "aggTrades" / "rest-bounded" / REST_DATE.isoformat()
-    agg_pages = sorted(agg_directory.glob("*.json"))
-    agg_pages = [path for path in agg_pages if "page-" in path.name]
+        rows.extend(payload)
+    if not found:
+        raise CaptureError("no bounded REST page found")
+    return rows
+
+
+def _load_bound_csv(path: Path, header: tuple[str, ...]) -> list[list[str]]:
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.reader(handle)
+        if tuple(next(reader, ())) != header:
+            raise CaptureError(f"bounded CSV header mismatch: {path}")
+        return list(reader)
+
+
+def _load_retained_manifest(data_dir: Path) -> dict[str, Any]:
+    path = data_dir / EXECUTION_MANIFEST_NAME
+    manifest = json.loads(path.read_bytes())
+    if manifest.get("manifest_sha256") != manifest_sha256(manifest):
+        raise CaptureError("retained execution manifest canonical hash mismatch")
+    if manifest.get("base_manifest", {}).get("sha256") != sha256_path(
+        data_dir / BASE_MANIFEST_NAME
+    ):
+        raise CaptureError("retained execution manifest base binding mismatch")
+    for item in manifest.get("files", []):
+        file_path = data_dir / item["path"]
+        if not file_path.is_file() or sha256_path(file_path) != item["sha256"]:
+            raise CaptureError(f"retained execution file binding mismatch: {file_path}")
+    return manifest
+
+
+def load_retained_rest_capture(
+    data_dir: Path, retained_manifest: dict[str, Any]
+) -> tuple[
+    list[list[Any]],
+    list[dict[str, Any]],
+    int,
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+]:
+    entries = {item["path"]: item for item in retained_manifest["files"]}
+    mark_directory = (
+        data_dir
+        / "binance_usdm"
+        / "markPriceKlines"
+        / "rest-bounded"
+        / REST_DATE.isoformat()
+    )
+    for name, expected in A61_MARK_RETAINED_SHA256.items():
+        path = mark_directory / name
+        if not path.is_file() or sha256_path(path) != expected:
+            raise CaptureError(f"retained a61ef74 mark artifact mismatch: {path}")
+    mark_pages = sorted(mark_directory.glob("*.page-*.json"))
+    mark_rows = _load_json_pages(mark_pages)
+
+    agg_directory = (
+        data_dir
+        / "binance_usdm"
+        / "aggTrades"
+        / "rest-bounded"
+        / REST_DATE.isoformat()
+    )
+    agg_pages = sorted(path for path in agg_directory.glob("*.json") if "page-" in path.name)
     agg_rows: list[dict[str, Any]] = []
-    coverage_start = HOLDOUT_START_MS
+    coverage_start = RETAINED_AGG_COVERAGE_START_MS
     for path in agg_pages:
-        match = re.search(r"-(\d{8}T\d{6})Z-", path.name)
-        if match:
-            start = int(dt.datetime.strptime(match.group(1), "%Y%m%dT%H%M%S").replace(tzinfo=UTC).timestamp() * 1000)
-            coverage_start = min(coverage_start, start)
         payload = json.loads(path.read_bytes())
         if not isinstance(payload, list):
             raise CaptureError(f"{path} is not a JSON array")
         agg_rows.extend(payload)
     agg_rows.sort(key=lambda row: (row["a"], row["T"]))
-    return mark_rows, agg_rows, coverage_start
+
+    def metadata(paths: Iterable[Path], *, retained_mark: bool = False) -> list[dict[str, Any]]:
+        result = []
+        for path in paths:
+            relative = path.relative_to(data_dir).as_posix()
+            old = entries.get(relative)
+            if old is None:
+                raise CaptureError(f"retained REST artifact is not manifest-bound: {path}")
+            status = old["status"]
+            if retained_mark and not status.startswith("retained_from_a61ef74_"):
+                status = "retained_from_a61ef74_" + status
+            result.append(
+                {
+                    "path": path,
+                    "source_url": old["source_url"],
+                    "row_count": old["row_count"],
+                    "status": status,
+                }
+            )
+        return result
+
+    mark_page_files = metadata(mark_pages, retained_mark=True)
+    agg_page_files = metadata(agg_pages)
+    derivative_files = metadata(
+        sorted(
+            path
+            for directory in (mark_directory, agg_directory)
+            for path in directory.iterdir()
+            if path.is_file() and path.suffix != ".json"
+        ),
+        retained_mark=False,
+    )
+    for item in derivative_files:
+        if (
+            "markPriceKlines" in item["path"].as_posix()
+            and not item["status"].startswith("retained_from_a61ef74_")
+        ):
+            item["status"] = "retained_from_a61ef74_" + item["status"]
+    return (
+        mark_rows,
+        agg_rows,
+        coverage_start,
+        mark_page_files,
+        agg_page_files,
+        derivative_files,
+    )
 
 
 def validate_manifest_file_cover(
@@ -994,19 +1772,47 @@ def validate_manifest_file_cover(
         )
 
 
+def _validate_checksum_file(path: Path, checksum_path: Path) -> str:
+    expected = parse_provider_checksum(checksum_path.read_bytes(), path.name)
+    if sha256_path(path) != expected:
+        raise CaptureError(f"checksum mismatch: {path}")
+    return expected
+
+
 def validate_existing(data_dir: Path) -> dict[str, Any]:
     manifest_path = data_dir / EXECUTION_MANIFEST_NAME
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("manifest_sha256") != manifest_sha256(manifest):
         raise CaptureError("execution manifest canonical hash mismatch")
-    if manifest["base_manifest"]["sha256"] != sha256_path(data_dir / BASE_MANIFEST_NAME):
+    if manifest["base_manifest"]["sha256"] != sha256_path(
+        data_dir / BASE_MANIFEST_NAME
+    ):
         raise CaptureError("base manifest hash binding mismatch")
     validate_manifest_file_cover(data_dir, manifest)
     for item in manifest["files"]:
         path = data_dir / item["path"]
-        if path.stat().st_size != item["size_bytes"] or sha256_path(path) != item["sha256"]:
+        if (
+            path.stat().st_size != item["size_bytes"]
+            or sha256_path(path) != item["sha256"]
+        ):
             raise CaptureError(f"manifest file binding mismatch: {path}")
-    mark_rows, agg_rows, _ = load_rest_capture(data_dir)
+        parsed = urllib.parse.urlparse(item["source_url"])
+        parameters = urllib.parse.parse_qs(parsed.query)
+        if parameters:
+            end_times = parameters.get("endTime")
+            if not end_times or int(end_times[0]) > REST_END_MS:
+                raise CaptureError(f"manifest REST URL escapes holdout: {item['source_url']}")
+        elif "/daily/" in item["path"] and "2026-08-24" in item["source_url"]:
+            raise CaptureError("manifest references a holdout-day daily archive")
+
+    (
+        mark_rows,
+        agg_rows,
+        _,
+        _,
+        _,
+        _,
+    ) = load_retained_rest_capture(data_dir, manifest)
     coverage_start = int(
         dt.datetime.fromisoformat(
             manifest["datasets"]["aggTrades"]["rest_2026_08_24"][
@@ -1015,24 +1821,195 @@ def validate_existing(data_dir: Path) -> dict[str, Any]:
         ).timestamp()
         * 1000
     )
-    validate_rest_mark(mark_rows)
-    validate_rest_agg(agg_rows, coverage_start)
+    rest_mark = validate_rest_mark(mark_rows)
+    rest_agg = validate_rest_agg(agg_rows, coverage_start)
+
+    base_manifest, artifacts = _load_base_manifest(data_dir)
+    price_rows: dict[str, list[list[str]]] = {}
+    expected_price_rows: dict[str, list[list[str]]] = {}
+    for source in PRICE_BAR_SOURCES:
+        expected_price_rows[source], expected_binding = load_frozen_price_rows(
+            data_dir, base_manifest, artifacts, source
+        )
+        directory = (
+            data_dir
+            / "binance_usdm"
+            / "priceBars"
+            / source
+            / "1h"
+            / "derived-bounded"
+            / REST_DATE.isoformat()
+        )
+        csv_name = f"{SYMBOL}-1h-{REST_DATE.isoformat()}.discovery-bounded.csv"
+        csv_path = directory / csv_name
+        price_rows[source] = _load_bound_csv(csv_path, FROZEN_PRICE_HEADER)
+        if price_rows[source] != expected_price_rows[source]:
+            raise CaptureError(f"derived {source} rows differ from frozen base artifact")
+        csv_value = _csv_bytes(FROZEN_PRICE_HEADER, expected_price_rows[source])
+        zip_path = csv_path.with_suffix(".zip")
+        expected_zip = deterministic_zip(csv_name, csv_value)
+        checksum_path = zip_path.with_name(zip_path.name + ".CHECKSUM")
+        expected_checksum = (
+            f"{hashlib.sha256(expected_zip).hexdigest()}  {zip_path.name}\n".encode()
+        )
+        if (
+            csv_path.read_bytes() != csv_value
+            or zip_path.read_bytes() != expected_zip
+            or checksum_path.read_bytes() != expected_checksum
+        ):
+            raise CaptureError(f"derived {source} artifacts are not deterministic")
+        for item in manifest["files"]:
+            if item["path"] in {
+                csv_path.relative_to(data_dir).as_posix(),
+                zip_path.relative_to(data_dir).as_posix(),
+                checksum_path.relative_to(data_dir).as_posix(),
+            } and (
+                item["status"] != DERIVED_STATUS
+                or item.get("derivation_binding") != expected_binding
+            ):
+                raise CaptureError(f"derived {source} provenance binding mismatch")
+
+    price_summaries = {
+        source: validate_derived_price_rows(rows, source)
+        for source, rows in price_rows.items()
+    }
+    if price_summaries["mark"]["timestamps_ms"] != price_summaries["index"]["timestamps_ms"]:
+        raise CaptureError("derived mark/index 1h timestamps differ")
+
+    (
+        funding_rows,
+        accepted_response_bytes,
+        accepted_receipt_bytes,
+        _,
+        accepted_funding_binding,
+    ) = _accepted_funding_source()
+    funding_entries = [
+        item
+        for item in manifest["files"]
+        if item["status"] == ACCEPTED_FUNDING_STATUS
+        and "fundingHistory/accepted-capture/" in item["path"]
+    ]
+    if len(funding_entries) != 2:
+        raise CaptureError("accepted funding response and receipt are not exactly manifest-bound")
+    expected_mirrors = {
+        "funding-history.json": accepted_response_bytes,
+        "acquisition-receipt.json": accepted_receipt_bytes,
+    }
+    for entry in funding_entries:
+        path = data_dir / entry["path"]
+        if (
+            path.read_bytes() != expected_mirrors.get(path.name)
+            or entry.get("accepted_source_binding") != accepted_funding_binding
+        ):
+            raise CaptureError("accepted funding mirror or provenance binding mismatch")
+    funding_summary = validate_funding_rows(funding_rows, exact_cover=True)
+
     previous = None
+    daily_agg_rows = 0
+    daily_mark_rows = 0
+    daily_price_rows = {source: 0 for source in PRICE_BAR_SOURCES}
     for utc_date in daily_dates():
-        _, previous = validate_agg_archive(archive_path(data_dir, "aggTrades", utc_date), utc_date, previous)
-        validate_mark_archive(archive_path(data_dir, "markPriceKlines", utc_date), utc_date)
+        agg_path = archive_path(data_dir, "aggTrades", utc_date)
+        _validate_checksum_file(
+            agg_path, agg_path.with_name(agg_path.name + ".CHECKSUM")
+        )
+        agg_summary, previous = validate_agg_archive(
+            agg_path, utc_date, previous
+        )
+        daily_agg_rows += agg_summary["row_count"]
+
+        mark_path = archive_path(data_dir, "markPriceKlines", utc_date)
+        _validate_checksum_file(
+            mark_path, mark_path.with_name(mark_path.name + ".CHECKSUM")
+        )
+        daily_mark_rows += validate_mark_archive(mark_path, utc_date)["row_count"]
+
+        for source in PRICE_BAR_SOURCES:
+            path = price_archive_path(data_dir, source, utc_date)
+            _validate_checksum_file(path, path.with_name(path.name + ".CHECKSUM"))
+            daily_price_rows[source] += validate_price_bar_archive(
+                path, utc_date, source
+            )["row_count"]
+
+    expected_rows = {
+        "aggTrades": daily_agg_rows + rest_agg["row_count"],
+        "markPriceKlines_1m": daily_mark_rows + rest_mark["row_count"],
+        "markPriceKlines_1h": daily_price_rows["mark"]
+        + price_summaries["mark"]["row_count"],
+        "indexPriceKlines_1h": daily_price_rows["index"]
+        + price_summaries["index"]["row_count"],
+        "fundingRate": funding_summary["row_count"],
+    }
+    for name, row_count in expected_rows.items():
+        if manifest["datasets"][name]["row_count"] != row_count:
+            raise CaptureError(f"manifest dataset row count mismatch: {name}")
+    for name in ("markPriceKlines_1h", "indexPriceKlines_1h"):
+        authority = manifest["datasets"][name]["required_authority_interval"]
+        if authority != {
+            "semantics": "half-open completed 1h grid",
+            "start_utc_inclusive": iso_ms(AUTHORITY_START_MS),
+            "end_utc_exclusive": iso_ms(HOLDOUT_START_MS),
+            "row_count": (HOLDOUT_START_MS - AUTHORITY_START_MS) // HOUR_MS,
+            "complete_grid": True,
+        }:
+            raise CaptureError(f"manifest authority coverage mismatch: {name}")
+    funding_dataset = manifest["datasets"]["fundingRate"]
+    if (
+        funding_dataset["selection_start_utc_inclusive"]
+        != iso_ms(AUTHORITY_START_MS)
+        or funding_dataset["selection_end_utc_exclusive"]
+        != iso_ms(HOLDOUT_START_MS)
+        or funding_dataset["status"] != ACCEPTED_FUNDING_STATUS
+        or funding_dataset["accepted_source_binding"] != accepted_funding_binding
+        or funding_dataset["regular_rate_type_count"] != ACCEPTED_FUNDING_ROW_COUNT
+        or funding_dataset["special_rate_type_count"] != 0
+        or funding_dataset["missing_rate_type_count"] != 0
+    ):
+        raise CaptureError("manifest accepted funding coverage mismatch")
     return manifest
 
 
-def capture(data_dir: Path) -> dict[str, Any]:
+def capture(data_dir: Path, *, offline: bool) -> dict[str, Any]:
     if not (data_dir / BASE_MANIFEST_NAME).is_file():
-        raise CaptureError(f"base manifest is required at {data_dir / BASE_MANIFEST_NAME}")
-    archive_statuses = capture_archives(data_dir)
-    mark_rows, mark_page_files = capture_mark_rest(data_dir)
-    agg_rows, agg_page_files, coverage_start = capture_agg_rest(data_dir)
+        raise CaptureError(
+            f"base manifest is required at {data_dir / BASE_MANIFEST_NAME}"
+        )
+    base_manifest, artifacts = _load_base_manifest(data_dir)
+    retained_manifest = _load_retained_manifest(data_dir)
+    archive_statuses = capture_archives(data_dir, offline=offline)
+    (
+        mark_rows,
+        agg_rows,
+        coverage_start,
+        mark_page_files,
+        agg_page_files,
+        derivative_files,
+    ) = load_retained_rest_capture(data_dir, retained_manifest)
+
     validate_rest_mark(mark_rows)
     validate_rest_agg(agg_rows, coverage_start)
-    derivative_files = write_rest_derivatives(data_dir, mark_rows, agg_rows)
+    price_rows: dict[str, list[list[str]]] = {}
+    price_bindings: dict[str, dict[str, Any]] = {}
+    for source in PRICE_BAR_SOURCES:
+        price_rows[source], price_bindings[source] = load_frozen_price_rows(
+            data_dir, base_manifest, artifacts, source
+        )
+    price_summaries = {
+        source: validate_derived_price_rows(rows, source)
+        for source, rows in price_rows.items()
+    }
+    if price_summaries["mark"]["timestamps_ms"] != price_summaries["index"]["timestamps_ms"]:
+        raise CaptureError("derived mark/index 1h timestamps differ")
+
+    price_page_files = {
+        source: [] for source in PRICE_BAR_SOURCES
+    }
+    for item in write_price_bar_derivatives(data_dir, price_rows, price_bindings):
+        source = "mark" if "/priceBars/mark/" in item["path"].as_posix() else "index"
+        price_page_files[source].append(item)
+    funding_rows, funding_page_files, _ = mirror_accepted_funding_capture(data_dir)
+    validate_funding_rows(funding_rows, exact_cover=True)
+
     manifest = build_manifest(
         data_dir,
         archive_statuses,
@@ -1041,11 +2018,18 @@ def capture(data_dir: Path) -> dict[str, Any]:
         agg_rows,
         agg_page_files,
         coverage_start,
+        price_rows,
+        price_page_files,
+        funding_rows,
+        funding_page_files,
         derivative_files,
     )
     atomic_write(
         data_dir / EXECUTION_MANIFEST_NAME,
-        json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n",
+        json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2).encode(
+            "utf-8"
+        )
+        + b"\n",
     )
     validate_existing(data_dir)
     return manifest
@@ -1055,22 +2039,51 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     result.add_argument("--validate-only", action="store_true")
+    result.add_argument(
+        "--offline",
+        action="store_true",
+        help="forbid network access; validate retained sources and derive locally",
+    )
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        manifest = validate_existing(args.data_dir) if args.validate_only else capture(args.data_dir)
+        manifest = (
+            validate_existing(args.data_dir)
+            if args.validate_only
+            else capture(args.data_dir, offline=args.offline)
+        )
     except (CaptureError, OSError, ValueError, zipfile.BadZipFile, json.JSONDecodeError) as error:
         raise SystemExit(f"capture failed: {error}") from None
-    print(json.dumps({
-        "manifest_sha256": manifest["manifest_sha256"],
-        "aggTrades_rows": manifest["datasets"]["aggTrades"]["row_count"],
-        "markPriceKlines_1m_rows": manifest["datasets"]["markPriceKlines_1m"]["row_count"],
-        "missing_intervals": manifest["missing_intervals"],
-        "gap_summary": manifest["gap_summary"],
-    }, ensure_ascii=False, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "manifest_sha256": manifest["manifest_sha256"],
+                "aggTrades_rows": manifest["datasets"]["aggTrades"]["row_count"],
+                "markPriceKlines_1m_rows": manifest["datasets"][
+                    "markPriceKlines_1m"
+                ]["row_count"],
+                "markPriceKlines_1h_rows": manifest["datasets"][
+                    "markPriceKlines_1h"
+                ]["row_count"],
+                "indexPriceKlines_1h_rows": manifest["datasets"][
+                    "indexPriceKlines_1h"
+                ]["row_count"],
+                "fundingRate_rows": manifest["datasets"]["fundingRate"][
+                    "row_count"
+                ],
+                "backtest_authority_interval": manifest[
+                    "backtest_authority_interval"
+                ],
+                "missing_intervals": manifest["missing_intervals"],
+                "gap_summary": manifest["gap_summary"],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

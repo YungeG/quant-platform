@@ -23,6 +23,21 @@ def test_archive_scope_stops_before_holdout_day():
     assert all("2026-08-24" not in MODULE.archive_url(kind, day) for kind in ("aggTrades", "markPriceKlines") for day in dates)
 
 
+def test_price_bar_archive_paths_are_provider_named_and_scoped():
+    day = dt.date(2026, 7, 15)
+    assert MODULE.price_archive_url("mark", day).endswith(
+        "/markPriceKlines/KORUUSDT/1h/KORUUSDT-1h-2026-07-15.zip"
+    )
+    assert MODULE.price_archive_url("index", day).endswith(
+        "/indexPriceKlines/KORUUSDT/1h/KORUUSDT-1h-2026-07-15.zip"
+    )
+    assert MODULE.price_archive_path(Path("data"), "mark", day) == Path(
+        "data/binance_usdm/priceBars/mark/1h/daily/KORUUSDT-1h-2026-07-15.zip"
+    )
+    with pytest.raises(ValueError, match="unsupported price-bar source"):
+        MODULE.price_archive_url("last", day)
+
+
 def test_every_rest_url_requires_inclusive_end_before_holdout():
     url = MODULE.bounded_rest_url(
         "aggTrades",
@@ -73,6 +88,117 @@ def test_rest_mark_validation_requires_exact_660_minute_grid():
         MODULE.validate_rest_mark(rows)
 
 
+def test_derived_price_validation_requires_exact_matching_1h_grid():
+    rows = []
+    for offset in range(11):
+        open_time = MODULE.REST_START_MS + offset * MODULE.HOUR_MS
+        rows.append(
+            [
+                MODULE.iso_ms(open_time),
+                "1.00000000",
+                "1.00000000",
+                "1.00000000",
+                "1.00000000",
+                MODULE.iso_ms(open_time + MODULE.HOUR_MS - 1),
+                "0.0",
+            ]
+        )
+    summary = MODULE.validate_derived_price_rows(rows, "mark")
+    assert summary["row_count"] == 11
+    assert summary["timestamps_ms"] == [
+        MODULE.REST_START_MS + offset * MODULE.HOUR_MS for offset in range(11)
+    ]
+    with pytest.raises(MODULE.CaptureError, match="exact 00:00-11:00"):
+        MODULE.validate_derived_price_rows(rows[:-1], "mark")
+    rows[-1][0] = MODULE.iso_ms(MODULE.HOLDOUT_START_MS)
+    with pytest.raises(MODULE.CaptureError, match="holdout|exact bounded"):
+        MODULE.validate_derived_price_rows(rows, "mark")
+
+
+def test_accepted_funding_capture_is_exact_regular_cover_and_excludes_holdout():
+    rows, response_bytes, receipt_bytes, receipt, binding = (
+        MODULE._accepted_funding_source()
+    )
+    summary = MODULE.validate_funding_rows(rows, exact_cover=True)
+    assert len(rows) == 120
+    assert {row["rateType"] for row in rows} == {"Regular"}
+    assert summary["regular_rate_type_count"] == 120
+    assert summary["special_rate_type_count"] == 0
+    assert summary["missing_rate_type_count"] == 0
+    assert summary["min_time_ms"] == MODULE.ACCEPTED_FUNDING_FIRST_MS
+    assert summary["max_time_ms"] == MODULE.ACCEPTED_FUNDING_LAST_MS
+    assert summary["max_time_ms"] < MODULE.HOLDOUT_START_MS
+    assert receipt["request"] == {
+        "end_time_milliseconds": MODULE.REST_END_MS,
+        "limit": 1000,
+        "start_time_milliseconds": MODULE.AUTHORITY_START_MS,
+        "symbol": "KORUUSDT",
+    }
+    assert MODULE.sha256_bytes(response_bytes) == binding["response_sha256"]
+    assert MODULE.sha256_bytes(receipt_bytes) == binding["receipt_sha256"]
+
+
+def test_offline_funding_mirror_is_byte_equal_and_rejects_type_or_time_tamper(
+    tmp_path,
+):
+    rows, files, _ = MODULE.mirror_accepted_funding_capture(tmp_path)
+    source_dir = MODULE.ROOT / MODULE.ACCEPTED_FUNDING_REPO_DIR
+    for item in files:
+        assert item["path"].read_bytes() == (source_dir / item["path"].name).read_bytes()
+        assert item["status"] == MODULE.ACCEPTED_FUNDING_STATUS
+
+    missing = [dict(row) for row in rows]
+    missing[0].pop("rateType")
+    with pytest.raises(MODULE.CaptureError, match="exact 120-row Regular cover"):
+        MODULE.validate_funding_rows(missing, exact_cover=True)
+    special = [dict(row) for row in rows]
+    special[0]["rateType"] = "Special"
+    with pytest.raises(MODULE.CaptureError, match="exact 120-row Regular cover"):
+        MODULE.validate_funding_rows(special, exact_cover=True)
+    holdout = [dict(rows[0], fundingTime=MODULE.HOLDOUT_START_MS)]
+    with pytest.raises(MODULE.CaptureError, match="authority interval"):
+        MODULE.validate_funding_rows(holdout)
+
+
+def test_price_derivatives_are_exact_deterministic_frozen_csv_subsets(tmp_path):
+    rows = {
+        source: [
+            [
+                MODULE.iso_ms(MODULE.REST_START_MS + offset * MODULE.HOUR_MS),
+                "1.00000000",
+                "2.00000000",
+                "0.50000000",
+                "1.50000000",
+                MODULE.iso_ms(
+                    MODULE.REST_START_MS
+                    + (offset + 1) * MODULE.HOUR_MS
+                    - 1
+                ),
+                "0.0",
+            ]
+            for offset in range(11)
+        ]
+        for source in MODULE.PRICE_BAR_SOURCES
+    }
+    bindings = {
+        source: {"frozen_source_metadata": {"endpoint": f"https://example/{source}"}}
+        for source in MODULE.PRICE_BAR_SOURCES
+    }
+    first = MODULE.write_price_bar_derivatives(tmp_path, rows, bindings)
+    hashes = {item["path"]: MODULE.sha256_path(item["path"]) for item in first}
+    second = MODULE.write_price_bar_derivatives(tmp_path, rows, bindings)
+    assert hashes == {item["path"]: MODULE.sha256_path(item["path"]) for item in second}
+    for source in MODULE.PRICE_BAR_SOURCES:
+        csv_path = next(
+            item["path"]
+            for item in first
+            if f"/priceBars/{source}/" in item["path"].as_posix()
+            and item["path"].suffix == ".csv"
+        )
+        assert MODULE._load_bound_csv(csv_path, MODULE.FROZEN_PRICE_HEADER) == rows[source]
+    assert {item["status"] for item in first} == {MODULE.DERIVED_STATUS}
+
+
 def test_rest_agg_validation_checks_contiguous_aggregate_and_nonoverlapping_raw_ids():
     rows = [
         {"a": 10, "p": "1.0", "q": "2.0", "f": 20, "l": 21, "T": MODULE.REST_START_MS, "m": True},
@@ -87,6 +213,42 @@ def test_rest_agg_validation_checks_contiguous_aggregate_and_nonoverlapping_raw_
     rows[1]["f"] = 21
     with pytest.raises(MODULE.CaptureError, match="overlap or regress"):
         MODULE.validate_rest_agg(rows, MODULE.REST_START_MS)
+
+
+def test_checksum_validation_detects_tamper(tmp_path):
+    archive = tmp_path / "provider.zip"
+    archive.write_bytes(b"provider bytes")
+    digest = MODULE.sha256_path(archive).removeprefix("sha256:")
+    checksum = tmp_path / "provider.zip.CHECKSUM"
+    checksum.write_text(f"{digest}  provider.zip\n", encoding="utf-8")
+    assert MODULE._validate_checksum_file(archive, checksum) == f"sha256:{digest}"
+    archive.write_bytes(b"tampered")
+    with pytest.raises(MODULE.CaptureError, match="checksum mismatch"):
+        MODULE._validate_checksum_file(archive, checksum)
+
+
+def test_offline_archive_resume_validates_all_existing_without_network(tmp_path, monkeypatch):
+    day = dt.date(2026, 7, 15)
+    monkeypatch.setattr(MODULE, "daily_dates", lambda: iter((day,)))
+    paths = [
+        *(MODULE.archive_path(tmp_path, kind, day) for kind in ("aggTrades", "markPriceKlines")),
+        *(MODULE.price_archive_path(tmp_path, source, day) for source in MODULE.PRICE_BAR_SOURCES),
+    ]
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(path.name.encode())
+        digest = MODULE.sha256_path(path).removeprefix("sha256:")
+        path.with_name(path.name + ".CHECKSUM").write_text(
+            f"{digest}  {path.name}\n", encoding="utf-8"
+        )
+    monkeypatch.setattr(
+        MODULE,
+        "fetch_bytes",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("network used")),
+    )
+    statuses = MODULE.capture_archives(tmp_path, offline=True)
+    assert len(statuses) == 8
+    assert set(statuses.values()) == {"already_verified"}
 
 
 def test_manifest_hash_is_canonical_and_excludes_its_value():
@@ -147,3 +309,32 @@ def test_checked_manifest_when_present_has_holdout_binding_and_canonical_hash():
     assert manifest["holdout_protection"]["full_2026_08_24_daily_archive_downloaded"] is False
     assert manifest["discovery_interval"]["end_ms_exclusive"] == MODULE.HOLDOUT_START_MS
     assert all("/daily/KORUUSDT" not in item["source_url"] or "2026-08-24" not in item["source_url"] for item in manifest["files"])
+    if manifest.get("schema_version") == 2:
+        assert manifest["datasets"]["markPriceKlines_1h"]["required_authority_interval"]["row_count"] == 961
+        assert manifest["datasets"]["indexPriceKlines_1h"]["required_authority_interval"]["row_count"] == 961
+        funding = manifest["datasets"]["fundingRate"]
+        assert funding["selection_end_utc_exclusive"] == MODULE.iso_ms(MODULE.HOLDOUT_START_MS)
+        assert funding["status"] == MODULE.ACCEPTED_FUNDING_STATUS
+        assert funding["rate_type_counts"] == {"Regular": 120}
+        assert funding["special_rate_type_count"] == 0
+        assert funding["missing_rate_type_count"] == 0
+        assert funding["accepted_source_binding"]["response_sha256"] == MODULE.ACCEPTED_FUNDING_RESPONSE_SHA256
+        assert funding["accepted_source_binding"]["receipt_sha256"] == MODULE.ACCEPTED_FUNDING_RECEIPT_SHA256
+        assert all(
+            item["status"] == MODULE.DERIVED_STATUS
+            for item in manifest["files"]
+            if "/priceBars/" in item["path"] and "/derived-bounded/" in item["path"]
+        )
+        assert manifest["datasets"]["markPriceKlines_1m"]["rest_2026_08_24"]["retained_from_commit"] == "a61ef74"
+
+
+def test_validate_only_path_never_uses_network(monkeypatch):
+    monkeypatch.setattr(
+        MODULE,
+        "_request",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("network used")),
+    )
+    manifest = MODULE.validate_existing(SCRIPT_PATH.parent / "data")
+    assert manifest["validation"]["derived_rows_equal_base_manifest_artifacts"] is True
+    assert manifest["validation"]["funding_byte_exact_mirror_verified"] is True
+    assert manifest["validation"]["funding_120_regular_no_special_or_missing"] is True
