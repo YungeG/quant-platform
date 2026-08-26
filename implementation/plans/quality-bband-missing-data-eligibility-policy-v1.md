@@ -1,6 +1,6 @@
 # QB-ELIG-01 — Quality + B-Band missing-data eligibility policy v1
 
-- **Status:** `STAGED_FUNNEL_AMENDED / CONTRACT_FROZEN / PLAN_ONLY / GENERAL_MARKET_AUTHORITY_MISSING`
+- **Status:** `STAGED_FUNNEL_AMENDED / NONFILING_TERMINAL_USER_APPROVED / CONTRACT_FROZEN / PLAN_ONLY / GENERAL_MARKET_AUTHORITY_MISSING`
 - **Scope:** alternating staged QB-DATA authority and deterministic structural/quality/entry qualification
 - **Consumer:** future quality, continuation, entry and ranking manifests
 
@@ -51,7 +51,7 @@ S0 lightweight broad authority
 
 Data stages preserve existing QB-DATA failure precedence and atomic semantics. Strategy stages are pure deterministic transformations over accepted upstream manifests. Missing/foreign/conflicting source authority blocks the active data stage and emits no downstream scope; exact hard-filter failures may legally reduce the next stage's scope only after complete prior-stage closure.
 
-Stage payloads may carry explicit source-bounded candidate intervals or N.A. declarations when their schemas and source coverage are mechanically complete. They may not silently fabricate an exact point.
+Stage payloads may carry explicit source-bounded candidate intervals or N.A. declarations when their schemas and source coverage are mechanically complete. An accepted `official_annual_report_nonfiling_declaration@1` is one such terminal declaration: it covers the expected statement kinds but supplies no financial values and maps to `UNRESOLVED_DECISION_MATERIAL` only from its conservative availability boundary. Stage payloads may not silently fabricate an exact point.
 
 ## 4. Quality qualification
 
@@ -71,7 +71,7 @@ Every Universe member receives exactly one quality disposition:
 | `QUALITY_HARD_FILTER_FAILED` | exact evidence or a wholly failing interval proves one frozen quality threshold fails |
 | `QUALITY_QUALIFIED_POINT` | all quality hard filters pass with point-valued rank features |
 | `QUALITY_QUALIFIED_INTERVAL` | all interpretations pass, but one or more rank features remain intervals |
-| `UNRESOLVED_DECISION_MATERIAL` | evidence-supported interpretations change quality qualification |
+| `UNRESOLVED_DECISION_MATERIAL` | evidence-supported interpretations change quality qualification, or competent-source confirmed non-filing leaves required annual financial qualification unavailable |
 
 Applicability such as `NO_CONTROLLING_SHAREHOLDER` is a predicate result inside a quality disposition, not a terminal disposition itself.
 
@@ -139,6 +139,7 @@ Missing signal data is not `NO_ENTRY_SIGNAL`; it is an S4 market-coverage failur
 | --- | --- |
 | Fewer than five complete fiscal years because complete listing history proves recent listing | `STRUCTURALLY_OUT_OF_SCOPE` |
 | Five years should exist, but required report/source/availability evidence is absent | active data-stage QB-DATA failure; no downstream manifest |
+| Competent issuer/exchange/regulator evidence confirms the annual report was not filed by the statutory deadline and QB-S2-NONFILE-01 exact-cover is accepted | terminal-cover the three expected statement kinds; `UNRESOLVED_DECISION_MATERIAL` from declaration availability; no numeric values, S3/ranking admission or forced exit |
 | Report/declaration exact-proves a line item or predicate is not applicable | use the report-specific value or N.A. predicate |
 | Provider null has no report-specific meaning | active data-stage payload/revision failure; never null→zero |
 | Exact value fails a quality or entry hard filter | corresponding `*_FILTER_FAILED` disposition |
@@ -160,7 +161,7 @@ Future Strategy manifests must exact-bind:
 - one entry disposition per non-held quality-qualified issuer when slots are available;
 - first failing Strategy stage or all qualified feature refs;
 - applicability decisions and candidate intervals;
-- evidence mode for interval-based failures;
+- evidence mode for interval-based failures and any official annual-report non-filing declaration refs;
 - exact continued-holding set, exit set and entry-ranking set;
 - counts and closure equations for every layer.
 
@@ -184,11 +185,11 @@ K = min(available_slots, entry_eligible_count)
 - If admissible interpretations change top-`K` membership, return `RANKING_AMBIGUOUS`.
 - T+1 failure for a selected name leaves the slot in cash; no lower-ranked same-open replacement is authorized.
 
-An empty or thin new-entry set is legitimate only after every consumed S0–S4 stage succeeds, complete quality/continuation/entry closure exists and no unresolved ambiguity remains. Thresholds are never loosened to fill positions.
+An empty or thin new-entry set is legitimate only after every consumed S0–S4 stage succeeds, complete quality/continuation/entry closure exists and no globally blocking ambiguity remains. The issuer-local `UNRESOLVED_DECISION_MATERIAL / REQUIRED_ANNUAL_REPORT_NOT_FILED` outcome under QB-S2-NONFILE-01 is a closed noncandidate, not a global ambiguity; it removes only that issuer from S3/entry scope. Thresholds are never loosened to fill positions.
 
 ## 10. Blocked decisions publish no target
 
-`UNRESOLVED_DECISION_MATERIAL`, `RANKING_AMBIGUOUS` or any active-stage authority failure publishes:
+Any globally blocking `UNRESOLVED_DECISION_MATERIAL`, `RANKING_AMBIGUOUS` or active-stage authority failure publishes:
 
 ```text
 no TargetSnapshot
@@ -197,6 +198,8 @@ no execution request
 ```
 
 It must not publish an empty complete snapshot: under the existing complete-snapshot contract, omission inside a published snapshot means zero target and could fabricate liquidation. The last valid effective target/holding state remains unchanged until a later unblocked decision or explicit authorized exit.
+
+Exception: `UNRESOLVED_DECISION_MATERIAL / REQUIRED_ANNUAL_REPORT_NOT_FILED` is issuer-local after accepted QB-S2-NONFILE-01 exact cover. It excludes that issuer from S3/new-entry ranking while unrelated issuers continue. If the issuer is held, continuation/exit is evaluated independently; non-filing alone emits no exit, slot release or replacement target. Every other unresolved reason remains globally blocking.
 
 ## 11. Failure precedence
 
@@ -223,7 +226,7 @@ After each required upstream data-stage success, S1/financial/governance-entry/r
 
 1. manifest/stage/Universe identity mismatch;
 2. quality/continuation/entry disposition closure mismatch;
-3. `UNRESOLVED_DECISION_MATERIAL` in quality, exit or entry eligibility;
+3. globally blocking `UNRESOLVED_DECISION_MATERIAL` in quality, exit or entry eligibility; issuer-local `REQUIRED_ANNUAL_REPORT_NOT_FILED` is already closed as a noncandidate and does not enter this failure branch;
 4. `RANKING_AMBIGUOUS` for T-close top-`K` membership;
 5. legitimate continued holdings plus thin/empty new-entry result.
 

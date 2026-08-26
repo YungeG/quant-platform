@@ -1,7 +1,9 @@
 # Quality-BBAND S2B exact-cover infeasibility v1
 
-Status: `DATA_INFEASIBLE_UNDER_ACCEPTED_S1/S2A_AUTHORITY / STRATEGY_NOT_REJECTED / IMPLEMENTATION_DEFERRED`  
+Status: `SUPERSEDED_BY_USER_APPROVED_QB-S2-NONFILE-01 / REMEDIATION_IMPLEMENTATION_PENDING / STRATEGY_NOT_REJECTED`
 Date: 2026-08-26
+
+Update: the user approved QB-S2-NONFILE-01 after the official eight-issuer audit separated one existing filing from seven competent-source confirmed non-filings. The failure-only extractor rejected below remains deferred, but a new S2B packet may proceed after official declaration artifacts and the `000046.SZ` backfill are accepted.
 
 ## Decision
 
@@ -62,7 +64,7 @@ The packet was therefore not committed, and no Backtest implementation task was 
 
 ## Authority required to resume
 
-At least one must happen before a new S2B packet is justified:
+The following originally defined the unblocking paths. QB-S2-NONFILE-01 now approves path 3 at the policy level; source/declaration implementation is still absent:
 
 1. accepted point-in-time listing/board/status/tradability authority proves that an expected issuer-period is structurally outside the immutable screen;
 2. accepted official filing/document authority supplies every missing statement member;
