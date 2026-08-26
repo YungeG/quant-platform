@@ -3,6 +3,7 @@
 - **Status:** `IMPLEMENTATION_PACKET_FROZEN / USER_APPROVED / SOURCE_ONLY / PLAN_ONLY`
 - **Backtest base:** PR #13 commit `7276c69`
 - **Purpose:** retain the missing pre/deadline non-filing proofs for `000038.SZ` and `000976.SZ`, plus the later NEEQ sponsor terminal confirmation for `601028.SH`
+- **Authority snapshot:** Platform commit `406e427`, packet SHA-256 `9d0c3ed63007dc0a91122a38867f2b235571380b022f84d5b813d08fe57adafa`
 
 ## 1. Exact write set
 
