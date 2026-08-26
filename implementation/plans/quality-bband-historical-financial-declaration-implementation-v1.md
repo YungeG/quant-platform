@@ -566,4 +566,4 @@ Published candidate:
 
 ## 19. Next handoff
 
-After declaration candidate publication, historical normalization may proceed for 2018–2020 and 2022. The 2021 period must remain unavailable until competent source authority resolves the financing-scope conflict. Therefore five complete ROIC observations and formal strategy execution remain blocked.
+The exact successor packet is [`quality-bband-historical-financial-normalization-implementation-v1.md`](quality-bband-historical-financial-normalization-implementation-v1.md). It normalizes 2018 balance plus 2019/2020/2022 trios, retains the 2022 provider `free_cashflow` conflict without selecting either value, and propagates the canonical 2021 `DEBT_SCOPE_INCOMPLETE` failure. Five complete ROIC observations and formal strategy execution remain blocked.

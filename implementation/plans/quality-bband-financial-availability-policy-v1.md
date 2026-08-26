@@ -243,4 +243,4 @@ A future pure implementation must prove:
 
 The availability contract and the finite 2019–2023 Calendar/Session evidence are frozen. The evidence is sufficient to freeze historical normalization for `20181231`, `20191231`, `20201231` and `20221231`; `20211231` remains stopped by `DEBT_SCOPE_INCOMPLETE`.
 
-No general SZSE Calendar provider or accepted historical `available_at` implementation exists. The next safe action is the fixed-scope historical normalization implementation packet.
+No general SZSE Calendar provider or accepted historical `available_at` implementation exists. The fixed-scope implementation is frozen in [`quality-bband-historical-financial-normalization-implementation-v1.md`](quality-bband-historical-financial-normalization-implementation-v1.md); the next safe action is its additive Backtest implementation on PR #7.

@@ -144,8 +144,8 @@ No accepted Backtest historical availability artifact exists yet.
 ## Next executable gates
 
 1. accept stacked PRs #1–#7;
-2. freeze and implement historical normalization for 2018–2020/2022 with exact Calendar/Session binding;
-3. preserve 2021 as unavailable;
+2. implement [`quality-bband-historical-financial-normalization-implementation-v1.md`](../implementation/plans/quality-bband-historical-financial-normalization-implementation-v1.md) on PR #7;
+3. publish four supported observation sets plus the canonical 2021 failure;
 4. five complete ROIC observations remain blocked until competent authority resolves 2021 debt.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.
