@@ -54,6 +54,8 @@ trade_date,ts_code,name,industry,list_date
 
 `20161230` returned `3,071` rows, confirming that the documented 2016 history does not mean every 2016 trading date is populated.
 
+Returned `list_date="0"` occurs for prelisting/provider-unknown rows: `26,5,12,17,39,10,22,3,5` rows respectively from 2017 through 2025. It must be retained as an unknown sentinel, not rejected or interpreted as a listing date.
+
 ## 4. Provider roster is not listing authority
 
 Joining each `bak_basic` response to the retained 2026 S0 `stock_basic` capture leaves unmatched SSE/SZSE codes. Examples include:
@@ -70,15 +72,15 @@ Using current S0 `market`, `bak_basic.list_date`, and provider `industry` only a
 
 | Screen | Raw rows | Current-S0 mainboard match | Listed five years | Excluding `银行/保险/证券/多元金融` |
 | --- | ---: | ---: | ---: | ---: |
-| 2017 | `3,232` | `2,591` | `2,071` | `2,014` |
-| 2018 | `3,518` | `2,791` | `2,101` | `2,037` |
-| 2019 | `3,622` | `2,861` | `2,126` | `2,060` |
-| 2020 | `3,850` | `2,934` | `2,227` | `2,151` |
-| 2021 | `4,326` | `3,083` | `2,312` | `2,235` |
-| 2022 | `4,719` | `3,152` | `2,531` | `2,439` |
-| 2023 | `4,994` | `3,203` | `2,709` | `2,616` |
+| 2017 | `3,232` | `2,591` | `2,052` | `1,995` |
+| 2018 | `3,518` | `2,791` | `2,098` | `2,034` |
+| 2019 | `3,622` | `2,861` | `2,119` | `2,053` |
+| 2020 | `3,850` | `2,934` | `2,218` | `2,143` |
+| 2021 | `4,326` | `3,083` | `2,300` | `2,224` |
+| 2022 | `4,719` | `3,152` | `2,526` | `2,434` |
+| 2023 | `4,994` | `3,203` | `2,705` | `2,612` |
 | 2024 | `5,364` | `3,199` | `2,738` | `2,635` |
-| 2025 | `5,415` | `3,181` | `2,777` | `2,668` |
+| 2025 | `5,415` | `3,181` | `2,776` | `2,667` |
 
 This demonstrates useful workload reduction but cannot become an S1 manifest because board and industry inputs are not historical authorities.
 
@@ -95,7 +97,7 @@ Remaining gaps:
 
 ## 7. Decision
 
-A useful next source-bounded capture can freeze `trade_cal` plus the ten annual `bak_basic` responses, including the explicit 2016 zero-row gap. It can support development-only historical funnel estimates for 2017–2025.
+PR #11 and SourceSnapshot `sha256:22585fa4c2070d87544f0ba977be757770aeeaad5bead30188317c1794680ee8` now freeze `trade_cal` plus the ten annual `bak_basic` responses, including the explicit 2016 zero-row gap and retained `list_date="0"` unknowns. They support development-only historical funnel estimates for 2017–2025.
 
 It cannot support formal Fold A/B S1 because:
 

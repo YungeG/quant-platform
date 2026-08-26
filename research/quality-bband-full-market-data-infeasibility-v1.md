@@ -24,7 +24,7 @@ The fixed issuer `xshe:000651` now has source-bounded, auditable research for:
 - fixed-window valuation SourceSnapshot and invariant `<60%` PE-percentile pass;
 - positive canonical FCF yield.
 
-Backtest PRs #1–#10 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
+Backtest PRs #1–#11 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
 
 A fixed-issuer pass is not a cross-sectional selection result and cannot substitute for a full-market peer set.
 
@@ -65,7 +65,7 @@ Search absence and provider zero-row responses cannot prove no event.
 
 Even with data, execution is still blocked by:
 
-- unaccepted Backtest PR stack #1–#10;
+- unaccepted Backtest PR stack #1–#11;
 - no accepted full-market QB-DATA Bundle or coverage reports;
 - provisional G12B capability/report names;
 - no canonical constrained-domain ranking witness schema;
@@ -108,7 +108,7 @@ At least one competent data path must be approved:
 
 Then all of the following remain required:
 
-- Backtest-owner approval of schemas/names and PRs #1–#10;
+- Backtest-owner approval of schemas/names and PRs #1–#11;
 - deterministic full-market QB-DATA publication/reopen;
 - interval-domain ranking proof artifacts;
 - accepted T+1 execution feasibility semantics;

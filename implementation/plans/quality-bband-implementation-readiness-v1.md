@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. Fixed-scope financial/valuation work and the first S0 lightweight staged capture are published as stacked Backtest PRs #1–#10. Full strategy implementation still cannot start because the stack is unaccepted, one source period remains `DEBT_SCOPE_INCOMPLETE`, exact feature/rank values remain interval-sensitive, and broad immutable historical authority, S1–S4, execution-feasibility and public portfolio authority are missing.
+The research design is approved for continued planning. Fixed-scope financial/valuation work, S0 lightweight capture and annual structural-roster capture are published as stacked Backtest PRs #1–#11. Full strategy implementation still cannot start because the stack is unaccepted, one source period remains `DEBT_SCOPE_INCOMPLETE`, exact feature/rank values remain interval-sensitive, and formal historical S1 authority, S2–S4, execution-feasibility and public portfolio authority are missing.
 
 ## Outcome
 
@@ -59,12 +59,13 @@ No second simulator, private Backtest composition, custom profit-and-loss calcul
 | C34 | `research/quality-bband-full-market-data-infeasibility-v1.md` | Concludes no formal Fold A/B economic run is honest under current public authority; strategy is untested/not rejected, while PR review and formal data procurement may continue. |
 | C35 | `implementation/plans/quality-bband-staged-data-funnel-v1.md` | User-approved S0→S4 staged exact-cover funnel reduces heavy acquisition only through deterministic prior-stage manifests. |
 | C36 | `implementation/plans/quality-bband-s0-lightweight-source-sentinel-v1.md` and `research/quality-bband-s0-lightweight-catalog-assessment-v1.md` | PR #10 publishes accepted source-bounded capture `sha256:b5b7a9243439146181ef07acd07c09e79d16f605bc6cfdc3148746e64359e198`; advisory current funnel narrows 5,889 returned rows to 2,841 provisional structural survivors, without granting S0/S1 authority. |
+| C37 | `implementation/plans/quality-bband-annual-structural-roster-source-sentinel-v1.md` and `research/quality-bband-annual-structural-roster-assessment-v1.md` | PR #11 publishes annual source-bounded capture `sha256:22585fa4c2070d87544f0ba977be757770aeeaad5bead30188317c1794680ee8`; 2017–2025 provisional S2 union is 2,845 issuers, while 2010–2016/formal S1 remain blocked. |
 
 ## Ownership
 
 - **Orchestrator:** current Platform planning session.
 - **Planning worktree:** `/home/ygguo/agent-projs/ai-crypt/platform-a-share-strategy` / `research/a-share-strategy`.
-- **Implementation worktrees:** PR worktrees exist for PRs #1–#10; no S1–S4, final QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
+- **Implementation worktrees:** PR worktrees exist for PRs #1–#11; no normalized/formal S1, S2–S4, final QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
 - **Data acquisition/Builder owner:** Backtest repository owner.
 - **Backtest public PREP owner:** Backtest Runtime repository owner.
 - **Platform integration owner:** Platform repository owner after accepted Backtest SHA exists.
@@ -260,7 +261,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope financial/governance/valuation lane, staged S0→S4 contracts and real S0 provider-response capture are complete. PRs #1–#10 await **Backtest-owner review/acceptance**. The capture demonstrates workload reduction but not historical S0/S1 authority; competent listing/board/CSRC-industry closure, S1–S4 accepted manifests, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is executable.
+The fixed-scope financial/governance/valuation lane and source-bounded S0/annual-roster captures are complete. PRs #1–#11 await **Backtest-owner review/acceptance**. The 2017–2025 roster capture bounds a provisional 2,845-issuer S2 workload but does not establish formal historical S1; competent listing/board/CSRC-industry closure, S2–S4 accepted manifests, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is executable.
 
 ## Next owner and first action
 
@@ -278,5 +279,6 @@ The fixed-scope financial/governance/valuation lane, staged S0→S4 contracts an
 - **Historical normalization:** stacked PR [`YungeG/quant-backtest#8`](https://github.com/YungeG/quant-backtest/pull/8), commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`; valid historical manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`.
 - **Valuation source:** stacked PR [`YungeG/quant-backtest#9`](https://github.com/YungeG/quant-backtest/pull/9), commit `5b99e50826a526cfd81ea8a28d2a1d1bf3daf52c`; valid SourceSnapshot `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30` and invalid candidate 01 retained separately.
 - **S0 lightweight source:** stacked PR [`YungeG/quant-backtest#10`](https://github.com/YungeG/quant-backtest/pull/10), commit `ea17ccf93f6242222800c298d6aab39177b8455d`; valid provider-response SourceSnapshot `sha256:b5b7a9243439146181ef07acd07c09e79d16f605bc6cfdc3148746e64359e198`, with every authority/grade flag false.
-- **Second decision:** accept PRs #2–#10 and the reasoned-ambiguity/staged-funnel policies for Research use; exact historical authority remains unresolved and interval-sensitive ranking must fail closed.
+- **Annual structural roster source:** stacked PR [`YungeG/quant-backtest#11`](https://github.com/YungeG/quant-backtest/pull/11), commit `1ba50ff69d1cdf37132e6e20ac1695bed0fbf685`; valid SourceSnapshot `sha256:22585fa4c2070d87544f0ba977be757770aeeaad5bead30188317c1794680ee8`, retaining 2016 zero rows and `list_date="0"` unknowns.
+- **Second decision:** accept PRs #2–#11 and the reasoned-ambiguity/staged-funnel policies for Research use; exact historical authority remains unresolved and interval-sensitive ranking must fail closed.
 - **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.

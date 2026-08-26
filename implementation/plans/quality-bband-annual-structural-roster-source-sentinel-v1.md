@@ -1,6 +1,6 @@
 # QB-S1-SRC-01 — Tushare annual structural roster source sentinel v1
 
-- **Status:** `IMPLEMENTATION_PACKET_FROZEN / USER_APPROVED / SOURCE_BOUNDED / PLAN_ONLY`
+- **Status:** `IMPLEMENTED / PR_11_OPEN / REAL_CANDIDATE_INDEPENDENTLY_ACCEPTED / SOURCE_BOUNDED`
 - **Owner:** Backtest acquisition tooling
 - **Purpose:** retain annual provider roster/industry observations for 2016–2025 S1 development; not S1 authority
 - **Implementation base:** Backtest PR #10 head `ea17ccf93f6242222800c298d6aab39177b8455d`
@@ -133,7 +133,7 @@ Do not copy transport/calendar validators, import direct HTTP clients, fail over
 - every row `trade_date` equals request;
 - nonempty string `ts_code`, `name`, `list_date`;
 - `industry` is string or null;
-- real `list_date <= trade_date`;
+- `list_date` is either exact string `"0"` or a real date not later than `trade_date`; `"0"` is retained as provider unknown and never interpreted as a listing date;
 - unique `ts_code` within the response;
 - no assumption that row presence equals listing/tradability;
 - no cross-date uniqueness requirement.
@@ -198,9 +198,10 @@ Literal ordered limitations:
 2. `20160503 zero rows are a bounded provider gap, not an empty Universe`;
 3. `Tushare trade_cal is source-bounded and not accepted Calendar authority`;
 4. `bak_basic row presence is not exchange listing or tradability authority`;
-5. `board and official CSRC industry history are not established`;
-6. `provider revision, absence, completeness, and terminal closure are not established`;
-7. `formal S1, Fold, Strategy, Validation, and deployment authority are not granted`.
+5. `bak_basic list_date=0 is retained as provider unknown, not a listing date`;
+6. `board and official CSRC industry history are not established`;
+7. `provider revision, absence, completeness, and terminal closure are not established`;
+8. `formal S1, Fold, Strategy, Validation, and deployment authority are not granted`.
 
 Fixed flags:
 
@@ -230,7 +231,17 @@ The explicit 2016 zero row is a bounded gap, not an empty Universe. Rows may inc
 
 No formal S1, Fold, Strategy, Validation or deployment authority is granted.
 
-## 11. Tests
+## 11. Implementation evidence
+
+- Backtest commit: `1ba50ff69d1cdf37132e6e20ac1695bed0fbf685`
+- PR: <https://github.com/YungeG/quant-backtest/pull/11>
+- Focused validation: `44 passed`
+- Builder/acquisition validation: `632 passed, 5 skipped`
+- Independent code and real-candidate review: accepted
+- Real SourceSnapshot: `sha256:22585fa4c2070d87544f0ba977be757770aeeaad5bead30188317c1794680ee8`
+- First publication failure: atomically rejected `list_date="0"`; no partial output survived; corrected candidate preserves unknown values
+
+## 12. Tests
 
 Cover exact eleven bodies/order/headers, ten delays, retry/nonretry, eleven clocks, chronological derived screen dates, cardinalities including zero, duplicate-key/nonfinite/schema/row/date failures, raw preservation, snapshot/receipt exactness, literal flags/limitations, token redaction, no-clobber/fsync cleanup and exact three-file diff. Positive cases retain null industry, BSE rows and the same `ts_code` on different roster dates.
 
