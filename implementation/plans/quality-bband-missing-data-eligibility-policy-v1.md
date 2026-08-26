@@ -99,27 +99,28 @@ Each holding receives exactly one continuation disposition:
 | `EXIT_REQUIRED` | complete evidence satisfies a frozen exit condition |
 | `UNRESOLVED_DECISION_MATERIAL` | evidence-supported interpretations change exit/continue |
 
-Fresh B-Band signal, current valuation percentile and cross-sectional rank are not continuation requirements. `CONTINUE_HOLDING` reserves one of the four slots.
+Fresh B-Band signal, current valuation percentile and cross-sectional rank are not continuation requirements. Every actually held Instrument, including one with `EXIT_REQUIRED`, occupies a slot until its exit execution is confirmed.
 
-An exit may be emitted only through the separately frozen next-eligible-execution semantics. A blocked continuation decision emits no replacement target, no empty target and no fabricated liquidation instruction.
+An exit may be emitted only through the separately frozen next-eligible-execution semantics. A pending or blocked exit emits no replacement target, no empty target and no fabricated liquidation instruction.
 
 ## 6. New-entry eligibility
 
-Only non-held quality-qualified issuers may enter new-entry evaluation. Available slots are:
+Only non-held quality-qualified issuers may enter new-entry evaluation. Pending exits still occupy positions until execution is confirmed. At T close:
 
 ```text
-available_slots = 4 - count(CONTINUE_HOLDING)
+available_slots = 4 - actual_held_instrument_count
 ```
 
-If `available_slots = 0`, no new-entry ranking is required.
+If `available_slots = 0`, no new-entry ranking is required. No atomic sell-before-buy slot release is inferred.
 
 New-entry stages are:
 
 1. positive FCF yield and five-year valuation-percentile rule;
 2. liquidity coverage and threshold;
 3. complete T-close BOLL contraction/trend/volume-breakout signal;
-4. frozen gap/tradability/lot-capital feasibility semantics;
-5. interval-aware ranking for the available slots.
+4. interval-aware T-close ranking for the available slots.
+
+T+1 gap, tradability and lot-capital checks apply only to selected names after ranking. Failure leaves cash and waits for a later complete signal; it does not promote another issuer at the same open.
 
 Each quality-qualified non-held issuer receives one entry disposition:
 
@@ -168,7 +169,7 @@ Any omission, duplicate, foreign member or count mismatch is a downstream exact-
 
 ## 9. Legitimate cash, thin selection and ranking
 
-Existing `CONTINUE_HOLDING` names reserve slots before any new candidate is considered. Ranking applies only to entry-eligible non-held issuers and only for `available_slots`.
+Every actually held Instrument reserves a slot until its exit execution is confirmed. Ranking applies only to entry-eligible non-held issuers and only for `available_slots`.
 
 Define:
 
@@ -177,11 +178,12 @@ K = min(available_slots, entry_eligible_count)
 ```
 
 - If `K = 0`, no entry ranking is required.
-- If `entry_eligible_count <= available_slots`, every feasible entry-eligible issuer may be selected; no cross-sectional membership ordering is required.
-- Otherwise ranking must determine a decision-invariant prefix long enough to fill available slots under the separately frozen sequential feasibility/skip rule.
-- Point features rank as degenerate intervals `[x, x]`; ambiguity-policy intervals remain intervals.
-- No midpoint, preferred candidate or provider value may silently replace an interval.
-- If interval overlap changes the consumed selected/replacement prefix, return `RANKING_AMBIGUOUS`.
+- If `entry_eligible_count <= available_slots`, every entry-eligible issuer may be selected; no cross-sectional membership ordering is required.
+- Otherwise ranking must determine one decision-invariant T-close top-`K` set.
+- Point features rank as degenerate intervals `[x, x]`; ambiguity-policy domains remain exact finite vectors or constrained intervals.
+- No midpoint, preferred candidate or provider value may silently replace ambiguity.
+- If admissible interpretations change top-`K` membership, return `RANKING_AMBIGUOUS`.
+- T+1 failure for a selected name leaves the slot in cash; no lower-ranked same-open replacement is authorized.
 
 An empty or thin new-entry set is legitimate only after Layer A success, complete quality/continuation/entry closure and no unresolved ambiguity. Thresholds are never loosened to fill positions.
 
@@ -221,7 +223,7 @@ QB-DATA retains its existing order unchanged:
 1. manifest/Bundle/Universe identity mismatch;
 2. quality/continuation/entry disposition closure mismatch;
 3. `UNRESOLVED_DECISION_MATERIAL` in quality, exit or entry eligibility;
-4. `RANKING_AMBIGUOUS` for the consumed available-slot prefix;
+4. `RANKING_AMBIGUOUS` for T-close top-`K` membership;
 5. legitimate continued holdings plus thin/empty new-entry result.
 
 An authority or Strategy block is not downgraded to cash, no signal or liquidation.
