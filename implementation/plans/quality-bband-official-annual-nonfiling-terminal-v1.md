@@ -5,7 +5,7 @@
 - **Backtest implementation base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** let competent-source confirmed annual-report non-filings exact-cover issuer-local S2 members without fabricated statements, silent issuer deletion, unrelated-issuer blocking or forced exits
 
-Approved authority snapshot: Platform commit `f236304`.
+Approved authority snapshot: Platform commit `f236304`. Implementation-authority amendment: `71d0030` (independently marked READY).
 
 | File at approved snapshot | SHA-256 |
 |---|---|
