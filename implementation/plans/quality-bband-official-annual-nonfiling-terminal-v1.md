@@ -1,6 +1,6 @@
 # QB-S2-NONFILE-01 — official annual-report non-filing terminal v1
 
-- **Status:** `IMPLEMENTATION_PACKET_FROZEN / NONFILING_EFFECTIVE_BOUNDARY_USER_APPROVED / PLAN_ONLY`
+- **Status:** `IMPLEMENTATION_PACKET_FROZEN / NONFILING_EFFECTIVE_BOUNDARY_USER_APPROVED / COMPETENT_EXCHANGE_PREDEADLINE_AUTHORITY_USER_APPROVED / PLAN_ONLY`
 - **Approved:** 2026-08-26
 - **Backtest implementation base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** let competent-source confirmed annual-report non-filings exact-cover issuer-local S2 members without fabricated statements, silent issuer deletion, unrelated-issuer blocking or forced exits
@@ -78,7 +78,7 @@ PREDEADLINE_DEFINITIVE_INABILITY
 EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE
 ```
 
-A pre-deadline document qualifies only when it unequivocally states that the issuer cannot disclose by the statutory deadline; a mere `预计无法`, risk warning or possible delay does not qualify. `PREDEADLINE_DEFINITIVE_INABILITY` becomes available no earlier than the first accepted session open strictly after the deadline. `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` requires competent exchange/status authority that the suspension is effective because the deadline was actually missed.
+A pre-deadline document qualifies only when an issuer, SSE or SZSE source unequivocally states that the issuer cannot disclose by the statutory deadline; a mere `预计无法`, risk warning or possible delay does not qualify. `PREDEADLINE_DEFINITIVE_INABILITY` becomes available no earlier than the first accepted session open strictly after the deadline. `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` requires competent exchange/status authority that the suspension is effective because the deadline was actually missed.
 
 The terminal document must affirm that the report remained unfiled through listing termination or that annual audit/report work remained incomplete at the last listed-state terminal. v1 accepts only:
 
@@ -138,7 +138,7 @@ Compatibility is exact:
 | role | evidence kind | allowed authority |
 |---|---|---|
 | `INITIAL_NONFILING_PROOF` | `POST_DEADLINE_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
-| `INITIAL_NONFILING_PROOF` | `PREDEADLINE_DEFINITIVE_INABILITY` | `ISSUER` |
+| `INITIAL_NONFILING_PROOF` | `PREDEADLINE_DEFINITIVE_INABILITY` | `ISSUER`, `SSE`, `SZSE` |
 | `INITIAL_NONFILING_PROOF` | `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` | `SSE`, `SZSE` |
 | `TERMINAL_CONFIRMATION` | `TERMINAL_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
 
@@ -353,7 +353,7 @@ Failure precedence is table order. Declaration reconstruction occurs before late
 
 1. input source-ref order does not change `declaration_id`;
 2. snapshot provenance or source-byte mutation fails;
-3. pre-deadline evidence cannot create an early declaration; reviewed `PREDEADLINE_DEFINITIVE_INABILITY` becomes usable only at the deadline boundary, and evidence-kind compatibility is exact;
+3. pre-deadline evidence cannot create an early declaration; reviewed `PREDEADLINE_DEFINITIVE_INABILITY` from `ISSUER`, `SSE` or `SZSE` authority becomes usable only at the deadline boundary, and evidence-kind compatibility is exact;
 4. wrong API-kind mapping, missing key, duplicate terminal or statement overlap fails;
 5. later filing availability shortens the half-open interval without backfill;
 6. a non-held non-filer is excluded locally while unrelated ranking proceeds;
