@@ -212,7 +212,7 @@ The finite official evidence frozen in [`quality-bband-szse-calendar-session-aut
 | `20211231` | `2022-04-30` | `2022-05-05 09:30 Asia/Shanghai` | `UtcInstant(1651714200000000000)` |
 | `20221231` | `2023-04-29` | `2023-05-04 09:30 Asia/Shanghai` | `UtcInstant(1683163800000000000)` |
 
-No historical `available_at` artifact exists yet. A Backtest-owned implementation must exact-bind the frozen source identities. The `20211231` lane terminates earlier with `DEBT_SCOPE_INCOMPLETE` and cannot emit normalization output.
+Stacked PR #8 publishes source-bounded candidates for the four supported historical `available_at` values and exact-binds the frozen source identities. It remains unaccepted/non-decision-grade. The `20211231` lane terminates earlier with `DEBT_SCOPE_INCOMPLETE` and emits no normalization output.
 
 ## 10. Compatibility and forbidden paths
 
@@ -243,4 +243,4 @@ A future pure implementation must prove:
 
 The availability contract and the finite 2019–2023 Calendar/Session evidence are frozen. The evidence is sufficient to freeze historical normalization for `20181231`, `20191231`, `20201231` and `20221231`; `20211231` remains stopped by `DEBT_SCOPE_INCOMPLETE`.
 
-No general SZSE Calendar provider or accepted historical `available_at` implementation exists. The fixed-scope implementation is frozen in [`quality-bband-historical-financial-normalization-implementation-v1.md`](quality-bband-historical-financial-normalization-implementation-v1.md); the next safe action is its additive Backtest implementation on PR #7.
+No general SZSE Calendar provider or accepted historical `available_at` implementation exists. The fixed-scope candidate is stacked PR #8 and remains unaccepted; the next safe action is historical presentation/formula-input planning for the four valid sets.

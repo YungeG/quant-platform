@@ -1,10 +1,9 @@
 # QB-FIN-HISTORY-NORM-IMPL-01 — Gree historical financial normalization packet
 
-- **Status:** `READY_FOR_IMPLEMENTATION / INDEPENDENT_HASH_REVIEW_ACCEPTED / NOT_STARTED`
+- **Status:** `STACKED_CANDIDATE_PUBLISHED / REAL_CANDIDATE_PUBLISHED / NOT_ACCEPTED`
 - **Owner:** Backtest Market Bundle Builder
 - **Base:** stacked PR #7 commit `25b8dd12a8a62530ce2467e13d1bd0b55b34b0cf`
-- **Planned branch:** `research/qb-fin-historical-normalization-v1`
-- **Planned PR:** stacked PR #8 on PR #7
+- **Candidate:** Backtest PR [#8](https://github.com/YungeG/quant-backtest/pull/8), commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`
 - **SourceSnapshot:** `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`
 - **Declaration candidate:** manifest file `sha256:a424edd19abc9b17d54f40bfc0e1c6f90e04690d7ba4c6bb10a99982e9531726`
 - **Calendar authority:** [`research/quality-bband-szse-calendar-session-authority-v1.md`](../../research/quality-bband-szse-calendar-session-authority-v1.md)
@@ -637,18 +636,9 @@ uv run --project packages/market-bundle-builder pytest -q \
   tests/architecture/test_gree_historical_financial_statement_normalization_v1_boundary.py
 ```
 
-Broad regression:
+Broad regression temporarily links the Platform consumer fixture at `/home/ygguo/agent-projs/ai-crypt/tests/contracts/backtest-consumer-port-v1.json`, removes the link after the run, and deselects exactly thirteen incompatible historical candidate write-set guards: the eight repository-global guards plus the five PR #3–#7 guards. The new PR #8 guard remains enabled.
 
-```bash
-uv run pytest -q \
-  --deselect=tests/architecture/test_gree_2023_financial_document_declarations_v1_boundary.py::test_declaration_candidate_write_set_is_exact \
-  --deselect=tests/architecture/test_gree_2023_financial_statement_normalization_v1_boundary.py::test_normalization_candidate_write_set_is_exact \
-  --deselect=tests/architecture/test_gree_2023_financial_statement_trio_selection_v1_boundary.py::test_selection_candidate_write_set_is_exact \
-  --deselect=tests/architecture/test_g12a_tushare_financial_history_sentinel_v3_boundary.py::test_v3_base_is_byte_identical_and_write_set_is_exact \
-  --deselect=tests/architecture/test_gree_historical_financial_document_declarations_v1_boundary.py::test_historical_declaration_write_set_is_exact
-```
-
-The new PR #8 exact-write-set guard remains enabled. No predecessor guard may be edited or deleted.
+The accepted run produced `2579 passed, 5 skipped, 13 deselected`. An earlier retry terminated in unrelated Python 3.13 garbage collection with exit `139`; the clean rerun is controlling. No guard was edited or deleted.
 
 Run LSP/lens on the exact three-file write set before commit.
 
@@ -658,7 +648,7 @@ Fresh root only:
 
 ```text
 /srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
-  normalized-observation-sets/000651.SZ/2018-2022/v1-candidate-01
+  normalized-observation-sets/000651.SZ/2018-2022/v1-candidate-02
 ```
 
 Exact files:
@@ -674,6 +664,8 @@ manifest.json
 
 Publication is atomic. Existing 2023 observation set and historical declaration roots are read-only predecessors. Credential strings and token paths must be absent from all bytes.
 
+`v1-candidate-01` is noncanonical and must never be consumed: its data files matched the frozen outputs, but its manifest bound an incorrect implementation commit. It remains preserved as failed evidence. `v1-candidate-02` is the first valid candidate.
+
 ## 18. Forbidden paths
 
 - no 2021 declaration or normalization success;
@@ -686,8 +678,34 @@ Publication is atomic. Existing 2023 observation set and historical declaration 
 - no modification of predecessor modules/tests/locks;
 - no merge, acceptance, deployment or real-trading authority.
 
-## 19. Readiness decision
+## 19. Implementation evidence
 
-`READY` for one additive Backtest implementation on PR #7. Independent bounded review reproduced all ten revision IDs, four observation-set hashes, the 2021 failure hash and every row-hash/update-flag mapping.
+Stacked Backtest PR [#8](https://github.com/YungeG/quant-backtest/pull/8):
 
-The writer has no remaining period, schema, conflict, availability, identity, failure-precedence, write-set or validation choice. After implementation and candidate publication, a separate historical presentation-selection/formula-input packet may consume the four sets while preserving the 2021 gap.
+- commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`;
+- exact three-file additive write set; PR #7 base tree byte/mode identical;
+- focused `16 passed, 1 skipped`;
+- real opt-in `2 passed`;
+- Builder-wide `377 passed, 5 skipped`;
+- broad `2579 passed, 5 skipped, 13 deselected`;
+- LSP/lens clean;
+- independent implementation review accepted after exact nested-failure and member-hash mutation blockers were fixed.
+
+Published valid candidate:
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  normalized-observation-sets/000651.SZ/2018-2022/v1-candidate-02
+```
+
+- 2018 set file `sha256:0f327ffaa9330260f953280f524fcbce65d6900e2938aba18ce270513f54b720`;
+- 2019 set file `sha256:09dfb83c3f7a850d31e7ae4989936f0466fb1a27b50a75676326738c151ff560`;
+- 2020 set file `sha256:5fb6d3c1697578bc9d3efa65800ca31ab5436d877f7700c94d196c34e675df0d`;
+- 2021 failure file `sha256:a8c964c65c967bef8a07a1a1dd0d2114edb63ccd87d6aded1e0b566f6e0a5f0f`;
+- 2022 set file `sha256:a632b01e64dc34c0ba6e216775bd5ac77f223f7f1ae25f3fb98d2bb29e3f3566`;
+- manifest file `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`;
+- canonical regeneration/readback, mode `0600`, directory `0700` and credential-exclusion checks passed.
+
+## 20. Next handoff
+
+A separate historical presentation-selection/formula-input packet may consume the four valid sets while preserving the 2021 gap. PR #8 and all predecessors remain unaccepted; no Strategy, Validation or deployment authority is granted.

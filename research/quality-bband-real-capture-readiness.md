@@ -1,8 +1,8 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `HISTORICAL_CALENDAR_EVIDENCE_FROZEN / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `HISTORICAL_NORMALIZATION_PUBLISHED / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
 - **Checked:** 2026-08-26
-- **Scope:** 000651.SZ 2018–2023 source/declaration candidates plus fixed 2023 normalization/selection and finite SZSE Calendar/Session evidence
+- **Scope:** 000651.SZ 2018–2023 source/declaration/normalization candidates plus fixed 2023 selection and finite SZSE Calendar/Session evidence
 
 ## Repository state
 
@@ -15,6 +15,7 @@
 | Backtest PR #5 | <https://github.com/YungeG/quant-backtest/pull/5>, open stacked on PR #4 | fixed trio-selection commit `5338d8046fa0f304d4a9590989c59ceffb51270b`; not accepted |
 | Backtest PR #6 | <https://github.com/YungeG/quant-backtest/pull/6>, open stacked on PR #5 | historical-source head `64159f81fa6f831990690dd133587b96533a0362`; not accepted |
 | Backtest PR #7 | <https://github.com/YungeG/quant-backtest/pull/7>, open stacked on PR #6 | historical-declaration commit `25b8dd12a8a62530ce2467e13d1bd0b55b34b0cf`; not accepted |
+| Backtest PR #8 | <https://github.com/YungeG/quant-backtest/pull/8>, open stacked on PR #7 | historical-normalization commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`; not accepted |
 | Platform research PR | <https://github.com/YungeG/quant-platform/pull/1>, open, mergeable | not accepted |
 | v1 commit | `e7e874fc58e0911b7df1cd0463387526afcb845d` | remotely reachable |
 | v2 commits | `23f2fbdfd2a95a66513097b9ab1c2ba66cfe0a52` + `146cd227b2fc707726e133dbbd08cde356f21dcd` | remotely reachable |
@@ -139,13 +140,30 @@ It contains four canonical declaration files for 2018–2020/2022, one canonical
 
 The 2019 annual notice's original `2019-05-02` reopen is not controlling: the official `2019-04-18` adjustment moved the effective Labour Day reopen to `2019-05-06`. The Gree 2018-report boundary remains `2019-04-30` because that is the first session strictly after its `2019-04-29` publication date.
 
-No accepted Backtest historical availability artifact exists yet.
+PR #8 now exact-binds these facts into source-bounded historical normalization candidates; no candidate is accepted or decision-grade.
+
+## Published historical normalization candidate
+
+```text
+/srv/bcache-8t/ygguo/quant/artifacts/a-share-quality-bband/
+  normalized-observation-sets/000651.SZ/2018-2022/v1-candidate-02
+```
+
+| Period | Canonical identity | File SHA-256 |
+| --- | --- | --- |
+| `20181231` | `sha256:20638846aa5eb0c98e30efcae5693114553ef8794a2697783d740ec658d38c68` | `sha256:0f327ffaa9330260f953280f524fcbce65d6900e2938aba18ce270513f54b720` |
+| `20191231` | `sha256:02bb2571ea9cef06465f0151b747004c34f4baa35b5d59b63e71f65c707fd7d1` | `sha256:09dfb83c3f7a850d31e7ae4989936f0466fb1a27b50a75676326738c151ff560` |
+| `20201231` | `sha256:2c6110a07d2a7c80745a3cabf35b84b4aeb13f1cd4901d53c24cca619c40f4ce` | `sha256:5fb6d3c1697578bc9d3efa65800ca31ab5436d877f7700c94d196c34e675df0d` |
+| `20211231` failure | `sha256:2cedd67871396e99f324623540ac66f1b254d31020d0e81ba075c6b5876bbc82` | `sha256:a8c964c65c967bef8a07a1a1dd0d2114edb63ccd87d6aded1e0b566f6e0a5f0f` |
+| `20221231` | `sha256:92d196719be464dc79938db432f442e2d56891effd04adb7e11031f6e31fe736` | `sha256:a632b01e64dc34c0ba6e216775bd5ac77f223f7f1ae25f3fb98d2bb29e3f3566` |
+
+Manifest file SHA-256 is `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`. Canonical regeneration/readback, mode and credential-exclusion checks passed. `v1-candidate-01` is retained as invalid evidence because its manifest bound the wrong implementation commit and must never be consumed.
 
 ## Next executable gates
 
-1. accept stacked PRs #1–#7;
-2. implement [`quality-bband-historical-financial-normalization-implementation-v1.md`](../implementation/plans/quality-bband-historical-financial-normalization-implementation-v1.md) on PR #7;
-3. publish four supported observation sets plus the canonical 2021 failure;
+1. accept stacked PRs #1–#8;
+2. freeze historical presentation selection/formula-input handling for the four valid sets;
+3. preserve 2021 as unavailable and do not bridge the gap heuristically;
 4. five complete ROIC observations remain blocked until competent authority resolves 2021 debt.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.
