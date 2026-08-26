@@ -77,7 +77,9 @@ Only the exact eligible set may enter S2.
 
 ### Request scope
 
-The union of all S1-eligible issuer/report periods required by annual decision dates and financial lookbacks. Each annual S2 qualification becomes effective only at its conservative financial availability boundary and remains the active financial roster until the next accepted annual S2 boundary.
+The logical S2 scope is the union of all S1-eligible issuer/report periods required by annual decision dates and financial lookbacks. Each annual S2 qualification becomes effective only at its conservative financial availability boundary and remains the active financial roster until the next accepted annual S2 boundary.
+
+When an approved provider endpoint cannot batch-filter the exact Instrument set, acquisition may retain declared full-market period or announcement-date-slice `SOURCE_SUPERSET` snapshots. A separate deterministic extraction manifest must then exact-bind the S1 expected set, select only matching Instrument/period rows, count every extra source row and fail on any missing expected member. Provider extras never enter S2 scope or define eligibility.
 
 ### Minimum authoritative fields
 
@@ -163,8 +165,8 @@ Successful final composition proves that every broad member followed one legal p
 ## 9. Stage failure rules
 
 1. malformed/foreign upstream manifest blocks before source I/O;
-2. input scope must equal the exact prior-stage output set;
-3. provider rows outside scope fail; missing expected members fail;
+2. normalized/extracted stage scope must equal the exact prior-stage output set;
+3. in `EXACT_SCOPE` acquisition, provider rows outside scope fail; in explicitly approved `SOURCE_SUPERSET` acquisition, extras are retained and audited but excluded only by the deterministic extraction manifest; missing expected members always fail;
 4. zero rows never imply threshold failure or event absence;
 5. stage publication is atomic and immutable;
 6. no downstream stage starts after an upstream block;
@@ -185,7 +187,7 @@ They nest under `BUNDLE_EXACT_COVER_MISMATCH`; malformed/foreign manifest types 
 Permitted:
 
 - request only lightweight S0 fields initially;
-- request only frozen minimal financial fields for S1 survivors;
+- request only frozen minimal financial fields; prefer exact S1 scope, or use explicitly declared full-market period/announcement-date-slice `SOURCE_SUPERSET` pages only when the provider cannot batch-filter the stage set;
 - request governance/valuation only for exact S2 passes;
 - request OHLCV/actions only for the deterministic pre-run S4 union of Instruments with any S3-qualified session, through the frozen continuation horizon;
 - batch and page within each exact scope;
