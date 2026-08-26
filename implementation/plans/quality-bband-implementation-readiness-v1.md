@@ -2,7 +2,7 @@
 
 **Status: NOT_READY**
 
-The research design is approved for continued planning. Fixed-scope financial and valuation acquisition, declaration, normalization and selection work is published as stacked Backtest PRs #1–#9. Full strategy implementation still cannot start because the stack is unaccepted, one source period remains `DEBT_SCOPE_INCOMPLETE`, exact feature/rank values remain interval-sensitive, and broad immutable data, Universe/action, execution-feasibility and public portfolio authority are missing.
+The research design is approved for continued planning. Fixed-scope financial/valuation work and the first S0 lightweight staged capture are published as stacked Backtest PRs #1–#10. Full strategy implementation still cannot start because the stack is unaccepted, one source period remains `DEBT_SCOPE_INCOMPLETE`, exact feature/rank values remain interval-sensitive, and broad immutable historical authority, S1–S4, execution-feasibility and public portfolio authority are missing.
 
 ## Outcome
 
@@ -57,13 +57,14 @@ No second simulator, private Backtest composition, custom profit-and-loss calcul
 | C32 | `implementation/plans/quality-bband-universe-corporate-action-coverage-v1.md` | Freezes broad listed ordinary-A-share Universe, downstream structural filtering, industry/status/action closure and point-in-time action semantics; real source closure is missing. |
 | C33 | `implementation/plans/quality-bband-feature-ranking-manifest-v1.md` | Freezes prospective canonical annual PE, three-factor equal-weight midrank scoring, correlated interpretation domains, actual-holding slot reservation and invariant T-close top-K selection. |
 | C34 | `research/quality-bband-full-market-data-infeasibility-v1.md` | Concludes no formal Fold A/B economic run is honest under current public authority; strategy is untested/not rejected, while PR review and formal data procurement may continue. |
-| C35 | `implementation/plans/quality-bband-staged-data-funnel-v1.md` | User-approved S0→S4 staged exact-cover funnel reduces heavy acquisition only through deterministic prior-stage manifests; first allowed implementation is non-authoritative S0 lightweight capture. |
+| C35 | `implementation/plans/quality-bband-staged-data-funnel-v1.md` | User-approved S0→S4 staged exact-cover funnel reduces heavy acquisition only through deterministic prior-stage manifests. |
+| C36 | `implementation/plans/quality-bband-s0-lightweight-source-sentinel-v1.md` and `research/quality-bband-s0-lightweight-catalog-assessment-v1.md` | PR #10 publishes accepted source-bounded capture `sha256:b5b7a9243439146181ef07acd07c09e79d16f605bc6cfdc3148746e64359e198`; advisory current funnel narrows 5,889 returned rows to 2,841 provisional structural survivors, without granting S0/S1 authority. |
 
 ## Ownership
 
 - **Orchestrator:** current Platform planning session.
 - **Planning worktree:** `/home/ygguo/agent-projs/ai-crypt/platform-a-share-strategy` / `research/a-share-strategy`.
-- **Implementation worktrees:** fixed-scope PR worktrees exist for PRs #1–#9; one additive S0 lightweight acquisition writer is now authorized, but no S1–S4, final QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
+- **Implementation worktrees:** PR worktrees exist for PRs #1–#10; no S1–S4, final QB-DATA, ranking, multi-stock PREP or Strategy writer is authorized.
 - **Data acquisition/Builder owner:** Backtest repository owner.
 - **Backtest public PREP owner:** Backtest Runtime repository owner.
 - **Platform integration owner:** Platform repository owner after accepted Backtest SHA exists.
@@ -259,7 +260,7 @@ Candidate acceptance tiers:
 
 `NOT_READY`.
 
-The fixed-scope financial/governance/valuation lane and staged S0→S4 planning contracts are complete. PRs #1–#9 await **Backtest-owner review/acceptance**. One non-authoritative S0 lightweight capture may now proceed to test funnel plumbing and estimate scope; broad source closure, S1–S4 accepted manifests, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is executable.
+The fixed-scope financial/governance/valuation lane, staged S0→S4 contracts and real S0 provider-response capture are complete. PRs #1–#10 await **Backtest-owner review/acceptance**. The capture demonstrates workload reduction but not historical S0/S1 authority; competent listing/board/CSRC-industry closure, S1–S4 accepted manifests, peer ranking, execution feasibility and QB-PREP-01 remain blocked. No formal economic Experiment/OOS run is executable.
 
 ## Next owner and first action
 
@@ -276,5 +277,6 @@ The fixed-scope financial/governance/valuation lane and staged S0→S4 planning 
 - **History source:** stacked PR [`YungeG/quant-backtest#6`](https://github.com/YungeG/quant-backtest/pull/6), head `64159f81fa6f831990690dd133587b96533a0362`; real 2018–2022 SourceSnapshot `sha256:aee2ea78f3d51185110bc927836ce77ed51f590a9c7b4c26ee7ecd951cbf8d4b`.
 - **Historical normalization:** stacked PR [`YungeG/quant-backtest#8`](https://github.com/YungeG/quant-backtest/pull/8), commit `bac94d56272d3d3aa1172c052c855d4fb46a4356`; valid historical manifest `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`.
 - **Valuation source:** stacked PR [`YungeG/quant-backtest#9`](https://github.com/YungeG/quant-backtest/pull/9), commit `5b99e50826a526cfd81ea8a28d2a1d1bf3daf52c`; valid SourceSnapshot `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30` and invalid candidate 01 retained separately.
-- **Second decision:** accept PRs #2–#9 and the reasoned-ambiguity policy for Research use; exact source values remain unresolved and interval-sensitive ranking must fail closed.
+- **S0 lightweight source:** stacked PR [`YungeG/quant-backtest#10`](https://github.com/YungeG/quant-backtest/pull/10), commit `ea17ccf93f6242222800c298d6aab39177b8455d`; valid provider-response SourceSnapshot `sha256:b5b7a9243439146181ef07acd07c09e79d16f605bc6cfdc3148746e64359e198`, with every authority/grade flag false.
+- **Second decision:** accept PRs #2–#10 and the reasoned-ambiguity/staged-funnel policies for Research use; exact historical authority remains unresolved and interval-sensitive ranking must fail closed.
 - **Acceptance gate:** accepted acquisition/declarations/normalization/selection plus five-year coherent statement evidence; none grants Strategy, Validation or deployment authority.

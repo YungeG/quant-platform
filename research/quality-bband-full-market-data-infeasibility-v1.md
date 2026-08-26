@@ -24,7 +24,7 @@ The fixed issuer `xshe:000651` now has source-bounded, auditable research for:
 - fixed-window valuation SourceSnapshot and invariant `<60%` PE-percentile pass;
 - positive canonical FCF yield.
 
-Backtest PRs #1–#9 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
+Backtest PRs #1–#10 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
 
 A fixed-issuer pass is not a cross-sectional selection result and cannot substitute for a full-market peer set.
 
@@ -65,7 +65,7 @@ Search absence and provider zero-row responses cannot prove no event.
 
 Even with data, execution is still blocked by:
 
-- unaccepted Backtest PR stack #1–#9;
+- unaccepted Backtest PR stack #1–#10;
 - no accepted full-market QB-DATA Bundle or coverage reports;
 - provisional G12B capability/report names;
 - no canonical constrained-domain ranking witness schema;
@@ -108,7 +108,7 @@ At least one competent data path must be approved:
 
 Then all of the following remain required:
 
-- Backtest-owner approval of schemas/names and PRs #1–#9;
+- Backtest-owner approval of schemas/names and PRs #1–#10;
 - deterministic full-market QB-DATA publication/reopen;
 - interval-domain ranking proof artifacts;
 - accepted T+1 execution feasibility semantics;
@@ -127,4 +127,4 @@ current next executable economic run = none
 stop reason = genuine data/authority infeasibility under current constraints
 ```
 
-No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic PR review, data-source qualification/procurement and the approved S0 lightweight source-bounded plumbing capture may proceed now. Further strategy tuning, unscoped heavy capture or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.
+No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic PR review and data-source qualification/procurement may proceed. The approved S0 lightweight source-bounded plumbing capture is complete; further unscoped heavy capture or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.

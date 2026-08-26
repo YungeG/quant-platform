@@ -1,6 +1,6 @@
 # QB-S0-SRC-01 — Tushare broad lightweight catalog source sentinel v1
 
-- **Status:** `IMPLEMENTATION_PACKET_FROZEN / USER_APPROVED / SOURCE_BOUNDED / PLAN_ONLY`
+- **Status:** `IMPLEMENTED / PR_10_OPEN / REAL_CANDIDATE_INDEPENDENTLY_ACCEPTED / SOURCE_BOUNDED`
 - **Owner:** Backtest acquisition tooling
 - **Purpose:** first S0 plumbing capture for staged acquisition; not an S0 member set or authority
 - **Implementation base:** Backtest PR #9 head `5b99e50826a526cfd81ea8a28d2a1d1bf3daf52c`
@@ -182,7 +182,7 @@ Order:
 10. credential scan;
 11. publication.
 
-Envelope validation precedes cardinality; cardinality precedes row checks; intra-response duplicate checks precede cross-status conflicts.
+Reused `_authority_rows` envelope/schema/row-width validation precedes cardinality. Cardinality then precedes semantic row checks; intra-response duplicate checks precede cross-status conflicts.
 
 Row validation:
 
@@ -224,7 +224,16 @@ No crash-safe or concurrent-reader atomic-visibility claim is made. A stronger r
 
 The capture does not prove complete historical inventory, as-of identity, code-change continuity, board/industry/status history, revisions, terminal closure, survivorship safety, S0 authority, S1 eligibility or later-stage qualification.
 
-## 11. Test and acceptance matrix
+## 11. Implementation evidence
+
+- Backtest commit: `ea17ccf93f6242222800c298d6aab39177b8455d`
+- PR: <https://github.com/YungeG/quant-backtest/pull/10>
+- Focused validation: `40 passed`
+- Builder/acquisition validation: `589 passed, 5 skipped`
+- Independent code and real-candidate review: accepted
+- Real SourceSnapshot: `sha256:b5b7a9243439146181ef07acd07c09e79d16f605bc6cfdc3148746e64359e198`
+
+## 12. Test and acceptance matrix
 
 Focused tests cover:
 
