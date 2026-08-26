@@ -108,7 +108,7 @@ A later S2B extraction manifest must:
 - fail on every missing expected member;
 - never let extras define eligibility.
 
-Expected coverage identity is exactly `(api_name, canonical InstrumentId, period)` for all three endpoints. `.BJ` and other non-S1 rows are retained source extras; extraction excludes them only against the immutable S1 expected set.
+Expected S2B coverage identity is exactly `(api_name, canonical InstrumentId, period)` for all three endpoints. Acquisition preserves non-whitespace provider source codes ending `.SZ/.SH/.BJ`, including legacy/noncanonical values such as `4920017.BJ` and `833243!1.BJ`. S2B later maps only canonical expected Instruments; `.BJ` and other non-S1 rows remain retained extras.
 
 ## 5. Output/member identity
 
@@ -150,7 +150,7 @@ Every page requires:
 - `end_date` equals requested period;
 - `report_type="1"`, `comp_type="1"`, `update_flag` in `{"0","1"}`;
 - every remaining value is finite JSON number or null, never quoted numeric;
-- `ts_code` satisfies the reused canonical Tushare stock-code validator; source-superset `.BJ` rows are allowed;
+- `ts_code` is nonempty/trimmed, contains no whitespace and ends `.SZ`, `.SH` or `.BJ`; canonical Instrument mapping is deferred to S2B;
 - exact duplicate and revision rows are retained and counted, never rejected or deduplicated in acquisition.
 
 Only terminal-leaf members form the later S2B row union. Nonterminal parent pages are audit/split evidence and must never enter extraction, coverage counts or qualification.
@@ -200,7 +200,7 @@ request_started: bool
 
 `acquire...` constructs it as `([],0,0,False)` and `_capture_page_tree` mutates it in deterministic traversal order, returning the current root member-key `str`. Use generic `AcquisitionError`, not a new public enum/failure type.
 
-Reuse approved proxy helpers, `_provider_response`, `_TS_CODE`, `_require_safe_output`, SourceSnapshot types, `freeze_source_snapshot`, `verify_source_snapshot` and `_common.publish_directory`. No direct HTTP dependency, endpoint failover, prior-artifact reads or financial normalization belongs here.
+Reuse approved proxy helpers, `_provider_response`, `_require_safe_output`, SourceSnapshot types, `freeze_source_snapshot`, `verify_source_snapshot` and `_common.publish_directory`. The module owns only the frozen source-code regex; no direct HTTP dependency, endpoint failover, prior-artifact reads or financial normalization belongs here.
 
 ## 8. Flow and spacing
 
@@ -342,7 +342,7 @@ Tests use reduced root periods/counts through monkeypatched frozen constants and
 - delays/retries/clocks/redaction/no-clobber/fsync cleanup;
 - literal limitations/flags and exact three-file diff.
 
-Safety ceilings count logical page requests, not transport retry attempts. The request ceiling is checked before each logical request; after transport, the immediate timestamp is recorded, then the response-byte ceiling and per-page credential scan run before parsing/retention. Maximum retained output is accepted as bounded by 512 MiB plus metadata.
+Safety ceilings count logical page requests, not transport retry attempts. The request ceiling is checked before each logical request; after transport, the immediate timestamp is recorded, then the response-byte ceiling and per-page credential scan run before parsing/retention. Maximum retained output is accepted as bounded by 512 MiB plus metadata. Residual limitation: the reused helper reads/decompresses one complete HTTP response before this ceiling can run, so v1 does not bound transport/decompression peak memory or a gzip-bomb response.
 
 Validation commands:
 
