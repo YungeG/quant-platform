@@ -159,11 +159,18 @@ PR #8 now exact-binds these facts into source-bounded historical normalization c
 
 Manifest file SHA-256 is `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b4e10c3eff2326be98`. Canonical regeneration/readback, mode and credential-exclusion checks passed. `v1-candidate-01` is retained as invalid evidence because its manifest bound the wrong implementation commit and must never be consumed.
 
+## Fixed-issuer governance and valuation closure
+
+- [`quality-bband-gree-governance-audit-v1.md`](quality-bband-gree-governance-audit-v1.md) records standard unqualified audit opinions, a source-bounded severe-issuer-penalty pass, no controlling shareholder, the largest shareholder's `100%` pledge advisory, and material acquisition history.
+- [`quality-bband-gree-valuation-assessment-v1.md`](quality-bband-gree-valuation-assessment-v1.md) records an invariant fixed-issuer pass under provider TTM PE and self-recomputed annual PE, plus positive canonical FCF yield.
+- Backtest PR #9 publishes the valid valuation SourceSnapshot candidate `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30`; candidate 01 is retained invalid because it recorded a pre-response timestamp.
+
 ## Next executable gates
 
-1. accept stacked PRs #1–#8;
+1. accept stacked PRs #1–#9;
 2. carry [`quality-bband-reasoned-ambiguity-policy-v1.md`](quality-bband-reasoned-ambiguity-policy-v1.md) into future feature qualification;
-3. preserve the 2021 debt interval and fail only if a threshold/rank/trade decision varies across candidates;
-4. proceed to the next missing authority: audit/governance/pledge/valuation plus general Universe/corporate-action coverage.
+3. preserve the 2021 debt and valuation-score intervals and fail only if a threshold/rank/trade decision varies across candidates;
+4. freeze general missing-data eligibility, immutable Universe, corporate-action coverage, and the public multi-stock A-share preparation seam;
+5. build the cross-sectional feature/ranking manifest with interval-aware cutoff handling.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

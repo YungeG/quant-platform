@@ -1,6 +1,6 @@
 # QB-VAL-SRC-01 — Gree fixed-window valuation source sentinel v1
 
-- **Status:** `IMPLEMENTATION_PACKET_FROZEN / SOURCE_BOUNDED / PLAN_ONLY`
+- **Status:** `IMPLEMENTED / PR_9_OPEN / CANDIDATE_02_INDEPENDENTLY_ACCEPTED / SOURCE_BOUNDED`
 - **Owner:** Backtest Market Bundle Builder acquisition tooling
 - **Issuer:** `000651.SZ` / `xshe:000651`
 - **Purpose:** retain the fixed five-year market-value inputs needed to assess the 2024-05-06 valuation gate without trusting a mutable provider ratio as canonical
@@ -109,7 +109,18 @@ It does not prove:
 - full-market or fold coverage;
 - a Strategy qualification, Backtest result, Promotion, Live or trading authority.
 
-## 8. Acceptance
+## 8. Implementation evidence
+
+- Backtest commit: `5b99e50826a526cfd81ea8a28d2a1d1bf3daf52c`
+- PR: <https://github.com/YungeG/quant-backtest/pull/9>
+- Focused validation: `22 passed`
+- Builder/acquisition validation: `552 passed, 5 skipped`
+- Broad non-architecture validation: `2365 passed, 5 skipped`; three unrelated cross-repository fixture-path tests failed because `/home/ygguo/agent-projs/ai-crypt/tests/contracts/backtest-consumer-port-v1.json` is absent
+- Independent review: accepted `v1-candidate-02`
+- Valid SourceSnapshot: `sha256:97120ac129e6bb8fb63b2dfdbb141e6501d281d01011fb1120bb1d29c8228c30`
+- Invalid retained predecessor: `v1-candidate-01`, because it recorded invocation time before response receipt
+
+## 9. Acceptance
 
 Minimum evidence:
 
