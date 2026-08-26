@@ -18,7 +18,7 @@ All predecessor bytes remain unchanged.
 
 No credential or provider token is read. Allowed network calls are exactly:
 
-- six POSTs to `https://www.cninfo.com.cn/new/hisAnnouncement/query`;
+- seven POSTs to `https://www.cninfo.com.cn/new/hisAnnouncement/query`;
 - fifteen GETs to the exact HTTPS PDF URLs in section 4.
 
 No redirect, endpoint failover, cookies, browser automation or alternate mirror is allowed. The injected test seams are:
