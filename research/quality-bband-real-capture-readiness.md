@@ -1,6 +1,6 @@
 # Quality + B-Band real financial capture readiness
 
-- **Status:** `HISTORICAL_NORMALIZATION_PUBLISHED / 2021_DEBT_SCOPE_INCOMPLETE / FORMULA_AUTHORITY_BLOCKED`
+- **Status:** `HISTORICAL_NORMALIZATION_PUBLISHED / FIXED_ISSUER_FIVE_YEAR_FEATURE_INFEASIBLE`
 - **Checked:** 2026-08-26
 - **Scope:** 000651.SZ 2018–2023 source/declaration/normalization candidates plus fixed 2023 selection and finite SZSE Calendar/Session evidence
 
@@ -162,8 +162,8 @@ Manifest file SHA-256 is `sha256:ff3cd00543d961721f8fd1fa3358950a7e7027bb4e37c1b
 ## Next executable gates
 
 1. accept stacked PRs #1–#8;
-2. use [`quality-bband-historical-formula-coverage-v1.md`](quality-bband-historical-formula-coverage-v1.md) as the controlling fixed-issuer coverage verdict;
-3. resolve the 2021 financing scope through competent official authority, or accept five-year feature infeasibility;
-4. do not implement additional selector/formula code or bridge the 2021 gap heuristically.
+2. use [`quality-bband-historical-formula-coverage-v1.md`](quality-bband-historical-formula-coverage-v1.md) and [`quality-bband-2021-debt-scope-resolution-v1.md`](quality-bband-2021-debt-scope-resolution-v1.md) as the controlling fixed-issuer verdict;
+3. do not implement additional selector/formula code or bridge the 2021 gap;
+4. require an explicit decision before substituting another issuer or designing general missing-data eligibility.
 
 The current capture grants no MarketBundle, Strategy, Validation, Live or deployment authority.

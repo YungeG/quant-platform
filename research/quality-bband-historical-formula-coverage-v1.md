@@ -1,6 +1,6 @@
 # Quality + B-Band historical selection/formula coverage v1
 
-- **Status:** `FIXED_ISSUER_COVERAGE_FROZEN / FIVE_YEAR_FEATURE_INFEASIBLE / 2021_AUTHORITY_REQUIRED`
+- **Status:** `FIXED_ISSUER_COVERAGE_FROZEN / FIVE_YEAR_FEATURE_INFEASIBLE_CONFIRMED`
 - **Checked:** 2026-08-26
 - **Scope:** `xshe:000651`, annual periods `20181231` through `20231231`
 - **Inputs:** Backtest PR #8 historical normalization candidate plus PR #5 2023 selection candidate
@@ -107,11 +107,11 @@ A 2021 balance-only exception is forbidden because PR #8 intentionally made the 
 
 ## 7. Next action
 
-The shortest productive path is source resolution, not more selection/formula code:
+The source-resolution attempt is recorded in [`quality-bband-2021-debt-scope-resolution-v1.md`](quality-bband-2021-debt-scope-resolution-v1.md). It found no explicit correction, comparative interest-bearing classification or issuer/exchange answer. The shortest productive path remains new competent authority, not more selection/formula code:
 
 1. search the official 2021 annual report and competent issuer/exchange materials for an explicit classification of `企业借款及利息 2,731,680,114.20`;
 2. determine whether it belongs inside or outside canonical interest-bearing debt;
 3. publish a new declaration/normalization revision only if competent authority resolves the scope;
-4. otherwise record the five-year quality feature as infeasible and stop this strategy before Backtest execution.
+4. otherwise preserve the confirmed fixed-issuer five-year quality-feature infeasibility and stop this financial lane before Backtest execution.
 
 No MarketBundle, Strategy, Validation, Live or deployment authority is granted.
