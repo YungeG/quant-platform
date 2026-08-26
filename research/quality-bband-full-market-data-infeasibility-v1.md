@@ -24,7 +24,7 @@ The fixed issuer `xshe:000651` now has source-bounded, auditable research for:
 - fixed-window valuation SourceSnapshot and invariant `<60%` PE-percentile pass;
 - positive canonical FCF yield.
 
-Backtest PRs #1–#11 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
+Backtest PRs #1–#12 and Platform PR #1 retain the implementation/planning evidence. None is merged or accepted.
 
 A fixed-issuer pass is not a cross-sectional selection result and cannot substitute for a full-market peer set.
 
@@ -65,26 +65,28 @@ Search absence and provider zero-row responses cannot prove no event.
 
 Even with data, execution is still blocked by:
 
-- unaccepted Backtest PR stack #1–#11;
+- unaccepted Backtest PR stack #1–#12;
 - no accepted full-market QB-DATA Bundle or coverage reports;
 - provisional G12B capability/report names;
 - no canonical constrained-domain ranking witness schema;
 - no accepted T+1 selected-name gap/tradability/lot transport;
 - no public multi-stock A-share PREP operation or qualified Profile.
 
-## 4. Bounded capture boundary after staged-funnel approval
+## 4. Bounded capture result after staged-funnel approval
 
-An unscoped heavy approved-proxy Tushare pull could preserve more returned bytes, but it cannot create the missing provider/source properties:
+The approved funnel completed source-bounded S0, annual structural-roster and S2A VIP financial captures. S2A candidate 02 retains 245 verified pages, 39 root trees, 142 terminal leaves and 302,446 terminal rows under Backtest PR #12.
 
-- historical-as-of identity;
+That materially reduced the uncertainty but did not create the missing provider/source properties:
+
+- historical official S1 identity and survivorship closure;
 - correction/supersession lineage;
-- complete pagination/terminal declaration;
-- competent no-event authority;
-- corporate-action lifecycle closure.
+- competent no-event or no-filing authority;
+- corporate-action lifecycle closure;
+- accounting unit, availability, presentation and debt-note qualification.
 
-It would therefore remain nonauthority input and would not unlock the required public Platform/Backtest flow.
+Against the provisional 2,845-Instrument S1 union, terminal leaves cover 96,515 of 96,537 expected `(api_name, InstrumentId, period)` triples. Twenty-two triples across eight Instruments remain absent. Exact per-Instrument advisory probes did not close them. Current delisted status or ST-like names cannot be projected backward to remove historical expected members.
 
-The user-approved exception is one staged S0 lightweight catalog capture. It may preserve returned broad identity/listing/company bytes, test exact stage plumbing and estimate structural-funnel scope while keeping historical completeness, survivorship, revision closure and decision-grade flags false. S1–S4 acquisition must wait for exact prior-stage manifests; this exception does not change the no-economic-run decision.
+A production S2B extractor bound only to the accepted inputs would therefore be failure-only. Its implementation was deferred rather than freezing unused output machinery. See `quality-bband-s2a-vip-financial-source-assessment-v1.md` and `quality-bband-s2b-exact-cover-infeasibility-v1.md`.
 
 ## 5. Forbidden substitutes
 
@@ -108,7 +110,7 @@ At least one competent data path must be approved:
 
 Then all of the following remain required:
 
-- Backtest-owner approval of schemas/names and PRs #1–#11;
+- Backtest-owner approval of schemas/names and PRs #1–#12;
 - deterministic full-market QB-DATA publication/reopen;
 - interval-domain ranking proof artifacts;
 - accepted T+1 execution feasibility semantics;
@@ -127,4 +129,4 @@ current next executable economic run = none
 stop reason = genuine data/authority infeasibility under current constraints
 ```
 
-No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic PR review and data-source qualification/procurement may proceed. The approved S0 lightweight source-bounded plumbing capture is complete; further unscoped heavy capture or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.
+No economic Experiment/OOS run should resume until one unblocking data/authority path is concretely available. Non-economic PR review and data-source qualification/procurement may proceed. The approved staged captures through S2A are complete; further unscoped heavy capture, a failure-only S2B implementation or unofficial backtesting would not close the authority gap and would violate the precommit/evidence boundary if presented as official evidence.
