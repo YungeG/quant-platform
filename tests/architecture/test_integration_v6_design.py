@@ -13,7 +13,7 @@ PLAN = ROOT / "implementation/plans/target-stream-research.md"
 PLAN_README = ROOT / "implementation/plans/README.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
 GLOSSARY = ROOT / "CONTEXT.md"
-FIXTURE_SHA = "0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496"
+FIXTURE_SHA = "dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2"
 APPROVED_AT = "2026-08-26T03:14:51Z"
 BASELINES = {
     "platform": "04b01a1db1408ab7277a116f02ce706243ac1499",
@@ -184,7 +184,24 @@ def test_integration_v6_target_materializer_and_module_wires_are_exact() -> None
         "target_stream_digest",
         "event_count",
     ]
-    assert validation["new_operation"] == "validate_target_candidate"
+    assert validation["new_operation"] == {
+        "name": "validate_target_candidate",
+        "parameters": [
+            "candidate_ref",
+            "policy",
+            "reservation_at",
+            "foundation",
+            "sample_ledger",
+            "materializer",
+            "backtest",
+        ],
+        "fresh_or_generic_preparation_input_parameter": False,
+        "backtest_target_operations": [
+            "publish_target(producer_context_ref, target_stream)",
+            "load_target(target_ref)",
+            "prepare_target(validation_case_ref, target_ref)",
+        ],
+    }
     assert validation["existing_validate_candidate_unchanged"] is True
     assert validation["all_v1_bytes_unchanged"] is True
     assert validation["discovery_target_ref_substitution_as_oos_valid"] is False
@@ -255,10 +272,15 @@ def test_integration_v6_execution_replay_precedence_and_scope_are_exact() -> Non
             "module commit preventing rematerialization"
         ),
         "target_cas_orphan_is_research_or_validation_evidence": False,
-        "recovery_order": ["first evidence/ref", "prepared request/run"],
+        "recovery_order": [
+            "exact-load verified first evidence/ref",
+            "reconstructed prepared request/run",
+        ],
+        "immutable_target_cas_load_required": True,
+        "idempotent_preparation_reconstruction_allowed": True,
         "forbidden_second_actions": [
-            "read",
-            "materialization",
+            "sample/materializer-input read",
+            "target materialization",
             "economic run",
             "governance refresh",
         ],

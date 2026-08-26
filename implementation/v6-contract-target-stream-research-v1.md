@@ -4,7 +4,7 @@
 - **Contract:** `integration-v6-target-stream-research-v1`
 - **Normative contract:** [`overall/integration-v6.md`](../overall/integration-v6.md)
 - **Protected fixture:** [`tests/contracts/integration-v6-target-stream-research-v1.json`](../tests/contracts/integration-v6-target-stream-research-v1.json)
-- **Fixture SHA-256:** `0f9787350efd9302ce8362b73a93d72d9ddbb48450ea617aa9e2265bd6b73496`
+- **Fixture SHA-256:** `dcae07677fc0c0a68c034310f2183c192f9b46ad4002a5293a88213966d28ae2`
 - **Plan:** [`implementation/plans/target-stream-research.md`](plans/target-stream-research.md)
 - **Status:** APPROVED
 - **Approval time:** `2026-08-26T03:14:51Z`
@@ -26,10 +26,10 @@ All five approvals bind the exact fixture hash and exact baseline SHAs. Approval
 - Backtest owns the context-bound `backtest_target_stream@1` CAS/exact-read repository and nominal `BacktestTargetStreamRef`; there is no Platform owner log.
 - The composition root supplies the exact structural materializer and immutable decision-source `strategy_artifact`; it reads only the cited immutable MarketBundle.
 - Research adds `TargetRecipe@1`, one `TargetBuildTask@1` per Trial, `TARGET_BUILD`, `TargetMaterializationEvidence@1`, target `ExperimentSpec@2`, and `StrategyCandidate@3` selected evidence.
-- Validation preserves the existing out-of-sample reservation producer and adds `ValidationPlan@2`, `ValidationTargetMaterializationEvidence@1`, target-aware CaseResult@2/ValidationReport@2, and optional `validate_target_candidate`.
+- Validation preserves the existing out-of-sample reservation producer and adds `ValidationPlan@2`, `ValidationTargetMaterializationEvidence@1`, target-aware CaseResult@2/ValidationReport@2, and exact `validate_target_candidate(candidate_ref, policy, reservation_at, foundation, sample_ledger, materializer, backtest)`.
 - Backtest adds source-neutral `DeterministicTimelineV2`/`TimelineCursorV2`, value-embedding `backtest_execution_input_bundle@6`, and profile-specific `prepare_cash_target_stream_backtest` while preserving all existing request/publication/evidence bytes.
 - Promotion fails closed on every Candidate@3/ValidationReport@2 ref until `TSR-PG-01`.
-- Materialization-evidence publication is the replay commit; a target CAS orphan is not module evidence.
+- Materialization-evidence publication is the replay commit; a target CAS orphan is not module evidence. Recovery exact-loads immutable committed target evidence and may repeat idempotent Backtest preparation only to reconstruct cache access; it never repeats a sample/materializer read, target materialization, economic run, or governance refresh.
 - Leaf implementation uses isolated clean commits; exact root gitlinks/VCS pins/`uv.lock` change only in root fan-in.
 
 ## Readiness and exclusions

@@ -182,7 +182,24 @@
     },
     "target_aware_case_result_schema_version": 2,
     "target_aware_validation_report_schema_version": 2,
-    "new_operation": "validate_target_candidate",
+    "new_operation": {
+      "name": "validate_target_candidate",
+      "parameters": [
+        "candidate_ref",
+        "policy",
+        "reservation_at",
+        "foundation",
+        "sample_ledger",
+        "materializer",
+        "backtest"
+      ],
+      "fresh_or_generic_preparation_input_parameter": false,
+      "backtest_target_operations": [
+        "publish_target(producer_context_ref, target_stream)",
+        "load_target(target_ref)",
+        "prepare_target(validation_case_ref, target_ref)"
+      ]
+    },
     "existing_validate_candidate_unchanged": true,
     "all_v1_bytes_unchanged": true,
     "discovery_target_ref_substitution_as_oos_valid": false,
@@ -264,12 +281,14 @@
     "materialization_evidence_publication": "module commit preventing rematerialization",
     "target_cas_orphan_is_research_or_validation_evidence": false,
     "recovery_order": [
-      "first evidence/ref",
-      "prepared request/run"
+      "exact-load verified first evidence/ref",
+      "reconstructed prepared request/run"
     ],
+    "immutable_target_cas_load_required": true,
+    "idempotent_preparation_reconstruction_allowed": true,
     "forbidden_second_actions": [
-      "read",
-      "materialization",
+      "sample/materializer-input read",
+      "target materialization",
       "economic run",
       "governance refresh"
     ]

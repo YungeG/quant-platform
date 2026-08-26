@@ -105,9 +105,9 @@ Market qualification is separate: `TSR-BIN-Q-01` remains H3 and `TSR-ASH-Q-01` r
 
 **State:** BLOCKED on accepted `TSR-RP-01` candidate provenance and `TSR-BT-01` authority.
 
-**Produces:** ValidationPlan@2, independent post-reservation target materialization, ValidationTargetMaterializationEvidence@1, target-aware CaseResult@2/ValidationReport@2, and optional `validate_target_candidate`.
+**Produces:** ValidationPlan@2, independent post-reservation target materialization, ValidationTargetMaterializationEvidence@1, target-aware CaseResult@2/ValidationReport@2, and exact `validate_target_candidate(candidate_ref, policy, reservation_at, foundation, sample_ledger, materializer, backtest)`.
 
-**Must prove:** existing `validate_candidate` and all v1 bytes unchanged; discovery target-ref substitution fails even for equal stream values; replay does not rematerialize or rerun.
+**Must prove:** existing `validate_candidate` and all v1 bytes unchanged; discovery target-ref substitution fails even for equal stream values; recovery exact-loads committed target evidence and may repeat only idempotent Backtest preparation, with no second sample/materializer read, target materialization, or economic run.
 
 **Write boundary:** isolated Validation branch/worktree and one clean leaf commit. No root pin or gitlink writes.
 

@@ -148,7 +148,21 @@ ValidationTargetMaterializationEvidence@1 = {
 }
 ```
 
-Target-aware CaseResult and ValidationReport use schema version 2. The additive public operation may be named `validate_target_candidate`; existing `validate_candidate` and every v1 byte remain unchanged.
+Target-aware CaseResult and ValidationReport use schema version 2. The additive public operation is exactly:
+
+```python
+validate_target_candidate(
+    candidate_ref,
+    policy,
+    reservation_at,
+    foundation,
+    sample_ledger,
+    materializer,
+    backtest,
+)
+```
+
+The structural `backtest` port adds `publish_target`, `load_target`, and `prepare_target(validation_case_ref, target_ref)` to the existing run/derive/load operations. The composition root may pre-bind the public cash request intent, provider inputs, readers, publisher, and publication root behind `prepare_target`; no generic preparation-input ABI is added. Existing `validate_candidate` and every v1 byte remain unchanged.
 
 Validation must independently materialize after the holdout reservation. Substituting the discovery target ref as OOS is invalid even when the stream values are equal.
 
@@ -205,8 +219,9 @@ Each module preserves its existing internal precedence inside the applicable hig
 - Reservation is idempotent and remains the gate before materialization/read.
 - Research or Validation materialization-evidence publication is that module's commit and prevents rematerialization.
 - A target CAS orphan is not Research or Validation evidence.
-- Replay recovers the first evidence/ref, then the prepared request/run.
-- Replay performs no second read, materialization, economic run, or governance refresh.
+- Replay recovers and exact-load verifies the first committed evidence/ref, then reconstructs the prepared request/run.
+- Replay performs no second sample/materializer-input read, target materialization, economic run, or governance refresh.
+- Exact immutable target-CAS loads are required during recovery, and idempotent Backtest preparation may be repeated from the committed target ref solely to reconstruct cache access.
 
 ## 10. Repository execution
 
