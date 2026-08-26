@@ -1,11 +1,11 @@
 # QB-S2-NONFILE-01 — official annual-report non-filing terminal v1
 
-- **Status:** `IMPLEMENTATION_PACKET_FROZEN / USER_APPROVED / PLAN_ONLY`
+- **Status:** `IMPLEMENTATION_PACKET_FROZEN / NONFILING_EFFECTIVE_BOUNDARY_USER_APPROVED / PLAN_ONLY`
 - **Approved:** 2026-08-26
 - **Backtest implementation base:** `33f7320bd3f1e81c6a985f2fdeea39aedb7bc01e`
 - **Purpose:** let competent-source confirmed annual-report non-filings exact-cover issuer-local S2 members without fabricated statements, silent issuer deletion, unrelated-issuer blocking or forced exits
 
-Approved authority snapshot: Platform commit `f236304`. Implementation-authority amendment: `71d0030` (independently marked READY).
+Approved authority snapshot: Platform commit `f236304`. Implementation-authority amendments: `71d0030` and effective-boundary/evidence-kind amendment `2bf2248` (both independently marked READY).
 
 | File at approved snapshot | SHA-256 |
 |---|---|
@@ -70,7 +70,15 @@ content_tree_hash
 provenance_hash
 ```
 
-The initial document must affirm that the issuer did not file the named annual report by the statutory deadline. A pre-deadline warning or expectation alone is insufficient.
+The initial document must satisfy one exact reviewed evidence kind:
+
+```text
+POST_DEADLINE_NONFILING_CONFIRMATION
+PREDEADLINE_DEFINITIVE_INABILITY
+EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE
+```
+
+A pre-deadline document qualifies only when it unequivocally states that the issuer cannot disclose by the statutory deadline; a mere `预计无法`, risk warning or possible delay does not qualify. `PREDEADLINE_DEFINITIVE_INABILITY` becomes available no earlier than the first accepted session open strictly after the deadline. `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` requires competent exchange/status authority that the suspension is effective because the deadline was actually missed.
 
 The terminal document must affirm that the report remained unfiled through listing termination or that annual audit/report work remained incomplete at the last listed-state terminal. v1 accepts only:
 
@@ -86,13 +94,23 @@ terminal_confirmation = "NOT_FILED_THROUGH_LISTING_TERMINATION"
 ReviewedNonFilingDocumentV1
 ```
 
+`NonFilingEvidenceKind` is an exact string enum:
+
+```text
+POST_DEADLINE_NONFILING_CONFIRMATION
+PREDEADLINE_DEFINITIVE_INABILITY
+EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE
+TERMINAL_NONFILING_CONFIRMATION
+```
+
 Exact fields:
 
 ```text
 type: Literal["reviewed_nonfiling_document"]
 schema_version: Literal[1]
 role: INITIAL_NONFILING_PROOF | TERMINAL_CONFIRMATION
-authority: ISSUER | SSE | SZSE | CSRC | CSRC_BRANCH
+evidence_kind: NonFilingEvidenceKind
+authority: ISSUER | SSE | SZSE | CSRC | CSRC_BRANCH | NEEQ_SPONSOR
 member_key: str
 source_url: str
 published_date: date
@@ -115,8 +133,18 @@ Rules:
 - `byte_count > 0`; reviewed pages are positive, strictly increasing and nonempty;
 - `content_hash` and byte count equal the verified snapshot member;
 - `EXACT_INSTANT` requires `published_at_epoch_nanoseconds`; `DATE_ONLY` requires null;
-- initial proof has `supersedes_member_key=null`;
-- terminal confirmation has `supersedes_member_key` equal to the initial member key;
+Compatibility is exact:
+
+| role | evidence kind | allowed authority |
+|---|---|---|
+| `INITIAL_NONFILING_PROOF` | `POST_DEADLINE_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
+| `INITIAL_NONFILING_PROOF` | `PREDEADLINE_DEFINITIVE_INABILITY` | `ISSUER` |
+| `INITIAL_NONFILING_PROOF` | `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE` | `SSE`, `SZSE` |
+| `TERMINAL_CONFIRMATION` | `TERMINAL_NONFILING_CONFIRMATION` | `ISSUER`, `SSE`, `SZSE`, `CSRC`, `CSRC_BRANCH`, `NEEQ_SPONSOR` |
+
+Initial proof has `supersedes_member_key=null`; terminal confirmation supersedes the initial member. Enum/type failures map to `INPUT_TYPE_MISMATCH`; a valid enum with an incompatible role/authority maps to `FINANCIAL_REVISION_MISMATCH`.
+
+Natural-language classification is outside the pure Builder. The trusted review packet exclusively assigns `evidence_kind` and freezes the literal reviewed excerpt/assertions. The Builder validates the exact enum and compatibility matrix; it performs no linguistic heuristic. A document saying only `预计无法` must not be assigned `PREDEADLINE_DEFINITIVE_INABILITY` by the reviewed evidence producer.
 - exactly one of each role exists;
 - input order is ignored; canonical order is role order above, then publication boundary, then member key;
 - duplicate member keys or duplicate roles fail; no duplicate collapse is inferred.
@@ -149,7 +177,9 @@ max(source_visibility_at, deadline_boundary_at)
 
 `deadline_boundary_at` is the first exact accepted exchange-session open strictly after the statutory deadline. `source_visibility_at` follows the frozen financial availability policy: exact instant when retained, otherwise first exact later accepted exchange-session open after the publication date. `availability_id = canonical_sha256(body_without_availability_id)` and must reconstruct exactly.
 
-The declaration receives separate initial and terminal availability values. Each `document_member_key` must match its reviewed document. Snapshot member acquisition must not precede publication; review time must not precede acquisition. Terminal source visibility/availability must not precede initial visibility/availability. A pre-deadline expectation cannot qualify as initial proof. Source publication after a screen cannot authorize that screen.
+The declaration receives separate initial and terminal availability values. Each `document_member_key` must match its reviewed document. Snapshot member acquisition must not precede publication; review time must not precede acquisition. Terminal source visibility/availability must not precede initial visibility/availability.
+
+For `PREDEADLINE_DEFINITIVE_INABILITY`, `available_at` is the later of source visibility and the deadline boundary. For `EXCHANGE_NONFILING_SUSPENSION_EFFECTIVE`, source visibility is the exact accepted suspension-effective instant and cannot precede the deadline boundary. A source published after a screen cannot authorize that earlier screen.
 
 Initial candidate availability audit:
 
@@ -158,10 +188,10 @@ Initial candidate availability audit:
 | `000693.SZ` / 2018 | 2019-04-30 issuer non-filing notice | 2019-05-06 open | covered at 2019-05-06 T-close |
 | `600090.SH` / 2021 | 2022-04-30 SSE/issuer non-filing authority | 2022-05-05 open | covered at 2022-05-05 T-close |
 | `600146.SH` / 2021 | 2022-04-30 SSE/issuer non-filing authority | 2022-05-05 open | covered at 2022-05-05 T-close |
-| `000038.SZ` / 2022 | 2023-05-09 definitive post-deadline authority | 2023-05-10 open | 2023-05-04 remains blocked |
-| `000976.SZ` / 2023 | 2024-05-12 definitive post-deadline authority | 2024-05-13 open | 2024-05-06 remains blocked |
-| `000622.SZ` / 2024 | 2025-05-06 definitive post-deadline authority | 2025-05-07 open | 2025-05-06 remains blocked |
-| `601028.SH` / 2024 | terminal proof after 2025-04-30; exact source packet pending | exact boundary pending packet | 2025-05-06 remains blocked unless earlier definitive proof is accepted |
+| `000038.SZ` / 2022 | 2023-04-29 unequivocal issuer inability notice | 2023-05-04 open | covered at 2023-05-04 T-close |
+| `000976.SZ` / 2023 | 2024-04-30 unequivocal issuer inability/stop notice | 2024-05-06 open | covered at 2024-05-06 T-close |
+| `000622.SZ` / 2024 | exchange/issuer non-filing suspension effective 2025-05-06 open | 2025-05-06 open | covered at 2025-05-06 T-close |
+| `601028.SH` / 2024 | 2025-04-29 unequivocal issuer inability notice | 2025-05-06 open | covered at 2025-05-06 T-close; terminal confirmation remains a later source |
 
 This table is a readiness target, not accepted availability evidence. Publication requires accepted Calendar/Session refs and retained source bytes.
 
@@ -233,6 +263,7 @@ Symbols:
 
 ```text
 NonFilingDocumentRole
+NonFilingEvidenceKind
 NonFilingAuthority
 ReviewedNonFilingDocumentV1
 OfficialNonFilingAvailabilityV1
@@ -322,7 +353,7 @@ Failure precedence is table order. Declaration reconstruction occurs before late
 
 1. input source-ref order does not change `declaration_id`;
 2. snapshot provenance or source-byte mutation fails;
-3. pre-deadline evidence cannot create an early declaration;
+3. pre-deadline evidence cannot create an early declaration; reviewed `PREDEADLINE_DEFINITIVE_INABILITY` becomes usable only at the deadline boundary, and evidence-kind compatibility is exact;
 4. wrong API-kind mapping, missing key, duplicate terminal or statement overlap fails;
 5. later filing availability shortens the half-open interval without backfill;
 6. a non-held non-filer is excluded locally while unrelated ranking proceeds;
