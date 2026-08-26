@@ -35,6 +35,7 @@ Implementation reuses public Backtest package types and functions:
 
 ```text
 crypto_quant_domain.InstrumentId
+crypto_quant_domain.VenueId
 crypto_quant_domain.UtcInstant
 crypto_quant_domain.canonical_sha256
 crypto_quant_bundle_builder.SourceSnapshot
@@ -44,8 +45,8 @@ crypto_quant_bundle_builder.verify_source_snapshot
 Canonical provider-code mapping is exact:
 
 ```text
-([0-9]{6}).SZ -> InstrumentId("xshe", code)
-([0-9]{6}).SH -> InstrumentId("xshg", code)
+([0-9]{6}).SZ -> InstrumentId(VenueId("xshe"), code)
+([0-9]{6}).SH -> InstrumentId(VenueId("xshg"), code)
 ```
 
 Any other code or mapping disagreement returns `CATALOG_IDENTITY_MISMATCH`.
@@ -131,22 +132,24 @@ Exact fields:
 ```text
 type: Literal["official_nonfiling_availability"]
 schema_version: Literal[1]
+availability_id: str
+document_member_key: str
 source_visibility_at: UtcInstant
 deadline_boundary_at: UtcInstant
 available_at: UtcInstant
-calendar_authority_ref: str
-source_availability_ref: str
+calendar_authority_id: str
+source_availability_id: str
 ```
 
-`available_at` must equal:
+Both authority IDs and `availability_id` are canonical `sha256:` identities. `available_at` must equal:
 
 ```text
 max(source_visibility_at, deadline_boundary_at)
 ```
 
-`deadline_boundary_at` is the first exact accepted exchange-session open strictly after the statutory deadline. `source_visibility_at` follows the frozen financial availability policy: exact instant when retained, otherwise first exact later accepted exchange-session open after the publication date.
+`deadline_boundary_at` is the first exact accepted exchange-session open strictly after the statutory deadline. `source_visibility_at` follows the frozen financial availability policy: exact instant when retained, otherwise first exact later accepted exchange-session open after the publication date. `availability_id = canonical_sha256(body_without_availability_id)` and must reconstruct exactly.
 
-A pre-deadline expectation cannot qualify as initial proof. Source publication after a screen cannot authorize that screen.
+The declaration receives separate initial and terminal availability values. Each `document_member_key` must match its reviewed document. Snapshot member acquisition must not precede publication; review time must not precede acquisition. Terminal source visibility/availability must not precede initial visibility/availability. A pre-deadline expectation cannot qualify as initial proof. Source publication after a screen cannot authorize that screen.
 
 Initial candidate availability audit:
 
@@ -180,6 +183,8 @@ fiscal_period_end_date: date
 statutory_deadline_date: date
 filing_status: Literal["NOT_FILED_BY_STATUTORY_DEADLINE"]
 economic_effective_date: date
+initial_availability: OfficialNonFilingAvailabilityV1
+terminal_availability: OfficialNonFilingAvailabilityV1
 available_at: UtcInstant
 active_interval_start: UtcInstant
 active_interval_end: UtcInstant
@@ -203,7 +208,7 @@ balancesheet_vip <-> BALANCE_SHEET
 cashflow_vip     <-> CASH_FLOW_STATEMENT
 ```
 
-Tuple order is exactly income, balance sheet, cash flow. `limitations` is sorted lexicographically, unique and nonempty. `economic_effective_date == statutory_deadline_date`; `available_at == active_interval_start`.
+Tuple order is exactly income, balance sheet, cash flow. `limitations` is sorted lexicographically, unique and nonempty. `economic_effective_date == statutory_deadline_date`; `available_at == active_interval_start == initial_availability.available_at`; `terminal_confirmation_available_at == terminal_availability.available_at`. Both full availability canonical values and their IDs are embedded in the declaration body.
 
 `active_interval_end` is the earlier of:
 
@@ -231,13 +236,32 @@ NonFilingDocumentRole
 NonFilingAuthority
 ReviewedNonFilingDocumentV1
 OfficialNonFilingAvailabilityV1
+OfficialAnnualReportNonFilingRequestV1
 OfficialAnnualReportNonFilingDeclarationV1
 OfficialAnnualReportNonFilingFailure
 OfficialAnnualReportNonFilingOutcome
-declare_official_annual_report_nonfiling_v1(...)
+declare_official_annual_report_nonfiling_v1(request: OfficialAnnualReportNonFilingRequestV1) -> OfficialAnnualReportNonFilingOutcome
 ```
 
-The operation consumes already verified immutable values. It performs no filesystem access, network request, clock read, PDF parsing, source acquisition or repository publication.
+Request fields are exact:
+
+```text
+type: Literal["official_annual_report_nonfiling_request"]
+schema_version: Literal[1]
+instrument_id: InstrumentId
+provider_code: str
+fiscal_period_end_date: date
+statutory_deadline_date: date
+source_snapshot: SourceSnapshot
+source_documents: tuple[ReviewedNonFilingDocumentV1, ReviewedNonFilingDocumentV1]
+initial_availability: OfficialNonFilingAvailabilityV1
+terminal_availability: OfficialNonFilingAvailabilityV1
+active_interval_end: UtcInstant
+terminal_confirmation_fact_date: date
+limitations: tuple[str, ...]
+```
+
+The operation validates and derives every declaration field not present in the request, including covered tuples, snapshot identities, availability links and declaration ID. It consumes already immutable values and performs no filesystem access, network request, clock read, PDF parsing, source acquisition or repository publication.
 
 ## 8. Exact-cover integration
 
@@ -303,8 +327,13 @@ Failure precedence is table order. Declaration reconstruction occurs before late
 5. later filing availability shortens the half-open interval without backfill;
 6. a non-held non-filer is excluded locally while unrelated ranking proceeds;
 7. a held non-filer emits no exit or slot release;
-8. combined source corruption and cover mismatch returns the earlier source failure;
-9. all seven initial declarations reconstruct byte-identically from accepted source/evidence inputs.
+8. combined source corruption and cover mismatch returns the earlier source failure.
+
+Later real-artifact integration gates, outside the three-file pure Builder write set:
+
+1. all seven declarations reconstruct byte-identically from accepted source/evidence/Calendar inputs;
+2. the provisional extraction closure recomputes `96,537 = 96,515 P + 1 O + 21 N`;
+3. each screen marked blocked in the availability table remains blocked before declaration availability.
 
 ## 12. Initial issuer-period set
 
