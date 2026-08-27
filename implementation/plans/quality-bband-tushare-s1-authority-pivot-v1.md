@@ -7,7 +7,7 @@
 - **Supersedes for S1 execution:** procurement-only blocking under `quality-bband-formal-s1-authority-feasibility-v1.md`
 - **Backtest implementation base:** `0d373b71b263a53b6b00e50b26ae1508dcfc986f`
 - **Preserves:** official SSE/SZSE/CSRC authority remains false; all source limitations remain explicit
-- **Packet body hash:** `sha256:b10001ff7fdc6e9f952ba49ea66e29990cd5aa6a0454476cebb20cc521db8a9d` (SHA-256 of this UTF-8 file with this entire line removed)
+- **Packet body hash:** `sha256:aeb8ac2b5aa8a97c5cf04140ff4a12a0c45854ee8ea34c19a8a89792676006bb` (SHA-256 of this UTF-8 file with this entire line removed)
 
 ## 1. Outcome
 
@@ -404,7 +404,7 @@ Implement as an additive no-network Backtest artifact tool with an exact three-f
 2. `tests/tools/acquisition/test_cn_a_share_quality_bband_tushare_s1_structural_v1.py`
 3. `tests/architecture/test_quality_bband_tushare_s1_structural_v1_boundary.py`
 
-The tool consumes only the two accepted artifact roots and one fresh output path. It must reconstruct every input SourceSnapshot, publish atomically with bounded safe reads and no-clobber rename, and reproduce the frozen real values before final publication.
+The tool consumes only the two accepted artifact roots and one fresh output path. It must reconstruct every input SourceSnapshot and publish atomically with bounded safe reads. Publication opens and pins the output parent directory, performs staging creation/file writes/no-clobber `renameat2` and fsync through directory-FD-relative operations, verifies the published directory inode equals the pinned staging-directory inode, then verifies the pathname still resolves to the pinned parent before success.
 
 Exact public operation:
 
@@ -433,7 +433,7 @@ _derive_catalog_and_extras
 _build_screen_dispositions
 _build_financial_requirements
 _validate_frozen_hashes
-_rename_noreplace
+_rename_noreplace_at
 _atomic_publish
 _parse_args
 main
