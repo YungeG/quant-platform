@@ -335,7 +335,7 @@ SURVIVORSHIP_SAFETY_BEYOND_TUSHARE_SCOPE_FALSE
 | 7 | `FROZEN_OUTPUT_MISMATCH` | Constructed manifest ID, byte count or file SHA differs from the frozen output. |
 | 8 | `PUBLICATION_INTEGRITY_FAILURE` | Staging, no-clobber rename, fsync, readback or inode/parent verification fails. |
 
-Every failure publishes no builder-accepted destination and emits no empty universe, Target, Strategy terminal or execution request. Race-created attacker-owned pathnames are never deleted merely to make the visible destination absent.
+Failure selection is global: both inputs are inspected before choosing the lowest-priority-number failure. Every failure publishes no builder-accepted destination and emits no empty universe, Target, Strategy terminal or execution request. Race-created or ownership-ambiguous pathnames are never deleted merely to make the visible destination absent, so failed races may leave quarantined staging/output paths for manual inspection.
 
 ## Security and atomic publication
 
@@ -378,7 +378,7 @@ Every failure publishes no builder-accepted destination and emits no empty unive
 | C5 | Alter one S1 byte or manifest flag; identity/authority failure must precede equivalence. |
 | C6 | Change expected-set authority or ID; rebinding must fail. |
 | C7 | Alter provider SHA, O/N key, count or overlap; closure/payload check must fail. |
-| C8 | Destination race/parent replacement/staging substitution must fail without clobber. |
+| C8 | Destination race, ancestor/parent replacement, mkdir→open staging substitution, directory substitution and member substitution must fail without clobber or attacker-path deletion. |
 
 Validation allocation:
 
