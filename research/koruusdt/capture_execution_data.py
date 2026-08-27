@@ -22,6 +22,7 @@ import urllib.parse
 import urllib.request
 import zipfile
 from collections.abc import Iterable, Iterator
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +48,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = Path(__file__).resolve().parent / "data"
 BASE_MANIFEST_NAME = "manifest.json"
 EXECUTION_MANIFEST_NAME = "execution_data_manifest.json"
+ARCHIVE_METADATA_RECEIPT_NAME = "binance_usdm/official_archive_metadata_receipt.json"
 USER_AGENT = "koruusdt-bounded-discovery-capture/1"
 MAX_RETRIES = 5
 DERIVED_STATUS = "base_manifest_derived_raw_observations"
@@ -200,11 +202,192 @@ def daily_dates() -> Iterator[dt.date]:
         current += dt.timedelta(days=1)
 
 
-def _request(url: str, *, range_start: int | None = None) -> urllib.response.addinfourl:
+def official_archive_metadata_specs(data_dir: Path) -> list[tuple[Path, str]]:
+    specs: list[tuple[Path, str]] = []
+    for utc_date in daily_dates():
+        archives = [
+            (
+                archive_path(data_dir, "aggTrades", utc_date),
+                archive_url("aggTrades", utc_date),
+            ),
+            *(
+                (
+                    price_archive_path(data_dir, source, utc_date),
+                    price_archive_url(source, utc_date),
+                )
+                for source in PRICE_BAR_SOURCES
+            ),
+        ]
+        for path, url in archives:
+            specs.extend(
+                (
+                    (path, url),
+                    (path.with_name(path.name + ".CHECKSUM"), url + ".CHECKSUM"),
+                )
+            )
+    return sorted(specs, key=lambda item: item[0].relative_to(data_dir).as_posix())
+
+
+def archive_metadata_receipt_sha256(receipt: dict[str, Any]) -> str:
+    payload = dict(receipt)
+    payload["receipt_sha256"] = ""
+    return sha256_bytes(canonical_json_bytes(payload))
+
+
+def parse_last_modified(value: str) -> tuple[str, int]:
+    try:
+        parsed = parsedate_to_datetime(value)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise CaptureError(f"invalid Last-Modified header: {value!r}") from error
+    if parsed.tzinfo is None:
+        raise CaptureError("Last-Modified header has no timezone")
+    parsed = parsed.astimezone(UTC)
+    canonical = parsed.isoformat(timespec="seconds").replace("+00:00", "Z")
+    nanoseconds = int(parsed.timestamp()) * 1_000_000_000 + parsed.microsecond * 1000
+    return canonical, nanoseconds
+
+
+def _request(
+    url: str, *, range_start: int | None = None, method: str = "GET"
+) -> urllib.response.addinfourl:
     headers = {"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
     if range_start is not None:
         headers["Range"] = f"bytes={range_start}-"
-    return urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60)
+    request = urllib.request.Request(url, headers=headers, method=method)
+    return urllib.request.urlopen(request, timeout=60)
+
+
+def head_archive_metadata(url: str, expected_size: int) -> dict[str, Any]:
+    for attempt in range(MAX_RETRIES):
+        try:
+            with _request(url, method="HEAD") as response:
+                response_url = response.geturl()
+                status = getattr(response, "status", response.getcode())
+                content_length = response.headers.get("Content-Length")
+                last_modified = response.headers.get("Last-Modified")
+                etag = response.headers.get("ETag")
+            if status != 200:
+                raise CaptureError(f"HEAD {url} returned HTTP {status}")
+            if response_url != url:
+                raise CaptureError(f"HEAD URL mismatch: requested={url} response={response_url}")
+            try:
+                size = int(content_length) if content_length is not None else -1
+            except ValueError as error:
+                raise CaptureError(f"HEAD {url} returned invalid Content-Length") from error
+            if size != expected_size:
+                raise CaptureError(
+                    f"HEAD {url} Content-Length {size} does not equal retained size {expected_size}"
+                )
+            if last_modified is None:
+                raise CaptureError(f"HEAD {url} omitted Last-Modified")
+            provider_utc, provider_ns = parse_last_modified(last_modified)
+            if etag is not None and not etag:
+                raise CaptureError(f"HEAD {url} returned an empty ETag")
+            return {
+                "url": url,
+                "content_length_bytes": size,
+                "etag": etag,
+                "provider_last_modified_utc": provider_utc,
+                "provider_last_modified_ns": provider_ns,
+            }
+        except urllib.error.HTTPError as error:
+            if error.code not in (429, 500, 502, 503, 504) or attempt == MAX_RETRIES - 1:
+                raise CaptureError(f"HEAD {url} failed with HTTP {error.code}") from error
+        except (OSError, TimeoutError) as error:
+            if attempt == MAX_RETRIES - 1:
+                raise CaptureError(f"HEAD {url} failed: {error}") from error
+        time.sleep(2**attempt)
+    raise AssertionError("unreachable")
+
+
+def _canonical_receipt_bytes(receipt: dict[str, Any]) -> bytes:
+    return canonical_json_bytes(receipt) + b"\n"
+
+
+def validate_archive_metadata_receipt(
+    data_dir: Path,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    path = data_dir / ARCHIVE_METADATA_RECEIPT_NAME
+    raw = path.read_bytes()
+    receipt = json.loads(raw)
+    if not isinstance(receipt, dict) or raw != _canonical_receipt_bytes(receipt):
+        raise CaptureError("official archive metadata receipt is not canonical JSON")
+    if receipt.get("receipt_sha256") != archive_metadata_receipt_sha256(receipt):
+        raise CaptureError("official archive metadata receipt canonical hash mismatch")
+    if (
+        receipt.get("type") != "binance_usdm_official_archive_metadata_receipt"
+        or receipt.get("schema_version") != 1
+        or receipt.get("instrument") != SYMBOL
+        or receipt.get("request_method") != "HEAD"
+        or receipt.get("retained_date_start") != DISCOVERY_START.date().isoformat()
+        or receipt.get("retained_date_end") != ARCHIVE_END_DATE.isoformat()
+    ):
+        raise CaptureError("official archive metadata receipt identity mismatch")
+
+    specs = official_archive_metadata_specs(data_dir)
+    expected = {
+        path.relative_to(data_dir).as_posix(): (path, url) for path, url in specs
+    }
+    files = receipt.get("files")
+    if not isinstance(files, list) or len(files) != len(expected):
+        raise CaptureError("official archive metadata receipt does not have exact file cover")
+    by_path: dict[str, dict[str, Any]] = {}
+    for item in files:
+        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+            raise CaptureError("official archive metadata receipt file schema mismatch")
+        relative = item["path"]
+        if relative in by_path or relative not in expected:
+            raise CaptureError("official archive metadata receipt has extra or duplicate path")
+        retained_path, expected_url = expected[relative]
+        if item.get("url") != expected_url:
+            raise CaptureError(f"official archive metadata receipt URL mismatch: {relative}")
+        if (
+            not retained_path.is_file()
+            or item.get("content_length_bytes") != retained_path.stat().st_size
+        ):
+            raise CaptureError(f"official archive metadata receipt size mismatch: {relative}")
+        try:
+            parsed = dt.datetime.strptime(
+                item.get("provider_last_modified_utc", ""), "%Y-%m-%dT%H:%M:%SZ"
+            ).replace(tzinfo=UTC)
+        except (TypeError, ValueError) as error:
+            raise CaptureError(
+                f"official archive metadata receipt timestamp mismatch: {relative}"
+            ) from error
+        if item.get("provider_last_modified_ns") != int(parsed.timestamp()) * 1_000_000_000:
+            raise CaptureError(
+                f"official archive metadata receipt nanoseconds mismatch: {relative}"
+            )
+        if item.get("etag") is not None and not isinstance(item.get("etag"), str):
+            raise CaptureError(f"official archive metadata receipt ETag mismatch: {relative}")
+        by_path[relative] = item
+    if set(by_path) != set(expected):
+        raise CaptureError("official archive metadata receipt does not have exact path cover")
+    return receipt, by_path
+
+
+def refresh_archive_metadata(data_dir: Path) -> dict[str, Any]:
+    files: list[dict[str, Any]] = []
+    for path, url in official_archive_metadata_specs(data_dir):
+        if not path.is_file() or path.is_symlink():
+            raise CaptureError(f"retained official archive file is missing or unsafe: {path}")
+        metadata = head_archive_metadata(url, path.stat().st_size)
+        if metadata.get("url") != url:
+            raise CaptureError(f"HEAD metadata URL mismatch: {url}")
+        files.append({"path": path.relative_to(data_dir).as_posix(), **metadata})
+    receipt: dict[str, Any] = {
+        "type": "binance_usdm_official_archive_metadata_receipt",
+        "schema_version": 1,
+        "instrument": SYMBOL,
+        "request_method": "HEAD",
+        "retained_date_start": DISCOVERY_START.date().isoformat(),
+        "retained_date_end": ARCHIVE_END_DATE.isoformat(),
+        "files": files,
+        "receipt_sha256": "",
+    }
+    receipt["receipt_sha256"] = archive_metadata_receipt_sha256(receipt)
+    atomic_write(data_dir / ARCHIVE_METADATA_RECEIPT_NAME, _canonical_receipt_bytes(receipt))
+    return validate_archive_metadata_receipt(data_dir)[0]
 
 
 def fetch_bytes(url: str) -> bytes:
@@ -1173,6 +1356,8 @@ def _file_entry(
     row_count: int | None,
     derivation_binding: dict[str, Any] | None = None,
     accepted_source_binding: dict[str, Any] | None = None,
+    archive_metadata: dict[str, Any] | None = None,
+    metadata_receipt_sha256: str | None = None,
 ) -> dict[str, Any]:
     result = {
         "path": path.relative_to(data_dir).as_posix(),
@@ -1187,6 +1372,17 @@ def _file_entry(
         result["derivation_binding"] = derivation_binding
     if accepted_source_binding is not None:
         result["accepted_source_binding"] = accepted_source_binding
+    if archive_metadata is not None:
+        result |= {
+            "provider_last_modified_utc": archive_metadata[
+                "provider_last_modified_utc"
+            ],
+            "provider_last_modified_ns": archive_metadata[
+                "provider_last_modified_ns"
+            ],
+            "etag": archive_metadata["etag"],
+            "official_archive_metadata_receipt_sha256": metadata_receipt_sha256,
+        }
     return result
 
 
@@ -1203,6 +1399,8 @@ def build_manifest(
     funding_rows: list[dict[str, Any]],
     funding_page_files: list[dict[str, Any]],
     derivative_files: list[dict[str, Any]],
+    archive_metadata_receipt: dict[str, Any] | None = None,
+    archive_metadata_by_path: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     files: list[dict[str, Any]] = []
     daily_agg: list[dict[str, Any]] = []
@@ -1214,6 +1412,13 @@ def build_manifest(
     raw_id_gaps: list[dict[str, Any]] = []
     first_agg: dict[str, Any] | None = None
     last_agg: dict[str, Any] | None = None
+    metadata_by_path = archive_metadata_by_path or {}
+    metadata_receipt_sha256 = (
+        archive_metadata_receipt["receipt_sha256"]
+        if archive_metadata_receipt is not None
+        else None
+    )
+    bound_metadata_paths: set[str] = set()
 
     def add_official_archive(
         path: Path, url: str, row_count: int
@@ -1225,6 +1430,13 @@ def build_manifest(
         if sha256_path(path) != provider_checksum:
             raise CaptureError(f"provider checksum mismatch after capture: {path}")
         relative = path.relative_to(data_dir).as_posix()
+        checksum_relative = checksum_path.relative_to(data_dir).as_posix()
+        archive_metadata = metadata_by_path.get(relative)
+        checksum_metadata = metadata_by_path.get(checksum_relative)
+        if archive_metadata is not None:
+            bound_metadata_paths.add(relative)
+        if checksum_metadata is not None:
+            bound_metadata_paths.add(checksum_relative)
         files.append(
             _file_entry(
                 data_dir,
@@ -1233,6 +1445,8 @@ def build_manifest(
                 provider_checksum=provider_checksum,
                 status=archive_statuses.get(relative, "verified"),
                 row_count=row_count,
+                archive_metadata=archive_metadata,
+                metadata_receipt_sha256=metadata_receipt_sha256,
             )
         )
         files.append(
@@ -1243,6 +1457,8 @@ def build_manifest(
                 provider_checksum=None,
                 status="official_provider_checksum",
                 row_count=None,
+                archive_metadata=checksum_metadata,
+                metadata_receipt_sha256=metadata_receipt_sha256,
             )
         )
 
@@ -1289,6 +1505,21 @@ def build_manifest(
             add_official_archive(
                 path, price_archive_url(source, utc_date), summary["row_count"]
             )
+
+    if bound_metadata_paths != set(metadata_by_path):
+        raise CaptureError("official archive metadata was not bound to exact manifest paths")
+    if archive_metadata_receipt is not None:
+        receipt_path = data_dir / ARCHIVE_METADATA_RECEIPT_NAME
+        files.append(
+            _file_entry(
+                data_dir,
+                receipt_path,
+                source_url=BASE_ARCHIVE_URL,
+                provider_checksum=None,
+                status="official_archive_metadata_receipt",
+                row_count=None,
+            )
+        )
 
     rest_mark_summary = validate_rest_mark(mark_rows)
     rest_mark_summary |= {
@@ -1519,7 +1750,7 @@ def build_manifest(
 
     manifest: dict[str, Any] = {
         "type": "koruusdt_execution_data_manifest",
-        "schema_version": 2,
+        "schema_version": 3 if archive_metadata_receipt is not None else 2,
         "instrument": SYMBOL,
         "generated_at_utc": json.loads((data_dir / BASE_MANIFEST_NAME).read_bytes())["generated_at_utc"],
         "generated_at_basis": "frozen base manifest generated_at_utc used as a deterministic offline regeneration marker",
@@ -1527,6 +1758,22 @@ def build_manifest(
             "path": BASE_MANIFEST_NAME,
             "sha256": sha256_path(data_dir / BASE_MANIFEST_NAME),
         },
+        **(
+            {
+                "official_archive_metadata_receipt": {
+                    "path": ARCHIVE_METADATA_RECEIPT_NAME,
+                    "file_sha256": sha256_path(
+                        data_dir / ARCHIVE_METADATA_RECEIPT_NAME
+                    ),
+                    "receipt_sha256": archive_metadata_receipt[
+                        "receipt_sha256"
+                    ],
+                    "file_count": len(archive_metadata_by_path or {}),
+                }
+            }
+            if archive_metadata_receipt is not None
+            else {}
+        ),
         "discovery_interval": {
             "semantics": "half-open",
             "start_utc_inclusive": iso_ms(DISCOVERY_START_MS),
@@ -1614,6 +1861,8 @@ def build_manifest(
             "funding_120_regular_no_special_or_missing": True,
             "funding_ordered_unique_exact_interval_semantics": True,
             "manifest_file_exact_cover": True,
+            "official_archive_metadata_receipt_verified": archive_metadata_receipt
+            is not None,
         },
         "manifest_sha256": "",
     }
@@ -1643,7 +1892,9 @@ def _load_bound_csv(path: Path, header: tuple[str, ...]) -> list[list[str]]:
         return list(reader)
 
 
-def _load_retained_manifest(data_dir: Path) -> dict[str, Any]:
+def _load_retained_manifest(
+    data_dir: Path, *, allow_refreshed_metadata_receipt: bool = False
+) -> dict[str, Any]:
     path = data_dir / EXECUTION_MANIFEST_NAME
     manifest = json.loads(path.read_bytes())
     if manifest.get("manifest_sha256") != manifest_sha256(manifest):
@@ -1653,6 +1904,11 @@ def _load_retained_manifest(data_dir: Path) -> dict[str, Any]:
     ):
         raise CaptureError("retained execution manifest base binding mismatch")
     for item in manifest.get("files", []):
+        if (
+            allow_refreshed_metadata_receipt
+            and item["path"] == ARCHIVE_METADATA_RECEIPT_NAME
+        ):
+            continue
         file_path = data_dir / item["path"]
         if not file_path.is_file() or sha256_path(file_path) != item["sha256"]:
             raise CaptureError(f"retained execution file binding mismatch: {file_path}")
@@ -1788,6 +2044,20 @@ def validate_existing(data_dir: Path) -> dict[str, Any]:
         data_dir / BASE_MANIFEST_NAME
     ):
         raise CaptureError("base manifest hash binding mismatch")
+    archive_metadata_receipt: dict[str, Any] | None = None
+    archive_metadata_by_path: dict[str, dict[str, Any]] = {}
+    if manifest.get("schema_version", 0) >= 3:
+        archive_metadata_receipt, archive_metadata_by_path = (
+            validate_archive_metadata_receipt(data_dir)
+        )
+        binding = manifest.get("official_archive_metadata_receipt")
+        if binding != {
+            "path": ARCHIVE_METADATA_RECEIPT_NAME,
+            "file_sha256": sha256_path(data_dir / ARCHIVE_METADATA_RECEIPT_NAME),
+            "receipt_sha256": archive_metadata_receipt["receipt_sha256"],
+            "file_count": len(archive_metadata_by_path),
+        }:
+            raise CaptureError("execution manifest metadata receipt binding mismatch")
     validate_manifest_file_cover(data_dir, manifest)
     for item in manifest["files"]:
         path = data_dir / item["path"]
@@ -1804,6 +2074,34 @@ def validate_existing(data_dir: Path) -> dict[str, Any]:
                 raise CaptureError(f"manifest REST URL escapes holdout: {item['source_url']}")
         elif "/daily/" in item["path"] and "2026-08-24" in item["source_url"]:
             raise CaptureError("manifest references a holdout-day daily archive")
+        metadata = archive_metadata_by_path.get(item["path"])
+        metadata_fields = {
+            "provider_last_modified_utc",
+            "provider_last_modified_ns",
+            "etag",
+            "official_archive_metadata_receipt_sha256",
+        }
+        if metadata is not None:
+            expected_metadata = {
+                "provider_last_modified_utc": metadata[
+                    "provider_last_modified_utc"
+                ],
+                "provider_last_modified_ns": metadata[
+                    "provider_last_modified_ns"
+                ],
+                "etag": metadata["etag"],
+                "official_archive_metadata_receipt_sha256": archive_metadata_receipt[
+                    "receipt_sha256"
+                ],
+            }
+            if any(item.get(key) != value for key, value in expected_metadata.items()):
+                raise CaptureError(
+                    f"manifest official archive metadata mismatch: {item['path']}"
+                )
+        elif metadata_fields.intersection(item):
+            raise CaptureError(
+                f"manifest has metadata on a non-receipted path: {item['path']}"
+            )
 
     (
         mark_rows,
@@ -1969,14 +2267,26 @@ def validate_existing(data_dir: Path) -> dict[str, Any]:
     return manifest
 
 
-def capture(data_dir: Path, *, offline: bool) -> dict[str, Any]:
+def capture(
+    data_dir: Path, *, allow_refreshed_metadata_receipt: bool = False
+) -> dict[str, Any]:
     if not (data_dir / BASE_MANIFEST_NAME).is_file():
         raise CaptureError(
             f"base manifest is required at {data_dir / BASE_MANIFEST_NAME}"
         )
     base_manifest, artifacts = _load_base_manifest(data_dir)
-    retained_manifest = _load_retained_manifest(data_dir)
-    archive_statuses = capture_archives(data_dir, offline=offline)
+    retained_manifest = _load_retained_manifest(
+        data_dir,
+        allow_refreshed_metadata_receipt=allow_refreshed_metadata_receipt,
+    )
+    archive_statuses = capture_archives(data_dir, offline=True)
+    receipt_path = data_dir / ARCHIVE_METADATA_RECEIPT_NAME
+    archive_metadata_receipt: dict[str, Any] | None = None
+    archive_metadata_by_path: dict[str, dict[str, Any]] = {}
+    if receipt_path.is_file():
+        archive_metadata_receipt, archive_metadata_by_path = (
+            validate_archive_metadata_receipt(data_dir)
+        )
     (
         mark_rows,
         agg_rows,
@@ -2023,6 +2333,8 @@ def capture(data_dir: Path, *, offline: bool) -> dict[str, Any]:
         funding_rows,
         funding_page_files,
         derivative_files,
+        archive_metadata_receipt,
+        archive_metadata_by_path,
     )
     atomic_write(
         data_dir / EXECUTION_MANIFEST_NAME,
@@ -2042,19 +2354,44 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument(
         "--offline",
         action="store_true",
-        help="forbid network access; validate retained sources and derive locally",
+        help="explicitly document the default network-free capture mode",
+    )
+    result.add_argument(
+        "--refresh-archive-metadata",
+        action="store_true",
+        help="HEAD only retained pre-holdout Binance Vision ZIP/CHECKSUM URLs",
     )
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
-    try:
-        manifest = (
-            validate_existing(args.data_dir)
-            if args.validate_only
-            else capture(args.data_dir, offline=args.offline)
+    if args.refresh_archive_metadata and (args.validate_only or args.offline):
+        raise SystemExit(
+            "capture failed: --refresh-archive-metadata cannot be combined with --validate-only or --offline"
         )
+    try:
+        if args.refresh_archive_metadata:
+            receipt_path = args.data_dir / ARCHIVE_METADATA_RECEIPT_NAME
+            manifest_path = args.data_dir / EXECUTION_MANIFEST_NAME
+            previous_receipt = receipt_path.read_bytes() if receipt_path.exists() else None
+            previous_manifest = manifest_path.read_bytes()
+            try:
+                refresh_archive_metadata(args.data_dir)
+                manifest = capture(
+                    args.data_dir, allow_refreshed_metadata_receipt=True
+                )
+            except Exception:
+                if previous_receipt is None:
+                    receipt_path.unlink(missing_ok=True)
+                else:
+                    atomic_write(receipt_path, previous_receipt)
+                atomic_write(manifest_path, previous_manifest)
+                raise
+        elif args.validate_only:
+            manifest = validate_existing(args.data_dir)
+        else:
+            manifest = capture(args.data_dir)
     except (CaptureError, OSError, ValueError, zipfile.BadZipFile, json.JSONDecodeError) as error:
         raise SystemExit(f"capture failed: {error}") from None
     print(

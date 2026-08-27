@@ -38,15 +38,23 @@ captured separately from the frozen exploratory dataset and its base
 ```bash
 uv run python research/koruusdt/capture_execution_data.py --offline
 uv run python research/koruusdt/capture_execution_data.py --validate-only
+uv run python research/koruusdt/capture_execution_data.py --refresh-archive-metadata
 uv run pytest research/koruusdt/tests/test_capture_execution_data.py
 ```
 
-The offline/resume capture validates every retained file before any possible
-network access. Official Binance USD-M daily ZIPs and `.CHECKSUM` files for
-2026-07-15 through 2026-08-23 are retained for aggregate trades, 1-minute mark
-prices, and provider-named 1-hour mark/index prices. A non-offline run may fetch
-only missing pre-holdout daily files after the complete preflight; official REST
-is not needed for completion.
+Normal, `--offline`, and `--validate-only` operation is network-free and fails
+closed on missing retained files. The explicit metadata refresh mode is the only
+network mode: it sends `HEAD` requests to the already-retained 2026-07-15
+through 2026-08-23 Binance Vision ZIP and `.CHECKSUM` URLs for aggregate trades
+and provider-named 1-hour mark/index prices. It never requests archive values or
+a 2026-08-24 URL. Each response URL and `Content-Length` must match the retained
+file; `ETag` is preserved when present and `Last-Modified` is normalized to UTC
+seconds plus Unix nanoseconds in
+`data/binance_usdm/official_archive_metadata_receipt.json`. The canonical,
+self-hashed receipt is exact-cover bound into `execution_data_manifest.json`.
+Official Binance USD-M daily ZIPs and `.CHECKSUM` files for the same retained
+period also include 1-minute mark prices; those are validated offline but are
+outside this metadata receipt. Official REST is not needed for completion.
 
 The bounded 2026-08-24 1-minute mark REST page and its deterministic derivatives
 are reused byte-for-byte from commit `a61ef74` and hash-checked before use. The
@@ -75,6 +83,26 @@ price-bar derivations live under `priceBars/{mark,index}/1h/derived-bounded/`.
 summaries, accepted-source hashes and paths, holdout checks, and a canonical
 self-hash. Repeated offline capture reproduces the same mirrored bytes and
 manifest hash.
+
+## Retained discovery SourceProjectionV2 and TargetV2
+
+Build the canonical, summary-only discovery artifact from the retained execution
+files and the checked-out Backtest production builder modules:
+
+```bash
+uv run python research/koruusdt/build_discovery_source_targets_v2.py
+uv run python research/koruusdt/build_discovery_source_targets_v2.py --validate-only
+uv run pytest research/koruusdt/tests/test_build_discovery_source_targets_v2.py
+```
+
+The build performs no network requests. It reconstructs and hash-checks the
+official daily captures, retained Aug-24 authorities, accepted funding and
+calendar/unit fixtures, the 611 audited boundary/cutoff pairs, the streaming
+boundary index, SourceProjectionV2, and all eight TargetV2 streams. The output
+`data/discovery_source_targets_v2.json` retains hashes, manifests, event counts,
+gap evidence, authority refs, and advisory flags only; it does not serialize the
+multi-million-row aggregate stream or source events. `--validate-only` rebuilds
+and byte-compares the checked-in output.
 
 ## Scope notes
 

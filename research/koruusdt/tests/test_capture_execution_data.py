@@ -251,6 +251,138 @@ def test_offline_archive_resume_validates_all_existing_without_network(tmp_path,
     assert set(statuses.values()) == {"already_verified"}
 
 
+def test_archive_metadata_refresh_heads_exact_retained_allowlist_and_rejects_tamper(
+    tmp_path, monkeypatch
+):
+    day = dt.date(2026, 7, 15)
+    monkeypatch.setattr(MODULE, "daily_dates", lambda: iter((day,)))
+    specs = MODULE.official_archive_metadata_specs(tmp_path)
+    expected = {url: path for path, url in specs}
+    for path in expected.values():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(path.name.encode("utf-8"))
+
+    calls = []
+
+    class Response:
+        status = 200
+
+        def __init__(self, url, size):
+            self.url = url
+            self.headers = {
+                "Content-Length": str(size),
+                "Last-Modified": "Tue, 25 Aug 2026 12:34:56 GMT",
+            }
+            if not url.endswith(".CHECKSUM"):
+                self.headers["ETag"] = '"provider-etag"'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def geturl(self):
+            return self.url
+
+        def getcode(self):
+            return self.status
+
+    def fake_request(url, *, range_start=None, method="GET"):
+        assert range_start is None
+        assert method == "HEAD"
+        assert url in expected
+        calls.append(url)
+        return Response(url, expected[url].stat().st_size)
+
+    monkeypatch.setattr(MODULE, "_request", fake_request)
+    receipt = MODULE.refresh_archive_metadata(tmp_path)
+    assert calls == [url for _, url in specs]
+    assert len(calls) == 6
+    assert all("2026-08-24" not in url for url in calls)
+    assert all("/1m/" not in url for url in calls)
+    assert receipt["receipt_sha256"] == MODULE.archive_metadata_receipt_sha256(
+        receipt
+    )
+    assert {
+        item["etag"] for item in receipt["files"] if not item["url"].endswith(".CHECKSUM")
+    } == {'"provider-etag"'}
+    assert {
+        item["provider_last_modified_utc"] for item in receipt["files"]
+    } == {"2026-08-25T12:34:56Z"}
+    assert {
+        item["provider_last_modified_ns"] for item in receipt["files"]
+    } == {1787661296000000000}
+
+    receipt["files"][0]["url"] += "?tampered=1"
+    receipt["receipt_sha256"] = MODULE.archive_metadata_receipt_sha256(receipt)
+    (tmp_path / MODULE.ARCHIVE_METADATA_RECEIPT_NAME).write_bytes(
+        MODULE._canonical_receipt_bytes(receipt)
+    )
+    with pytest.raises(MODULE.CaptureError, match="URL mismatch"):
+        MODULE.validate_archive_metadata_receipt(tmp_path)
+
+    receipt = MODULE.refresh_archive_metadata(tmp_path)
+    first_path = tmp_path / receipt["files"][0]["path"]
+    first_path.write_bytes(first_path.read_bytes() + b"tamper")
+    with pytest.raises(MODULE.CaptureError, match="size mismatch"):
+        MODULE.validate_archive_metadata_receipt(tmp_path)
+
+
+def test_archive_metadata_head_rejects_redirect_size_and_bad_timestamp(monkeypatch):
+    class Response:
+        status = 200
+
+        def __init__(self, url, headers):
+            self.url = url
+            self.headers = headers
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def geturl(self):
+            return self.url
+
+        def getcode(self):
+            return self.status
+
+    requested = "https://data.binance.vision/retained.zip"
+    monkeypatch.setattr(
+        MODULE,
+        "_request",
+        lambda *args, **kwargs: Response(
+            requested + ".redirected",
+            {"Content-Length": "3", "Last-Modified": "Tue, 25 Aug 2026 12:34:56 GMT"},
+        ),
+    )
+    with pytest.raises(MODULE.CaptureError, match="URL mismatch"):
+        MODULE.head_archive_metadata(requested, 3)
+
+    monkeypatch.setattr(
+        MODULE,
+        "_request",
+        lambda *args, **kwargs: Response(
+            requested,
+            {"Content-Length": "4", "Last-Modified": "Tue, 25 Aug 2026 12:34:56 GMT"},
+        ),
+    )
+    with pytest.raises(MODULE.CaptureError, match="retained size"):
+        MODULE.head_archive_metadata(requested, 3)
+
+    monkeypatch.setattr(
+        MODULE,
+        "_request",
+        lambda *args, **kwargs: Response(
+            requested, {"Content-Length": "3", "Last-Modified": "not-a-date"}
+        ),
+    )
+    with pytest.raises(MODULE.CaptureError, match="invalid Last-Modified"):
+        MODULE.head_archive_metadata(requested, 3)
+
+
 def test_manifest_hash_is_canonical_and_excludes_its_value():
     first = {"b": 2, "a": 1, "manifest_sha256": ""}
     second = {"manifest_sha256": "sha256:ignored", "a": 1, "b": 2}
@@ -309,7 +441,7 @@ def test_checked_manifest_when_present_has_holdout_binding_and_canonical_hash():
     assert manifest["holdout_protection"]["full_2026_08_24_daily_archive_downloaded"] is False
     assert manifest["discovery_interval"]["end_ms_exclusive"] == MODULE.HOLDOUT_START_MS
     assert all("/daily/KORUUSDT" not in item["source_url"] or "2026-08-24" not in item["source_url"] for item in manifest["files"])
-    if manifest.get("schema_version") == 2:
+    if manifest.get("schema_version", 0) >= 2:
         assert manifest["datasets"]["markPriceKlines_1h"]["required_authority_interval"]["row_count"] == 961
         assert manifest["datasets"]["indexPriceKlines_1h"]["required_authority_interval"]["row_count"] == 961
         funding = manifest["datasets"]["fundingRate"]
@@ -326,6 +458,27 @@ def test_checked_manifest_when_present_has_holdout_binding_and_canonical_hash():
             if "/priceBars/" in item["path"] and "/derived-bounded/" in item["path"]
         )
         assert manifest["datasets"]["markPriceKlines_1m"]["rest_2026_08_24"]["retained_from_commit"] == "a61ef74"
+    if manifest.get("schema_version", 0) >= 3:
+        receipt, metadata = MODULE.validate_archive_metadata_receipt(
+            SCRIPT_PATH.parent / "data"
+        )
+        assert manifest["official_archive_metadata_receipt"]["receipt_sha256"] == receipt["receipt_sha256"]
+        assert manifest["official_archive_metadata_receipt"]["file_count"] == len(metadata)
+
+
+def test_normal_capture_forces_offline_archive_validation(monkeypatch):
+    def stop_after_archive_mode(data_dir, *, offline):
+        assert offline is True
+        raise RuntimeError("archive mode checked")
+
+    monkeypatch.setattr(MODULE, "capture_archives", stop_after_archive_mode)
+    monkeypatch.setattr(
+        MODULE,
+        "_request",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("network used")),
+    )
+    with pytest.raises(RuntimeError, match="archive mode checked"):
+        MODULE.capture(SCRIPT_PATH.parent / "data")
 
 
 def test_validate_only_path_never_uses_network(monkeypatch):
