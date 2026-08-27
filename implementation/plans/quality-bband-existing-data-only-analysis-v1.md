@@ -68,6 +68,46 @@ Provider-only trio diagnostics:
 
 These provider-date classes are diagnostic only and supply no legal availability or supersession authority.
 
+## First existing-data-only cash-flow diagnostic
+
+A deterministic double recomputation over all retained cash-flow revisions produced 20,797 screen/issuer records.
+
+Method:
+
+- accepted N or unsupported O evidence takes issuer-local unresolved precedence;
+- for each provider-scoped record, retain every cash-flow revision across the five required years;
+- compute the minimum/maximum possible count of years with `n_cashflow_act > 0`;
+- compute `free_cash_flow = n_cashflow_act - c_pay_acq_const_fiolta` for every numeric candidate and a five-year sum interval only when every retained candidate is numeric;
+- do not select by `update_flag`, row order or provider date;
+- label a result a **provisional provider-scoped hard-filter failure** only when failure is decision-invariant across all retained candidates;
+- otherwise remain unresolved because ROIC, leverage and authority inputs are unavailable.
+
+Results:
+
+| Existing-data-only disposition | Count |
+|---|---:|
+| provisional hard-filter failure | 10,462 |
+| provider-scoped unresolved | 10,325 |
+| official nonfiling unresolved | 7 |
+| unsupported official scope unresolved | 3 |
+| total | 20,797 |
+
+Decision-invariant failure diagnostics:
+
+| Diagnostic | Count |
+|---|---:|
+| OCF positive in fewer than 4 of 5 years | 5,913 |
+| five-year FCF sum nonpositive | 9,162 |
+| both | 4,613 |
+
+Canonical diagnostic record hash:
+
+```text
+sha256:db8aadb7a9df211cc048fd8b8d2534e2e88d2c38486fd88491b9f40ef1e8f585
+```
+
+These are advisory existing-data-only results. `provisional hard-filter failure` is not a formal-S2 disposition, Strategy exclusion, target instruction or execution authority.
+
 ## Authority flags
 
 All existing formal-S1 and exact-cover flags remain as accepted. The following remain false:
