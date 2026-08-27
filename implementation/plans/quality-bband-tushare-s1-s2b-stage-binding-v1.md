@@ -335,7 +335,7 @@ SURVIVORSHIP_SAFETY_BEYOND_TUSHARE_SCOPE_FALSE
 | 7 | `FROZEN_OUTPUT_MISMATCH` | Constructed manifest ID, byte count or file SHA differs from the frozen output. |
 | 8 | `PUBLICATION_INTEGRITY_FAILURE` | Staging, no-clobber rename, fsync, readback or inode/parent verification fails. |
 
-Every failure leaves the destination absent and emits no empty universe, Target, Strategy terminal or execution request.
+Every failure publishes no builder-accepted destination and emits no empty universe, Target, Strategy terminal or execution request. Race-created attacker-owned pathnames are never deleted merely to make the visible destination absent.
 
 ## Security and atomic publication
 
@@ -344,12 +344,14 @@ Every failure leaves the destination absent and emits no empty universe, Target,
 - Require regular files and exact sizes before accepting bytes.
 - No network, credentials, environment authority or dynamic discovery.
 - Output must not exist or be inside either input root.
+- Traverse and, when required, create every output-parent component FD-relatively from a pinned `/` or `.` descriptor; reject `..` and symlink components.
 - Pin output parent FD.
 - Create hidden staging directory FD-relatively.
-- Write only `stage-binding-manifest.json` with `O_CREAT|O_EXCL`.
+- Write only `stage-binding-manifest.json` with `O_CREAT|O_EXCL`, retain its inode identity, and never unlink a substituted member.
 - Fsync file and staging directory.
+- Verify the staged member pathname still resolves to the pinned file inode before rename.
 - Publish with `renameat2(RENAME_NOREPLACE)`.
-- Verify published inode equals pinned staging inode.
+- Verify the published directory inode equals the pinned staging inode and the published member inode/content equal the pinned staged file.
 - Verify pathname still resolves through the pinned parent.
 - Fsync parent directory.
 
@@ -390,6 +392,8 @@ Candidate:
     tests/architecture/test_quality_bband_tushare_s1_s2b_stage_binding_v1_boundary.py
   uv run python -m compileall -q \
     tools/acquisition/cn_a_share_quality_bband_tushare_s1_s2b_stage_binding_v1.py
+  QB_TUSHARE_S1_S2B_REAL_ARTIFACT_SENTINEL=1 uv run pytest -q \
+    tests/tools/acquisition/test_cn_a_share_quality_bband_tushare_s1_s2b_stage_binding_v1.py
 
 Shared-node gate, once:
   uv run pytest -q
