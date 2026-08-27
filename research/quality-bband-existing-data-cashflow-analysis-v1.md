@@ -95,7 +95,37 @@ sha256:b14e53f9c96fe814815c525acceba3a71b623cf4afaace46c7118a9185f57823
 
 This mix demonstrates that cash-flow margin alone is not a substitute for the frozen ROIC, leverage, statement-scope and permanent-loss checks. Adding an ad hoc ST, sector, size or outlier rule would be a new strategy decision and is not permitted by the existing-data boundary.
 
-## 7. Conclusion
+## 7. Existing-price BOLL signal inventory
+
+The strongest immutable local price source already present is:
+
+```text
+/srv/bcache-8t/ygguo/duckdb/quant-a50/
+  quant_a50.duckdb.backup_20260521_daily_basic_2015
+sha256:cdc6ce41dee3fe9903d8c27ec5cc584455ad423989cd79e3eb0187c5bba8bd41
+```
+
+Its daily `MarketData` coverage ends on `2026-05-20`. It has no accepted corporate-action lifecycle or point-in-time adjustment authority, so this section is raw-price advisory evidence only.
+
+The 1,424 latest-screen cash-flow-invariant passes were scanned over the final 60 sessions using the frozen technical setup:
+
+```text
+BOLL(20,2)
+current bandwidth <= rolling 120-session 10% quantile
+close crosses from at/below the prior upper band to above the current upper band
+volume >= 1.5 * rolling 20-session median volume
+SMA20 slope positive
+```
+
+Results:
+
+- 97 advisory crossing events in the final 60 available sessions;
+- signal-set hash: `sha256:67dd2e4f6524ebc13df0d5aad4875510e2c0cd716ed13c879877ce7f26788c7a`;
+- on the final available session, `2026-05-20`, exactly one event: `600237` 铜峰电子, volume multiple approximately `2.44`.
+
+This is not a current signal. The price evidence is more than three months stale relative to the owner decision date, has no corporate-action closure, and cannot produce a T-close/T+1 instruction. No TargetSnapshot or execution request is emitted.
+
+## 8. Conclusion
 
 Existing data can conservatively identify 10,462 provisional cash-flow failures and a 1,424-member latest-screen cash-flow-invariant pass pool. It cannot determine a formal financial-qualified set or defensibly select four stocks.
 
