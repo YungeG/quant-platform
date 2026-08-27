@@ -100,9 +100,23 @@ RESEARCH_GRADE_UNRESOLVED
 
 Accepted N and unsupported O evidence remain unresolved and numeric-free.
 
-## 7. Existing market-data convention
+## 7. Existing market-data convention and approved gap capture
 
-The immutable local DuckDB backup may be used as advisory raw-price evidence:
+Owner approval on `2026-08-28` permits acquisition only for the missing market-data interval after the immutable local backup. It does not reopen financial, governance or valuation-data procurement.
+
+The permitted source scope is limited to:
+
+```text
+research-grade 20250506 provisional-pass pool
+daily OHLCV/amount
+adj_factor
+trade_cal
+2026-05-21 through the latest completed session available by 2026-08-28
+```
+
+The capture remains Tushare source-bounded research evidence. Provider corrections and full corporate-action lifecycle authority remain false.
+
+The immutable local DuckDB backup supplies the preceding advisory raw-price evidence:
 
 ```text
 sha256:cdc6ce41dee3fe9903d8c27ec5cc584455ad423989cd79e3eb0187c5bba8bd41
