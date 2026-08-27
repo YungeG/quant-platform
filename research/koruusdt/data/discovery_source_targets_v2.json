@@ -73,8 +73,12 @@
     "all_target_streams_alternating": true,
     "all_target_streams_flat_at_end": true,
     "backtest_evidence": false,
+    "economics_evidence": false,
+    "execution_bundle_deployment_authorized": false,
+    "execution_bundle_development_only": true,
     "gap_audit_clear": true,
-    "network_performed": false
+    "network_performed": false,
+    "profile_source_authority_verified": true
   },
   "boundary_index": {
     "aggregate_id_coverage_gaps": [
@@ -133,12 +137,14 @@
       "koru_tradifi_calendar_unit_authority_v1",
       "binance_usdm_koru_aggtrade_boundary_index_v1",
       "binance_usdm_koru_tradifi_source_projection_v2",
-      "binance_usdm_koru_closed_market_range_targets_v2"
+      "binance_usdm_koru_closed_market_range_targets_v2",
+      "binance_usdm_koru_tradifi_development_profile_v1",
+      "binance_usdm_koru_tradifi_execution_bundle_v2"
     ],
-    "backtest_head": "366df1a466e9869b2a61d677fb02a2c2b4fa6132",
+    "backtest_head": "a870af8a9dc26fa36c194856ca8af0b1fee77739",
     "network_performed": false,
     "path": "research/koruusdt/build_discovery_source_targets_v2.py",
-    "sha256": "sha256:b2142ba2562982b7420c26cfbb39a0a31b02190143f23d3684bf5ec84dd34742"
+    "sha256": "sha256:16addc2a97c46e8c1d82ece25a6b64380cb84ca6f3a72963bee3527d95820d50"
   },
   "captures": {
     "aggregate_trades": [
@@ -1248,6 +1254,400 @@
       }
     ]
   },
+  "development_profile_v1": {
+    "financial_dispatcher_spec_hash": "sha256:2f5b4b4bbd4f0a1219cadb19ffbce5eca0b093aa2dfd4ec4d189854d45ea288c",
+    "limitations": [
+      "development_profile",
+      "retained_source_projection_v2_only",
+      "selected_aggregate_execution_reference_only",
+      "index_strategy_stream_validated_but_not_substituted_for_public_price_purposes",
+      "composed_at_and_acquisition_are_evidence_only",
+      "single_instrument_single_usdt_cross_account_only",
+      "deployment_unauthorized"
+    ],
+    "profile_composition_request_hash": "sha256:da0a7dc7d0068d4114a55552da5fb8ac5810d1fecd498299caa40cf2df68adf0",
+    "profile_registry_hash": "sha256:36e8a0ed4491a83dc46ba1b97a15320a55b76e9b91a76aa049c8d78f481d5fe0",
+    "request_hash": "sha256:c0aebfab4408567dfa5b859ea7d612c3d43a718f74706be21c6425d6543eb46e",
+    "resolved_profile_hash": "sha256:a8e11e6fcc139fa3760ed4dcbd8508149dd7f4f09a32c5bd045a1346ff83aa77",
+    "result_digest": "sha256:a79b12ee0b2bd809cd3318c21d3534df2f5de0889b079176b8fcef3389dc8558",
+    "source_authority_verified": true,
+    "source_event_count": 5531,
+    "source_profile_authority_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+    "source_profile_authority_ref": {
+      "artifact_type": "binance_usdm_koru_source_profile_authority",
+      "content_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+      "schema_version": 2,
+      "type": "artifact_ref"
+    },
+    "source_stream_count": 7,
+    "source_stream_counts": [
+      [
+        "binance_usdm.aggregate_trades.execution_reference.koruusdt.tradifi.v1",
+        611
+      ],
+      [
+        "binance_usdm.funding_history.publications.koruusdt.v1",
+        120
+      ],
+      [
+        "binance_usdm.index_price.strategy.koruusdt.1h.v1",
+        960
+      ],
+      [
+        "binance_usdm.mark_price.liquidation.koruusdt.1h.v1",
+        960
+      ],
+      [
+        "binance_usdm.mark_price.margin.koruusdt.1h.v1",
+        960
+      ],
+      [
+        "binance_usdm.mark_price.strategy.koruusdt.1h.v1",
+        960
+      ],
+      [
+        "binance_usdm.mark_price.valuation.koruusdt.1h.v1",
+        960
+      ]
+    ],
+    "source_stream_hashes": [
+      [
+        "binance_usdm.aggregate_trades.execution_reference.koruusdt.tradifi.v1",
+        "sha256:184cd3ae8f6acf1864a4273f4e5220931b9ce184e1452975acb6e7e2e92c61a2"
+      ],
+      [
+        "binance_usdm.funding_history.publications.koruusdt.v1",
+        "sha256:d817ba2db109104103af837d4758520799f2647bc5394471b6262598792a9d92"
+      ],
+      [
+        "binance_usdm.index_price.strategy.koruusdt.1h.v1",
+        "sha256:3a501bdc41df34e251d661f7258fb419c468f9ac026482abb06f5d04a023b6f9"
+      ],
+      [
+        "binance_usdm.mark_price.liquidation.koruusdt.1h.v1",
+        "sha256:ff7be7c68d2a1f18ee4145e697ecd3396b57ae41c9a1c829b05fe2b107b796ef"
+      ],
+      [
+        "binance_usdm.mark_price.margin.koruusdt.1h.v1",
+        "sha256:0e476daf143fe37597e97e2ff66ce147d6c6879c9dcc4f26dd8b46a7d200adeb"
+      ],
+      [
+        "binance_usdm.mark_price.strategy.koruusdt.1h.v1",
+        "sha256:ca46fcfe2a9662911b2b36699ef39e08f6b1be234276da4976086a7dd01b3e18"
+      ],
+      [
+        "binance_usdm.mark_price.valuation.koruusdt.1h.v1",
+        "sha256:50dac1f5c27779cc687852d8031c375b68fc8222b621817dc9a2c3ab87e93166"
+      ]
+    ]
+  },
+  "execution_bundle_v2": {
+    "authority_artifacts": [
+      {
+        "artifact_type": "xkrx_regular_session_calendar",
+        "content_hash": "sha256:dcffef007cd8a9c00319259663c32cd09812904562229b3a2084d03718624d35",
+        "schema_version": 1
+      },
+      {
+        "artifact_type": "arcx_koru_core_session_calendar",
+        "content_hash": "sha256:d9a75b431730740b6e5793f99a71978513422ed78f6dd7bda4485f20a75a9926",
+        "schema_version": 1
+      },
+      {
+        "artifact_type": "binance_usdm_tradifi_post_adjustment_unit_regime",
+        "content_hash": "sha256:dca20ef381e3e95469e7507d422430317e471677a1d2450b188a918cbb146e18",
+        "schema_version": 1
+      },
+      {
+        "artifact_type": "binance_usdm_koru_source_profile_authority",
+        "content_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+        "schema_version": 2
+      }
+    ],
+    "authority_refs": [
+      {
+        "artifact_type": "xkrx_regular_session_calendar",
+        "content_hash": "sha256:dcffef007cd8a9c00319259663c32cd09812904562229b3a2084d03718624d35",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      {
+        "artifact_type": "arcx_koru_core_session_calendar",
+        "content_hash": "sha256:d9a75b431730740b6e5793f99a71978513422ed78f6dd7bda4485f20a75a9926",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      {
+        "artifact_type": "binance_usdm_tradifi_post_adjustment_unit_regime",
+        "content_hash": "sha256:dca20ef381e3e95469e7507d422430317e471677a1d2450b188a918cbb146e18",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      {
+        "artifact_type": "binance_usdm_koru_source_profile_authority",
+        "content_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+        "schema_version": 2,
+        "type": "artifact_ref"
+      }
+    ],
+    "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a48d769a72cfdda6b027154641124b84645c25337a49033439a6990d86483c24",
+    "bundle_ref": {
+      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a48d769a72cfdda6b027154641124b84645c25337a49033439a6990d86483c24",
+      "manifest_hash": "sha256:cf7b42a7443c3850f6c9bce0c4350443b62303a8b0ec6013de7d812fb328d269",
+      "type": "market_bundle_ref"
+    },
+    "bundle_schema_version": 2,
+    "deployment_authorized": false,
+    "development_only": true,
+    "event_count_total": 6221,
+    "limitations": [
+      "selected_source_events_form_the_executable_stream",
+      "full_raw_data_is_retained_transitively_in_source_snapshots",
+      "v2_projection_target_and_authority_identities",
+      "development_only"
+    ],
+    "manifest_content_hash": "sha256:19d1a1dbd3344dffd4ca2e450e7ad1ab60223480837ff777ddad043eb9fab176",
+    "manifest_hash": "sha256:cf7b42a7443c3850f6c9bce0c4350443b62303a8b0ec6013de7d812fb328d269",
+    "reader_hash": "sha256:6eaa5875dfb30a3949ef959c7d50f8b098fd51f5995275aeaa422496fcc6ddd5",
+    "reader_ref": {
+      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a48d769a72cfdda6b027154641124b84645c25337a49033439a6990d86483c24",
+      "manifest_hash": "sha256:cf7b42a7443c3850f6c9bce0c4350443b62303a8b0ec6013de7d812fb328d269",
+      "type": "market_bundle_ref"
+    },
+    "request_hash": "sha256:e142ea6353bba3bc67b756936b81a16e11957be918f95756ef2711801a0e1d20",
+    "result_digest": "sha256:cc23be9e89576422575bb034da4ac500ee0c030065baa05b68b24ead79eb3229",
+    "stream_count": 19,
+    "stream_manifests": [
+      {
+        "capability": {
+          "key": "price.aggregate_trade.koru-usdt-tradifi-perpetual",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:184cd3ae8f6acf1864a4273f4e5220931b9ce184e1452975acb6e7e2e92c61a2",
+        "event_count": 611,
+        "event_type": "binance_usdm_koru_aggregate_trade.v1",
+        "stream_key": "binance_usdm.aggregate_trades.execution_reference.koruusdt.tradifi.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "binance_usdm.funding-publications",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:d817ba2db109104103af837d4758520799f2647bc5394471b6262598792a9d92",
+        "event_count": 120,
+        "event_type": "binance_usdm_koru_funding_history_publication_v1",
+        "stream_key": "binance_usdm.funding_history.publications.koruusdt.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "price.bar",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:3a501bdc41df34e251d661f7258fb419c468f9ac026482abb06f5d04a023b6f9",
+        "event_count": 960,
+        "event_type": "binance_usdm_koru_index_price_strategy_bar_v1",
+        "stream_key": "binance_usdm.index_price.strategy.koruusdt.1h.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "price.bar",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:ff7be7c68d2a1f18ee4145e697ecd3396b57ae41c9a1c829b05fe2b107b796ef",
+        "event_count": 960,
+        "event_type": "binance_usdm_koru_mark_price_liquidation_bar_v1",
+        "stream_key": "binance_usdm.mark_price.liquidation.koruusdt.1h.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "price.point",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:0e476daf143fe37597e97e2ff66ce147d6c6879c9dcc4f26dd8b46a7d200adeb",
+        "event_count": 960,
+        "event_type": "binance_usdm_koru_mark_price_point_v1",
+        "stream_key": "binance_usdm.mark_price.margin.koruusdt.1h.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "price.bar",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:ca46fcfe2a9662911b2b36699ef39e08f6b1be234276da4976086a7dd01b3e18",
+        "event_count": 960,
+        "event_type": "binance_usdm_koru_mark_price_strategy_bar_v1",
+        "stream_key": "binance_usdm.mark_price.strategy.koruusdt.1h.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "price.point",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:50dac1f5c27779cc687852d8031c375b68fc8222b621817dc9a2c3ab87e93166",
+        "event_count": 960,
+        "event_type": "binance_usdm_koru_mark_price_point_v1",
+        "stream_key": "binance_usdm.mark_price.valuation.koruusdt.1h.v1",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "account.financial-event",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:fa3d3575e19002494d598c38cd7942c27dca6bbae2b4617cbc5cd2a491e1f08b",
+        "event_count": 1,
+        "event_type": "account_financial_event",
+        "stream_key": "binance_usdm.tradifi.account.authority.koruusdt.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "bar_open",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:f08a484a5bcc88a9779d74ef1d8cd8d98d4b48d6611e387b8ef241a950756b1e",
+        "event_count": 611,
+        "event_type": "bar_open",
+        "stream_key": "binance_usdm.tradifi.bar_open.first_retained_aggregate_trade.koruusdt.1h.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "binance_usdm.tradifi.preparation-authority",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:78c7963516d72c48e03247d0cc072704490394493ad06f7ad4245408a998909f",
+        "event_count": 1,
+        "event_type": "binance_usdm_tradifi_preparation_authority_v2",
+        "stream_key": "binance_usdm.tradifi.preparation_authority.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "binance_usdm.price-purpose-streams",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:5d71991e6fe9eb1a67ba378f78bce5a073c7fbe7744e4637c75e4196d66943c3",
+        "event_count": 1,
+        "event_type": "binance_usdm_tradifi_price_purpose_binding_v2",
+        "stream_key": "binance_usdm.tradifi.price_purpose.authority.koruusdt.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:8a7c041c5f4501653f856ca7ef04605aba2b66c8171fd815c6f5993491d90b29",
+        "event_count": 8,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p01.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:1d010fd55a3cb43ca5e7e2923c0d0eac10d625c9fdc2c7c43b554f4834008f6a",
+        "event_count": 8,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p02.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:f308e346818fcef7b26e16181b6aabd048338272a7131947873fb15d84fb8784",
+        "event_count": 12,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p03.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:ee510beda7dbcb6579af89ee72150e223bbf2bc994dfc75a39c580c0da58e91e",
+        "event_count": 12,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p04.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:6aa6d980490961150795f5eba146c6d43a1fa0af10658f2e070c3e1408498dfe",
+        "event_count": 6,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p05.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:d1af1bb2e1b184a4611d8e93afc0cf76bcafff4f24f7a0a4215c7ad2dc1fba6c",
+        "event_count": 6,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p06.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:fcc1ec1874ae80d0e659de4df0e14de75bbfb1c3ee9ff2cba4400382cb12aa05",
+        "event_count": 12,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p07.v2",
+        "type": "market_stream_manifest"
+      },
+      {
+        "capability": {
+          "key": "precomputed_target_stream",
+          "type": "market_bundle_capability",
+          "version": 1
+        },
+        "content_hash": "sha256:bcc2708949b07fbc640790a8701b43626cbd0d65f29fe9a3b962dcdc9cfe817f",
+        "event_count": 12,
+        "event_type": "strategy_decision_candidate",
+        "stream_key": "binance_usdm.tradifi.target.koruusdt.closed_market_range.p08.v2",
+        "type": "market_stream_manifest"
+      }
+    ]
+  },
   "input_manifests": {
     "base": {
       "file_sha256": "sha256:c20ab7e8444e4f2a60e6e2b10e9faf57345e68c6cd10a4682c744f3fe4f91a80",
@@ -1262,8 +1662,8 @@
     "gap_audit": {
       "eligible_boundary_count": 611,
       "event_hashes_sha256": "sha256:87564465a575c934738a9ed4e35c2091a900e4a1d14ff08fd2b8bf34c5719be6",
-      "file_sha256": "sha256:fe61c5f2e775f1235f7d882abac38a9b04f4a821d8aa97fc6d2f8588a59a1146",
-      "manifest_sha256": "sha256:ab73be4b2277e640ac7a2f98b61b23b429d9ada1d045f3166459483bc70c7f04",
+      "file_sha256": "sha256:4efc1825a91bc42df13765544df44c4ec94df8dd84ec081112bc3f687a1a7445",
+      "manifest_sha256": "sha256:dd1ff1847a7de4e8bb296ff924ef6c4774ede38db4047a1f18350b0941560a5d",
       "path": "research/koruusdt/data/execution_gap_impact.json",
       "status": "clear"
     }
@@ -1275,13 +1675,13 @@
     "advisory_only",
     "decision_grade_eligible_false",
     "deployment_authorized_false",
-    "no_profile_final_bundle_or_economics_built",
+    "development_profile_and_execution_bundle_are_not_backtest_or_economics_evidence",
     "aug24_aggregate_trade_prefix_missing_but_gap_audit_clear",
     "aug24_mark_index_are_base_manifest_derived_retained_observations",
     "instrument_catalog_hash_is_local_retained_discovery_binding_not_deployment_catalog",
     "official_archive_acquisition_is_conservatively_bound_to_repository_retention_commits"
   ],
-  "manifest_sha256": "sha256:2a1310f520b669cbfb542844d40218dcfed3b9593f270f997f505622194da557",
+  "manifest_sha256": "sha256:e3a14e76ec8f2912b7b9474b2c50ac2d095567c5a31982c5a9474ccb47d68baf",
   "repository_retention": {
     "aggregate_trades": {
       "commit": "a61ef741ce582cd61dbc6e3a623066de7c6b8bf4",
@@ -1293,6 +1693,17 @@
     }
   },
   "schema_version": 1,
+  "source_profile_authority_v2": {
+    "artifact_type": "binance_usdm_koru_source_profile_authority",
+    "content_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+    "ref": {
+      "artifact_type": "binance_usdm_koru_source_profile_authority",
+      "content_hash": "sha256:95994eec3667059e595babc37cf15eb4333aaeb92e3c1d75278615d188f3e59c",
+      "schema_version": 2,
+      "type": "artifact_ref"
+    },
+    "schema_version": 2
+  },
   "source_projection_v2": {
     "authority_refs": [
       {

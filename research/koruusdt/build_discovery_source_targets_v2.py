@@ -34,8 +34,10 @@ GAP_AUDIT = DATA / "execution_gap_impact.json"
 # Use the checked-out production modules, not the workspace's older pinned wheels.
 for package in (
     "trading-domain",
+    "trading-kernel",
     "market-data-contracts",
     "market-bundle-builder",
+    "backtest-runtime",
 ):
     sys.path.insert(0, str(BACKTEST / "packages" / package / "src"))
 
@@ -71,10 +73,15 @@ from crypto_quant_bundle_builder.binance_usdm_koru_price_bars_source_bounded_v1 
     capture_binance_usdm_koru_price_bars_source_bounded_v1,
     normalize_binance_usdm_koru_price_bars_source_bounded_v1,
 )
+from crypto_quant_bundle_builder.binance_usdm_koru_tradifi_execution_bundle_v2 import (  # noqa: E402
+    BinanceUsdmKoruTradifiExecutionBundleRequestV2,
+    build_binance_usdm_koru_tradifi_execution_bundle_v2,
+)
 from crypto_quant_bundle_builder.binance_usdm_koru_tradifi_source_projection_v2 import (  # noqa: E402
     BinanceUsdmKoruTradifiSourceProjectionRequestV2,
     _eligible_boundaries,
     _verified_authority,
+    build_binance_usdm_koru_source_profile_authority_v2,
     build_binance_usdm_koru_tradifi_source_projection_v2,
 )
 from crypto_quant_bundle_builder.koru_tradifi_calendar_unit_authority_v1 import (  # noqa: E402
@@ -83,9 +90,18 @@ from crypto_quant_bundle_builder.koru_tradifi_calendar_unit_authority_v1 import 
     verify_koru_tradifi_calendar_unit_authority_v1,
 )
 from crypto_quant_bundle_builder.source_snapshots import RawSourceMember  # noqa: E402
+from crypto_quant_backtest import (  # noqa: E402
+    BinanceUsdmKoruTradifiDevelopmentProfileRequestV1,
+    TimelineWindow,
+    build_binance_usdm_koru_tradifi_development_profile_v1,
+)
 from crypto_quant_domain import (  # noqa: E402
     InstrumentId,
+    Money,
     Scale,
+    SimulationInstant,
+    SourceSequence,
+    TimelinePhase,
     UtcInstant,
     VenueId,
     canonical_sha256,
@@ -99,6 +115,8 @@ AGG_COMMIT = "a61ef741ce582cd61dbc6e3a623066de7c6b8bf4"
 AGG_COMMIT_UTC = "2026-08-26T06:50:03Z"
 PRICE_FUNDING_COMMIT = "9aca2510ba8aea8397501494aa58742f07ce758f"
 PRICE_FUNDING_COMMIT_UTC = "2026-08-26T09:46:54Z"
+ACCOUNT_ID = "account-1"
+INITIAL_EQUITY = Money(1_000_000_000_000, Scale(8), "USDT")
 INSTRUMENT = InstrumentId(VenueId("binance_usdm"), "koru-usdt-tradifi-perpetual")
 CALENDAR_FIXTURE = (
     BACKTEST
@@ -684,6 +702,119 @@ def validate_target_streams(target: Any) -> list[dict[str, Any]]:
     return summaries
 
 
+def build_profile_and_bundle(source: Any, target: Any) -> tuple[Any, Any, Any, Any]:
+    source_authority_envelope, source_authority_ref = (
+        build_binance_usdm_koru_source_profile_authority_v2(source)
+    )
+    profile = _unwrap(
+        build_binance_usdm_koru_tradifi_development_profile_v1(
+            BinanceUsdmKoruTradifiDevelopmentProfileRequestV1(
+                timeline_window=TimelineWindow(
+                    source.request.timeline_window_start,
+                    source.request.timeline_window_start,
+                    source.request.timeline_window_end_exclusive,
+                ),
+                composed_at=SimulationInstant(
+                    UtcInstant(utc_ns(PRICE_FUNDING_COMMIT_UTC) + 1),
+                    TimelinePhase(200, "profile_composition"),
+                    SourceSequence(0),
+                ),
+                account_id=ACCOUNT_ID,
+                xkrx_calendar_ref=source.xkrx_calendar_ref,
+                arcx_calendar_ref=source.arcx_calendar_ref,
+                post_adjustment_unit_regime_ref=(
+                    source.post_adjustment_unit_regime_ref
+                ),
+                source_profile_authority_envelope=source_authority_envelope,
+                source_profile_authority_ref=source_authority_ref,
+                source_events=source.source_events,
+            )
+        ),
+        "development profile",
+    )
+    bundle = _unwrap(
+        build_binance_usdm_koru_tradifi_execution_bundle_v2(
+            BinanceUsdmKoruTradifiExecutionBundleRequestV2(
+                source_projection=source,
+                target_result=target,
+                source_profile_authority_envelope=source_authority_envelope,
+                source_profile_authority_ref=source_authority_ref,
+                profile_composition_request_wire=(
+                    profile.profile_composition_request_wire
+                ),
+                profile_composition_request_hash=(
+                    profile.profile_composition_request_hash
+                ),
+                execution_account_id=ACCOUNT_ID,
+                initial_equity=INITIAL_EQUITY,
+                sleeve_allocation_fraction="1",
+            )
+        ),
+        "execution BundleV2",
+    )
+    return source_authority_envelope, source_authority_ref, profile, bundle
+
+
+def profile_summary(profile: Any) -> dict[str, Any]:
+    return {
+        "request_hash": profile.request.request_hash,
+        "result_digest": profile.result_digest,
+        "profile_composition_request_hash": profile.profile_composition_request_hash,
+        "resolved_profile_hash": canonical_sha256(profile.resolved_profile),
+        "profile_registry_hash": canonical_sha256(profile.profile_registry),
+        "financial_dispatcher_spec_hash": canonical_sha256(
+            profile.financial_dispatcher_spec
+        ),
+        "source_profile_authority_hash": profile.source_profile_authority_hash,
+        "source_profile_authority_ref": (
+            profile.source_profile_authority_ref.to_canonical_dict()
+        ),
+        "source_stream_hashes": [list(value) for value in profile.source_stream_hashes],
+        "source_stream_counts": [list(value) for value in profile.source_stream_counts],
+        "source_stream_count": len(profile.source_stream_counts),
+        "source_event_count": sum(value[1] for value in profile.source_stream_counts),
+        "source_authority_verified": profile.source_authority_verified,
+        "limitations": list(profile.limitations),
+    }
+
+
+def bundle_summary(bundle: Any) -> dict[str, Any]:
+    manifest = bundle.manifest
+    reader = bundle.reader
+    return {
+        "request_hash": bundle.request.request_hash,
+        "result_digest": bundle.result_digest,
+        "bundle_ref": bundle.bundle_ref.to_canonical_dict(),
+        "bundle_key": manifest.bundle_key,
+        "bundle_schema_version": manifest.schema_version,
+        "manifest_hash": canonical_sha256(manifest),
+        "manifest_content_hash": manifest.content_hash,
+        "authority_refs": [value.to_canonical_dict() for value in bundle.authority_refs],
+        "authority_artifacts": [
+            {
+                "artifact_type": value.artifact_type,
+                "schema_version": value.schema_version,
+                "content_hash": value.content_hash,
+            }
+            for value in bundle.authority_artifacts
+        ],
+        "stream_manifests": [value.to_canonical_dict() for value in manifest.streams],
+        "stream_count": len(manifest.streams),
+        "event_count_total": sum(value.event_count for value in manifest.streams),
+        "reader_ref": reader.bundle_ref.to_canonical_dict(),
+        "reader_hash": canonical_sha256(
+            {
+                "bundle_ref": reader.bundle_ref,
+                "manifest": reader.manifest,
+                "streams": reader.streams,
+            }
+        ),
+        "development_only": bundle.development_only,
+        "deployment_authorized": bundle.deployment_authorized,
+        "limitations": list(bundle.request.to_canonical_dict()["limitations"]),
+    }
+
+
 def _git_head() -> str:
     return subprocess.run(
         ["git", "-C", str(BACKTEST), "rev-parse", "HEAD"],
@@ -765,6 +896,7 @@ def build_manifest() -> dict[str, Any]:
         build_binance_usdm_koru_aggregate_trade_boundary_index_v1(boundary_request),
         "aggregate boundary index",
     )
+    print("built aggregate boundary index", file=sys.stderr)
     expected_missing = tuple(
         value for value in boundaries if missing_start <= value.boundary < missing_end
     )
@@ -798,6 +930,7 @@ def build_manifest() -> dict[str, Any]:
         ),
         "SourceProjectionV2",
     )
+    print("built SourceProjectionV2", file=sys.stderr)
     if tuple(value.hourly_boundary for value in source.missing_boundaries) != tuple(
         value.boundary for value in expected_missing
     ):
@@ -808,7 +941,13 @@ def build_manifest() -> dict[str, Any]:
         ),
         "TargetV2",
     )
+    print("built TargetV2", file=sys.stderr)
     target_summaries = validate_target_streams(target)
+    print("building development profile and BundleV2", file=sys.stderr)
+    source_authority_envelope, source_authority_ref, profile, bundle = (
+        build_profile_and_bundle(source, target)
+    )
+    print("built development profile and BundleV2", file=sys.stderr)
 
     accepted_fixture = gap["accepted_bundle_fixture"]
     accepted_fixture_binding = {
@@ -837,6 +976,8 @@ def build_manifest() -> dict[str, Any]:
                 "binance_usdm_koru_aggtrade_boundary_index_v1",
                 "binance_usdm_koru_tradifi_source_projection_v2",
                 "binance_usdm_koru_closed_market_range_targets_v2",
+                "binance_usdm_koru_tradifi_development_profile_v1",
+                "binance_usdm_koru_tradifi_execution_bundle_v2",
             ],
             "network_performed": False,
         },
@@ -933,12 +1074,20 @@ def build_manifest() -> dict[str, Any]:
             "development_authorized": target.development_authorized,
             "deployment_authorized": target.deployment_authorized,
         },
+        "source_profile_authority_v2": {
+            "artifact_type": source_authority_envelope.artifact_type,
+            "schema_version": source_authority_envelope.schema_version,
+            "content_hash": source_authority_envelope.content_hash,
+            "ref": source_authority_ref.to_canonical_dict(),
+        },
+        "development_profile_v1": profile_summary(profile),
+        "execution_bundle_v2": bundle_summary(bundle),
         "limitations": [
             "development_only",
             "advisory_only",
             "decision_grade_eligible_false",
             "deployment_authorized_false",
-            "no_profile_final_bundle_or_economics_built",
+            "development_profile_and_execution_bundle_are_not_backtest_or_economics_evidence",
             "aug24_aggregate_trade_prefix_missing_but_gap_audit_clear",
             "aug24_mark_index_are_base_manifest_derived_retained_observations",
             "instrument_catalog_hash_is_local_retained_discovery_binding_not_deployment_catalog",
@@ -948,8 +1097,12 @@ def build_manifest() -> dict[str, Any]:
             "gap_audit_clear": True,
             "all_target_streams_alternating": True,
             "all_target_streams_flat_at_end": True,
+            "profile_source_authority_verified": profile.source_authority_verified,
+            "execution_bundle_development_only": bundle.development_only,
+            "execution_bundle_deployment_authorized": bundle.deployment_authorized,
             "network_performed": False,
             "backtest_evidence": False,
+            "economics_evidence": False,
         },
         "manifest_sha256": "",
     }

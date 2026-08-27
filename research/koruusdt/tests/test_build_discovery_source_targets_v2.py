@@ -21,6 +21,15 @@ class Ref:
         return {"content_hash": self.content_hash}
 
 
+class Canonical:
+    def __init__(self, name: str, event_count: int = 0) -> None:
+        self.name = name
+        self.event_count = event_count
+
+    def to_canonical_dict(self) -> dict[str, object]:
+        return {"name": self.name, "event_count": self.event_count}
+
+
 def stream(states: tuple[bool, ...]):
     events = tuple(
         SimpleNamespace(
@@ -115,10 +124,78 @@ def test_target_stream_validation_fails_closed() -> None:
         builder.validate_target_streams(nonflat)
 
 
-def test_production_script_has_no_network_or_backtest_runtime_private_imports() -> None:
+def test_profile_and_bundle_summaries_retain_canonical_flags_and_limitations() -> None:
+    hash_value = "sha256:" + "3" * 64
+    profile = SimpleNamespace(
+        request=SimpleNamespace(request_hash=hash_value),
+        result_digest=hash_value,
+        profile_composition_request_hash=hash_value,
+        resolved_profile=Canonical("resolved"),
+        profile_registry=Canonical("registry"),
+        financial_dispatcher_spec=Canonical("dispatcher"),
+        source_profile_authority_hash=hash_value,
+        source_profile_authority_ref=Ref(hash_value),
+        source_stream_hashes=(("source", hash_value),),
+        source_stream_counts=(("source", 2),),
+        source_authority_verified=True,
+        limitations=("development_profile", "deployment_unauthorized"),
+    )
+    profile_value = builder.profile_summary(profile)
+
+    assert profile_value["source_event_count"] == 2
+    assert profile_value["source_authority_verified"] is True
+    assert profile_value["limitations"] == [
+        "development_profile",
+        "deployment_unauthorized",
+    ]
+
+    stream_manifest = Canonical("stream", event_count=2)
+    manifest = SimpleNamespace(
+        bundle_key="development-v2-test",
+        schema_version=2,
+        content_hash=hash_value,
+        streams=(stream_manifest,),
+        to_canonical_dict=lambda: {"content_hash": hash_value},
+    )
+    bundle_ref = Ref(hash_value)
+    bundle_ref.bundle_key = "development-v2-test"
+    reader = SimpleNamespace(
+        bundle_ref=bundle_ref,
+        manifest=manifest,
+        streams={"stream": (Canonical("event"),)},
+    )
+    bundle = SimpleNamespace(
+        request=SimpleNamespace(
+            request_hash=hash_value,
+            to_canonical_dict=lambda: {"limitations": ("development_only",)},
+        ),
+        result_digest=hash_value,
+        bundle_ref=bundle_ref,
+        manifest=manifest,
+        reader=reader,
+        authority_refs=(Ref(hash_value),),
+        authority_artifacts=(
+            SimpleNamespace(
+                artifact_type="source_profile_authority",
+                schema_version=2,
+                content_hash=hash_value,
+            ),
+        ),
+        development_only=True,
+        deployment_authorized=False,
+    )
+    bundle_value = builder.bundle_summary(bundle)
+
+    assert bundle_value["event_count_total"] == 2
+    assert bundle_value["development_only"] is True
+    assert bundle_value["deployment_authorized"] is False
+    assert bundle_value["limitations"] == ["development_only"]
+
+
+def test_production_script_has_no_network_or_private_fixture_imports() -> None:
     source = SCRIPT.read_text()
 
     assert "urllib.request" not in source
     assert "requests" not in source
-    assert "crypto_quant_backtest" not in source
+    assert "from crypto_quant_backtest." not in source
     assert "from tests." not in source

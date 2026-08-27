@@ -84,7 +84,7 @@ summaries, accepted-source hashes and paths, holdout checks, and a canonical
 self-hash. Repeated offline capture reproduces the same mirrored bytes and
 manifest hash.
 
-## Retained discovery SourceProjectionV2 and TargetV2
+## Retained discovery SourceProjectionV2, TargetV2, profile, and bundle
 
 Build the canonical, summary-only discovery artifact from the retained execution
 files and the checked-out Backtest production builder modules:
@@ -98,11 +98,15 @@ uv run pytest research/koruusdt/tests/test_build_discovery_source_targets_v2.py
 The build performs no network requests. It reconstructs and hash-checks the
 official daily captures, retained Aug-24 authorities, accepted funding and
 calendar/unit fixtures, the 611 audited boundary/cutoff pairs, the streaming
-boundary index, SourceProjectionV2, and all eight TargetV2 streams. The output
-`data/discovery_source_targets_v2.json` retains hashes, manifests, event counts,
-gap evidence, authority refs, and advisory flags only; it does not serialize the
-multi-million-row aggregate stream or source events. `--validate-only` rebuilds
-and byte-compares the checked-in output.
+boundary index, SourceProjectionV2, all eight TargetV2 streams, the fixed
+Development Profile V1, and ExecutionBundleV2. The output
+`data/discovery_source_targets_v2.json` retains canonical hashes, stream
+manifests and counts, profile and bundle limitations, authority refs, and
+advisory flags only; it does not serialize the multi-million-row aggregate
+stream, source events, profile wire, or bundle events. The profile and bundle
+remain development-only and deployment-unauthorized, and are not backtest or
+economics evidence. `--validate-only` rebuilds and byte-compares the checked-in
+output.
 
 ## Scope notes
 
