@@ -1,7 +1,8 @@
 # Research: Quality-BBAND 2017–2025 formal historical S1 authority feasibility
 
-- **Decision:** `PUBLICLY_DATA_INFEASIBLE`
-- **Formal S1 authority:** `false`
+- **Official-public decision:** `PUBLICLY_DATA_INFEASIBLE`
+- **Owner amendment, 2026-08-27:** retained Tushare fields are approved as the controlling project S1 authority where present; see `quality-bband-tushare-s1-authority-pivot-v1.md`
+- **Official exchange/CSRC S1 authority:** `false`
 - **Strategy / Fold / Validation authority:** `false`
 - **Scope:** frozen source-bounded screen dates `2017-05-02`, `2018-05-02`, `2019-05-06`, `2020-05-06`, `2021-05-06`, `2022-05-05`, `2023-05-04`, `2024-05-06`, `2025-05-06`; these are not accepted general Calendar authority, and exact decision instants remain Fold-manifest/Calendar inputs
 

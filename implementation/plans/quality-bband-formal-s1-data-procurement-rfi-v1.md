@@ -1,9 +1,9 @@
 # Quality-BBAND formal S1 data procurement RFI v1
 
-- **Status:** `RFI_READY / USER_PURCHASE_APPROVAL_REQUIRED / NO_EXTERNAL_SEND`
+- **Status:** `RFI_READY / OPTIONAL_AFTER_TUSHARE_AUTHORITY_PIVOT / USER_PURCHASE_APPROVAL_REQUIRED / NO_EXTERNAL_SEND`
 - **Strategy:** `cn-a-share.quality-bband-breakout.manual4.v1`
 - **Authority:** [`quality-bband-formal-s1-authority-feasibility-v1.md`](../../research/quality-bband-formal-s1-authority-feasibility-v1.md)
-- **Decision preserved:** `PUBLICLY_DATA_INFEASIBLE / FORMAL_S1_FALSE / STRATEGY_AUTHORITY_FALSE`
+- **Decision preserved:** official-public authority remains infeasible; owner-approved Tushare S1 authority is governed separately by `quality-bband-tushare-s1-authority-pivot-v1.md`; Strategy authority remains false
 
 ## 1. Purpose
 
