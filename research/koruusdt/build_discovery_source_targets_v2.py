@@ -41,6 +41,11 @@ for package in (
 ):
     sys.path.insert(0, str(BACKTEST / "packages" / package / "src"))
 
+from crypto_quant_backtest import (  # noqa: E402
+    BinanceUsdmKoruTradifiDevelopmentProfileRequestV1,
+    TimelineWindow,
+    build_binance_usdm_koru_tradifi_development_profile_v1,
+)
 from crypto_quant_bundle_builder.binance_usdm_koru_aggtrade_boundary_index_v1 import (  # noqa: E402
     BinanceUsdmKoruAggregateTradeBoundaryIndexRequestV1,
     BinanceUsdmKoruExecutionBoundaryV1,
@@ -90,11 +95,6 @@ from crypto_quant_bundle_builder.koru_tradifi_calendar_unit_authority_v1 import 
     verify_koru_tradifi_calendar_unit_authority_v1,
 )
 from crypto_quant_bundle_builder.source_snapshots import RawSourceMember  # noqa: E402
-from crypto_quant_backtest import (  # noqa: E402
-    BinanceUsdmKoruTradifiDevelopmentProfileRequestV1,
-    TimelineWindow,
-    build_binance_usdm_koru_tradifi_development_profile_v1,
-)
 from crypto_quant_domain import (  # noqa: E402
     InstrumentId,
     Money,
@@ -824,7 +824,9 @@ def _git_head() -> str:
     ).stdout.strip()
 
 
-def build_manifest() -> dict[str, Any]:
+def build_manifest(
+    *, return_context: bool = False
+) -> dict[str, Any] | tuple[dict[str, Any], dict[str, Any]]:
     execution = load_json(EXECUTION_MANIFEST)
     base = load_json(BASE_MANIFEST)
     gap = load_json(GAP_AUDIT)
@@ -1106,7 +1108,17 @@ def build_manifest() -> dict[str, Any]:
         },
         "manifest_sha256": "",
     }
-    return json.loads(manifest_bytes(value))
+    manifest = json.loads(manifest_bytes(value))
+    if return_context:
+        return manifest, {
+            "source": source,
+            "target": target,
+            "source_authority_envelope": source_authority_envelope,
+            "source_authority_ref": source_authority_ref,
+            "profile": profile,
+            "bundle": bundle,
+        }
+    return manifest
 
 
 def _die(message: str) -> NoReturn:

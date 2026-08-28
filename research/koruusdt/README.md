@@ -108,6 +108,13 @@ remain development-only and deployment-unauthorized, and are not backtest or
 economics evidence. `--validate-only` rebuilds and byte-compares the checked-in
 output.
 
+`run_discovery_backtests_v1.py --parameter-id p01` is a bounded local Backtest
+execution report only. It is not official Experiment, Analysis, or Candidate
+evidence: public Research `execute_experiment` remains the authoritative
+publishing path, and no such integration exists here. The runner emits a
+retained-context reconstruction stage before any retained work and fails without
+writing its output if preparation or engine execution fails.
+
 ## Scope notes
 
 - Binance data comes from public USD-M `klines`, `markPriceKlines`,
