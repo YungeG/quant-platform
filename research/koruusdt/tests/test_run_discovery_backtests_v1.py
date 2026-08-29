@@ -34,7 +34,7 @@ def _context(bundle) -> object:
     )
 
 
-def test_p01_tiny_bundle_smoke_reaches_schema6_engine_summary_and_selection() -> None:
+def test_p01_tiny_bundle_smoke_reaches_schema7_engine_summary_and_selection() -> None:
     context = _context(fixture._nonempty_bundle())
 
     first = runner._run_trial(context, "p01", emit=lambda *args, **kwargs: None)
@@ -42,7 +42,7 @@ def test_p01_tiny_bundle_smoke_reaches_schema6_engine_summary_and_selection() ->
 
     assert first == second
     assert first["status"] == "completed"
-    assert first["execution_input_ref"]["schema_version"] == 6
+    assert first["execution_input_ref"]["schema_version"] == 7
     assert first["fill_count"] == 2
     assert first["fill_times_epoch_nanoseconds"] == [
         1_784_347_500_000_000_000,
