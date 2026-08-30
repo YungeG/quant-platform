@@ -1,0 +1,109 @@
+{
+  "study": "a-share-sector-etf-dual-momentum-v12",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "start": "2020-01-02",
+    "end": "2026-08-25",
+    "decision_months": 80,
+    "participation": 1.0,
+    "selected_etfs": 31
+  },
+  "portfolio": {
+    "metrics": {
+      "cagr": 0.037675698200702934,
+      "volatility": 0.2820515270099947,
+      "sharpe": 0.2727647924667295,
+      "max_drawdown": -0.547505075571648,
+      "calmar": 0.06881342270912444
+    },
+    "gross_metrics": {
+      "cagr": 0.055117140804706644,
+      "volatility": 0.28218660861752404,
+      "sharpe": 0.3318353252544863,
+      "max_drawdown": -0.5204196897105714,
+      "calmar": 0.1059090228414681
+    },
+    "benchmark_metrics": {
+      "cagr": 0.035002072677012386,
+      "volatility": 0.1918297632026839,
+      "sharpe": 0.27530867963178096,
+      "max_drawdown": -0.4215534708063592,
+      "calmar": 0.08303115761343265
+    },
+    "excess_cagr": 0.002673625523690548,
+    "gross_to_net_cagr_retention": 0.6835568327863204,
+    "folds": {
+      "2020-2022": {
+        "cagr": -0.00595178905036764,
+        "volatility": 0.2866927370051018,
+        "sharpe": 0.12270778276832528,
+        "max_drawdown": -0.5201958477798847,
+        "calmar": -0.011441438980662674,
+        "benchmark_cagr": -0.008141449828503733,
+        "excess_cagr": 0.0021896607781360933
+      },
+      "2023-2024": {
+        "cagr": 0.039684834272305736,
+        "volatility": 0.2321444993745875,
+        "sharpe": 0.2840167492794515,
+        "max_drawdown": -0.24730431860826885,
+        "calmar": 0.1604696371484183,
+        "benchmark_cagr": 0.03059062020577019,
+        "excess_cagr": 0.009094214066535544
+      },
+      "2025": {
+        "cagr": 0.5053388143674049,
+        "volatility": 0.2793219207590248,
+        "sharpe": 1.605788571513969,
+        "max_drawdown": -0.18601207418465138,
+        "calmar": 2.716698991624397,
+        "benchmark_cagr": 0.21686398842420873,
+        "excess_cagr": 0.2884748259431962
+      }
+    },
+    "positive_excess_folds": 3,
+    "yearly_returns": {
+      "2020": 0.48181860924999964,
+      "2021": 0.09868488277658738,
+      "2022": -0.39627075764464104,
+      "2023": 0.12460320371487277,
+      "2024": -0.041785593203552907,
+      "2025": 0.4835089785743518,
+      "2026": -0.19384748965815513
+    },
+    "best_year": "2025",
+    "best_year_return": 0.4835089785743518,
+    "cagr_excluding_best_year": -0.02598658568571599,
+    "annual_turnover": 5.459883629605693,
+    "average_positions": 2.7368094351334573,
+    "minimum_positions": 0,
+    "average_cash_fraction": 0.08829825541556485,
+    "trade_count": 217,
+    "buy_count": 110,
+    "sell_count": 107,
+    "fees": 54027.92395125675,
+    "blocked_buys": 0,
+    "blocked_sells": 0,
+    "lot_failures": 0,
+    "expired_buys": 0,
+    "execution_failure_rate": 0.0,
+    "missing_valuation_rate": 0.0
+  },
+  "holdout_2025": {
+    "strategy_return": 0.4835089785743518,
+    "benchmark_return": 0.20836372792825553,
+    "excess": 0.2751452506460963
+  },
+  "checks": {
+    "cagr": false,
+    "sharpe": false,
+    "drawdown": false,
+    "excess": false,
+    "validation": true,
+    "holdout": true,
+    "cost_retention": false,
+    "participation": false
+  },
+  "verdict": "NO-GO",
+  "trade_authorized": false
+}
