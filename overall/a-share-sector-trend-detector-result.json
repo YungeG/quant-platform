@@ -1,0 +1,100 @@
+{
+  "study": "a-share-sector-trend-detector-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "detection": {
+    "summary": {
+      "trend_labels": 726,
+      "detected": 569,
+      "recall": 0.7837465564738292,
+      "median_delay": 5.0,
+      "median_capture_ratio": 0.6381867867012825,
+      "signals": 1459,
+      "false_positive_rate": 0.6490747087045922,
+      "periods": {
+        "2018-2022": {
+          "count": 439,
+          "recall": 0.7471526195899773,
+          "median_delay": 6.0,
+          "median_capture_ratio": 0.6382300159175902
+        },
+        "2023-2024": {
+          "count": 168,
+          "recall": 0.8095238095238095,
+          "median_delay": 6.0,
+          "median_capture_ratio": 0.586284795235011
+        },
+        "2025": {
+          "count": 119,
+          "recall": 0.8823529411764706,
+          "median_delay": 2.0,
+          "median_capture_ratio": 0.7498012120548795
+        },
+        "2026": {
+          "count": 49,
+          "recall": 0.8775510204081632,
+          "median_delay": 6.0,
+          "median_capture_ratio": 0.6383701016847704
+        }
+      }
+    },
+    "checks": {
+      "count": true,
+      "recall": true,
+      "validation_recall": true,
+      "holdout_recall": true,
+      "delay": true,
+      "capture": true,
+      "false_positive": false
+    },
+    "verdict": "NO-GO"
+  },
+  "trading": {
+    "summary": {
+      "source_events": 1756,
+      "mapped_events": 811,
+      "complete_events": 728,
+      "mapping_rate": 0.46184510250569477,
+      "absolute_positive20": 0.43543956043956045,
+      "outperform20": 0.46153846153846156,
+      "success20": 0.3118131868131868,
+      "median_active20": -0.004345926641294184,
+      "median_active35": -0.007519058121324418,
+      "bootstrap95_active20": [
+        -0.0053151757142697814,
+        0.003921642229901387
+      ],
+      "trim_best5_mean_active20": -0.009207942704283174,
+      "periods": {
+        "2018-2022": {
+          "count": 340,
+          "mean_active20": 0.0013304211599674777,
+          "success_rate": 0.31470588235294117
+        },
+        "2023-2024": {
+          "count": 245,
+          "mean_active20": -0.0020002366712769492,
+          "success_rate": 0.2857142857142857
+        },
+        "2025": {
+          "count": 143,
+          "mean_active20": -0.003399365377214667,
+          "success_rate": 0.34965034965034963
+        }
+      }
+    },
+    "checks": {
+      "count": true,
+      "mapping": false,
+      "absolute": false,
+      "outperform": false,
+      "active20": false,
+      "active35": false,
+      "bootstrap": false,
+      "trim": false,
+      "periods": false,
+      "holdout": false
+    },
+    "verdict": "NO-GO"
+  },
+  "events": "overall/a-share-sector-trend-etf-events.csv"
+}
