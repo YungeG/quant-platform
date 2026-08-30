@@ -1,0 +1,56 @@
+{
+  "study": "a-share-true-breakout-etf-execution-v6",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "summary": {
+    "source_signals": 85,
+    "mapped": 54,
+    "mapping_rate": 0.6352941176470588,
+    "complete10": 54,
+    "absolute_positive10": 0.5370370370370371,
+    "outperform10": 0.5370370370370371,
+    "success10": 0.48148148148148145,
+    "median_active10": 0.002612765646063664,
+    "median_active20": -0.01449811941052831,
+    "bootstrap95_active10": [
+      -0.006513168145963718,
+      0.025618289962423716
+    ],
+    "trim_best5_mean_active10": -0.0010213172864690454,
+    "periods": {
+      "2018-2022": {
+        "count": 30,
+        "mean_active10": 0.012666814196538064,
+        "median_active10": 0.002341465306357926,
+        "success_rate": 0.5
+      },
+      "2023-2024": {
+        "count": 14,
+        "mean_active10": -0.0073632463567769235,
+        "median_active10": -0.00039045808429510886,
+        "success_rate": 0.35714285714285715
+      },
+      "2025": {
+        "count": 10,
+        "mean_active10": 0.020836694491057118,
+        "median_active10": 0.022549153700583857,
+        "success_rate": 0.6
+      }
+    }
+  },
+  "checks": {
+    "mapping": true,
+    "count": true,
+    "absolute": false,
+    "outperform": false,
+    "success": false,
+    "active10": true,
+    "active20": false,
+    "bootstrap": false,
+    "trim": false,
+    "periods": false,
+    "holdout": true
+  },
+  "verdict": "NO-GO",
+  "events": "overall/a-share-true-breakout-etf-events.csv",
+  "trade_authorized": false
+}
