@@ -1,8 +1,9 @@
 {
   "strategy_id": "a-share-stock-bond-gold-equal-1n-v1",
-  "status": "GO_RESEARCH_GRADE",
+  "status": "OUT_OF_SCOPE_FOR_PURE_EQUITY_REQUIREMENT",
   "trade_authorized": false,
-  "shadow_required": true,
+  "shadow_required": false,
+  "scope_note": "User subsequently restricted the target to pure A-share stocks, equity ETFs, and cash; bond and gold holdings make this strategy ineligible for that objective.",
   "period": {
     "start": "2017-01-03",
     "end": "2026-08-25",
