@@ -1,0 +1,10 @@
+{
+  "freeze_date": "2026-08-27",
+  "as_of": "2026-08-27",
+  "rows": 5,
+  "evidence_eligible_events": 0,
+  "trade_authorized": false,
+  "raw_manifest_sha256": "da10d6421d314c0863df958dafbf820aae6662319bbe3d802a9adbb184a2347d",
+  "states_sha256": "9898b6dfdb476c8392f68c5923163d0c0d35783800fd734fad8db5faa286a1ff",
+  "ledger_sha256": "9d8b68e130a447858bbf7b438244b5d19b2d3e1df587c724a87ba66a1c58bb04"
+}

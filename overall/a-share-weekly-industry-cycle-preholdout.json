@@ -1,0 +1,192 @@
+{
+  "study": "a-share-weekly-industry-cycle-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "ef118f5d09a00249",
+    "candidate_events": 109,
+    "valid_events": 97,
+    "max_event_year": 2024
+  },
+  "summary": {
+    "count": 97,
+    "absolute_positive_rate": 0.422680412371134,
+    "outperform_rate": 0.41237113402061853,
+    "success_rate": 0.20618556701030927,
+    "mean_active35": -0.00765672965434752,
+    "median_active30": -0.012403163301804798,
+    "median_active35": -0.009634866177338997,
+    "median_active40": -0.010279404137041759,
+    "bootstrap95": [
+      -0.02123758320528578,
+      0.00677588107126427
+    ],
+    "trim_top5_mean": -0.01739842998678695,
+    "median_max_return40": 0.05001915974323645,
+    "median_min_return40": -0.06896927227503069,
+    "median_outperform_days40": 13.0,
+    "folds": {
+      "2018-2020": {
+        "count": 59,
+        "mean_active35": -0.016354478759904086,
+        "success_rate": 0.1864406779661017
+      },
+      "2021-2022": {
+        "count": 26,
+        "mean_active35": 0.004603363937264759,
+        "success_rate": 0.15384615384615385
+      },
+      "2023-2025": {
+        "count": 12,
+        "mean_active35": 0.008543667332812319,
+        "success_rate": 0.4166666666666667
+      }
+    },
+    "holdout2025": {
+      "count": 0,
+      "success_rate": 0.0,
+      "median_active35": 0.0
+    },
+    "industries": {
+      "传媒": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.07671048626961563
+      },
+      "公用事业": {
+        "count": 7,
+        "success_rate": 0.14285714285714285,
+        "median_active35": -0.056523630600298747
+      },
+      "医药生物": {
+        "count": 6,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.006310676003046578
+      },
+      "商贸零售": {
+        "count": 8,
+        "success_rate": 0.25,
+        "median_active35": -0.03407582144751403
+      },
+      "国防军工": {
+        "count": 3,
+        "success_rate": 0.0,
+        "median_active35": -0.037067078387902574
+      },
+      "基础化工": {
+        "count": 5,
+        "success_rate": 0.2,
+        "median_active35": -0.010794941721098295
+      },
+      "家用电器": {
+        "count": 1,
+        "success_rate": 1.0,
+        "median_active35": 0.13061109701285534
+      },
+      "建筑材料": {
+        "count": 4,
+        "success_rate": 0.25,
+        "median_active35": -0.01027735049385381
+      },
+      "建筑装饰": {
+        "count": 5,
+        "success_rate": 0.4,
+        "median_active35": 0.02481498691461037
+      },
+      "房地产": {
+        "count": 4,
+        "success_rate": 0.0,
+        "median_active35": -0.006791971233333749
+      },
+      "有色金属": {
+        "count": 4,
+        "success_rate": 0.0,
+        "median_active35": -0.06905009214402003
+      },
+      "机械设备": {
+        "count": 5,
+        "success_rate": 0.2,
+        "median_active35": -0.03741791195955957
+      },
+      "汽车": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 9.637426746555988e-05
+      },
+      "煤炭": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.05827305970198676
+      },
+      "环保": {
+        "count": 4,
+        "success_rate": 0.25,
+        "median_active35": 0.020229536723859354
+      },
+      "电力设备": {
+        "count": 4,
+        "success_rate": 0.0,
+        "median_active35": -0.02505013167376413
+      },
+      "电子": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.01901233342339337
+      },
+      "社会服务": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": 0.0225106136971136
+      },
+      "纺织服饰": {
+        "count": 7,
+        "success_rate": 0.42857142857142855,
+        "median_active35": -0.001689559968608756
+      },
+      "美容护理": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.0041964200334223545
+      },
+      "计算机": {
+        "count": 5,
+        "success_rate": 0.2,
+        "median_active35": -0.009634866177338997
+      },
+      "轻工制造": {
+        "count": 5,
+        "success_rate": 0.0,
+        "median_active35": 0.001915539220162854
+      },
+      "通信": {
+        "count": 6,
+        "success_rate": 0.16666666666666666,
+        "median_active35": 0.013259553531770885
+      },
+      "食品饮料": {
+        "count": 3,
+        "success_rate": 0.0,
+        "median_active35": -0.045749251855659256
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": true,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": true,
+      "trim": false,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-weekly-industry-events-preholdout.csv",
+  "limitations": [
+    "source-bounded industry and financial histories",
+    "industry thesis is non-virgin",
+    "custom event simulator is not formal Platform Backtest evidence"
+  ]
+}

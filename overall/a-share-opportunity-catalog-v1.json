@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "as_of": "2026-08-27",
+  "capital": 0,
+  "trade_authorized": false,
+  "opportunities": [
+    {
+      "opportunity_id": "pharma-vs-chemical-current-state-v1",
+      "kind": "relative_industry_v1",
+      "source": "overall/a-share-pharma-chemical-rotation-monthly-current.csv",
+      "left": "医药生物",
+      "right": "基础化工",
+      "features": [
+        "triple_growth_breadth_pct",
+        "ocf_positive_breadth_pct",
+        "pe_median_pct",
+        "positive_revision_breadth_pct",
+        "median_revision_pct",
+        "ma20_breadth_pct",
+        "relative20_pct"
+      ],
+      "source_outcome_column": "future63",
+      "history_end": "2025-12-31",
+      "positive_selection": "PHARMA",
+      "negative_selection": "CHEMICAL",
+      "max_analogs": 10,
+      "min_separation_months": 3,
+      "min_analogs": 8,
+      "min_abs_median": 0.03,
+      "min_direction_share": 0.60,
+      "bootstrap_samples": 2000,
+      "seed": 20260829,
+      "coverage_rules": [
+        {"column": "market_coverage", "minimum": 0.90},
+        {"column": "financial_coverage", "minimum": 0.60},
+        {"column": "analyst_coverage", "minimum": 0.30}
+      ]
+    },
+    {
+      "opportunity_id": "analyst-revision-top30-state-v1",
+      "kind": "monthly_signal_state_v1",
+      "source": "overall/a-share-analyst-opportunity-state.csv",
+      "as_of": "2026-08-26",
+      "features": [
+        "positive_revision_breadth_pct",
+        "median_revision_pct",
+        "top30_revision_pct",
+        "coverage_pct",
+        "paired_count_pct"
+      ],
+      "source_outcome_column": "outcome",
+      "history_end": "2025-12-31",
+      "positive_selection": "ANALYST_REVISION_TOP30",
+      "negative_selection": "DISABLE",
+      "allow_negative_selection": false,
+      "max_analogs": 10,
+      "min_separation_months": 2,
+      "min_analogs": 8,
+      "min_abs_median": 0.005,
+      "min_direction_share": 0.60,
+      "bootstrap_samples": 2000,
+      "seed": 20260829
+    }
+  ]
+}

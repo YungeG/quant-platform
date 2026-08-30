@@ -1,0 +1,1606 @@
+{
+  "study": "china-cycle-stock-bond-gold-v1",
+  "data": {
+    "etf_source": "overall/a-share-multi-asset-etf-daily.csv",
+    "macro_source": "overall/a-share-macro-cycle-monthly.csv",
+    "start": "2017-01-03",
+    "end": "2026-08-25"
+  },
+  "variants": {
+    "fixed_quarterly": {
+      "metrics": {
+        "cagr": 0.06416499790275343,
+        "volatility": 0.0674865966673967,
+        "sharpe": 0.9554078688447932,
+        "max_drawdown": -0.09490600034217722,
+        "calmar": 0.6760900013846419
+      },
+      "gross_metrics": {
+        "cagr": 0.06438073138902833,
+        "volatility": 0.06748410370816639,
+        "sharpe": 0.9584450985573948,
+        "max_drawdown": -0.09475392721273945,
+        "calmar": 0.6794518526338451
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.06254892108869137,
+          "volatility": 0.05743014042099405,
+          "sharpe": 1.0852166534179468,
+          "max_drawdown": -0.08121622947333296,
+          "calmar": 0.770152979205087
+        },
+        "2020-2022": {
+          "cagr": 0.028599889893753394,
+          "volatility": 0.06965861349693307,
+          "sharpe": 0.43963583926821176,
+          "max_drawdown": -0.09490600034217367,
+          "calmar": 0.30134964902787476
+        },
+        "2023-2026": {
+          "cagr": 0.09578791219625193,
+          "volatility": 0.07315526092495837,
+          "sharpe": 1.2872625165944813,
+          "max_drawdown": -0.0801194883518731,
+          "calmar": 1.1955632039930835
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.062347933658420285,
+        "2018": -0.037170847140797436,
+        "2019": 0.16578057170116978,
+        "2020": 0.12337362275078001,
+        "2021": -0.000159771483768556,
+        "2022": -0.034118445558035115,
+        "2023": 0.018183753597177832,
+        "2024": 0.13701967216516064,
+        "2025": 0.17196114847961064,
+        "2026": 0.015530700698706212
+      },
+      "stress_returns": {
+        "2018": -0.037170847140797436,
+        "2022": -0.034118445558035115
+      },
+      "annual_turnover": 0.12666772792551925,
+      "gross_to_net_cagr_retention": 0.9966490985482704,
+      "total_cost": 899.4888969977052,
+      "average_weights": {
+        "equity": 0.3005801292445814,
+        "bond": 0.4981140879291585,
+        "gold": 0.20087879734376657
+      },
+      "lot_feasibility": 1.0
+    },
+    "equal_1n": {
+      "metrics": {
+        "cagr": 0.08130329947278603,
+        "volatility": 0.08590362708717868,
+        "sharpe": 0.9531160355527347,
+        "max_drawdown": -0.12513116956022718,
+        "calmar": 0.6497445820935426
+      },
+      "gross_metrics": {
+        "cagr": 0.08153670637005761,
+        "volatility": 0.08590008990076722,
+        "sharpe": 0.9556650090645238,
+        "max_drawdown": -0.12506970996830602,
+        "calmar": 0.6519300827572069
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.07339358788316863,
+          "volatility": 0.06701301989112646,
+          "sharpe": 1.0904776024465161,
+          "max_drawdown": -0.1019687650046277,
+          "calmar": 0.71976538972339
+        },
+        "2020-2022": {
+          "cagr": 0.0325545240355245,
+          "volatility": 0.08671934681278037,
+          "sharpe": 0.4127818256581256,
+          "max_drawdown": -0.11586300352696777,
+          "calmar": 0.28097428035297956
+        },
+        "2023-2026": {
+          "cagr": 0.13006883477783338,
+          "volatility": 0.09826297119601256,
+          "sharpe": 1.2940011981911097,
+          "max_drawdown": -0.1251311695602273,
+          "calmar": 1.0394599142240857
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.07594370677109308,
+        "2018": -0.05065341443247695,
+        "2019": 0.2022953284787603,
+        "2020": 0.1507745928026809,
+        "2021": -0.015273946740512412,
+        "2022": -0.03197315727127703,
+        "2023": 0.030411694948985435,
+        "2024": 0.1698239230288967,
+        "2025": 0.25313632284764154,
+        "2026": 0.016127677112681926
+      },
+      "stress_returns": {
+        "2018": -0.05065341443247695,
+        "2022": -0.03197315727127703
+      },
+      "annual_turnover": 0.134872843792556,
+      "gross_to_net_cagr_retention": 0.9971374009613259,
+      "total_cost": 1010.6291404417402,
+      "average_weights": {
+        "equity": 0.33352953796314355,
+        "bond": 0.33172654257103323,
+        "gold": 0.33431693398332957
+      },
+      "lot_feasibility": 1.0
+    },
+    "inverse_vol": {
+      "metrics": {
+        "cagr": 0.049570633900782424,
+        "volatility": 0.02950775219545895,
+        "sharpe": 1.6545179643836054,
+        "max_drawdown": -0.03181218539710173,
+        "calmar": 1.5582278702958454
+      },
+      "gross_metrics": {
+        "cagr": 0.049817891689330596,
+        "volatility": 0.02950104675259834,
+        "sharpe": 1.6628733728974807,
+        "max_drawdown": -0.03181218539710162,
+        "calmar": 1.5660002941473319
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.04874171082061185,
+          "volatility": 0.029409298522077167,
+          "sharpe": 1.633063092771122,
+          "max_drawdown": -0.027667588718554903,
+          "calmar": 1.7616898717279206
+        },
+        "2020-2022": {
+          "cagr": 0.033444800208594305,
+          "volatility": 0.03425194625637871,
+          "sharpe": 0.9776356078594445,
+          "max_drawdown": -0.031812185397101844,
+          "calmar": 1.0513204230112778
+        },
+        "2023-2026": {
+          "cagr": 0.06375039877536115,
+          "volatility": 0.02503353071440064,
+          "sharpe": 2.481535413056667,
+          "max_drawdown": -0.02509488987225894,
+          "calmar": 2.5403737214975313
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.02702620584049087,
+        "2018": 0.032427306651438226,
+        "2019": 0.08271502892878924,
+        "2020": 0.06387201054067293,
+        "2021": 0.02225781204877908,
+        "2022": 0.011170884272335702,
+        "2023": 0.03909810754855392,
+        "2024": 0.09206632473456255,
+        "2025": 0.07075994416010412,
+        "2026": 0.02199294312832012
+      },
+      "stress_returns": {
+        "2018": 0.032427306651438226,
+        "2022": 0.011170884272335702
+      },
+      "annual_turnover": 0.14719570854542724,
+      "gross_to_net_cagr_retention": 0.9950367673106262,
+      "total_cost": 1006.2324100286908,
+      "average_weights": {
+        "equity": 0.0900940281831348,
+        "bond": 0.7767478276632769,
+        "gold": 0.13273115867109472
+      },
+      "lot_feasibility": 1.0
+    },
+    "cycle_fast": {
+      "metrics": {
+        "cagr": 0.0469404750004907,
+        "volatility": 0.08483246058297904,
+        "sharpe": 0.5832864012376269,
+        "max_drawdown": -0.18087399736747012,
+        "calmar": 0.25952030520520175
+      },
+      "gross_metrics": {
+        "cagr": 0.05031615495977615,
+        "volatility": 0.08484389005298011,
+        "sharpe": 0.6211655624098462,
+        "max_drawdown": -0.17730966871814569,
+        "calmar": 0.28377558496124383
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.043511053581142045,
+          "volatility": 0.070410651993818,
+          "sharpe": 0.6401072211604669,
+          "max_drawdown": -0.12549755776010618,
+          "calmar": 0.34670836913269054
+        },
+        "2020-2022": {
+          "cagr": 0.004428213348252497,
+          "volatility": 0.09027751294860084,
+          "sharpe": 0.09406309931794322,
+          "max_drawdown": -0.18087399736747,
+          "calmar": 0.0244823104078138
+        },
+        "2023-2026": {
+          "cagr": 0.08628679293293895,
+          "volatility": 0.09093323358306614,
+          "sharpe": 0.9559550698517668,
+          "max_drawdown": -0.11979967221197829,
+          "calmar": 0.7202590068882633
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.042377993135435776,
+        "2018": -0.05243536201963295,
+        "2019": 0.14557112202399347,
+        "2020": 0.1659083637546619,
+        "2021": -0.02144148246118338,
+        "2022": -0.11224673425681053,
+        "2023": -0.0014646563008682278,
+        "2024": 0.14148066994960606,
+        "2025": 0.1661248453507831,
+        "2026": 0.005475130869999623
+      },
+      "stress_returns": {
+        "2018": -0.05243536201963295,
+        "2022": -0.11224673425681053
+      },
+      "annual_turnover": 2.0114674220779083,
+      "gross_to_net_cagr_retention": 0.9329106136590913,
+      "total_cost": 14325.156851887492,
+      "average_weights": {
+        "equity": 0.348506480625946,
+        "bond": 0.44652675970254474,
+        "gold": 0.19728102098662453
+      },
+      "lot_feasibility": 1.0
+    },
+    "cycle_slow": {
+      "metrics": {
+        "cagr": 0.048674661446374,
+        "volatility": 0.08123713930107757,
+        "sharpe": 0.6257776668490715,
+        "max_drawdown": -0.17897484698065658,
+        "calmar": 0.27196369918748814
+      },
+      "gross_metrics": {
+        "cagr": 0.05104619607306238,
+        "volatility": 0.08124920818174688,
+        "sharpe": 0.6535032863607287,
+        "max_drawdown": -0.1761346293248296,
+        "calmar": 0.28981351519991205
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.05346826143293071,
+          "volatility": 0.06492669374008281,
+          "sharpe": 0.834771380538127,
+          "max_drawdown": -0.1080359700705461,
+          "calmar": 0.4949116613477587
+        },
+        "2020-2022": {
+          "cagr": 0.013835740316246792,
+          "volatility": 0.09390576138175853,
+          "sharpe": 0.1932182310417889,
+          "max_drawdown": -0.17897484698065413,
+          "calmar": 0.07730550158113746
+        },
+        "2023-2026": {
+          "cagr": 0.07423309142451529,
+          "volatility": 0.08217565313016925,
+          "sharpe": 0.9127526247149741,
+          "max_drawdown": -0.1256329538634947,
+          "calmar": 0.5908727697764119
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.04935744478756798,
+        "2018": -0.02932187927631702,
+        "2019": 0.14188268309805374,
+        "2020": 0.140232106035046,
+        "2021": -0.020275257124619417,
+        "2022": -0.06858681090612195,
+        "2023": 0.015857078131551683,
+        "2024": 0.12117901496357697,
+        "2025": 0.12973631632636962,
+        "2026": -0.0011883745239360533
+      },
+      "stress_returns": {
+        "2018": -0.02932187927631702,
+        "2022": -0.06858681090612195
+      },
+      "annual_turnover": 1.4114861685606324,
+      "gross_to_net_cagr_retention": 0.953541403490791,
+      "total_cost": 10065.871419114923,
+      "average_weights": {
+        "equity": 0.31258885481560317,
+        "bond": 0.4826489215559703,
+        "gold": 0.19707648494354188
+      },
+      "lot_feasibility": 1.0
+    },
+    "fixed_monthly": {
+      "metrics": {
+        "cagr": 0.06491798863904674,
+        "volatility": 0.06666641426196698,
+        "sharpe": 0.9769321698608641,
+        "max_drawdown": -0.09478066919024597,
+        "calmar": 0.6849285745043838
+      },
+      "gross_metrics": {
+        "cagr": 0.06523720965646551,
+        "volatility": 0.06667231017902302,
+        "sharpe": 0.9813480164964214,
+        "max_drawdown": -0.09449187075235033,
+        "calmar": 0.6904002337665947
+      },
+      "folds": {
+        "2017-2019": {
+          "cagr": 0.05875338492593718,
+          "volatility": 0.05639467906499086,
+          "sharpe": 1.0406255734156207,
+          "max_drawdown": -0.08216477727319982,
+          "calmar": 0.7150677805719693
+        },
+        "2020-2022": {
+          "cagr": 0.028917777265100364,
+          "volatility": 0.06961270632417868,
+          "sharpe": 0.44431817990406725,
+          "max_drawdown": -0.09478066919024497,
+          "calmar": 0.30510205838551563
+        },
+        "2023-2026": {
+          "cagr": 0.1008223409927067,
+          "volatility": 0.07184225047961351,
+          "sharpe": 1.3732528642940578,
+          "max_drawdown": -0.07376336001857609,
+          "calmar": 1.3668349837550278
+        }
+      },
+      "yearly_returns": {
+        "2017": 0.052892104422188835,
+        "2018": -0.03813144943974445,
+        "2019": 0.16526590263175667,
+        "2020": 0.12209093097110335,
+        "2021": 3.9190396844412945e-05,
+        "2022": -0.03234329470426811,
+        "2023": 0.018676681870772205,
+        "2024": 0.15314682900437204,
+        "2025": 0.16812435865133613,
+        "2026": 0.020389103885149362
+      },
+      "stress_returns": {
+        "2018": -0.03813144943974445,
+        "2022": -0.03234329470426811
+      },
+      "annual_turnover": 0.187299166381504,
+      "gross_to_net_cagr_retention": 0.9951067646961027,
+      "total_cost": 1381.3122391601128,
+      "average_weights": {
+        "equity": 0.2974934407483096,
+        "bond": 0.4954476451829567,
+        "gold": 0.19937317538384902
+      },
+      "lot_feasibility": 1.0
+    }
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "cagr_margin": false,
+      "sharpe_floor": false,
+      "max_drawdown": false,
+      "positive_excess_folds": false,
+      "stress_years": false,
+      "best_year_independence": true,
+      "cost_retention": false,
+      "turnover": false,
+      "lot_feasibility": true
+    },
+    "fold_excess_cagr": {
+      "2017-2019": -0.019037867507549322,
+      "2020-2022": -0.024171676545500898,
+      "2023-2026": -0.009501119263312985
+    }
+  },
+  "current_cycle": {
+    "data_through": "2026-07-01",
+    "fast_state": "contraction",
+    "fast_growth_impulse": -1.1000000000000014,
+    "fast_inflation_impulse": -0.09999999999999964,
+    "fast_weights": {
+      "equity": 0.2,
+      "bond": 0.7,
+      "gold": 0.1
+    },
+    "slow_state": "expansion",
+    "slow_growth_impulse": 0.10000000000000142,
+    "slow_inflation_impulse": 3.033333333333333,
+    "slow_weights": {
+      "equity": 0.5,
+      "bond": 0.2,
+      "gold": 0.3
+    }
+  },
+  "recommended_weights": {
+    "equity": 0.3,
+    "bond": 0.5,
+    "gold": 0.2
+  },
+  "cycle_state_history": [
+    {
+      "signal_date": "2017-01-26",
+      "data_through": "2016-12-01",
+      "fast_state": "unavailable",
+      "fast_growth_impulse": 0.0,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-02-28",
+      "data_through": "2017-01-01",
+      "fast_state": "unavailable",
+      "fast_growth_impulse": 0.0,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-03-31",
+      "data_through": "2017-02-01",
+      "fast_state": "unavailable",
+      "fast_growth_impulse": 0.0,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-04-28",
+      "data_through": "2017-03-01",
+      "fast_state": "unavailable",
+      "fast_growth_impulse": 0.0,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-05-31",
+      "data_through": "2017-04-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.3333333333333357,
+      "fast_inflation_impulse": -1.0333333333333332,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-06-30",
+      "data_through": "2017-05-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.10000000000000142,
+      "fast_inflation_impulse": -1.7666666666666666,
+      "slow_state": "unavailable",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.0
+    },
+    {
+      "signal_date": "2017-07-31",
+      "data_through": "2017-06-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.46666666666666856,
+      "fast_inflation_impulse": -1.0,
+      "slow_state": "contraction",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": -1.6333333333333337
+    },
+    {
+      "signal_date": "2017-08-31",
+      "data_through": "2017-07-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.13333333333333286,
+      "fast_inflation_impulse": -0.2999999999999998,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.10000000000000142,
+      "slow_inflation_impulse": -1.7666666666666666
+    },
+    {
+      "signal_date": "2017-09-29",
+      "data_through": "2017-08-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.6000000000000014,
+      "fast_inflation_impulse": 0.7999999999999998,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.06666666666666288,
+      "slow_inflation_impulse": -0.7333333333333334
+    },
+    {
+      "signal_date": "2017-10-31",
+      "data_through": "2017-09-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.93333333333333,
+      "fast_inflation_impulse": 1.1333333333333337,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.06666666666666998,
+      "slow_inflation_impulse": 0.43333333333333357
+    },
+    {
+      "signal_date": "2017-11-30",
+      "data_through": "2017-10-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.4000000000000057,
+      "fast_inflation_impulse": 0.666666666666667,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.06666666666666998,
+      "slow_inflation_impulse": 1.2000000000000002
+    },
+    {
+      "signal_date": "2017-12-29",
+      "data_through": "2017-11-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.36666666666666714,
+      "fast_inflation_impulse": -0.9000000000000004,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.36666666666666003,
+      "slow_inflation_impulse": 0.7666666666666666
+    },
+    {
+      "signal_date": "2018-01-31",
+      "data_through": "2017-12-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.06666666666666998,
+      "fast_inflation_impulse": -1.6333333333333329,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.06666666666666288,
+      "slow_inflation_impulse": -0.36666666666666625
+    },
+    {
+      "signal_date": "2018-02-28",
+      "data_through": "2018-01-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.23333333333333428,
+      "fast_inflation_impulse": -1.5666666666666673,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.36666666666666714,
+      "slow_inflation_impulse": -1.7000000000000002
+    },
+    {
+      "signal_date": "2018-03-30",
+      "data_through": "2018-02-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -1.7000000000000028,
+      "fast_inflation_impulse": -1.2999999999999998,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.5,
+      "slow_inflation_impulse": -2.2333333333333334
+    },
+    {
+      "signal_date": "2018-04-27",
+      "data_through": "2018-03-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.03333333333333144,
+      "fast_inflation_impulse": -1.1999999999999997,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.5333333333333314,
+      "slow_inflation_impulse": -2.166666666666667
+    },
+    {
+      "signal_date": "2018-05-31",
+      "data_through": "2018-04-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.2666666666666657,
+      "fast_inflation_impulse": -0.30000000000000027,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.9333333333333371,
+      "slow_inflation_impulse": -1.6
+    },
+    {
+      "signal_date": "2018-06-29",
+      "data_through": "2018-05-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.9333333333333371,
+      "fast_inflation_impulse": 0.6999999999999997,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.20000000000000284,
+      "slow_inflation_impulse": -0.7666666666666666
+    },
+    {
+      "signal_date": "2018-07-31",
+      "data_through": "2018-06-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.1666666666666643,
+      "fast_inflation_impulse": 1.166666666666667,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.5333333333333314,
+      "slow_inflation_impulse": 0.36666666666666625
+    },
+    {
+      "signal_date": "2018-08-31",
+      "data_through": "2018-07-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.7666666666666657,
+      "fast_inflation_impulse": 0.5333333333333332,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.5333333333333385,
+      "slow_inflation_impulse": 1.0666666666666669
+    },
+    {
+      "signal_date": "2018-09-28",
+      "data_through": "2018-08-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.4000000000000057,
+      "fast_inflation_impulse": -0.36666666666666714,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.30000000000000426,
+      "slow_inflation_impulse": 0.9333333333333336
+    },
+    {
+      "signal_date": "2018-10-31",
+      "data_through": "2018-09-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.1666666666666714,
+      "fast_inflation_impulse": -0.8666666666666667,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.5333333333333314,
+      "slow_inflation_impulse": 0.033333333333333215
+    },
+    {
+      "signal_date": "2018-11-30",
+      "data_through": "2018-10-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.7333333333333343,
+      "fast_inflation_impulse": -0.7999999999999998,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.5333333333333385,
+      "slow_inflation_impulse": -0.8000000000000003
+    },
+    {
+      "signal_date": "2018-12-28",
+      "data_through": "2018-11-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.8666666666666671,
+      "fast_inflation_impulse": -0.9666666666666663,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.5999999999999943,
+      "slow_inflation_impulse": -1.2666666666666666
+    },
+    {
+      "signal_date": "2019-01-31",
+      "data_through": "2018-12-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.7333333333333343,
+      "fast_inflation_impulse": -2.3000000000000003,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -1.0,
+      "slow_inflation_impulse": -1.7999999999999998
+    },
+    {
+      "signal_date": "2019-02-28",
+      "data_through": "2019-01-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.36666666666666714,
+      "fast_inflation_impulse": -2.1999999999999997,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.7999999999999972,
+      "slow_inflation_impulse": -2.433333333333333
+    },
+    {
+      "signal_date": "2019-03-29",
+      "data_through": "2019-02-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.46666666666666856,
+      "fast_inflation_impulse": -1.1333333333333333,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.6000000000000014,
+      "slow_inflation_impulse": -2.8333333333333335
+    },
+    {
+      "signal_date": "2019-04-30",
+      "data_through": "2019-03-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 1.2666666666666657,
+      "fast_inflation_impulse": 0.033333333333333326,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.36666666666666714,
+      "slow_inflation_impulse": -2.0999999999999996
+    },
+    {
+      "signal_date": "2019-05-31",
+      "data_through": "2019-04-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.19999999999999574,
+      "fast_inflation_impulse": 0.7,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.3999999999999986,
+      "slow_inflation_impulse": -0.7666666666666667
+    },
+    {
+      "signal_date": "2019-06-28",
+      "data_through": "2019-05-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.03333333333333144,
+      "fast_inflation_impulse": 0.1333333333333333,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.8333333333333286,
+      "slow_inflation_impulse": 0.2666666666666666
+    },
+    {
+      "signal_date": "2019-07-31",
+      "data_through": "2019-06-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.5666666666666629,
+      "fast_inflation_impulse": -0.6333333333333333,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.03333333333333144,
+      "slow_inflation_impulse": 0.3
+    },
+    {
+      "signal_date": "2019-08-30",
+      "data_through": "2019-07-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.13333333333333286,
+      "fast_inflation_impulse": -0.8,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.13333333333333286,
+      "slow_inflation_impulse": -0.3666666666666667
+    },
+    {
+      "signal_date": "2019-09-30",
+      "data_through": "2019-08-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.13333333333333286,
+      "fast_inflation_impulse": -0.9,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.5333333333333314,
+      "slow_inflation_impulse": -1.0
+    },
+    {
+      "signal_date": "2019-10-31",
+      "data_through": "2019-09-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.06666666666666998,
+      "fast_inflation_impulse": -0.8333333333333333,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.1666666666666643,
+      "slow_inflation_impulse": -1.2666666666666666
+    },
+    {
+      "signal_date": "2019-11-29",
+      "data_through": "2019-10-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -1.06666666666667,
+      "fast_inflation_impulse": -0.8333333333333335,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.43333333333333,
+      "slow_inflation_impulse": -1.3
+    },
+    {
+      "signal_date": "2019-12-31",
+      "data_through": "2019-11-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 1.0,
+      "fast_inflation_impulse": -0.19999999999999996,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.09999999999999432,
+      "slow_inflation_impulse": -1.0333333333333332
+    },
+    {
+      "signal_date": "2020-01-23",
+      "data_through": "2019-12-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.46666666666666146,
+      "fast_inflation_impulse": 0.8999999999999999,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.033333333333338544,
+      "slow_inflation_impulse": -0.40000000000000013
+    },
+    {
+      "signal_date": "2020-02-28",
+      "data_through": "2020-01-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.03333333333333144,
+      "fast_inflation_impulse": 1.2666666666666668,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.6666666666666643,
+      "slow_inflation_impulse": 0.6
+    },
+    {
+      "signal_date": "2020-03-31",
+      "data_through": "2020-02-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -24.46666666666667,
+      "fast_inflation_impulse": 0.19999999999999996,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -7.833333333333336,
+      "slow_inflation_impulse": 1.1333333333333333
+    },
+    {
+      "signal_date": "2020-04-30",
+      "data_through": "2020-03-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 7.899999999999999,
+      "fast_inflation_impulse": -1.2333333333333334,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -8.066666666666663,
+      "slow_inflation_impulse": 0.5666666666666668
+    },
+    {
+      "signal_date": "2020-05-29",
+      "data_through": "2020-04-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 8.43333333333333,
+      "fast_inflation_impulse": -2.5,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -8.266666666666666,
+      "slow_inflation_impulse": -1.0666666666666669
+    },
+    {
+      "signal_date": "2020-06-30",
+      "data_through": "2020-05-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 8.299999999999997,
+      "fast_inflation_impulse": -2.033333333333333,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 8.166666666666664,
+      "slow_inflation_impulse": -2.5
+    },
+    {
+      "signal_date": "2020-07-31",
+      "data_through": "2020-06-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.9333333333333371,
+      "fast_inflation_impulse": -0.2333333333333334,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 8.699999999999996,
+      "slow_inflation_impulse": -2.6666666666666665
+    },
+    {
+      "signal_date": "2020-08-31",
+      "data_through": "2020-07-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.4333333333333371,
+      "fast_inflation_impulse": 0.8666666666666667,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 8.799999999999997,
+      "slow_inflation_impulse": -1.3666666666666665
+    },
+    {
+      "signal_date": "2020-09-30",
+      "data_through": "2020-08-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.6000000000000014,
+      "fast_inflation_impulse": 1.0333333333333332,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.0,
+      "slow_inflation_impulse": 0.2999999999999998
+    },
+    {
+      "signal_date": "2020-10-30",
+      "data_through": "2020-09-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.8333333333333357,
+      "fast_inflation_impulse": 0.3666666666666667,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.9000000000000057,
+      "slow_inflation_impulse": 1.1
+    },
+    {
+      "signal_date": "2020-11-30",
+      "data_through": "2020-10-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.7333333333333272,
+      "fast_inflation_impulse": 0.06666666666666643,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.06666666666667,
+      "slow_inflation_impulse": 0.9666666666666663
+    },
+    {
+      "signal_date": "2020-12-31",
+      "data_through": "2020-11-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.7333333333333343,
+      "fast_inflation_impulse": 0.5666666666666669,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.1000000000000014,
+      "slow_inflation_impulse": 0.5666666666666667
+    },
+    {
+      "signal_date": "2021-01-29",
+      "data_through": "2020-12-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.2666666666666657,
+      "fast_inflation_impulse": 1.5,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.7999999999999972,
+      "slow_inflation_impulse": 0.833333333333333
+    },
+    {
+      "signal_date": "2021-02-26",
+      "data_through": "2021-01-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -2.56666666666667,
+      "fast_inflation_impulse": 1.6333333333333335,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.4333333333333371,
+      "slow_inflation_impulse": 1.5333333333333337
+    },
+    {
+      "signal_date": "2021-03-31",
+      "data_through": "2021-02-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -2.93333333333333,
+      "fast_inflation_impulse": 2.2333333333333334,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -2.200000000000003,
+      "slow_inflation_impulse": 2.4333333333333336
+    },
+    {
+      "signal_date": "2021-04-30",
+      "data_through": "2021-03-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 2.133333333333333,
+      "fast_inflation_impulse": 3.866666666666667,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -2.133333333333333,
+      "slow_inflation_impulse": 3.466666666666667
+    },
+    {
+      "signal_date": "2021-05-31",
+      "data_through": "2021-04-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.5666666666666629,
+      "fast_inflation_impulse": 4.666666666666666,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.9666666666666686,
+      "slow_inflation_impulse": 4.833333333333333
+    },
+    {
+      "signal_date": "2021-06-30",
+      "data_through": "2021-05-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.63333333333334,
+      "fast_inflation_impulse": 4.7,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.2666666666666657,
+      "slow_inflation_impulse": 6.2
+    },
+    {
+      "signal_date": "2021-07-30",
+      "data_through": "2021-06-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -1.5333333333333314,
+      "fast_inflation_impulse": 2.0666666666666673,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.3999999999999986,
+      "slow_inflation_impulse": 6.066666666666666
+    },
+    {
+      "signal_date": "2021-08-31",
+      "data_through": "2021-07-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -1.2333333333333343,
+      "fast_inflation_impulse": 0.8000000000000007,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.3999999999999986,
+      "slow_inflation_impulse": 4.633333333333334
+    },
+    {
+      "signal_date": "2021-09-30",
+      "data_through": "2021-08-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -4.266666666666666,
+      "fast_inflation_impulse": 0.5666666666666664,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -3.0333333333333314,
+      "slow_inflation_impulse": 2.3666666666666663
+    },
+    {
+      "signal_date": "2021-10-29",
+      "data_through": "2021-09-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.30000000000000426,
+      "fast_inflation_impulse": 1.5999999999999996,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -2.633333333333333,
+      "slow_inflation_impulse": 1.5333333333333332
+    },
+    {
+      "signal_date": "2021-11-30",
+      "data_through": "2021-10-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.20000000000000284,
+      "fast_inflation_impulse": 3.7666666666666675,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -2.6999999999999957,
+      "slow_inflation_impulse": 2.299999999999999
+    },
+    {
+      "signal_date": "2021-12-31",
+      "data_through": "2021-11-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 1.7333333333333343,
+      "fast_inflation_impulse": 1.6666666666666679,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.1666666666666714,
+      "slow_inflation_impulse": 3.2666666666666675
+    },
+    {
+      "signal_date": "2022-01-28",
+      "data_through": "2021-12-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.6333333333333329,
+      "fast_inflation_impulse": -2.0666666666666664,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.7333333333333343,
+      "slow_inflation_impulse": 2.5000000000000018
+    },
+    {
+      "signal_date": "2022-02-28",
+      "data_through": "2022-01-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.7333333333333343,
+      "fast_inflation_impulse": -3.1333333333333346,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 1.3333333333333357,
+      "slow_inflation_impulse": -0.466666666666665
+    },
+    {
+      "signal_date": "2022-03-31",
+      "data_through": "2022-02-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.6000000000000014,
+      "fast_inflation_impulse": -1.9666666666666668,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.10000000000000142,
+      "slow_inflation_impulse": -2.966666666666667
+    },
+    {
+      "signal_date": "2022-04-29",
+      "data_through": "2022-03-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -2.6666666666666714,
+      "fast_inflation_impulse": -1.0999999999999996,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -1.3999999999999986,
+      "slow_inflation_impulse": -3.5
+    },
+    {
+      "signal_date": "2022-05-31",
+      "data_through": "2022-04-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -7.633333333333333,
+      "fast_inflation_impulse": -0.7333333333333343,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -4.233333333333334,
+      "slow_inflation_impulse": -2.4000000000000004
+    },
+    {
+      "signal_date": "2022-06-30",
+      "data_through": "2022-05-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.8333333333333286,
+      "fast_inflation_impulse": -1.9666666666666668,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -4.833333333333336,
+      "slow_inflation_impulse": -1.833333333333333
+    },
+    {
+      "signal_date": "2022-07-29",
+      "data_through": "2022-06-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 7.466666666666669,
+      "fast_inflation_impulse": -1.4666666666666677,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -1.9333333333333371,
+      "slow_inflation_impulse": -1.9000000000000012
+    },
+    {
+      "signal_date": "2022-08-31",
+      "data_through": "2022-07-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 4.100000000000001,
+      "fast_inflation_impulse": -2.633333333333333,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 4.099999999999994,
+      "slow_inflation_impulse": -2.8000000000000007
+    },
+    {
+      "signal_date": "2022-09-30",
+      "data_through": "2022-08-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.033333333333338544,
+      "fast_inflation_impulse": -3.2666666666666666,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 6.133333333333333,
+      "slow_inflation_impulse": -3.366666666666667
+    },
+    {
+      "signal_date": "2022-10-31",
+      "data_through": "2022-09-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -1.8666666666666671,
+      "fast_inflation_impulse": -3.3000000000000003,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 3.3000000000000043,
+      "slow_inflation_impulse": -4.366666666666666
+    },
+    {
+      "signal_date": "2022-11-30",
+      "data_through": "2022-10-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -2.700000000000003,
+      "fast_inflation_impulse": -3.7666666666666666,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -1.1333333333333329,
+      "slow_inflation_impulse": -4.933333333333334
+    },
+    {
+      "signal_date": "2022-12-30",
+      "data_through": "2022-11-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -3.43333333333333,
+      "fast_inflation_impulse": -1.9333333333333333,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -3.7666666666666657,
+      "slow_inflation_impulse": -4.766666666666667
+    },
+    {
+      "signal_date": "2023-01-31",
+      "data_through": "2022-12-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -6.399999999999999,
+      "fast_inflation_impulse": -0.1333333333333333,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -5.466666666666669,
+      "slow_inflation_impulse": -3.566666666666667
+    },
+    {
+      "signal_date": "2023-02-28",
+      "data_through": "2023-01-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 6.666666666666664,
+      "fast_inflation_impulse": 0.30000000000000004,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -3.0,
+      "slow_inflation_impulse": -1.5666666666666667
+    },
+    {
+      "signal_date": "2023-03-31",
+      "data_through": "2023-02-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 8.866666666666667,
+      "fast_inflation_impulse": -0.46666666666666656,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 1.6333333333333329,
+      "slow_inflation_impulse": -0.4
+    },
+    {
+      "signal_date": "2023-04-28",
+      "data_through": "2023-03-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 6.366666666666667,
+      "fast_inflation_impulse": -1.5333333333333332,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 9.199999999999996,
+      "slow_inflation_impulse": -0.46666666666666656
+    },
+    {
+      "signal_date": "2023-05-31",
+      "data_through": "2023-04-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -1.0333333333333314,
+      "fast_inflation_impulse": -2.033333333333333,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 8.399999999999999,
+      "slow_inflation_impulse": -1.5666666666666667
+    },
+    {
+      "signal_date": "2023-06-30",
+      "data_through": "2023-05-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -3.0333333333333314,
+      "fast_inflation_impulse": -2.0999999999999996,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 4.133333333333333,
+      "slow_inflation_impulse": -2.5999999999999996
+    },
+    {
+      "signal_date": "2023-07-31",
+      "data_through": "2023-06-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -2.4666666666666686,
+      "fast_inflation_impulse": -1.833333333333334,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -2.2333333333333343,
+      "slow_inflation_impulse": -2.966666666666667
+    },
+    {
+      "signal_date": "2023-08-31",
+      "data_through": "2023-07-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -2.0999999999999943,
+      "fast_inflation_impulse": 0.13333333333333286,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -3.8333333333333286,
+      "slow_inflation_impulse": -2.3
+    },
+    {
+      "signal_date": "2023-09-28",
+      "data_through": "2023-08-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.8000000000000043,
+      "fast_inflation_impulse": 1.7999999999999998,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -3.200000000000003,
+      "slow_inflation_impulse": -0.7000000000000002
+    },
+    {
+      "signal_date": "2023-10-31",
+      "data_through": "2023-09-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.4333333333333371,
+      "fast_inflation_impulse": 1.7666666666666666,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -1.7333333333333272,
+      "slow_inflation_impulse": 1.233333333333333
+    },
+    {
+      "signal_date": "2023-11-30",
+      "data_through": "2023-10-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.7666666666666657,
+      "fast_inflation_impulse": 0.7000000000000002,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.7666666666666657,
+      "slow_inflation_impulse": 2.0999999999999996
+    },
+    {
+      "signal_date": "2023-12-29",
+      "data_through": "2023-11-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.9333333333333371,
+      "fast_inflation_impulse": -0.2999999999999998,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.5333333333333314,
+      "slow_inflation_impulse": 1.5666666666666664
+    },
+    {
+      "signal_date": "2024-01-31",
+      "data_through": "2023-12-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.7333333333333343,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -1.0,
+      "slow_inflation_impulse": 0.5333333333333337
+    },
+    {
+      "signal_date": "2024-02-29",
+      "data_through": "2024-01-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.43333333333333,
+      "fast_inflation_impulse": 0.2666666666666666,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.8000000000000043,
+      "slow_inflation_impulse": -0.033333333333333215
+    },
+    {
+      "signal_date": "2024-03-29",
+      "data_through": "2024-02-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.36666666666666714,
+      "fast_inflation_impulse": 0.033333333333333215,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.3333333333333357,
+      "slow_inflation_impulse": 0.06666666666666687
+    },
+    {
+      "signal_date": "2024-04-30",
+      "data_through": "2024-03-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 2.000000000000007,
+      "fast_inflation_impulse": -0.16666666666666652,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.0333333333333314,
+      "slow_inflation_impulse": 0.10000000000000009
+    },
+    {
+      "signal_date": "2024-05-31",
+      "data_through": "2024-04-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.20000000000000284,
+      "fast_inflation_impulse": 0.16666666666666652,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.2333333333333343,
+      "slow_inflation_impulse": 0.06666666666666687
+    },
+    {
+      "signal_date": "2024-06-28",
+      "data_through": "2024-05-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.7666666666666657,
+      "fast_inflation_impulse": 1.2666666666666666,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 1.1000000000000085,
+      "slow_inflation_impulse": 0.3999999999999999
+    },
+    {
+      "signal_date": "2024-07-31",
+      "data_through": "2024-06-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -1.3000000000000043,
+      "fast_inflation_impulse": 1.4333333333333333,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.43333333333333,
+      "slow_inflation_impulse": 1.0999999999999999
+    },
+    {
+      "signal_date": "2024-08-30",
+      "data_through": "2024-07-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.8666666666666671,
+      "fast_inflation_impulse": 0.7666666666666666,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -1.1999999999999957,
+      "slow_inflation_impulse": 1.6666666666666665
+    },
+    {
+      "signal_date": "2024-09-30",
+      "data_through": "2024-08-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.46666666666666856,
+      "fast_inflation_impulse": -0.8,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -1.5333333333333385,
+      "slow_inflation_impulse": 1.1
+    },
+    {
+      "signal_date": "2024-10-31",
+      "data_through": "2024-09-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.13333333333333286,
+      "fast_inflation_impulse": -1.6666666666666665,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.8333333333333357,
+      "slow_inflation_impulse": -0.2333333333333334
+    },
+    {
+      "signal_date": "2024-11-29",
+      "data_through": "2024-10-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.5666666666666629,
+      "fast_inflation_impulse": -1.0999999999999999,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.13333333333333997,
+      "slow_inflation_impulse": -1.5
+    },
+    {
+      "signal_date": "2024-12-31",
+      "data_through": "2024-11-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.36666666666666714,
+      "fast_inflation_impulse": 0.0,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 0.3999999999999986,
+      "slow_inflation_impulse": -1.6
+    },
+    {
+      "signal_date": "2025-01-27",
+      "data_through": "2024-12-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 1.5333333333333385,
+      "fast_inflation_impulse": 0.43333333333333357,
+      "slow_state": "recovery",
+      "slow_growth_impulse": 1.0333333333333314,
+      "slow_inflation_impulse": -0.7666666666666664
+    },
+    {
+      "signal_date": "2025-02-28",
+      "data_through": "2025-01-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -1.1666666666666643,
+      "fast_inflation_impulse": 0.2666666666666666,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.6000000000000014,
+      "slow_inflation_impulse": 0.1333333333333333
+    },
+    {
+      "signal_date": "2025-03-31",
+      "data_through": "2025-02-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.06666666666666998,
+      "fast_inflation_impulse": 0.16666666666666652,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.46666666666666856,
+      "slow_inflation_impulse": 0.4666666666666668
+    },
+    {
+      "signal_date": "2025-04-30",
+      "data_through": "2025-03-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.2666666666666657,
+      "fast_inflation_impulse": -0.2333333333333334,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.3999999999999986,
+      "slow_inflation_impulse": 0.23333333333333295
+    },
+    {
+      "signal_date": "2025-05-30",
+      "data_through": "2025-04-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.6666666666666643,
+      "fast_inflation_impulse": -0.3666666666666667,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.13333333333333286,
+      "slow_inflation_impulse": -0.10000000000000009
+    },
+    {
+      "signal_date": "2025-06-30",
+      "data_through": "2025-05-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.5,
+      "fast_inflation_impulse": -0.833333333333333,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.46666666666666856,
+      "slow_inflation_impulse": -0.5666666666666669
+    },
+    {
+      "signal_date": "2025-07-31",
+      "data_through": "2025-06-01",
+      "fast_state": "recovery",
+      "fast_growth_impulse": 0.033333333333338544,
+      "fast_inflation_impulse": -0.7666666666666666,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.43333333333333,
+      "slow_inflation_impulse": -0.8666666666666667
+    },
+    {
+      "signal_date": "2025-08-29",
+      "data_through": "2025-07-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -0.23333333333333428,
+      "fast_inflation_impulse": -0.3999999999999999,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.46666666666666146,
+      "slow_inflation_impulse": -1.0333333333333332
+    },
+    {
+      "signal_date": "2025-09-30",
+      "data_through": "2025-08-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.06666666666666288,
+      "fast_inflation_impulse": 0.6000000000000001,
+      "slow_state": "contraction",
+      "slow_growth_impulse": -0.19999999999999574,
+      "slow_inflation_impulse": -0.5333333333333332
+    },
+    {
+      "signal_date": "2025-10-31",
+      "data_through": "2025-09-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.13333333333333286,
+      "fast_inflation_impulse": 1.0666666666666669,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": 0.0,
+      "slow_inflation_impulse": 0.26666666666666705
+    },
+    {
+      "signal_date": "2025-11-28",
+      "data_through": "2025-10-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.4333333333333371,
+      "fast_inflation_impulse": 0.833333333333333,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.06666666666666998,
+      "slow_inflation_impulse": 1.0666666666666669
+    },
+    {
+      "signal_date": "2025-12-31",
+      "data_through": "2025-11-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.6666666666666643,
+      "fast_inflation_impulse": 0.23333333333333295,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.36666666666666714,
+      "slow_inflation_impulse": 1.1666666666666665
+    },
+    {
+      "signal_date": "2026-01-30",
+      "data_through": "2025-12-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.6000000000000014,
+      "fast_inflation_impulse": 0.30000000000000027,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.30000000000000426,
+      "slow_inflation_impulse": 0.8666666666666663
+    },
+    {
+      "signal_date": "2026-02-27",
+      "data_through": "2026-01-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.3333333333333357,
+      "fast_inflation_impulse": 0.666666666666667,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.29999999999999716,
+      "slow_inflation_impulse": 0.5999999999999999
+    },
+    {
+      "signal_date": "2026-03-31",
+      "data_through": "2026-02-01",
+      "fast_state": "stagflation",
+      "fast_growth_impulse": -0.56666666666667,
+      "fast_inflation_impulse": 0.9333333333333332,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.10000000000000142,
+      "slow_inflation_impulse": 0.8000000000000003
+    },
+    {
+      "signal_date": "2026-04-30",
+      "data_through": "2026-03-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.5,
+      "fast_inflation_impulse": 1.9,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.20000000000000284,
+      "slow_inflation_impulse": 1.4666666666666668
+    },
+    {
+      "signal_date": "2026-05-29",
+      "data_through": "2026-04-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.1666666666666714,
+      "fast_inflation_impulse": 3.4,
+      "slow_state": "stagflation",
+      "slow_growth_impulse": -0.033333333333338544,
+      "slow_inflation_impulse": 2.6333333333333333
+    },
+    {
+      "signal_date": "2026-06-30",
+      "data_through": "2026-05-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.46666666666666856,
+      "fast_inflation_impulse": 3.1,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.36666666666666714,
+      "slow_inflation_impulse": 3.8
+    },
+    {
+      "signal_date": "2026-07-31",
+      "data_through": "2026-06-01",
+      "fast_state": "expansion",
+      "fast_growth_impulse": 0.23333333333333428,
+      "fast_inflation_impulse": 1.6999999999999997,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.46666666666666856,
+      "slow_inflation_impulse": 4.199999999999999
+    },
+    {
+      "signal_date": "2026-08-25",
+      "data_through": "2026-07-01",
+      "fast_state": "contraction",
+      "fast_growth_impulse": -1.1000000000000014,
+      "fast_inflation_impulse": -0.09999999999999964,
+      "slow_state": "expansion",
+      "slow_growth_impulse": 0.10000000000000142,
+      "slow_inflation_impulse": 3.033333333333333
+    }
+  ],
+  "limitations": [
+    "macro history is current-vintage and lacks historical revision snapshots",
+    "a one-month lag is imposed but cannot eliminate revision bias",
+    "cycle weights are fixed economic hypotheses rather than optimized allocations",
+    "the current official assessment can turn before the slow classifier confirms"
+  ]
+}

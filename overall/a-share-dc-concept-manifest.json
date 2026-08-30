@@ -1,0 +1,27 @@
+{
+  "api": [
+    "dc_member",
+    "dc_index"
+  ],
+  "endpoint": "https://fast.xiaodefa.cn",
+  "member_queries": 1987,
+  "index_queries": 176,
+  "member_query_success_rate": 1.0,
+  "index_query_success_rate": 0.6818181818181818,
+  "member_rows": 4208,
+  "index_rows": 10962,
+  "outputs": {
+    "members": {
+      "path": "overall/a-share-dc-concept-members.csv",
+      "sha256": "27ed8d1a5f8b78ff28c5fa78be5bdceea3b181371fa4f087a2b25d6e297fbb5f"
+    },
+    "index": {
+      "path": "overall/a-share-dc-concept-index.csv",
+      "sha256": "6a26b4b9d73f2a812ecb92bfecee4558f120211523bfaa7896c94eeb46a1e89d"
+    },
+    "queries": {
+      "path": "overall/a-share-dc-concept-queries.csv",
+      "sha256": "cc30239a7453bef7c0fa9165f2cc06ae00066416d2157e05073e9ce91897e50c"
+    }
+  }
+}

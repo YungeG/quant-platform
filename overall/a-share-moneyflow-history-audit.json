@@ -1,0 +1,237 @@
+{
+  "study": "a-share-moneyflow-history-audit-v1",
+  "source": "overall/a-share-moneyflow-raw/moneyflow_*.parquet",
+  "identity": {
+    "rows": 9368505,
+    "distinct_keys": 9368505,
+    "duplicate_rows": 0,
+    "min_date": "20180102",
+    "max_date": "20260827",
+    "symbols": 5793
+  },
+  "null_counts": {
+    "buy_sm_amount": 0,
+    "sell_sm_amount": 0,
+    "buy_md_amount": 0,
+    "sell_md_amount": 0,
+    "buy_lg_amount": 0,
+    "sell_lg_amount": 0,
+    "buy_elg_amount": 0,
+    "sell_elg_amount": 0,
+    "net_mf_amount": 0
+  },
+  "nonpositive_directional_amount": 0,
+  "net_formula": {
+    "absolute_quantiles": [
+      817.5500000000004,
+      9799.22799999999,
+      28085.177599999937
+    ],
+    "absolute_max": 2839774.5399999996,
+    "relative_quantiles": [
+      0.05721497870845955,
+      0.16858751554399132,
+      0.23364900973526256
+    ],
+    "relative_max": 0.6666666666666666
+  },
+  "market_join": {
+    "unmatched_rows": 658613,
+    "coverage": 0.9296992423017333
+  },
+  "yearly": [
+    {
+      "year_key": "2018",
+      "row_count": 816683,
+      "date_count": 243,
+      "median_rows": 3355.0,
+      "sm_share": 0.2600638863017721,
+      "md_share": 0.33623268665023953,
+      "lg_share": 0.27485796027386694,
+      "elg_share": 0.12884546677412143,
+      "median_large_net_rate": -0.01622134521955733
+    },
+    {
+      "year_key": "2019",
+      "row_count": 884816,
+      "date_count": 244,
+      "median_rows": 3610.0,
+      "sm_share": 0.263875706549154,
+      "md_share": 0.33467783047176364,
+      "lg_share": 0.27264729796690046,
+      "elg_share": 0.1287991650121753,
+      "median_large_net_rate": -0.01722683972162762
+    },
+    {
+      "year_key": "2020",
+      "row_count": 945853,
+      "date_count": 243,
+      "median_rows": 3857.0,
+      "sm_share": 0.25380602724819507,
+      "md_share": 0.33078546452234325,
+      "lg_share": 0.2767744981600036,
+      "elg_share": 0.13863401006945567,
+      "median_large_net_rate": -0.01915060274133187
+    },
+    {
+      "year_key": "2021",
+      "row_count": 1058569,
+      "date_count": 243,
+      "median_rows": 4378.0,
+      "sm_share": 0.28289905442982105,
+      "md_share": 0.33078621158232824,
+      "lg_share": 0.2562451465427227,
+      "elg_share": 0.1300695874451253,
+      "median_large_net_rate": -0.014695833709579375
+    },
+    {
+      "year_key": "2022",
+      "row_count": 1146022,
+      "date_count": 242,
+      "median_rows": 4715.0,
+      "sm_share": 0.3417741138969491,
+      "md_share": 0.3396446483928539,
+      "lg_share": 0.22414631422500153,
+      "elg_share": 0.09443492348519446,
+      "median_large_net_rate": -0.011468632250976656
+    },
+    {
+      "year_key": "2023",
+      "row_count": 1209410,
+      "date_count": 242,
+      "median_rows": 5002.0,
+      "sm_share": 0.3427448689063038,
+      "md_share": 0.34320945531266595,
+      "lg_share": 0.2254548827045298,
+      "elg_share": 0.08859079307650512,
+      "median_large_net_rate": -0.01157901786289656
+    },
+    {
+      "year_key": "2024",
+      "row_count": 1233188,
+      "date_count": 242,
+      "median_rows": 5095.0,
+      "sm_share": 0.34034636216798625,
+      "md_share": 0.337480571900444,
+      "lg_share": 0.2287717305956293,
+      "elg_share": 0.09340133533593635,
+      "median_large_net_rate": -0.008839529454708717
+    },
+    {
+      "year_key": "2025",
+      "row_count": 1248108,
+      "date_count": 243,
+      "median_rows": 5139.0,
+      "sm_share": 0.32467237958392514,
+      "md_share": 0.33194719319372434,
+      "lg_share": 0.23703216323369278,
+      "elg_share": 0.10634826398865943,
+      "median_large_net_rate": -0.007790358207103668
+    },
+    {
+      "year_key": "2026",
+      "row_count": 825856,
+      "date_count": 158,
+      "median_rows": 5187.0,
+      "sm_share": 0.30671546755940915,
+      "md_share": 0.3253186279031077,
+      "lg_share": 0.23979022661902347,
+      "elg_share": 0.1281756779184529,
+      "median_large_net_rate": -0.005554230641757859
+    }
+  ],
+  "bucket_share_breaks_5pp": [
+    {
+      "from": "2021",
+      "to": "2022",
+      "field": "sm_share",
+      "change": 0.058875059467128066
+    }
+  ],
+  "market_amount_scale": [
+    {
+      "year_key": "2018",
+      "ratio": [
+        0.00019328765308529612,
+        0.0001999996199510231,
+        0.00020000110374750977
+      ]
+    },
+    {
+      "year_key": "2019",
+      "ratio": [
+        0.00019814177596733996,
+        0.00019999976086553073,
+        0.00020000010237634545
+      ]
+    },
+    {
+      "year_key": "2020",
+      "ratio": [
+        0.00019810852477655843,
+        0.00019999979461500565,
+        0.00020000005565749175
+      ]
+    },
+    {
+      "year_key": "2021",
+      "ratio": [
+        0.00019999917655669583,
+        0.0001999999985021795,
+        0.00020000024352220783
+      ]
+    },
+    {
+      "year_key": "2022",
+      "ratio": [
+        0.00019951565321083112,
+        0.00019999999518649075,
+        0.00020000020068667456
+      ]
+    },
+    {
+      "year_key": "2023",
+      "ratio": [
+        0.00019999952540127508,
+        0.00019999999813224455,
+        0.000200000221521935
+      ]
+    },
+    {
+      "year_key": "2024",
+      "ratio": [
+        0.0001999998194484149,
+        0.00020000000181579102,
+        0.00020000019812672112
+      ]
+    },
+    {
+      "year_key": "2025",
+      "ratio": [
+        0.00019999988735018337,
+        0.00020000000122521365,
+        0.00020000012547625055
+      ]
+    },
+    {
+      "year_key": "2026",
+      "ratio": [
+        0.00019999990289661898,
+        0.0002000000035621818,
+        0.00020000042140695917
+      ]
+    }
+  ],
+  "decision": {
+    "usable_for_research": true,
+    "all_order_direction_usable": false,
+    "large_order_epoch_usable": true,
+    "size_bucket_cross_period_usable": false,
+    "decision_grade": false
+  },
+  "limitations": [
+    "provider-classified buy/sell and order sizes are not exchange tick authority",
+    "provider methodology changes are not formally versioned",
+    "net_mf is retained for audit only"
+  ]
+}

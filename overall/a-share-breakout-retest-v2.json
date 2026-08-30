@@ -1,0 +1,145 @@
+{
+  "study": "a-share-breakout-level-retest-v2",
+  "data": {
+    "panel_version": "4d211add824ce579",
+    "panel_rows": 11153166,
+    "event_count": 4447,
+    "executed_count": 205,
+    "start": "2016-01-01",
+    "end": "2026-08-25"
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": false,
+      "active10": false,
+      "active20": false,
+      "median20": true,
+      "win_rate20": false,
+      "positive_folds": false,
+      "bootstrap": false,
+      "execution": true
+    },
+    "metrics": {
+      "5": {
+        "count": 205,
+        "mean": -0.0020945738138317413,
+        "median": -0.010430221534747243,
+        "win_rate": 0.4195121951219512,
+        "bootstrap_95": [
+          -0.008255672315423082,
+          0.004423187471190285
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "mean": -0.0033975586802473573,
+            "median": -0.011722503458574457,
+            "win_rate": 0.3917525773195876
+          },
+          "2020-2022": {
+            "count": 54,
+            "mean": 0.0003575743541554888,
+            "median": -0.0068030303608188685,
+            "win_rate": 0.3888888888888889
+          },
+          "2023-2026": {
+            "count": 54,
+            "mean": -0.002206175092146478,
+            "median": -0.0026163967892063687,
+            "win_rate": 0.5
+          }
+        }
+      },
+      "10": {
+        "count": 204,
+        "mean": -0.006409151413917307,
+        "median": -0.00831273035980525,
+        "win_rate": 0.46078431372549017,
+        "bootstrap_95": [
+          -0.01458222761356075,
+          0.0017977640444970689
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 96,
+            "mean": -0.008701105533432391,
+            "median": -0.014265496894735266,
+            "win_rate": 0.3854166666666667
+          },
+          "2020-2022": {
+            "count": 54,
+            "mean": -0.008944989099449593,
+            "median": 0.00269219162319511,
+            "win_rate": 0.5185185185185185
+          },
+          "2023-2026": {
+            "count": 54,
+            "mean": 0.00020127137297513335,
+            "median": 0.009284839878534545,
+            "win_rate": 0.5370370370370371
+          }
+        }
+      },
+      "20": {
+        "count": 203,
+        "mean": -0.0015448584803960219,
+        "median": 0.00039049313802764227,
+        "win_rate": 0.5073891625615764,
+        "bootstrap_95": [
+          -0.014538660401472342,
+          0.011406835349710018
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "mean": -0.0059474985227136986,
+            "median": -0.0039085622682007055,
+            "win_rate": 0.4845360824742268
+          },
+          "2020-2022": {
+            "count": 54,
+            "mean": 0.009973305217081847,
+            "median": 0.011658381043494315,
+            "win_rate": 0.5740740740740741
+          },
+          "2023-2026": {
+            "count": 52,
+            "mean": -0.005293411471915059,
+            "median": -0.017807298338224524,
+            "win_rate": 0.4807692307692308
+          }
+        }
+      }
+    }
+  },
+  "failure_summary": {
+    "terminal_reasons": {
+      "retest_volatility_expanded": 1917,
+      "distribution_selloff": 1006,
+      "no_retest_timeout": 307,
+      "triggered": 213,
+      "support_break": 551,
+      "no_recovery_timeout": 137,
+      "retest_volume_not_contracted": 316
+    },
+    "execution_reasons": {
+      "not_triggered": 4234,
+      "executed": 205,
+      "entry_gap_above_half_atr": 8
+    },
+    "outcome_reasons": {
+      "failed_after_initial_strength": 28,
+      "early_failure": 74,
+      "successful_20d": 103
+    },
+    "rejection_rate": 0.03755868544600939
+  },
+  "ledger": "overall/a-share-breakout-retest-v2-events.csv",
+  "limitations": [
+    "historical ST authority is unavailable",
+    "daily bars cannot observe intraday retest order or auction queue position",
+    "one event per symbol is suppressed for twelve sessions after breakout",
+    "the interval is not virgin OOS"
+  ]
+}

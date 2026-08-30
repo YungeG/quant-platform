@@ -1,0 +1,93 @@
+{
+  "study": "a-share-breakout-retest-concept-cluster-v1",
+  "data": {
+    "events": 4447,
+    "executed_events": 205,
+    "complete_executed_events": 19,
+    "executed_data_complete_rate": 0.09268292682926829,
+    "concept_confirmed_events": 6,
+    "available_date_min": "20250116",
+    "available_date_max": "20260720"
+  },
+  "decision": {
+    "verdict": "DATA-BLOCKED",
+    "checks": {
+      "count": false,
+      "mean": false,
+      "median": true,
+      "win_rate": true,
+      "positive_folds": false,
+      "bootstrap": false,
+      "uplift": true,
+      "completeness": false
+    },
+    "complete_sample20": {
+      "count": 17,
+      "mean": -0.030836576425192847,
+      "median": -0.0211168900936148,
+      "win_rate": 0.35294117647058826,
+      "bootstrap_95": [
+        -0.058219864224429305,
+        -0.004415306062645689
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 0,
+          "mean": 0.0,
+          "median": 0.0,
+          "win_rate": 0.0
+        },
+        "2020-2022": {
+          "count": 0,
+          "mean": 0.0,
+          "median": 0.0,
+          "win_rate": 0.0
+        },
+        "2023-2026": {
+          "count": 17,
+          "mean": -0.030836576425192847,
+          "median": -0.0211168900936148,
+          "win_rate": 0.35294117647058826
+        }
+      }
+    },
+    "concept_cluster20": {
+      "count": 4,
+      "mean": -0.002043180531383873,
+      "median": 0.023532221675657702,
+      "win_rate": 0.75,
+      "bootstrap_95": [
+        -0.06627977546092667,
+        0.0402992973829326
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 0,
+          "mean": 0.0,
+          "median": 0.0,
+          "win_rate": 0.0
+        },
+        "2020-2022": {
+          "count": 0,
+          "mean": 0.0,
+          "median": 0.0,
+          "win_rate": 0.0
+        },
+        "2023-2026": {
+          "count": 4,
+          "mean": -0.002043180531383873,
+          "median": 0.023532221675657702,
+          "win_rate": 0.75
+        }
+      }
+    },
+    "mean_uplift": 0.028793395893808974,
+    "win_rate_uplift": 0.39705882352941174
+  },
+  "ledger": "overall/a-share-breakout-retest-v2-concept-events.csv",
+  "limitations": [
+    "Eastmoney PIT concept membership is available only from 2025 in the proxy history",
+    "historical completeness is below the frozen gate",
+    "concept memberships may change because the provider taxonomy is dynamic"
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "study": "a-share-breakout-microstructure-v1",
+  "data": {
+    "events": 205
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "features": {
+      "retest_recovery": {
+        "count": 203,
+        "rho": 0.03892389414782091,
+        "p": 0.5813838180027857,
+        "bootstrap95": [
+          -0.10466624707618816,
+          0.17518016837074235
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "rho": 0.005877982551293701
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": 0.07456399538292528
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": 0.07142094829900779
+          }
+        },
+        "success_median": 0.509433962264149,
+        "failure_median": 0.46027742749054207
+      },
+      "signal_close_vs_vwap": {
+        "count": 203,
+        "rho": -0.1382781859756535,
+        "p": 0.04913059463821426,
+        "bootstrap95": [
+          -0.27633529490703845,
+          0.007590684726623679
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "rho": -0.03567483694508731
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": -0.20716599961882978
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": -0.2678220780329548
+          }
+        },
+        "success_median": 0.0077148560454958215,
+        "failure_median": 0.0078434940824611
+      },
+      "auction_turnover": {
+        "count": 202,
+        "rho": -0.10813488524795424,
+        "p": 0.12556115594164174,
+        "bootstrap95": [
+          -0.24482092916631737,
+          0.02825525399268957
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "rho": -0.13291605301914577
+          },
+          "2020-2022": {
+            "count": 53,
+            "rho": -0.17335913562328656
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": -0.1102194143259626
+          }
+        },
+        "success_median": 3.9473257453647265e-09,
+        "failure_median": 4.378297549015444e-09
+      },
+      "entry_first30_return": {
+        "count": 203,
+        "rho": 0.06387633285058665,
+        "p": 0.36525209282238835,
+        "bootstrap95": [
+          -0.08221424815525868,
+          0.19823899584432972
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "rho": -0.02301843249812728
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": 0.011701924909472076
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": 0.32556352577687125
+          }
+        },
+        "success_median": 0.0016000000000000458,
+        "failure_median": -0.0010647762023908713
+      },
+      "entry_close_vs_vwap": {
+        "count": 203,
+        "rho": 0.05279715163634591,
+        "p": 0.454387547654123,
+        "bootstrap95": [
+          -0.08770673757572409,
+          0.1930323583125669
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 97,
+            "rho": 0.030283505154639172
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": 0.05652753954640747
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": 0.08435072142064372
+          }
+        },
+        "success_median": -0.0009785803144668481,
+        "failure_median": -0.002315997633800748
+      }
+    },
+    "decisions": {
+      "retest_recovery": {
+        "status": "MARGINAL",
+        "holm_p": 1.0,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": true,
+          "holm": false
+        }
+      },
+      "signal_close_vs_vwap": {
+        "status": "NO-GO",
+        "holm_p": 0.2456529731910713,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": false,
+          "bootstrap": false,
+          "fold_direction": false,
+          "holm": false
+        }
+      },
+      "auction_turnover": {
+        "status": "NO-GO",
+        "holm_p": 0.502244623766567,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": false,
+          "bootstrap": false,
+          "fold_direction": false,
+          "holm": false
+        }
+      },
+      "entry_first30_return": {
+        "status": "MARGINAL",
+        "holm_p": 1.0,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": true,
+          "holm": false
+        }
+      },
+      "entry_close_vs_vwap": {
+        "status": "MARGINAL",
+        "holm_p": 1.0,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": true,
+          "holm": false
+        }
+      }
+    }
+  },
+  "ledger": "overall/a-share-breakout-microstructure-events.csv"
+}

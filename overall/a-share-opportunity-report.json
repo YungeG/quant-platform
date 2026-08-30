@@ -1,0 +1,183 @@
+{
+  "catalog": {
+    "path": "overall/a-share-opportunity-catalog-v1.json",
+    "sha256": "10ab1767b303dc733683cb7850686462c2e7b9bdb6ca8a44590e3f39d8700a72"
+  },
+  "sources": [
+    {
+      "source": "overall/a-share-pharma-chemical-rotation-monthly-current.csv",
+      "source_sha256": "c7f7549f8f747d0b4cfadd42830c7c8f1b01ed4a391867c7fae62504ed47fb82",
+      "left": "医药生物",
+      "right": "基础化工",
+      "current_scores": {
+        "医药生物": 44.91666666666666,
+        "基础化工": 54.16666666666666
+      }
+    },
+    {
+      "source": "overall/a-share-analyst-opportunity-state.csv",
+      "source_sha256": "17cd7564a70bd48dffd6e6a8011b83bd1ce8c888f4294d062396089463a27f2e"
+    }
+  ],
+  "capital": 0,
+  "trade_authorized": false,
+  "as_of": "2026-08-27",
+  "decisions": [
+    {
+      "opportunity_id": "pharma-vs-chemical-current-state-v1",
+      "as_of": "2026-08-27",
+      "status": "NO-SELECTION",
+      "selection": null,
+      "reason": "statistical_gate_failed",
+      "current_vector": {
+        "triple_growth_breadth_pct": -0.3166666666666666,
+        "ocf_positive_breadth_pct": -0.55,
+        "pe_median_pct": 0.0666666666666666,
+        "positive_revision_breadth_pct": -0.5166666666666667,
+        "median_revision_pct": 0.050000000000000044,
+        "ma20_breadth_pct": -0.30000000000000004,
+        "relative20_pct": -0.033333333333333215
+      },
+      "analogs": [
+        {
+          "date": "2022-01-28",
+          "distance": 0.7494757737021797,
+          "outcome": 0.0359209142068353
+        },
+        {
+          "date": "2025-10-31",
+          "distance": 0.7799572637865061,
+          "outcome": -0.1980896031792344
+        },
+        {
+          "date": "2022-06-30",
+          "distance": 0.8006149373924738,
+          "outcome": -0.04394203439294998
+        },
+        {
+          "date": "2021-05-31",
+          "distance": 0.8034647195462633,
+          "outcome": -0.5274655955210301
+        },
+        {
+          "date": "2021-10-29",
+          "distance": 0.8249713799749528,
+          "outcome": 0.0459890540964083
+        },
+        {
+          "date": "2024-09-30",
+          "distance": 0.8663460945578018,
+          "outcome": -0.056164812416000215
+        },
+        {
+          "date": "2019-05-31",
+          "distance": 0.8705173481986096,
+          "outcome": 0.1257736945976271
+        },
+        {
+          "date": "2025-01-27",
+          "distance": 0.8709828420302617,
+          "outcome": -0.019601258229127498
+        },
+        {
+          "date": "2023-01-31",
+          "distance": 0.9047713032093312,
+          "outcome": 0.154497171777568
+        },
+        {
+          "date": "2025-07-31",
+          "distance": 0.9078362554264215,
+          "outcome": -0.1407963787258309
+        }
+      ],
+      "evidence": {
+        "count": 10,
+        "mean": -0.062387884778573446,
+        "median": -0.03177164631103874,
+        "positive_share": 0.4,
+        "negative_share": 0.6,
+        "bootstrap95": [
+          -0.1901116799855444,
+          0.03825558628009641
+        ]
+      }
+    },
+    {
+      "opportunity_id": "analyst-revision-top30-state-v1",
+      "as_of": "2026-08-26",
+      "status": "NO-SELECTION",
+      "selection": null,
+      "reason": "statistical_gate_failed",
+      "current_vector": {
+        "positive_revision_breadth_pct": 0.75,
+        "median_revision_pct": 0.9833333333333332,
+        "top30_revision_pct": 0.6833333333333333,
+        "coverage_pct": 0.4333333333333333,
+        "paired_count_pct": 0.1166666666666666
+      },
+      "analogs": [
+        {
+          "date": "2025-10-31",
+          "distance": 0.12801909579781015,
+          "outcome": -0.0232251220696613
+        },
+        {
+          "date": "2025-12-31",
+          "distance": 0.2666666666666667,
+          "outcome": 0.0421430066625638
+        },
+        {
+          "date": "2025-08-29",
+          "distance": 0.35823642100341135,
+          "outcome": -0.0062242969108893
+        },
+        {
+          "date": "2021-07-30",
+          "distance": 0.37192572103190924,
+          "outcome": 0.1263457150455839
+        },
+        {
+          "date": "2021-04-30",
+          "distance": 0.4743641718356979,
+          "outcome": 0.0312833280754197
+        },
+        {
+          "date": "2022-02-28",
+          "distance": 0.49665548085837813,
+          "outcome": 0.0055991233871138
+        },
+        {
+          "date": "2021-02-26",
+          "distance": 0.5914201364324501,
+          "outcome": -0.0078870091939549
+        },
+        {
+          "date": "2021-09-30",
+          "distance": 0.6516971238805941,
+          "outcome": -0.0392022745477048
+        },
+        {
+          "date": "2025-03-31",
+          "distance": 0.6647890225059708,
+          "outcome": -0.0070536450865092
+        },
+        {
+          "date": "2020-12-31",
+          "distance": 0.7500231477909347,
+          "outcome": 0.0030592088683985
+        }
+      ],
+      "evidence": {
+        "count": 10,
+        "mean": 0.012483803423036021,
+        "median": -0.0015825440212453997,
+        "positive_share": 0.5,
+        "negative_share": 0.5,
+        "bootstrap95": [
+          -0.011012830895779105,
+          0.043887541863452256
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "study": "a-share-2026-sector-volume-launches-v1",
+  "data": {
+    "panel": "overall/a-share-2026-sector-volume-panel.csv",
+    "events": 75,
+    "launches": 7,
+    "failed": 31,
+    "incomplete": 21
+  },
+  "phase_summary": {
+    "FAILED": {
+      "count": 31,
+      "median_active35": -0.077398310036038,
+      "patterns": {
+        "MIXED": 25,
+        "SUSTAINED": 5,
+        "PULSE": 1
+      },
+      "median_phases": {
+        "quiet_amount_share_rel": -0.005705828366914134,
+        "quiet_turnover_rel": -0.010111168850983898,
+        "quiet_volume_breadth": 0.3947442128169062,
+        "quiet_up_amount_share": 0.5308451232485913,
+        "quiet_price_breadth": 0.2758620689655172,
+        "quiet_top5_amount_concentration": 0.26726426272186765,
+        "preparation_amount_share_rel": -0.031744255251592635,
+        "preparation_turnover_rel": 0.028836761209743433,
+        "preparation_volume_breadth": 0.4336734693877551,
+        "preparation_up_amount_share": 0.5494535565196076,
+        "preparation_price_breadth": 0.5058823529411764,
+        "preparation_top5_amount_concentration": 0.2624446352251642,
+        "start_amount_share_rel": -0.028372810910402446,
+        "start_turnover_rel": 0.10306351446736639,
+        "start_volume_breadth": 0.5483028720626631,
+        "start_up_amount_share": 0.7277111053238239,
+        "start_price_breadth": 0.6595744680851063,
+        "start_top5_amount_concentration": 0.2647640158512291,
+        "ignition_amount_share_rel": -0.006507263731193702,
+        "ignition_turnover_rel": 0.17959175180321618,
+        "ignition_volume_breadth": 0.6220472440944882,
+        "ignition_up_amount_share": 0.5205998817810328,
+        "ignition_price_breadth": 0.575,
+        "ignition_top5_amount_concentration": 0.2387793004613471,
+        "expansion_amount_share_rel": -0.05742335701076695,
+        "expansion_turnover_rel": 0.1848878752159664,
+        "expansion_volume_breadth": 0.453781512605042,
+        "expansion_up_amount_share": 0.4572045894486082,
+        "expansion_price_breadth": 0.4758064516129032,
+        "expansion_top5_amount_concentration": 0.2585572584216206,
+        "follow_through_amount_share_rel": -0.19830844857886892,
+        "follow_through_turnover_rel": 0.0036561141064167524,
+        "follow_through_volume_breadth": 0.3933128128010527,
+        "follow_through_up_amount_share": 0.46437964293571365,
+        "follow_through_price_breadth": 0.17551340062652276,
+        "follow_through_top5_amount_concentration": 0.2654290226750702
+      }
+    },
+    "INCOMPLETE_CROSS": {
+      "count": 21,
+      "median_active35": null,
+      "patterns": {
+        "MIXED": 12,
+        "SUSTAINED": 8,
+        "PULSE": 1
+      },
+      "median_phases": {
+        "quiet_amount_share_rel": -0.014785733151670533,
+        "quiet_turnover_rel": 0.03178041190210812,
+        "quiet_volume_breadth": 0.4341085271317829,
+        "quiet_up_amount_share": 0.4175312261612276,
+        "quiet_price_breadth": 0.16129032258064513,
+        "quiet_top5_amount_concentration": 0.343400675298664,
+        "preparation_amount_share_rel": 0.012089998205647157,
+        "preparation_turnover_rel": -0.08978332829061236,
+        "preparation_volume_breadth": 0.375968992248062,
+        "preparation_up_amount_share": 0.5104619823124195,
+        "preparation_price_breadth": 0.29591836734693877,
+        "preparation_top5_amount_concentration": 0.31121462849074116,
+        "start_amount_share_rel": 0.08775335640679693,
+        "start_turnover_rel": -0.04428554234768789,
+        "start_volume_breadth": 0.4018475750577367,
+        "start_up_amount_share": 0.7477277954642159,
+        "start_price_breadth": 0.5,
+        "start_top5_amount_concentration": 0.299316695845467,
+        "ignition_amount_share_rel": 0.1898893555283956,
+        "ignition_turnover_rel": -0.055322907365578655,
+        "ignition_volume_breadth": 0.48,
+        "ignition_up_amount_share": 0.5337442156140935,
+        "ignition_price_breadth": 0.6048387096774194,
+        "ignition_top5_amount_concentration": 0.2947658851308634,
+        "expansion_amount_share_rel": 0.08957252148012196,
+        "expansion_turnover_rel": -0.17149273724718528,
+        "expansion_volume_breadth": 0.35,
+        "expansion_up_amount_share": 0.5630519532380587,
+        "expansion_price_breadth": 0.8181818181818182,
+        "expansion_top5_amount_concentration": 0.3159102177786149,
+        "follow_through_amount_share_rel": 0.3363324973155518,
+        "follow_through_turnover_rel": -0.18700940108315617,
+        "follow_through_volume_breadth": 0.4352367593646663,
+        "follow_through_up_amount_share": 0.5531764477606084,
+        "follow_through_price_breadth": 0.6282296041746214,
+        "follow_through_top5_amount_concentration": 0.328396611918367
+      }
+    },
+    "LAUNCH": {
+      "count": 7,
+      "median_active35": 0.1307710989217105,
+      "patterns": {
+        "MIXED": 5,
+        "SUSTAINED": 2
+      },
+      "median_phases": {
+        "quiet_amount_share_rel": -0.027714298951754868,
+        "quiet_turnover_rel": -0.017964699966594555,
+        "quiet_volume_breadth": 0.35365853658536583,
+        "quiet_up_amount_share": 0.46274574302937516,
+        "quiet_price_breadth": 0.26771653543307083,
+        "quiet_top5_amount_concentration": 0.42260858027569737,
+        "preparation_amount_share_rel": -0.008158583193855928,
+        "preparation_turnover_rel": 0.18629555322304192,
+        "preparation_volume_breadth": 0.5428571428571429,
+        "preparation_up_amount_share": 0.5776869656967432,
+        "preparation_price_breadth": 0.5814889336016096,
+        "preparation_top5_amount_concentration": 0.40255115948468945,
+        "start_amount_share_rel": -0.0022763695224190528,
+        "start_turnover_rel": 0.38618211881590847,
+        "start_volume_breadth": 0.8222222222222222,
+        "start_up_amount_share": 0.7458410067162777,
+        "start_price_breadth": 0.8591549295774648,
+        "start_top5_amount_concentration": 0.3665942424468917,
+        "ignition_amount_share_rel": 0.03261345556495576,
+        "ignition_turnover_rel": 0.623777225554049,
+        "ignition_volume_breadth": 0.8888888888888888,
+        "ignition_up_amount_share": 0.4890227715501118,
+        "ignition_price_breadth": 0.84251968503937,
+        "ignition_top5_amount_concentration": 0.4020154011918813,
+        "expansion_amount_share_rel": 0.2023762637836377,
+        "expansion_turnover_rel": 0.6552258943936087,
+        "expansion_volume_breadth": 0.64,
+        "expansion_up_amount_share": 0.5875721616600693,
+        "expansion_price_breadth": 0.7671232876712328,
+        "expansion_top5_amount_concentration": 0.3735667334356493,
+        "follow_through_amount_share_rel": 0.4447869386435348,
+        "follow_through_turnover_rel": 0.657689712910341,
+        "follow_through_volume_breadth": 0.5275590551181102,
+        "follow_through_up_amount_share": 0.5306467385214114,
+        "follow_through_price_breadth": 0.6141732283464567,
+        "follow_through_top5_amount_concentration": 0.4144845222560568
+      }
+    },
+    "WEAK": {
+      "count": 16,
+      "median_active35": 0.026673929685217798,
+      "patterns": {
+        "MIXED": 11,
+        "SUSTAINED": 4,
+        "PULSE": 1
+      },
+      "median_phases": {
+        "quiet_amount_share_rel": -0.001374508939088137,
+        "quiet_turnover_rel": -0.0005047392539493378,
+        "quiet_volume_breadth": 0.39471153846153845,
+        "quiet_up_amount_share": 0.48291613249420584,
+        "quiet_price_breadth": 0.27117566855653985,
+        "quiet_top5_amount_concentration": 0.34476819020116034,
+        "preparation_amount_share_rel": 0.005553280085414669,
+        "preparation_turnover_rel": 0.1061110192412979,
+        "preparation_volume_breadth": 0.50131495897328,
+        "preparation_up_amount_share": 0.5899930245508112,
+        "preparation_price_breadth": 0.45843005465864317,
+        "preparation_top5_amount_concentration": 0.3643742073007048,
+        "start_amount_share_rel": 0.011228486343888844,
+        "start_turnover_rel": 0.3514817927629682,
+        "start_volume_breadth": 0.7976190476190477,
+        "start_up_amount_share": 0.7575457116776823,
+        "start_price_breadth": 0.7877551020408163,
+        "start_top5_amount_concentration": 0.3242256150053668,
+        "ignition_amount_share_rel": -0.05078888023579847,
+        "ignition_turnover_rel": 0.25961367901884336,
+        "ignition_volume_breadth": 0.6619311875693674,
+        "ignition_up_amount_share": 0.5438050218596718,
+        "ignition_price_breadth": 0.7526530612244897,
+        "ignition_top5_amount_concentration": 0.3496842378760112,
+        "expansion_amount_share_rel": -0.06246817562166207,
+        "expansion_turnover_rel": 0.11566669133935426,
+        "expansion_volume_breadth": 0.44336723882178425,
+        "expansion_up_amount_share": 0.49609296200302244,
+        "expansion_price_breadth": 0.5073260073260073,
+        "expansion_top5_amount_concentration": 0.3264140735668122,
+        "follow_through_amount_share_rel": 0.08687784603008308,
+        "follow_through_turnover_rel": 0.005506217509908512,
+        "follow_through_volume_breadth": 0.3443877551020408,
+        "follow_through_up_amount_share": 0.5164203397261988,
+        "follow_through_price_breadth": 0.39652268674460067,
+        "follow_through_top5_amount_concentration": 0.29075991201351775
+      }
+    }
+  },
+  "prestart_comparison": [
+    {
+      "feature": "preparation_amount_share_rel",
+      "launch_median": -0.008158583193855928,
+      "failed_median": -0.031744255251592635,
+      "p": 0.4598554894607527,
+      "holm_p": 1.0
+    },
+    {
+      "feature": "preparation_turnover_rel",
+      "launch_median": 0.18629555322304192,
+      "failed_median": 0.028836761209743433,
+      "p": 0.0009538633764639956,
+      "holm_p": 0.007630907011711965
+    },
+    {
+      "feature": "preparation_volume_breadth",
+      "launch_median": 0.5428571428571429,
+      "failed_median": 0.4336734693877551,
+      "p": 0.01911482619686954,
+      "holm_p": 0.11468895718121724
+    },
+    {
+      "feature": "start_amount_share_rel",
+      "launch_median": -0.0022763695224190528,
+      "failed_median": -0.028372810910402446,
+      "p": 0.853962074937307,
+      "holm_p": 1.0
+    },
+    {
+      "feature": "start_turnover_rel",
+      "launch_median": 0.38618211881590847,
+      "failed_median": 0.10306351446736639,
+      "p": 0.03627929576071991,
+      "holm_p": 0.18139647880359955
+    },
+    {
+      "feature": "start_volume_breadth",
+      "launch_median": 0.8222222222222222,
+      "failed_median": 0.5483028720626631,
+      "p": 0.0009538633764639956,
+      "holm_p": 0.007630907011711965
+    },
+    {
+      "feature": "start_up_amount_share",
+      "launch_median": 0.7458410067162777,
+      "failed_median": 0.7277111053238239,
+      "p": 0.88294342048212,
+      "holm_p": 1.0
+    },
+    {
+      "feature": "start_price_breadth",
+      "launch_median": 0.8591549295774648,
+      "failed_median": 0.6595744680851063,
+      "p": 5.1979928140918856e-05,
+      "holm_p": 0.0004678193532682697
+    },
+    {
+      "feature": "start_top5_amount_concentration",
+      "launch_median": 0.3665942424468917,
+      "failed_median": 0.2647640158512291,
+      "p": 0.43753312135665084,
+      "holm_p": 1.0
+    }
+  ],
+  "top_launches": [
+    {
+      "signal_date": "2026-01-08",
+      "sector": "石油石化",
+      "future35": 0.3594800489161109,
+      "active_future35": 0.3748400714276642,
+      "observed_forward_days": 40,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-01-12",
+      "sector": "公用事业",
+      "future35": 0.1484707134435716,
+      "active_future35": 0.1705101840375751,
+      "observed_forward_days": 40,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-01-07",
+      "sector": "钢铁",
+      "future35": 0.1109564474139548,
+      "active_future35": 0.1366723593116335,
+      "observed_forward_days": 40,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-01-20",
+      "sector": "煤炭",
+      "future35": 0.1176466281342427,
+      "active_future35": 0.1307710989217105,
+      "observed_forward_days": 40,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-01-09",
+      "sector": "环保",
+      "future35": 0.0910901175685978,
+      "active_future35": 0.1188656511983573,
+      "observed_forward_days": 40,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-01-05",
+      "sector": "基础化工",
+      "future35": 0.0977704508637038,
+      "active_future35": 0.1069384687296222,
+      "observed_forward_days": 40,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-01-08",
+      "sector": "建筑材料",
+      "future35": 0.0813674927961476,
+      "active_future35": 0.0967275153077008,
+      "observed_forward_days": 40,
+      "volume_pattern": "MIXED"
+    }
+  ],
+  "incomplete_crosses": [
+    {
+      "signal_date": "2026-07-15",
+      "sector": "交通运输",
+      "observed_forward_days": 31,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-23",
+      "sector": "传媒",
+      "observed_forward_days": 25,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-08-18",
+      "sector": "公用事业",
+      "observed_forward_days": 7,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-16",
+      "sector": "农林牧渔",
+      "observed_forward_days": 30,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-16",
+      "sector": "商贸零售",
+      "observed_forward_days": 30,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-08-06",
+      "sector": "基础化工",
+      "observed_forward_days": 15,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-28",
+      "sector": "家用电器",
+      "observed_forward_days": 22,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-08-06",
+      "sector": "建筑材料",
+      "observed_forward_days": 15,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-28",
+      "sector": "建筑装饰",
+      "observed_forward_days": 22,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-08-05",
+      "sector": "汽车",
+      "observed_forward_days": 16,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-28",
+      "sector": "环保",
+      "observed_forward_days": 22,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-08-05",
+      "sector": "电力设备",
+      "observed_forward_days": 16,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-08-14",
+      "sector": "电子",
+      "observed_forward_days": 9,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-17",
+      "sector": "石油石化",
+      "observed_forward_days": 29,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-23",
+      "sector": "社会服务",
+      "observed_forward_days": 25,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-27",
+      "sector": "纺织服饰",
+      "observed_forward_days": 23,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-17",
+      "sector": "综合",
+      "observed_forward_days": 29,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "计算机",
+      "observed_forward_days": 19,
+      "volume_pattern": "PULSE"
+    },
+    {
+      "signal_date": "2026-07-28",
+      "sector": "轻工制造",
+      "observed_forward_days": 22,
+      "volume_pattern": "MIXED"
+    },
+    {
+      "signal_date": "2026-07-17",
+      "sector": "钢铁",
+      "observed_forward_days": 29,
+      "volume_pattern": "SUSTAINED"
+    },
+    {
+      "signal_date": "2026-07-16",
+      "sector": "食品饮料",
+      "observed_forward_days": 30,
+      "volume_pattern": "SUSTAINED"
+    }
+  ],
+  "limitations": [
+    "2026-only descriptive sample",
+    "launch label uses future returns",
+    "volume patterns are not predictive validation"
+  ]
+}

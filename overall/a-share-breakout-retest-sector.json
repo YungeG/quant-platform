@@ -1,0 +1,111 @@
+{
+  "study": "a-share-breakout-retest-sector-effect-v1",
+  "data": {
+    "panel_version": "4d211add824ce579",
+    "events": 4447,
+    "sector_confirmed_events": 473,
+    "feature_complete_rate": 0.6950753316842815,
+    "start": "2016-01-01",
+    "end": "2026-08-25"
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": false,
+      "mean": false,
+      "median": true,
+      "win_rate": true,
+      "positive_folds": true,
+      "bootstrap": false,
+      "uplift": true
+    },
+    "all_executed20": {
+      "count": 203,
+      "mean": -0.0015448584803960214,
+      "median": 0.0003904931380276,
+      "win_rate": 0.5073891625615764,
+      "bootstrap_95": [
+        -0.014538660401472347,
+        0.011406835349710015
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 97,
+          "mean": -0.0059474985227137,
+          "median": -0.0039085622682007,
+          "win_rate": 0.4845360824742268
+        },
+        "2020-2022": {
+          "count": 54,
+          "mean": 0.009973305217081844,
+          "median": 0.0116583810434943,
+          "win_rate": 0.5740740740740741
+        },
+        "2023-2026": {
+          "count": 52,
+          "mean": -0.0052934114719150665,
+          "median": -0.0178072983382245,
+          "win_rate": 0.4807692307692308
+        }
+      }
+    },
+    "sector_confirmed20": {
+      "count": 13,
+      "mean": 0.008319152393173924,
+      "median": 0.0006840265272534,
+      "win_rate": 0.6153846153846154,
+      "bootstrap_95": [
+        -0.015361940414981998,
+        0.03631713175545291
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 8,
+          "mean": -0.008490585525024187,
+          "median": -0.02632409782401785,
+          "win_rate": 0.375
+        },
+        "2020-2022": {
+          "count": 4,
+          "mean": 0.04384740969605028,
+          "median": 0.0247760026073924,
+          "win_rate": 1.0
+        },
+        "2023-2026": {
+          "count": 1,
+          "mean": 0.0006840265272534,
+          "median": 0.0006840265272534,
+          "win_rate": 1.0
+        }
+      }
+    },
+    "mean_uplift": 0.009864010873569945,
+    "win_rate_uplift": 0.10799545282303902
+  },
+  "failure_table": {
+    "False": {
+      "distribution_selloff": 881,
+      "no_recovery_timeout": 127,
+      "no_retest_timeout": 266,
+      "retest_volatility_expanded": 1723,
+      "retest_volume_not_contracted": 284,
+      "support_break": 494,
+      "triggered": 199
+    },
+    "True": {
+      "distribution_selloff": 125,
+      "no_recovery_timeout": 10,
+      "no_retest_timeout": 41,
+      "retest_volatility_expanded": 194,
+      "retest_volume_not_contracted": 32,
+      "support_break": 57,
+      "triggered": 14
+    }
+  },
+  "ledger": "overall/a-share-breakout-retest-v2-sector-events.csv",
+  "limitations": [
+    "industry indices and membership use current-vintage stored history",
+    "sector thresholds are frozen but the sample is not virgin OOS",
+    "daily industry breadth cannot observe intraday sector leadership changes"
+  ]
+}

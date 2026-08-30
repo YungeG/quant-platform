@@ -1,0 +1,111 @@
+{
+  "study": "a-share-breakout-retest-correlation-cluster-v1",
+  "data": {
+    "panel_version": "f8318ee1b95d7bf4",
+    "events": 4447,
+    "cluster_confirmed_events": 694,
+    "events_with_candidates": 4410,
+    "start": "2016-01-01",
+    "end": "2026-08-25"
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": false,
+      "mean": false,
+      "median": true,
+      "win_rate": false,
+      "positive_folds": false,
+      "bootstrap": false,
+      "uplift": false
+    },
+    "all_executed20": {
+      "count": 203,
+      "mean": -0.0015448584803960214,
+      "median": 0.0003904931380276,
+      "win_rate": 0.5073891625615764,
+      "bootstrap_95": [
+        -0.014538660401472347,
+        0.011406835349710015
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 97,
+          "mean": -0.0059474985227137,
+          "median": -0.0039085622682007,
+          "win_rate": 0.4845360824742268
+        },
+        "2020-2022": {
+          "count": 54,
+          "mean": 0.009973305217081844,
+          "median": 0.0116583810434943,
+          "win_rate": 0.5740740740740741
+        },
+        "2023-2026": {
+          "count": 52,
+          "mean": -0.0052934114719150665,
+          "median": -0.0178072983382245,
+          "win_rate": 0.4807692307692308
+        }
+      }
+    },
+    "correlation_cluster20": {
+      "count": 25,
+      "mean": -0.010643228423588684,
+      "median": 0.0073661807709434,
+      "win_rate": 0.52,
+      "bootstrap_95": [
+        -0.043355864506570724,
+        0.021077897804634
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 11,
+          "mean": 0.019195255389021084,
+          "median": 0.0252659930535387,
+          "win_rate": 0.6363636363636364
+        },
+        "2020-2022": {
+          "count": 7,
+          "mean": -0.023990864523874132,
+          "median": 0.0073661807709434,
+          "win_rate": 0.5714285714285714
+        },
+        "2023-2026": {
+          "count": 7,
+          "mean": -0.04418463831454716,
+          "median": -0.0469456299698312,
+          "win_rate": 0.2857142857142857
+        }
+      }
+    },
+    "mean_uplift": -0.009098369943192663,
+    "win_rate_uplift": 0.012610837438423617
+  },
+  "failure_table": {
+    "False": {
+      "distribution_selloff": 817,
+      "no_recovery_timeout": 115,
+      "no_retest_timeout": 270,
+      "retest_volatility_expanded": 1601,
+      "retest_volume_not_contracted": 283,
+      "support_break": 480,
+      "triggered": 187
+    },
+    "True": {
+      "distribution_selloff": 189,
+      "no_recovery_timeout": 22,
+      "no_retest_timeout": 37,
+      "retest_volatility_expanded": 316,
+      "retest_volume_not_contracted": 33,
+      "support_break": 71,
+      "triggered": 26
+    }
+  },
+  "ledger": "overall/a-share-breakout-retest-v2-correlation-events.csv",
+  "limitations": [
+    "correlation peers are defined only among recent breakout events",
+    "daily returns cannot identify intraday lead-lag direction",
+    "the sample is not virgin OOS"
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "study": "a-share-breakout-retest-peer-cluster-v1",
+  "data": {
+    "events": 4447,
+    "group_available_rate": 0.8814931414436699,
+    "cluster_confirmed_events": 188,
+    "start": "2016-01-01",
+    "end": "2026-08-25"
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": false,
+      "mean": true,
+      "median": true,
+      "win_rate": true,
+      "positive_folds": true,
+      "bootstrap": false,
+      "uplift": true
+    },
+    "all_executed20": {
+      "count": 203,
+      "mean": -0.0015448584803960214,
+      "median": 0.0003904931380276,
+      "win_rate": 0.5073891625615764,
+      "bootstrap_95": [
+        -0.014538660401472347,
+        0.011406835349710015
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 97,
+          "mean": -0.0059474985227137,
+          "median": -0.0039085622682007,
+          "win_rate": 0.4845360824742268
+        },
+        "2020-2022": {
+          "count": 54,
+          "mean": 0.009973305217081844,
+          "median": 0.0116583810434943,
+          "win_rate": 0.5740740740740741
+        },
+        "2023-2026": {
+          "count": 52,
+          "mean": -0.0052934114719150665,
+          "median": -0.0178072983382245,
+          "win_rate": 0.4807692307692308
+        }
+      }
+    },
+    "cluster_confirmed20": {
+      "count": 4,
+      "mean": 0.0479249238631039,
+      "median": 0.0548929391140576,
+      "win_rate": 0.75,
+      "bootstrap_95": [
+        -0.007239272193217124,
+        0.09612110466847122
+      ],
+      "folds": {
+        "2016-2019": {
+          "count": 2,
+          "mean": 0.09511307019241375,
+          "median": 0.09511307019241375,
+          "win_rate": 1.0
+        },
+        "2020-2022": {
+          "count": 1,
+          "mean": 0.035790908050937,
+          "median": 0.035790908050937,
+          "win_rate": 1.0
+        },
+        "2023-2026": {
+          "count": 1,
+          "mean": -0.0343173529833489,
+          "median": -0.0343173529833489,
+          "win_rate": 0.0
+        }
+      }
+    },
+    "mean_uplift": 0.04946978234349993,
+    "win_rate_uplift": 0.2426108374384236
+  },
+  "failure_table": {
+    "False": {
+      "distribution_selloff": 963,
+      "no_recovery_timeout": 133,
+      "no_retest_timeout": 298,
+      "retest_volatility_expanded": 1815,
+      "retest_volume_not_contracted": 308,
+      "support_break": 533,
+      "triggered": 209
+    },
+    "True": {
+      "distribution_selloff": 43,
+      "no_recovery_timeout": 4,
+      "no_retest_timeout": 9,
+      "retest_volatility_expanded": 102,
+      "retest_volume_not_contracted": 8,
+      "support_break": 18,
+      "triggered": 4
+    }
+  },
+  "ledger": "overall/a-share-breakout-retest-v2-cluster-events.csv",
+  "limitations": [
+    "SW2021 L2/L3 membership is current-vintage and may contain taxonomy revision bias",
+    "peer clustering uses breakout events, not intraday return correlations",
+    "the sample is not virgin OOS"
+  ]
+}

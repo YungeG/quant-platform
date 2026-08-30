@@ -1,0 +1,117 @@
+{
+  "study": "a-share-pharma-chemical-current-analogs-v1",
+  "current": {
+    "date": "2026-08-27",
+    "vector_pharma_minus_chemical": {
+      "triple_growth_breadth_pct": -0.3166666666666666,
+      "ocf_positive_breadth_pct": -0.55,
+      "pe_median_pct": 0.0666666666666666,
+      "positive_revision_breadth_pct": -0.5166666666666667,
+      "median_revision_pct": 0.050000000000000044,
+      "ma20_breadth_pct": -0.30000000000000004,
+      "relative20_pct": -0.033333333333333215
+    },
+    "pharma_score": 44.91666666666666,
+    "chemical_score": 54.16666666666666,
+    "data_complete": true
+  },
+  "analogs": [
+    {
+      "decision_date": "2022-01-28",
+      "distance": 0.7494757737021797,
+      "pharma_future63": -0.0405944689230974,
+      "chemical_future63": -0.0765153831299327,
+      "pharma_minus_chemical_3m": 0.0359209142068353
+    },
+    {
+      "decision_date": "2025-10-31",
+      "distance": 0.7799572637865061,
+      "pharma_future63": -0.0579539162068816,
+      "chemical_future63": 0.1401356869723528,
+      "pharma_minus_chemical_3m": -0.1980896031792344
+    },
+    {
+      "decision_date": "2022-06-30",
+      "distance": 0.8006149373924738,
+      "pharma_future63": -0.1650604363126668,
+      "chemical_future63": -0.1211184019197168,
+      "pharma_minus_chemical_3m": -0.04394203439294998
+    },
+    {
+      "decision_date": "2021-05-31",
+      "distance": 0.8034647195462633,
+      "pharma_future63": -0.1311088985626868,
+      "chemical_future63": 0.3963566969583433,
+      "pharma_minus_chemical_3m": -0.5274655955210301
+    },
+    {
+      "decision_date": "2021-10-29",
+      "distance": 0.8249713799749528,
+      "pharma_future63": -0.0403677956204804,
+      "chemical_future63": -0.0863568497168887,
+      "pharma_minus_chemical_3m": 0.0459890540964083
+    },
+    {
+      "decision_date": "2024-09-30",
+      "distance": 0.8663460945578018,
+      "pharma_future63": -0.2174372795715537,
+      "chemical_future63": -0.1612724671555535,
+      "pharma_minus_chemical_3m": -0.056164812416000215
+    },
+    {
+      "decision_date": "2019-05-31",
+      "distance": 0.8705173481986096,
+      "pharma_future63": 0.0794214018012823,
+      "chemical_future63": -0.0463522927963448,
+      "pharma_minus_chemical_3m": 0.1257736945976271
+    },
+    {
+      "decision_date": "2025-01-27",
+      "distance": 0.8709828420302617,
+      "pharma_future63": 0.0559180449932351,
+      "chemical_future63": 0.0755193032223626,
+      "pharma_minus_chemical_3m": -0.019601258229127498
+    },
+    {
+      "decision_date": "2023-01-31",
+      "distance": 0.9047713032093312,
+      "pharma_future63": 0.0005619878897816,
+      "chemical_future63": -0.1539351838877864,
+      "pharma_minus_chemical_3m": 0.154497171777568
+    },
+    {
+      "decision_date": "2025-07-31",
+      "distance": 0.9078362554264215,
+      "pharma_future63": -0.0349943757112171,
+      "chemical_future63": 0.1058020030146138,
+      "pharma_minus_chemical_3m": -0.1407963787258309
+    }
+  ],
+  "statistics": {
+    "count": 10,
+    "mean": -0.062387884778573446,
+    "median": -0.03177164631103874,
+    "pharma_win_rate": 0.4,
+    "bootstrap95": [
+      -0.1901116799855444,
+      0.03825558628009641
+    ]
+  },
+  "decision": {
+    "verdict": "NO-SELECTION",
+    "checks": {
+      "market": true,
+      "financial": true,
+      "analyst": true,
+      "analogs": true,
+      "median_abs": true,
+      "direction_share": true,
+      "bootstrap": false
+    }
+  },
+  "limitations": [
+    "current 2026H1 snapshot remains provider-source-bounded",
+    "nearest-neighbor history is non-virgin and small",
+    "relative direction is not positive absolute-return authority"
+  ]
+}

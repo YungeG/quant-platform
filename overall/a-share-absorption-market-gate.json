@@ -1,0 +1,186 @@
+{
+  "study": "a-share-absorption-market-regime-v1",
+  "data": {
+    "source_events": 227,
+    "accepted": 89,
+    "acceptance_rate": 0.3920704845814978
+  },
+  "summary": {
+    "count": 83,
+    "absolute_positive_rate": 0.5421686746987951,
+    "outperform_rate": 0.46987951807228917,
+    "success_rate": 0.3373493975903614,
+    "mean_active35": -0.009620694100310653,
+    "median_active30": -0.0148207243073852,
+    "median_active35": -0.0132477873561107,
+    "median_active40": -0.0378330210465923,
+    "bootstrap95": [
+      -0.029545657432656223,
+      0.010646888732705967
+    ],
+    "trim_top5_mean": -0.021594267620540265,
+    "median_max_return40": 0.0751635870900722,
+    "median_min_return40": -0.0604481684740698,
+    "median_outperform_days40": 16.0,
+    "folds": {
+      "2018-2020": {
+        "count": 46,
+        "mean_active35": -0.024386128119947434,
+        "success_rate": 0.30434782608695654
+      },
+      "2021-2022": {
+        "count": 6,
+        "mean_active35": -0.03392297924197513,
+        "success_rate": 0.16666666666666666
+      },
+      "2023-2025": {
+        "count": 31,
+        "mean_active35": 0.016992972859472544,
+        "success_rate": 0.41935483870967744
+      }
+    },
+    "holdout2025": {
+      "count": 15,
+      "success_rate": 0.4,
+      "median_active35": 0.0057249654942552
+    },
+    "industries": {
+      "交通运输": {
+        "count": 1,
+        "success_rate": 1.0,
+        "median_active35": 0.0446680891698741
+      },
+      "传媒": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.146816353660736
+      },
+      "公用事业": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.20612714273481347
+      },
+      "农林牧渔": {
+        "count": 3,
+        "success_rate": 0.6666666666666666,
+        "median_active35": 0.024090406285451
+      },
+      "医药生物": {
+        "count": 4,
+        "success_rate": 0.0,
+        "median_active35": -0.10595219062522745
+      },
+      "半导体": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.0114036285603718
+      },
+      "国防军工": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": -0.02188388424006705
+      },
+      "基础化工": {
+        "count": 6,
+        "success_rate": 0.5,
+        "median_active35": 0.0117965503660067
+      },
+      "家用电器": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.08358413501940991
+      },
+      "建筑装饰": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.0463767452197136
+      },
+      "房地产": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.08646900375227459
+      },
+      "有色金属": {
+        "count": 4,
+        "success_rate": 0.5,
+        "median_active35": 0.018880720263718898
+      },
+      "机械设备": {
+        "count": 8,
+        "success_rate": 0.125,
+        "median_active35": -0.03621135719634125
+      },
+      "汽车": {
+        "count": 6,
+        "success_rate": 0.16666666666666666,
+        "median_active35": -0.06045582499469595
+      },
+      "环保": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": -0.011228983778597549
+      },
+      "电力设备": {
+        "count": 5,
+        "success_rate": 0.6,
+        "median_active35": 0.0711868542788402
+      },
+      "电子": {
+        "count": 12,
+        "success_rate": 0.4166666666666667,
+        "median_active35": 0.0211793504354158
+      },
+      "纺织服饰": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.0020646099515198
+      },
+      "计算机": {
+        "count": 5,
+        "success_rate": 0.4,
+        "median_active35": 0.0087781747107174
+      },
+      "轻工制造": {
+        "count": 2,
+        "success_rate": 1.0,
+        "median_active35": 0.1065080057689156
+      },
+      "通信": {
+        "count": 4,
+        "success_rate": 0.5,
+        "median_active35": 0.02138459890359605
+      },
+      "非银金融": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.0017979177218526519
+      },
+      "食品饮料": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.0311959631267167
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": true,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": false,
+      "trim": false,
+      "holdout": false,
+      "success": false
+    }
+  },
+  "events": "overall/a-share-absorption-market-gated-events.csv",
+  "limitations": [
+    "single precommitted market trend gate",
+    "uses existing exploratory execution events",
+    "no formal Platform validation authority"
+  ]
+}

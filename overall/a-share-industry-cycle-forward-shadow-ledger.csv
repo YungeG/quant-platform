@@ -1,0 +1,3 @@
+observation_id,arm,signal_date,industry,status,reason,entry_date,entry_price,products_or_constituents,data_snapshot_hash,return_d30,return_d35,return_d40,active_d30,active_d35,active_d40,max_return_40,max_return_day,max_return_date,min_return_40,min_return_day,min_return_date,days_outperform_hs300_40,observed_days,replay_status,notes
+steel-price-inventory-20260827,steel_price_inventory,2026-08-27,钢铁,PENDING_T1,price breadth 100% and warehouse contraction breadth 66.67% for second consecutive week,,,HC/J/RB,,,,,,,,,,,,,,,0,pending,zero-capital forward observation
+communication-absorption-20260827,communication_absorption,2026-08-27,通信,NO-SIGNAL,no BUYING_DIFFUSION,,,,,,,,,,,,,,,,,,,0,not-applicable,zero-capital forward observation

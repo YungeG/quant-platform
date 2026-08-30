@@ -1,0 +1,162 @@
+{
+  "study": "a-share-sector-etf-execution-v1",
+  "summary": {
+    "source_events": 257,
+    "mapped_events": 169,
+    "complete35": 167,
+    "mapping_rate": 0.6575875486381323,
+    "absolute_positive_rate": 0.46107784431137727,
+    "outperform_rate": 0.437125748502994,
+    "success_rate": 0.281437125748503,
+    "mean_active35": 0.00561376861677835,
+    "median_active30": -0.010605747166700832,
+    "median_active35": -0.014667565815378432,
+    "median_active40": -0.017771542874551197,
+    "bootstrap95": [
+      -0.007678238743402122,
+      0.019672508409145324
+    ],
+    "trim_top5_mean": -0.007428519388491747,
+    "folds": {
+      "2018-2022": {
+        "count": 64,
+        "mean_active35": -0.0127520001460324,
+        "success_rate": 0.28125
+      },
+      "2023-2024": {
+        "count": 56,
+        "mean_active35": 0.025369939507556165,
+        "success_rate": 0.25
+      },
+      "2025": {
+        "count": 29,
+        "mean_active35": 0.003281375734545087,
+        "success_rate": 0.2413793103448276
+      }
+    },
+    "industries": {
+      "交通运输": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.012789473597316296
+      },
+      "传媒": {
+        "count": 8,
+        "success_rate": 0.25,
+        "median_active35": -0.013024816959749781
+      },
+      "公用事业": {
+        "count": 7,
+        "success_rate": 0.2857142857142857,
+        "median_active35": -0.020565375658781707
+      },
+      "农林牧渔": {
+        "count": 3,
+        "success_rate": 0.0,
+        "median_active35": 0.004511792596459174
+      },
+      "医药生物": {
+        "count": 14,
+        "success_rate": 0.21428571428571427,
+        "median_active35": -0.019347311886396608
+      },
+      "国防军工": {
+        "count": 10,
+        "success_rate": 0.3,
+        "median_active35": -0.02841482894779541
+      },
+      "基础化工": {
+        "count": 14,
+        "success_rate": 0.14285714285714285,
+        "median_active35": -0.021967426494448557
+      },
+      "房地产": {
+        "count": 3,
+        "success_rate": 0.0,
+        "median_active35": -0.03662300841167732
+      },
+      "有色金属": {
+        "count": 10,
+        "success_rate": 0.2,
+        "median_active35": -0.01588973741925654
+      },
+      "机械设备": {
+        "count": 14,
+        "success_rate": 0.14285714285714285,
+        "median_active35": -0.015823170159388285
+      },
+      "汽车": {
+        "count": 10,
+        "success_rate": 0.6,
+        "median_active35": 0.08129181249339222
+      },
+      "煤炭": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.052408063923236714
+      },
+      "环保": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": -0.019457206012378554
+      },
+      "电子": {
+        "count": 23,
+        "success_rate": 0.30434782608695654,
+        "median_active35": 0.008221035862509989
+      },
+      "石油石化": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.15955442304955392
+      },
+      "计算机": {
+        "count": 19,
+        "success_rate": 0.3684210526315789,
+        "median_active35": -0.009616131993207433
+      },
+      "通信": {
+        "count": 10,
+        "success_rate": 0.8,
+        "median_active35": 0.07297777543231931
+      },
+      "钢铁": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": 0.046552452358638016
+      },
+      "非银金融": {
+        "count": 6,
+        "success_rate": 0.0,
+        "median_active35": -0.02382232094069265
+      },
+      "食品饮料": {
+        "count": 5,
+        "success_rate": 0.0,
+        "median_active35": -0.05299839080610336
+      }
+    }
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": true,
+      "mapping": true,
+      "absolute": false,
+      "outperform": false,
+      "success": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "trim": false,
+      "folds": true,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-sector-etf-execution-events.csv",
+  "limitations": [
+    "ETF benchmark may not exactly match SW L1 industry",
+    "historical ETF availability limits coverage",
+    "research-grade provider data only"
+  ]
+}

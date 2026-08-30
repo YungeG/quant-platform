@@ -1,0 +1,41 @@
+{
+  "source": {
+    "path": "overall/a-share-turnover-absorption-events.csv",
+    "sha256": "e3e0de231d7dc4e83b8aaf9462747a272a45fa19d6867c4adf1ee61dae4393a0"
+  },
+  "rows": 227,
+  "valid_rows": 211,
+  "invalid_rows": 16,
+  "required_fields": [
+    "event_id",
+    "signal_date",
+    "industry",
+    "score",
+    "status",
+    "observed_days",
+    "return_d30",
+    "return_d35",
+    "return_d40",
+    "active_d30",
+    "active_d35",
+    "active_d40",
+    "max_return_40",
+    "max_return_day",
+    "max_return_date",
+    "min_return_40",
+    "min_return_day",
+    "min_return_date",
+    "max_active_40",
+    "max_active_day",
+    "max_active_date",
+    "min_active_40",
+    "min_active_day",
+    "min_active_date",
+    "days_outperform_hs300_40",
+    "outperform_ratio_40",
+    "success_d35",
+    "rejection_reason"
+  ],
+  "invalid_fields_remain_null": true,
+  "markdown": "overall/a-share-turnover-absorption-event-path-results.md"
+}

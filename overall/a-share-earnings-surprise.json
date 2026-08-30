@@ -1,0 +1,75 @@
+{
+  "study": "a-share-analyst-earnings-surprise-v1",
+  "data": {
+    "panel_version": "775de5b40310be21",
+    "panel_rows": 11158480,
+    "actual_rows": 61245,
+    "consensus_matched": 3791
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": true,
+      "rho": true,
+      "p_value": true,
+      "top_mean": true,
+      "top_median": true,
+      "top_win": false,
+      "folds": true,
+      "bootstrap": true
+    },
+    "all": {
+      "count": 3791,
+      "rho": 0.1158540006725689,
+      "p_value": 8.366704462260977e-13
+    },
+    "top_quintile": {
+      "count": 759,
+      "mean_active5": 0.008349683725972008,
+      "mean_active20": 0.01346499281135888,
+      "mean_active60": 0.02635228154781102,
+      "median_active20": 0.003703328239859935,
+      "win_rate20": 0.5191040843214756,
+      "cluster_bootstrap_95": [
+        0.005675280692154277,
+        0.021911631293836453
+      ],
+      "folds": {
+        "2017-2019": {
+          "count": 237,
+          "mean_active20": 0.02451678172154226,
+          "median_active20": 0.016902943356274153,
+          "win_rate": 0.6075949367088608
+        },
+        "2020-2022": {
+          "count": 255,
+          "mean_active20": 0.005297792029866964,
+          "median_active20": -0.0025595575943603544,
+          "win_rate": 0.48627450980392156
+        },
+        "2023-2025": {
+          "count": 216,
+          "mean_active20": 0.012991731096315799,
+          "median_active20": -0.00048066788887066647,
+          "win_rate": 0.49537037037037035
+        }
+      }
+    },
+    "bottom_quintile": {
+      "count": 759,
+      "mean_active20": -0.013042084378467713,
+      "median_active20": -0.02142762583065084,
+      "win_rate20": 0.38998682476943347
+    },
+    "quintile_bounds": {
+      "q20": -0.006227501799856013,
+      "q80": 0.0007317073170731687
+    }
+  },
+  "ledger": "overall/a-share-earnings-surprise-events.csv",
+  "limitations": [
+    "annual EPS only",
+    "report_date and ann_date have day-level timing",
+    "source-bounded non-virgin history"
+  ]
+}

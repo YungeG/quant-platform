@@ -1,0 +1,58 @@
+{
+  "as_of": "2026-08-27",
+  "authority": "research_risk_dashboard_only",
+  "trade_authorized": false,
+  "historical_verdict": "NO-GO",
+  "industries": [
+    {
+      "industry": "公用事业",
+      "status": "ENTER",
+      "appeared_count": 3,
+      "industry_new_entries": 0,
+      "industry_breadth": 0.0612244897959183,
+      "breadth_pct": 0.8709677419354839,
+      "breadth_shock": 0.0180890538033395,
+      "top_symbols": "[\"001258\", \"600396\", \"002015\"]"
+    },
+    {
+      "industry": "医药生物",
+      "status": "ENTER",
+      "appeared_count": 7,
+      "industry_new_entries": 0,
+      "industry_breadth": 0.0299145299145299,
+      "breadth_pct": 0.5806451612903226,
+      "breadth_shock": 0.0017448949295184,
+      "top_symbols": "[\"600721\", \"600664\", \"002412\", \"600272\", \"603538\", \"000931\", \"603259\"]"
+    },
+    {
+      "industry": "有色金属",
+      "status": "ENTER",
+      "appeared_count": 10,
+      "industry_new_entries": 1,
+      "industry_breadth": 0.1030927835051546,
+      "breadth_pct": 0.9032258064516128,
+      "breadth_shock": 0.0449610630750471,
+      "top_symbols": "[\"601212\", \"002716\", \"002428\", \"000506\", \"000657\", \"600362\", \"002155\", \"000603\", \"603993\", \"300139\"]"
+    },
+    {
+      "industry": "电子",
+      "status": "ENTER",
+      "appeared_count": 22,
+      "industry_new_entries": 3,
+      "industry_breadth": 0.0607734806629834,
+      "breadth_pct": 0.8387096774193549,
+      "breadth_shock": -0.0048002898288198,
+      "top_symbols": "[\"600206\", \"001309\", \"601138\", \"000725\", \"603986\", \"600183\", \"000636\", \"600460\", \"002384\", \"600584\"]"
+    },
+    {
+      "industry": "通信",
+      "status": "ENTER",
+      "appeared_count": 14,
+      "industry_new_entries": 0,
+      "industry_breadth": 0.1866666666666666,
+      "breadth_pct": 1.0,
+      "breadth_shock": 0.0287719298245614,
+      "top_symbols": "[\"600487\", \"002491\", \"003040\", \"601869\", \"600522\", \"600105\", \"300308\", \"600498\", \"300394\", \"603118\"]"
+    }
+  ]
+}

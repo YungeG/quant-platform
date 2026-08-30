@@ -1,0 +1,183 @@
+{
+  "study": "a-share-weekly-industry-cycle-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "ef118f5d09a00249",
+    "candidate_events": 63,
+    "valid_events": 63,
+    "max_event_year": 2025,
+    "min_targets": 3
+  },
+  "summary": {
+    "count": 63,
+    "absolute_positive_rate": 0.42857142857142855,
+    "outperform_rate": 0.2857142857142857,
+    "success_rate": 0.2222222222222222,
+    "mean_active35": -0.017171684224525825,
+    "median_active30": -0.04458869704758206,
+    "median_active35": -0.05009276051730527,
+    "median_active40": -0.07367299541977002,
+    "bootstrap95": [
+      -0.05157982074109296,
+      0.02306057484829735
+    ],
+    "trim_top5_mean": -0.04532940789308988,
+    "median_max_return40": 0.09222237801896416,
+    "median_min_return40": -0.07737764922090762,
+    "median_outperform_days40": 10.0,
+    "folds": {
+      "2018-2020": {
+        "count": 0,
+        "mean_active35": 0.0,
+        "success_rate": 0.0
+      },
+      "2021-2022": {
+        "count": 0,
+        "mean_active35": 0.0,
+        "success_rate": 0.0
+      },
+      "2023-2025": {
+        "count": 63,
+        "mean_active35": -0.017171684224525825,
+        "success_rate": 0.2222222222222222
+      }
+    },
+    "holdout2025": {
+      "count": 36,
+      "success_rate": 0.2222222222222222,
+      "median_active35": -0.049878628011277015
+    },
+    "industries": {
+      "交通运输": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.09111802963180815
+      },
+      "传媒": {
+        "count": 5,
+        "success_rate": 0.2,
+        "median_active35": -0.10842049234250462
+      },
+      "公用事业": {
+        "count": 3,
+        "success_rate": 0.0,
+        "median_active35": -0.061430873205613135
+      },
+      "农林牧渔": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.2352136320392575
+      },
+      "医药生物": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.08692423495517199
+      },
+      "商贸零售": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.04419962791507309
+      },
+      "国防军工": {
+        "count": 2,
+        "success_rate": 1.0,
+        "median_active35": 0.10383423029597794
+      },
+      "基础化工": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.06092348296085531
+      },
+      "家用电器": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.060804322179199954
+      },
+      "建筑材料": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.2006905036888078
+      },
+      "建筑装饰": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": -0.10712641497441933
+      },
+      "有色金属": {
+        "count": 3,
+        "success_rate": 0.3333333333333333,
+        "median_active35": 0.006180470540587679
+      },
+      "机械设备": {
+        "count": 7,
+        "success_rate": 0.0,
+        "median_active35": -0.08633350155966324
+      },
+      "汽车": {
+        "count": 5,
+        "success_rate": 0.2,
+        "median_active35": -0.016228797421065755
+      },
+      "电力设备": {
+        "count": 3,
+        "success_rate": 0.6666666666666666,
+        "median_active35": 0.1605024104266326
+      },
+      "电子": {
+        "count": 4,
+        "success_rate": 0.25,
+        "median_active35": -0.034046072900661584
+      },
+      "社会服务": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.2082493142395619
+      },
+      "计算机": {
+        "count": 6,
+        "success_rate": 0.16666666666666666,
+        "median_active35": -0.06259283838150775
+      },
+      "轻工制造": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.05423562571380702
+      },
+      "通信": {
+        "count": 6,
+        "success_rate": 0.5,
+        "median_active35": 0.07350821253298345
+      },
+      "非银金融": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.013855375315965313
+      },
+      "食品饮料": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.10222772273061032
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": true,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": false,
+      "trim": false,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-attention-stock-events-preholdout.csv",
+  "limitations": [
+    "source-bounded industry and financial histories",
+    "industry thesis is non-virgin",
+    "custom event simulator is not formal Platform Backtest evidence"
+  ]
+}

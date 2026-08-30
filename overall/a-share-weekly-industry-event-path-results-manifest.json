@@ -1,0 +1,41 @@
+{
+  "source": {
+    "path": "overall/a-share-weekly-industry-events.csv",
+    "sha256": "460c7f00fd6b2d2d9272275d339adb3170ed995af52495ef589048f461d6f415"
+  },
+  "rows": 116,
+  "valid_rows": 104,
+  "invalid_rows": 12,
+  "required_fields": [
+    "event_id",
+    "signal_date",
+    "industry",
+    "score",
+    "status",
+    "observed_days",
+    "return_d30",
+    "return_d35",
+    "return_d40",
+    "active_d30",
+    "active_d35",
+    "active_d40",
+    "max_return_40",
+    "max_return_day",
+    "max_return_date",
+    "min_return_40",
+    "min_return_day",
+    "min_return_date",
+    "max_active_40",
+    "max_active_day",
+    "max_active_date",
+    "min_active_40",
+    "min_active_day",
+    "min_active_date",
+    "days_outperform_hs300_40",
+    "outperform_ratio_40",
+    "success_d35",
+    "rejection_reason"
+  ],
+  "invalid_fields_remain_null": true,
+  "markdown": "overall/a-share-weekly-industry-event-path-results.md"
+}

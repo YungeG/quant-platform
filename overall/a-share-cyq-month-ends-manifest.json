@@ -1,0 +1,427 @@
+{
+  "endpoint": "https://fast.xiaodefa.cn",
+  "api": "cyq_perf",
+  "dates": [
+    {
+      "trade_date": "20180131",
+      "row_count": 3049
+    },
+    {
+      "trade_date": "20180228",
+      "row_count": 3031
+    },
+    {
+      "trade_date": "20180330",
+      "row_count": 3048
+    },
+    {
+      "trade_date": "20180427",
+      "row_count": 3062
+    },
+    {
+      "trade_date": "20180531",
+      "row_count": 3088
+    },
+    {
+      "trade_date": "20180629",
+      "row_count": 3112
+    },
+    {
+      "trade_date": "20180731",
+      "row_count": 3172
+    },
+    {
+      "trade_date": "20180831",
+      "row_count": 3207
+    },
+    {
+      "trade_date": "20180928",
+      "row_count": 3238
+    },
+    {
+      "trade_date": "20181031",
+      "row_count": 3248
+    },
+    {
+      "trade_date": "20181130",
+      "row_count": 3294
+    },
+    {
+      "trade_date": "20181228",
+      "row_count": 3307
+    },
+    {
+      "trade_date": "20190131",
+      "row_count": 3323
+    },
+    {
+      "trade_date": "20190228",
+      "row_count": 3325
+    },
+    {
+      "trade_date": "20190329",
+      "row_count": 3325
+    },
+    {
+      "trade_date": "20190430",
+      "row_count": 3329
+    },
+    {
+      "trade_date": "20190531",
+      "row_count": 3360
+    },
+    {
+      "trade_date": "20190628",
+      "row_count": 3373
+    },
+    {
+      "trade_date": "20190731",
+      "row_count": 3411
+    },
+    {
+      "trade_date": "20190830",
+      "row_count": 3425
+    },
+    {
+      "trade_date": "20190930",
+      "row_count": 3436
+    },
+    {
+      "trade_date": "20191031",
+      "row_count": 3445
+    },
+    {
+      "trade_date": "20191129",
+      "row_count": 3481
+    },
+    {
+      "trade_date": "20191231",
+      "row_count": 3508
+    },
+    {
+      "trade_date": "20200123",
+      "row_count": 3528
+    },
+    {
+      "trade_date": "20200228",
+      "row_count": 3550
+    },
+    {
+      "trade_date": "20200331",
+      "row_count": 3558
+    },
+    {
+      "trade_date": "20200430",
+      "row_count": 3556
+    },
+    {
+      "trade_date": "20200529",
+      "row_count": 3592
+    },
+    {
+      "trade_date": "20200630",
+      "row_count": 3617
+    },
+    {
+      "trade_date": "20200731",
+      "row_count": 3671
+    },
+    {
+      "trade_date": "20200831",
+      "row_count": 3732
+    },
+    {
+      "trade_date": "20200930",
+      "row_count": 3798
+    },
+    {
+      "trade_date": "20201030",
+      "row_count": 3826
+    },
+    {
+      "trade_date": "20201130",
+      "row_count": 3850
+    },
+    {
+      "trade_date": "20201231",
+      "row_count": 3903
+    },
+    {
+      "trade_date": "20210129",
+      "row_count": 3937
+    },
+    {
+      "trade_date": "20210226",
+      "row_count": 3967
+    },
+    {
+      "trade_date": "20210331",
+      "row_count": 4002
+    },
+    {
+      "trade_date": "20210430",
+      "row_count": 4043
+    },
+    {
+      "trade_date": "20210531",
+      "row_count": 4102
+    },
+    {
+      "trade_date": "20210630",
+      "row_count": 4146
+    },
+    {
+      "trade_date": "20210730",
+      "row_count": 4196
+    },
+    {
+      "trade_date": "20210831",
+      "row_count": 4240
+    },
+    {
+      "trade_date": "20210930",
+      "row_count": 4271
+    },
+    {
+      "trade_date": "20211029",
+      "row_count": 4311
+    },
+    {
+      "trade_date": "20211130",
+      "row_count": 4499
+    },
+    {
+      "trade_date": "20211231",
+      "row_count": 4537
+    },
+    {
+      "trade_date": "20220128",
+      "row_count": 4576
+    },
+    {
+      "trade_date": "20220228",
+      "row_count": 4599
+    },
+    {
+      "trade_date": "20220331",
+      "row_count": 4638
+    },
+    {
+      "trade_date": "20220429",
+      "row_count": 4665
+    },
+    {
+      "trade_date": "20220531",
+      "row_count": 4696
+    },
+    {
+      "trade_date": "20220630",
+      "row_count": 4734
+    },
+    {
+      "trade_date": "20220729",
+      "row_count": 4775
+    },
+    {
+      "trade_date": "20220831",
+      "row_count": 4845
+    },
+    {
+      "trade_date": "20220930",
+      "row_count": 4887
+    },
+    {
+      "trade_date": "20221031",
+      "row_count": 4925
+    },
+    {
+      "trade_date": "20221130",
+      "row_count": 4978
+    },
+    {
+      "trade_date": "20221230",
+      "row_count": 5065
+    },
+    {
+      "trade_date": "20230131",
+      "row_count": 5075
+    },
+    {
+      "trade_date": "20230228",
+      "row_count": 5119
+    },
+    {
+      "trade_date": "20230331",
+      "row_count": 5164
+    },
+    {
+      "trade_date": "20230428",
+      "row_count": 5196
+    },
+    {
+      "trade_date": "20230531",
+      "row_count": 5244
+    },
+    {
+      "trade_date": "20230630",
+      "row_count": 5295
+    },
+    {
+      "trade_date": "20230731",
+      "row_count": 5346
+    },
+    {
+      "trade_date": "20230831",
+      "row_count": 5390
+    },
+    {
+      "trade_date": "20230928",
+      "row_count": 5415
+    },
+    {
+      "trade_date": "20231031",
+      "row_count": 5434
+    },
+    {
+      "trade_date": "20231130",
+      "row_count": 5459
+    },
+    {
+      "trade_date": "20231229",
+      "row_count": 5490
+    },
+    {
+      "trade_date": "20240131",
+      "row_count": 5513
+    },
+    {
+      "trade_date": "20240229",
+      "row_count": 5525
+    },
+    {
+      "trade_date": "20240329",
+      "row_count": 5538
+    },
+    {
+      "trade_date": "20240430",
+      "row_count": 5516
+    },
+    {
+      "trade_date": "20240531",
+      "row_count": 5548
+    },
+    {
+      "trade_date": "20240628",
+      "row_count": 5560
+    },
+    {
+      "trade_date": "20240731",
+      "row_count": 5566
+    },
+    {
+      "trade_date": "20240830",
+      "row_count": 5576
+    },
+    {
+      "trade_date": "20240930",
+      "row_count": 5583
+    },
+    {
+      "trade_date": "20241031",
+      "row_count": 5587
+    },
+    {
+      "trade_date": "20241129",
+      "row_count": 5602
+    },
+    {
+      "trade_date": "20241231",
+      "row_count": 5610
+    },
+    {
+      "trade_date": "20250127",
+      "row_count": 5623
+    },
+    {
+      "trade_date": "20250228",
+      "row_count": 5627
+    },
+    {
+      "trade_date": "20250331",
+      "row_count": 5637
+    },
+    {
+      "trade_date": "20250430",
+      "row_count": 5602
+    },
+    {
+      "trade_date": "20250530",
+      "row_count": 5622
+    },
+    {
+      "trade_date": "20250630",
+      "row_count": 5644
+    },
+    {
+      "trade_date": "20250731",
+      "row_count": 5649
+    },
+    {
+      "trade_date": "20250829",
+      "row_count": 5654
+    },
+    {
+      "trade_date": "20250930",
+      "row_count": 5663
+    },
+    {
+      "trade_date": "20251031",
+      "row_count": 5432
+    },
+    {
+      "trade_date": "20251128",
+      "row_count": 5432
+    },
+    {
+      "trade_date": "20251231",
+      "row_count": 5458
+    },
+    {
+      "trade_date": "20260130",
+      "row_count": 5462
+    },
+    {
+      "trade_date": "20260227",
+      "row_count": 5471
+    },
+    {
+      "trade_date": "20260331",
+      "row_count": 5482
+    },
+    {
+      "trade_date": "20260430",
+      "row_count": 5460
+    },
+    {
+      "trade_date": "20260529",
+      "row_count": 5506
+    },
+    {
+      "trade_date": "20260630",
+      "row_count": 5508
+    },
+    {
+      "trade_date": "20260731",
+      "row_count": 5528
+    },
+    {
+      "trade_date": "20260825",
+      "row_count": 5546
+    }
+  ],
+  "row_count": 471769,
+  "output": {
+    "path": "overall/a-share-cyq-month-ends.csv",
+    "sha256": "43b50b2046f944f4526ea27852fd73bd5fbab5caf1e4d0dd2ac9c63cf041e808"
+  }
+}

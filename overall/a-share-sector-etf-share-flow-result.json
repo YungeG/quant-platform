@@ -1,0 +1,57 @@
+{
+  "study": "a-share-sector-etf-share-flow-v1",
+  "summary": {
+    "waves": 596,
+    "failed_seeds": 86,
+    "diffused": 507,
+    "complete35": 438,
+    "absolute_positive_rate": 0.4589041095890411,
+    "outperform_rate": 0.4132420091324201,
+    "success_rate": 0.2648401826484018,
+    "mean_active35": -0.0046795773520981136,
+    "median_active35": -0.012028111906346901,
+    "bootstrap95": [
+      -0.011564463690850915,
+      0.002122999643325418
+    ],
+    "trim_top5_mean": -0.015466881828242317,
+    "folds": {
+      "2018-2022": {
+        "count": 197,
+        "mean_active35": -0.0051881059139661,
+        "success_rate": 0.2893401015228426
+      },
+      "2023-2024": {
+        "count": 143,
+        "mean_active35": -0.006182482220874106,
+        "success_rate": 0.1958041958041958
+      },
+      "2025": {
+        "count": 64,
+        "mean_active35": 0.0006700904720281682,
+        "success_rate": 0.328125
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": true,
+      "absolute": false,
+      "outperform": false,
+      "success": false,
+      "median": false,
+      "bootstrap": false,
+      "trim": false,
+      "folds": false,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-sector-etf-share-flow-events.csv",
+  "panel": "overall/a-share-sector-etf-share-flow-panel.csv",
+  "limitations": [
+    "direct ETF mappings only",
+    "new ETFs excluded for first20 observations",
+    "fund share is provider source-bounded"
+  ]
+}

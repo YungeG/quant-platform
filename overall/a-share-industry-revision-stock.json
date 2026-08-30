@@ -1,0 +1,137 @@
+{
+  "study": "a-share-weekly-industry-cycle-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "ef118f5d09a00249",
+    "candidate_events": 37,
+    "valid_events": 28,
+    "max_event_year": 2025
+  },
+  "summary": {
+    "count": 28,
+    "absolute_positive_rate": 0.5714285714285714,
+    "outperform_rate": 0.39285714285714285,
+    "success_rate": 0.32142857142857145,
+    "mean_active35": 0.016181645749158712,
+    "median_active30": -0.016798081987724367,
+    "median_active35": -0.01195287711713272,
+    "median_active40": -0.014718638269321072,
+    "bootstrap95": [
+      -0.011903781551589636,
+      0.04757889327533095
+    ],
+    "trim_top5_mean": 0.0006123212937770209,
+    "median_max_return40": 0.05676178759650852,
+    "median_min_return40": -0.05897591702589422,
+    "median_outperform_days40": 17.0,
+    "folds": {
+      "2018-2020": {
+        "count": 9,
+        "mean_active35": 0.01358715919907922,
+        "success_rate": 0.2222222222222222
+      },
+      "2021-2022": {
+        "count": 10,
+        "mean_active35": 0.028424553625196268,
+        "success_rate": 0.5
+      },
+      "2023-2025": {
+        "count": 3,
+        "mean_active35": -0.017168580555664392,
+        "success_rate": 0.0
+      }
+    },
+    "holdout2025": {
+      "count": 2,
+      "success_rate": 0.0,
+      "median_active35": -0.0067274888605188266
+    },
+    "industries": {
+      "交通运输": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.03169944271275571
+      },
+      "农林牧渔": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.05034208526751793
+      },
+      "半导体": {
+        "count": 2,
+        "success_rate": 0.5,
+        "median_active35": 0.08867853046061663
+      },
+      "基础化工": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": 0.017312615343831328
+      },
+      "建筑材料": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.014638633665249978
+      },
+      "建筑装饰": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.05805033978972429
+      },
+      "有色金属": {
+        "count": 3,
+        "success_rate": 1.0,
+        "median_active35": 0.05229437533532022
+      },
+      "汽车": {
+        "count": 1,
+        "success_rate": 1.0,
+        "median_active35": 0.02384372783031785
+      },
+      "煤炭": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.05290727580896232
+      },
+      "轻工制造": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.05209779112376134
+      },
+      "银行": {
+        "count": 2,
+        "success_rate": 0.0,
+        "median_active35": -0.046888324352971855
+      },
+      "非银金融": {
+        "count": 6,
+        "success_rate": 0.0,
+        "median_active35": -0.01790679269588774
+      },
+      "食品饮料": {
+        "count": 4,
+        "success_rate": 0.5,
+        "median_active35": 0.08433040338326747
+      }
+    }
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": false,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": true,
+      "trim": true,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-industry-revision-stock-events.csv",
+  "limitations": [
+    "source-bounded industry and financial histories",
+    "industry thesis is non-virgin",
+    "custom event simulator is not formal Platform Backtest evidence"
+  ]
+}

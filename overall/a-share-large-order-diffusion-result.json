@@ -1,0 +1,71 @@
+{
+  "study": "a-share-large-order-diffusion-epoch-v1",
+  "summary": {
+    "waves": 2123,
+    "failed_seeds": 2105,
+    "diffused": 2,
+    "complete35": 2,
+    "absolute_positive_rate": 0.5,
+    "outperform_rate": 0.5,
+    "success_rate": 0.5,
+    "mean_active35": 0.0011870175381607506,
+    "median_active30": -0.0611194904533261,
+    "median_active35": 0.0011870175381607506,
+    "median_active40": 0.00037111350698604273,
+    "bootstrap95": [
+      -0.13928836328262317,
+      0.14166239835894467
+    ],
+    "trim_top5_mean": -0.13928836328262317,
+    "folds": {
+      "2018-2021": {
+        "count": 1,
+        "mean_active35": 0.14166239835894467,
+        "success_rate": 1.0
+      },
+      "2023-2024": {
+        "count": 1,
+        "mean_active35": -0.13928836328262317,
+        "success_rate": 0.0
+      },
+      "2025": {
+        "count": 0,
+        "mean_active35": 0.0,
+        "success_rate": 0.0
+      }
+    },
+    "industries": {
+      "电子": {
+        "count": 1,
+        "success_rate": 1.0,
+        "median_active35": 0.14166239835894467
+      },
+      "计算机": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.13928836328262317
+      }
+    }
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "count": false,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": false,
+      "trim": false,
+      "holdout": false
+    }
+  },
+  "waves": "overall/a-share-large-order-diffusion-waves.csv",
+  "daily": "overall/a-share-large-order-diffusion-wave-daily.csv",
+  "limitations": [
+    "provider size-bucket methodology reset at 2022 epoch",
+    "source-bounded moneyflow direction classification",
+    "price outcomes exclude unmatched local MarketData symbols"
+  ]
+}

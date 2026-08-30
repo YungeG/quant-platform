@@ -1,0 +1,211 @@
+{
+  "study": "a-share-breakout-context-features-v1",
+  "data": {
+    "events": 205,
+    "active20_complete": 203
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "features": {
+      "chip_winner_rate": {
+        "count": 163,
+        "rho": -0.18061040770284348,
+        "p_value": 0.021047001327328445,
+        "bootstrap_95": [
+          -0.3272079671921918,
+          -0.021602497838851115
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 57,
+            "rho": -0.19458128078817735
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": -0.23854085273729556
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": -0.1095364125330829
+          }
+        },
+        "successful_median": 86.2,
+        "failed_median": 90.81
+      },
+      "moneyflow_ths_net_rate": {
+        "count": 18,
+        "rho": 0.09597523219814243,
+        "p_value": 0.7048123642968974,
+        "bootstrap_95": [
+          -0.3968901508312955,
+          0.5636856959994427
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 0,
+            "rho": 0.0
+          },
+          "2020-2022": {
+            "count": 0,
+            "rho": 0.0
+          },
+          "2023-2026": {
+            "count": 18,
+            "rho": 0.09597523219814243
+          }
+        },
+        "successful_median": 17.96,
+        "failed_median": 14.73
+      },
+      "recent_limit_count5": {
+        "count": 106,
+        "rho": -0.006507181034416437,
+        "p_value": 0.9472171150421788,
+        "bootstrap_95": [
+          -0.1861241537435269,
+          0.22620212928924546
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 0,
+            "rho": 0.0
+          },
+          "2020-2022": {
+            "count": 54,
+            "rho": -0.16357917811526165
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": 0.23791547571544325
+          }
+        },
+        "successful_median": 0.0,
+        "failed_median": 0.0
+      },
+      "hot_money_intensity5": {
+        "count": 64,
+        "rho": 0.21483446221182986,
+        "p_value": 0.08823728975214888,
+        "bootstrap_95": [
+          0.0,
+          0.3664103936322717
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 0,
+            "rho": 0.0
+          },
+          "2020-2022": {
+            "count": 12,
+            "rho": 0.0
+          },
+          "2023-2026": {
+            "count": 52,
+            "rho": 0.23791547571544325
+          }
+        },
+        "successful_median": 0.0,
+        "failed_median": 0.0
+      },
+      "analyst_eps_revision30": {
+        "count": 193,
+        "rho": 0.06341111095617519,
+        "p_value": 0.3809785069971275,
+        "bootstrap_95": [
+          -0.08606673025446558,
+          0.20209344422202002
+        ],
+        "folds": {
+          "2016-2019": {
+            "count": 91,
+            "rho": -0.11443688919411091
+          },
+          "2020-2022": {
+            "count": 51,
+            "rho": 0.15849150982618765
+          },
+          "2023-2026": {
+            "count": 51,
+            "rho": 0.2212868314128839
+          }
+        },
+        "successful_median": 0.0,
+        "failed_median": 0.0
+      }
+    },
+    "decisions": {
+      "chip_winner_rate": {
+        "status": "MARGINAL",
+        "expected_sign": -1,
+        "holm_p": 0.10523500663664223,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": true,
+          "fold_direction": true,
+          "holm": false
+        }
+      },
+      "moneyflow_ths_net_rate": {
+        "status": "MARGINAL",
+        "expected_sign": 1,
+        "holm_p": 1.0,
+        "checks": {
+          "count": false,
+          "fold_counts": false,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": false,
+          "holm": false
+        }
+      },
+      "recent_limit_count5": {
+        "status": "MARGINAL",
+        "expected_sign": -1,
+        "holm_p": 1.0,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": false,
+          "holm": false
+        }
+      },
+      "hot_money_intensity5": {
+        "status": "NO-GO",
+        "expected_sign": -1,
+        "holm_p": 0.3529491590085955,
+        "checks": {
+          "count": false,
+          "fold_counts": false,
+          "direction": false,
+          "bootstrap": false,
+          "fold_direction": false,
+          "holm": false
+        }
+      },
+      "analyst_eps_revision30": {
+        "status": "MARGINAL",
+        "expected_sign": 1,
+        "holm_p": 1.0,
+        "checks": {
+          "count": true,
+          "fold_counts": true,
+          "direction": true,
+          "bootstrap": false,
+          "fold_direction": true,
+          "holm": false
+        }
+      }
+    }
+  },
+  "ledger": "overall/a-share-breakout-context-events.csv",
+  "limitations": [
+    "moneyflow_ths history is sparse before 2025",
+    "limit-list history starts in 2020 and hot-money history in 2022-08",
+    "report_rc is proxy-observed and needs a source-contract audit before decision-grade use",
+    "this is a feature-screening study, not a portfolio backtest"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "strategy": "a-share-three-industry-short-term-information-v1",
+  "status": "FROZEN_SHADOW_ZERO_CAPITAL",
+  "frozen_at": "2026-08-29",
+  "as_of_signal_matrix": "2026-08-26",
+  "design": {
+    "path": "overall/a-share-three-industry-short-term-information-design.md",
+    "sha256": "993ef9fbb5a8e96612240392c7bba47333dd743cb03f94f820c5f3af66412162"
+  },
+  "initial_signal_matrix": {
+    "path": "overall/a-share-three-industry-short-term-signals.csv",
+    "sha256": "7a50a800e1eccc7bd36f98656ebd0d655907e0417db93a93f64c25706ed34333",
+    "arm_a": 30,
+    "arm_b": 11
+  },
+  "ledger": {
+    "path": "overall/a-share-three-industry-short-term-shadow-ledger.csv",
+    "initial_sha256": "defc2cd2f7459d1a3e94247e17c39cb675735218daeb7a7043ef35288774c482"
+  },
+  "capital": 0,
+  "trade_authorized": false
+}

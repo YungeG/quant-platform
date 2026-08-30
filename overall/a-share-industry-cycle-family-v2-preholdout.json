@@ -1,0 +1,92 @@
+{
+  "study": "a-share-weekly-industry-cycle-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "ef118f5d09a00249",
+    "candidate_events": 7,
+    "valid_events": 7,
+    "max_event_year": 2024
+  },
+  "summary": {
+    "count": 7,
+    "absolute_positive_rate": 0.5714285714285714,
+    "outperform_rate": 0.2857142857142857,
+    "success_rate": 0.2857142857142857,
+    "mean_active35": -0.05392615078148123,
+    "median_active30": -0.03775105377235766,
+    "median_active35": -0.04121438154711088,
+    "median_active40": -0.04037551871808265,
+    "bootstrap95": [
+      -0.1524349448514053,
+      0.027362456016384033
+    ],
+    "trim_top5_mean": -0.0779426588584627,
+    "median_max_return40": 0.05738766392791783,
+    "median_min_return40": -0.049492717657054985,
+    "median_outperform_days40": 6.0,
+    "folds": {
+      "2018-2020": {
+        "count": 4,
+        "mean_active35": -0.12631853042147395,
+        "success_rate": 0.0
+      },
+      "2021-2022": {
+        "count": 3,
+        "mean_active35": 0.042597022071842384,
+        "success_rate": 0.6666666666666666
+      },
+      "2023-2025": {
+        "count": 0,
+        "mean_active35": 0.0,
+        "success_rate": 0.0
+      }
+    },
+    "holdout2025": {
+      "count": 0,
+      "success_rate": 0.0,
+      "median_active35": 0.0
+    },
+    "industries": {
+      "电力设备": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.022134168872882443
+      },
+      "电子": {
+        "count": 1,
+        "success_rate": 1.0,
+        "median_active35": 0.0901728976804076
+      },
+      "社会服务": {
+        "count": 1,
+        "success_rate": 0.0,
+        "median_active35": -0.34292520036858243
+      },
+      "食品饮料": {
+        "count": 4,
+        "success_rate": 0.25,
+        "median_active35": -0.04348181670138507
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": false,
+      "absolute": false,
+      "outperform": false,
+      "median": false,
+      "bootstrap": false,
+      "horizons": false,
+      "folds": false,
+      "trim": false,
+      "holdout": false
+    }
+  },
+  "events": "overall/a-share-industry-cycle-family-v2-events-preholdout.csv",
+  "limitations": [
+    "source-bounded industry and financial histories",
+    "industry thesis is non-virgin",
+    "custom event simulator is not formal Platform Backtest evidence"
+  ]
+}

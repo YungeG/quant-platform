@@ -1,0 +1,891 @@
+{
+  "study": "a-share-three-industry-historical-validation-v1",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "6d2a852d2074b51a",
+    "years": [
+      2017,
+      2025
+    ],
+    "events": 1397,
+    "cohorts": [
+      {
+        "year": 2017,
+        "industry": "医药生物",
+        "eligible": 38,
+        "expectation_gap": 0,
+        "confirmed_leader": 6,
+        "fundamental_strong": 12
+      },
+      {
+        "year": 2017,
+        "industry": "半导体",
+        "eligible": 5,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 0
+      },
+      {
+        "year": 2017,
+        "industry": "基础化工",
+        "eligible": 32,
+        "expectation_gap": 0,
+        "confirmed_leader": 8,
+        "fundamental_strong": 10
+      },
+      {
+        "year": 2018,
+        "industry": "医药生物",
+        "eligible": 82,
+        "expectation_gap": 0,
+        "confirmed_leader": 9,
+        "fundamental_strong": 25
+      },
+      {
+        "year": 2018,
+        "industry": "半导体",
+        "eligible": 11,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 0
+      },
+      {
+        "year": 2018,
+        "industry": "基础化工",
+        "eligible": 27,
+        "expectation_gap": 0,
+        "confirmed_leader": 5,
+        "fundamental_strong": 9
+      },
+      {
+        "year": 2019,
+        "industry": "医药生物",
+        "eligible": 84,
+        "expectation_gap": 0,
+        "confirmed_leader": 15,
+        "fundamental_strong": 26
+      },
+      {
+        "year": 2019,
+        "industry": "半导体",
+        "eligible": 7,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 0
+      },
+      {
+        "year": 2019,
+        "industry": "基础化工",
+        "eligible": 16,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 5
+      },
+      {
+        "year": 2020,
+        "industry": "医药生物",
+        "eligible": 67,
+        "expectation_gap": 0,
+        "confirmed_leader": 10,
+        "fundamental_strong": 21
+      },
+      {
+        "year": 2020,
+        "industry": "半导体",
+        "eligible": 15,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 6
+      },
+      {
+        "year": 2020,
+        "industry": "基础化工",
+        "eligible": 22,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 7
+      },
+      {
+        "year": 2021,
+        "industry": "医药生物",
+        "eligible": 107,
+        "expectation_gap": 10,
+        "confirmed_leader": 11,
+        "fundamental_strong": 33
+      },
+      {
+        "year": 2021,
+        "industry": "半导体",
+        "eligible": 40,
+        "expectation_gap": 0,
+        "confirmed_leader": 5,
+        "fundamental_strong": 13
+      },
+      {
+        "year": 2021,
+        "industry": "基础化工",
+        "eligible": 107,
+        "expectation_gap": 6,
+        "confirmed_leader": 14,
+        "fundamental_strong": 33
+      },
+      {
+        "year": 2022,
+        "industry": "医药生物",
+        "eligible": 75,
+        "expectation_gap": 8,
+        "confirmed_leader": 7,
+        "fundamental_strong": 24
+      },
+      {
+        "year": 2022,
+        "industry": "半导体",
+        "eligible": 33,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 10
+      },
+      {
+        "year": 2022,
+        "industry": "基础化工",
+        "eligible": 96,
+        "expectation_gap": 11,
+        "confirmed_leader": 6,
+        "fundamental_strong": 29
+      },
+      {
+        "year": 2023,
+        "industry": "医药生物",
+        "eligible": 129,
+        "expectation_gap": 13,
+        "confirmed_leader": 7,
+        "fundamental_strong": 39
+      },
+      {
+        "year": 2023,
+        "industry": "半导体",
+        "eligible": 14,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 5
+      },
+      {
+        "year": 2023,
+        "industry": "基础化工",
+        "eligible": 13,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 0
+      },
+      {
+        "year": 2024,
+        "industry": "医药生物",
+        "eligible": 81,
+        "expectation_gap": 0,
+        "confirmed_leader": 9,
+        "fundamental_strong": 25
+      },
+      {
+        "year": 2024,
+        "industry": "半导体",
+        "eligible": 48,
+        "expectation_gap": 5,
+        "confirmed_leader": 0,
+        "fundamental_strong": 15
+      },
+      {
+        "year": 2024,
+        "industry": "基础化工",
+        "eligible": 53,
+        "expectation_gap": 0,
+        "confirmed_leader": 0,
+        "fundamental_strong": 16
+      },
+      {
+        "year": 2025,
+        "industry": "医药生物",
+        "eligible": 73,
+        "expectation_gap": 0,
+        "confirmed_leader": 11,
+        "fundamental_strong": 22
+      },
+      {
+        "year": 2025,
+        "industry": "半导体",
+        "eligible": 52,
+        "expectation_gap": 0,
+        "confirmed_leader": 10,
+        "fundamental_strong": 16
+      },
+      {
+        "year": 2025,
+        "industry": "基础化工",
+        "eligible": 70,
+        "expectation_gap": 6,
+        "confirmed_leader": 10,
+        "fundamental_strong": 22
+      }
+    ]
+  },
+  "summaries": {
+    "expectation_gap": {
+      "63": {
+        "count": 59,
+        "mean": -0.03502570472004119,
+        "median": -0.04770410942114312,
+        "win_rate": 0.3389830508474576,
+        "bootstrap95": [
+          -0.08042822351885383,
+          0.011709876491113937
+        ],
+        "trim_top5_mean": -0.05802814784184879,
+        "folds": {
+          "2017-2019": {
+            "count": 0,
+            "mean": 0.0
+          },
+          "2020-2022": {
+            "count": 35,
+            "mean": -0.040549998378542514
+          },
+          "2023-2025": {
+            "count": 24,
+            "mean": -0.026969443134726757
+          }
+        },
+        "years": {
+          "2021": {
+            "count": 16,
+            "mean": -0.03418487095494918
+          },
+          "2022": {
+            "count": 19,
+            "mean": -0.04591010568262109
+          },
+          "2023": {
+            "count": 13,
+            "mean": 0.03126906573866
+          },
+          "2024": {
+            "count": 5,
+            "mean": -0.17821093616907985
+          },
+          "2025": {
+            "count": 6,
+            "mean": -0.027118301498437154
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 31,
+            "mean": -0.006245844341883473
+          },
+          "半导体": {
+            "count": 5,
+            "mean": -0.17821093616907985
+          },
+          "基础化工": {
+            "count": 23,
+            "mean": -0.04268872708863667
+          }
+        }
+      },
+      "126": {
+        "count": 59,
+        "mean": -0.016039325188510853,
+        "median": -0.0942702644831214,
+        "win_rate": 0.3389830508474576,
+        "bootstrap95": [
+          -0.08291449929602857,
+          0.05491716673483676
+        ],
+        "trim_top5_mean": -0.05918464457606105,
+        "folds": {
+          "2017-2019": {
+            "count": 0,
+            "mean": 0.0
+          },
+          "2020-2022": {
+            "count": 35,
+            "mean": -0.08784759675084787
+          },
+          "2023-2025": {
+            "count": 24,
+            "mean": 0.08868107083989733
+          }
+        },
+        "years": {
+          "2021": {
+            "count": 16,
+            "mean": -0.05959355924750831
+          },
+          "2022": {
+            "count": 19,
+            "mean": -0.11164047043787068
+          },
+          "2023": {
+            "count": 13,
+            "mean": 0.03399944915644784
+          },
+          "2024": {
+            "count": 5,
+            "mean": 0.16376515059708233
+          },
+          "2025": {
+            "count": 6,
+            "mean": 0.14458785135638375
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 31,
+            "mean": -0.057921148895773766
+          },
+          "半导体": {
+            "count": 5,
+            "mean": 0.16376515059708233
+          },
+          "基础化工": {
+            "count": 23,
+            "mean": 0.001322159854844991
+          }
+        }
+      },
+      "252": {
+        "count": 53,
+        "mean": -0.06563697234604578,
+        "median": -0.17392029629584124,
+        "win_rate": 0.2830188679245283,
+        "bootstrap95": [
+          -0.14647219091005823,
+          0.032461352156926346
+        ],
+        "trim_top5_mean": -0.13201764885410616,
+        "folds": {
+          "2017-2019": {
+            "count": 0,
+            "mean": 0.0
+          },
+          "2020-2022": {
+            "count": 35,
+            "mean": -0.06583851818055524
+          },
+          "2023-2025": {
+            "count": 18,
+            "mean": -0.0652450776678329
+          }
+        },
+        "years": {
+          "2021": {
+            "count": 16,
+            "mean": -0.01535778147287531
+          },
+          "2022": {
+            "count": 19,
+            "mean": -0.10834861225018046
+          },
+          "2023": {
+            "count": 13,
+            "mean": -0.031043943073718733
+          },
+          "2024": {
+            "count": 5,
+            "mean": -0.1541680276125298
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 31,
+            "mean": -0.050524902714049365
+          },
+          "半导体": {
+            "count": 5,
+            "mean": -0.1541680276125298
+          },
+          "基础化工": {
+            "count": 17,
+            "mean": -0.06715573012601452
+          }
+        }
+      }
+    },
+    "confirmed_leader": {
+      "63": {
+        "count": 143,
+        "mean": -0.04038736364572381,
+        "median": -0.05885984720924854,
+        "win_rate": 0.35664335664335667,
+        "bootstrap95": [
+          -0.07076290554809782,
+          -0.010781158825948878
+        ],
+        "trim_top5_mean": -0.06756231994207519,
+        "folds": {
+          "2017-2019": {
+            "count": 43,
+            "mean": 0.033677880717748604
+          },
+          "2020-2022": {
+            "count": 53,
+            "mean": -0.07125193577168332
+          },
+          "2023-2025": {
+            "count": 47,
+            "mean": -0.0733444526872868
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 14,
+            "mean": 0.05343100918258507
+          },
+          "2018": {
+            "count": 14,
+            "mean": -0.01902405066351409
+          },
+          "2019": {
+            "count": 15,
+            "mean": 0.06443009677307977
+          },
+          "2020": {
+            "count": 10,
+            "mean": 0.01695636398373984
+          },
+          "2021": {
+            "count": 30,
+            "mean": -0.12432528675329517
+          },
+          "2022": {
+            "count": 13,
+            "mean": -0.016627510241366047
+          },
+          "2023": {
+            "count": 7,
+            "mean": 0.020431163547240814
+          },
+          "2024": {
+            "count": 9,
+            "mean": -0.0863478396346839
+          },
+          "2025": {
+            "count": 31,
+            "mean": -0.09074441498132292
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 85,
+            "mean": -0.021993001362675808
+          },
+          "半导体": {
+            "count": 15,
+            "mean": -0.06437897184565093
+          },
+          "基础化工": {
+            "count": 43,
+            "mean": -0.06837914669363482
+          }
+        }
+      },
+      "126": {
+        "count": 143,
+        "mean": -0.011005145068589229,
+        "median": -0.05606146365468074,
+        "win_rate": 0.40559440559440557,
+        "bootstrap95": [
+          -0.05941643799423477,
+          0.038675999532955446
+        ],
+        "trim_top5_mean": -0.05635210418608675,
+        "folds": {
+          "2017-2019": {
+            "count": 43,
+            "mean": 0.09775428514387713
+          },
+          "2020-2022": {
+            "count": 53,
+            "mean": -0.04227733209214032
+          },
+          "2023-2025": {
+            "count": 47,
+            "mean": -0.07524407244918169
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 14,
+            "mean": 0.13813202708957675
+          },
+          "2018": {
+            "count": 14,
+            "mean": 0.04195485448678705
+          },
+          "2019": {
+            "count": 15,
+            "mean": 0.11214786127450822
+          },
+          "2020": {
+            "count": 10,
+            "mean": 0.17606686885219322
+          },
+          "2021": {
+            "count": 30,
+            "mean": -0.11670104419594099
+          },
+          "2022": {
+            "count": 13,
+            "mean": -0.03848738180977992
+          },
+          "2023": {
+            "count": 7,
+            "mean": 0.1659079230161448
+          },
+          "2024": {
+            "count": 9,
+            "mean": -0.09606984456568897
+          },
+          "2025": {
+            "count": 31,
+            "mean": -0.12365155693978555
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 85,
+            "mean": 0.03295833595970972
+          },
+          "半导体": {
+            "count": 15,
+            "mean": -0.09779893300741088
+          },
+          "基础化工": {
+            "count": 43,
+            "mean": -0.06763279782028894
+          }
+        }
+      },
+      "252": {
+        "count": 112,
+        "mean": 0.07131894509527932,
+        "median": -0.03961918148269727,
+        "win_rate": 0.45535714285714285,
+        "bootstrap95": [
+          -0.0063996615958598875,
+          0.16239403635536512
+        ],
+        "trim_top5_mean": 0.004460293596385259,
+        "folds": {
+          "2017-2019": {
+            "count": 43,
+            "mean": 0.290906268074603
+          },
+          "2020-2022": {
+            "count": 53,
+            "mean": -0.08438416010229852
+          },
+          "2023-2025": {
+            "count": 16,
+            "mean": -0.0030554494446764606
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 14,
+            "mean": 0.16674901905013587
+          },
+          "2018": {
+            "count": 14,
+            "mean": 0.23937181115570225
+          },
+          "2019": {
+            "count": 15,
+            "mean": 0.4548851936217463
+          },
+          "2020": {
+            "count": 10,
+            "mean": -0.01716295381357245
+          },
+          "2021": {
+            "count": 30,
+            "mean": -0.1712791010755306
+          },
+          "2022": {
+            "count": 13,
+            "mean": 0.06443400653690928
+          },
+          "2023": {
+            "count": 7,
+            "mean": 0.2172878983068475
+          },
+          "2024": {
+            "count": 9,
+            "mean": -0.1744336088069729
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 74,
+            "mean": 0.15681800674826907
+          },
+          "半导体": {
+            "count": 5,
+            "mean": -0.18104663983088093
+          },
+          "基础化工": {
+            "count": 33,
+            "mean": -0.08216901362261284
+          }
+        }
+      }
+    },
+    "fundamental_strong": {
+      "63": {
+        "count": 423,
+        "mean": -0.03733464915323296,
+        "median": -0.05780484699562021,
+        "win_rate": 0.34988179669030733,
+        "bootstrap95": [
+          -0.0537375166554752,
+          -0.02028065887053768
+        ],
+        "trim_top5_mean": -0.06239440440147038,
+        "folds": {
+          "2017-2019": {
+            "count": 87,
+            "mean": 0.007049893431599804
+          },
+          "2020-2022": {
+            "count": 176,
+            "mean": -0.06078368031470309
+          },
+          "2023-2025": {
+            "count": 160,
+            "mean": -0.03567480990611863
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 22,
+            "mean": 0.01602283801205104
+          },
+          "2018": {
+            "count": 34,
+            "mean": -0.03055425340908579
+          },
+          "2019": {
+            "count": 31,
+            "mean": 0.041925255102999257
+          },
+          "2020": {
+            "count": 34,
+            "mean": -0.03143674941154304
+          },
+          "2021": {
+            "count": 79,
+            "mean": -0.08897562931780702
+          },
+          "2022": {
+            "count": 63,
+            "mean": -0.04126989744902421
+          },
+          "2023": {
+            "count": 44,
+            "mean": -0.006353802618428072
+          },
+          "2024": {
+            "count": 56,
+            "mean": -0.053145035081253233
+          },
+          "2025": {
+            "count": 60,
+            "mean": -0.04087133842029942
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 227,
+            "mean": -0.024890949836381456
+          },
+          "半导体": {
+            "count": 65,
+            "mean": -0.03422201782718304
+          },
+          "基础化工": {
+            "count": 131,
+            "mean": -0.06044183068848895
+          }
+        }
+      },
+      "126": {
+        "count": 423,
+        "mean": -0.009112954695792671,
+        "median": -0.06914168820110107,
+        "win_rate": 0.375886524822695,
+        "bootstrap95": [
+          -0.03456028219869853,
+          0.01827676714724273
+        ],
+        "trim_top5_mean": -0.05428799423572274,
+        "folds": {
+          "2017-2019": {
+            "count": 87,
+            "mean": 0.04347031931678969
+          },
+          "2020-2022": {
+            "count": 176,
+            "mean": -0.05755951450651243
+          },
+          "2023-2025": {
+            "count": 160,
+            "mean": 0.015586105851657404
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 22,
+            "mean": 0.09602850048408426
+          },
+          "2018": {
+            "count": 34,
+            "mean": -0.0055059495129681935
+          },
+          "2019": {
+            "count": 31,
+            "mean": 0.059886872688766704
+          },
+          "2020": {
+            "count": 34,
+            "mean": 0.045707073884910666
+          },
+          "2021": {
+            "count": 79,
+            "mean": -0.06781025297889619
+          },
+          "2022": {
+            "count": 63,
+            "mean": -0.10043658856984682
+          },
+          "2023": {
+            "count": 44,
+            "mean": 0.04799088223355564
+          },
+          "2024": {
+            "count": 56,
+            "mean": -0.001307615318510805
+          },
+          "2025": {
+            "count": 60,
+            "mean": 0.007590076263755698
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 227,
+            "mean": 0.0016504189464443834
+          },
+          "半导体": {
+            "count": 65,
+            "mean": 0.028139541493679112
+          },
+          "基础化工": {
+            "count": 131,
+            "mean": -0.046248054459941346
+          }
+        }
+      },
+      "252": {
+        "count": 363,
+        "mean": -0.03449731599270711,
+        "median": -0.10544011234103581,
+        "win_rate": 0.34710743801652894,
+        "bootstrap95": [
+          -0.07563360558720984,
+          0.01391021607585175
+        ],
+        "trim_top5_mean": -0.0994921494925095,
+        "folds": {
+          "2017-2019": {
+            "count": 87,
+            "mean": 0.15059736055080553
+          },
+          "2020-2022": {
+            "count": 176,
+            "mean": -0.12576974918761724
+          },
+          "2023-2025": {
+            "count": 100,
+            "mean": -0.03489020216252124
+          }
+        },
+        "years": {
+          "2017": {
+            "count": 22,
+            "mean": 0.12509543780444846
+          },
+          "2018": {
+            "count": 34,
+            "mean": 0.08710525326598634
+          },
+          "2019": {
+            "count": 31,
+            "mean": 0.23833200403802177
+          },
+          "2020": {
+            "count": 34,
+            "mean": -0.17227165696773297
+          },
+          "2021": {
+            "count": 79,
+            "mean": -0.12389491530181716
+          },
+          "2022": {
+            "count": 63,
+            "mean": -0.10302446367101838
+          },
+          "2023": {
+            "count": 44,
+            "mean": 0.03829045521240783
+          },
+          "2024": {
+            "count": 56,
+            "mean": -0.09238929009996552
+          }
+        },
+        "industries": {
+          "医药生物": {
+            "count": 205,
+            "mean": 0.02672083035306365
+          },
+          "半导体": {
+            "count": 49,
+            "mean": -0.07156811681291386
+          },
+          "基础化工": {
+            "count": 109,
+            "mean": -0.13296750645777933
+          }
+        }
+      }
+    }
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "count": true,
+      "mean": false,
+      "median": false,
+      "win": false,
+      "folds": false,
+      "bootstrap": false,
+      "trim": false,
+      "beats_fundamental": false,
+      "beats_leader": false
+    }
+  },
+  "limitations": [
+    "current sector thesis makes history non-virgin",
+    "source-bounded SW2021 membership",
+    "event-level T+1 open approximation, not formal Platform Backtest",
+    "no governance/official S2 authority"
+  ]
+}

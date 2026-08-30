@@ -1,0 +1,891 @@
+{
+  "as_of": "2026-08-26",
+  "return_start": "2026-05-26",
+  "definitions": {
+    "semiconductor": "SW2021 L2 半导体",
+    "chemical": "SW2021 L1 基础化工",
+    "pharma": "SW2021 L1 医药生物",
+    "bright": "revenue/net profit/deducted profit all positive; industry percentile mean of five metrics"
+  },
+  "counts": {
+    "universe": {
+      "医药生物": 527,
+      "半导体": 186,
+      "基础化工": 463
+    },
+    "reported": {
+      "医药生物": 295,
+      "半导体": 115,
+      "基础化工": 305
+    },
+    "bright_eligible": {
+      "医药生物": 79,
+      "半导体": 50,
+      "基础化工": 107
+    }
+  },
+  "top_performance": {
+    "医药生物": [
+      {
+        "symbol": "300765",
+        "name": "石药创新",
+        "ann_date": "2026-08-18",
+        "revenue_yi": 32.4024222611,
+        "net_profit_yi": 12.6118599132,
+        "tr_yoy": 208.7246,
+        "netprofit_yoy": 46025.712,
+        "dt_netprofit_yoy": 3079.6,
+        "roe_waa": 38.2,
+        "ocf_yoy": 1928.7417,
+        "performance_score": 0.9932065029401592,
+        "market_cap_yi": 639.0897695,
+        "return_3m": 0.6337522441651704
+      },
+      {
+        "symbol": "688331",
+        "name": "荣昌生物",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 58.53293736770001,
+        "net_profit_yi": 46.622833563,
+        "tr_yoy": 433.1095,
+        "netprofit_yoy": 1137.057,
+        "dt_netprofit_yoy": 1073.7779,
+        "roe_waa": 78.38,
+        "ocf_yoy": 1816.1504,
+        "performance_score": 0.9884699642568892,
+        "market_cap_yi": 681.71947675,
+        "return_3m": 0.059385964912280764
+      },
+      {
+        "symbol": "688266",
+        "name": "泽璟制药-U",
+        "ann_date": "2026-08-01",
+        "revenue_yi": 12.053795714300001,
+        "net_profit_yi": 6.4001110413,
+        "tr_yoy": 220.8781,
+        "netprofit_yoy": 979.0934,
+        "dt_netprofit_yoy": 700.6555,
+        "roe_waa": 45.7,
+        "ocf_yoy": 4850.2985,
+        "performance_score": 0.9864314539375071,
+        "market_cap_yi": 316.8557154,
+        "return_3m": 0.2147351329409377
+      },
+      {
+        "symbol": "300497",
+        "name": "富祥股份",
+        "ann_date": "2026-08-12",
+        "revenue_yi": 8.882522497,
+        "net_profit_yi": 1.7694342063,
+        "tr_yoy": 72.5854,
+        "netprofit_yoy": 2660.2599,
+        "dt_netprofit_yoy": 644.83,
+        "roe_waa": 7.78,
+        "ocf_yoy": 540.7657,
+        "performance_score": 0.9544863369076445,
+        "market_cap_yi": 90.6546267,
+        "return_3m": 0.08301158301158296
+      },
+      {
+        "symbol": "920656",
+        "name": "海昇药业",
+        "ann_date": "2026-08-20",
+        "revenue_yi": 1.4114247180000001,
+        "net_profit_yi": 0.4702110742,
+        "tr_yoy": 39.9588,
+        "netprofit_yoy": 55.0526,
+        "dt_netprofit_yoy": 58.47,
+        "roe_waa": 6.47,
+        "ocf_yoy": 891.1388,
+        "performance_score": 0.8669433875245012,
+        "market_cap_yi": 14.51,
+        "return_3m": 0.016818500350385346
+      },
+      {
+        "symbol": "300199",
+        "name": "翰宇药业",
+        "ann_date": "2026-08-21",
+        "revenue_yi": 6.882866213,
+        "net_profit_yi": 2.3670016204,
+        "tr_yoy": 25.2701,
+        "netprofit_yoy": 62.7156,
+        "dt_netprofit_yoy": 85.9,
+        "roe_waa": 32.33,
+        "ocf_yoy": 94.3811,
+        "performance_score": 0.8643191513893693,
+        "market_cap_yi": 200.23082538,
+        "return_3m": -0.10536700868192572
+      },
+      {
+        "symbol": "002923",
+        "name": "润都股份",
+        "ann_date": "2026-08-21",
+        "revenue_yi": 7.0888664862,
+        "net_profit_yi": 0.40751012770000006,
+        "tr_yoy": 29.3431,
+        "netprofit_yoy": 212.5932,
+        "dt_netprofit_yoy": 173.85,
+        "roe_waa": 3.85,
+        "ocf_yoy": 669.5894,
+        "performance_score": 0.8640747146316153,
+        "market_cap_yi": 36.60383769,
+        "return_3m": -0.010859728506787403
+      },
+      {
+        "symbol": "688428",
+        "name": "诺诚健华",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 11.370570643599999,
+        "net_profit_yi": 2.4635589177,
+        "tr_yoy": 55.4558,
+        "netprofit_yoy": 918.6917,
+        "dt_netprofit_yoy": 327.3771,
+        "roe_waa": 3.2,
+        "ocf_yoy": 231.7997,
+        "performance_score": 0.8606802721088436,
+        "market_cap_yi": 498.0036205,
+        "return_3m": 0.12375249500997998
+      },
+      {
+        "symbol": "002693",
+        "name": "双成药业",
+        "ann_date": "2026-08-22",
+        "revenue_yi": 1.1715778726000001,
+        "net_profit_yi": 0.1362778839,
+        "tr_yoy": 39.2711,
+        "netprofit_yoy": 173.7971,
+        "dt_netprofit_yoy": 151.86,
+        "roe_waa": 3.25,
+        "ocf_yoy": 1389.7913,
+        "performance_score": 0.8579453476305776,
+        "market_cap_yi": 37.98558568,
+        "return_3m": null
+      },
+      {
+        "symbol": "688712",
+        "name": "北芯生命",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 3.8661405422,
+        "net_profit_yi": 0.9296997048000001,
+        "tr_yoy": 49.3517,
+        "netprofit_yoy": 88.0095,
+        "dt_netprofit_yoy": 108.0,
+        "roe_waa": 5.76,
+        "ocf_yoy": 127.626,
+        "performance_score": 0.8574518621007725,
+        "market_cap_yi": 136.1088,
+        "return_3m": -0.28311003733801887
+      }
+    ],
+    "半导体": [
+      {
+        "symbol": "688766",
+        "name": "普冉股份",
+        "ann_date": "2026-08-19",
+        "revenue_yi": 39.5929199788,
+        "net_profit_yi": 8.267458933099999,
+        "tr_yoy": 336.6702,
+        "netprofit_yoy": 1929.6503,
+        "dt_netprofit_yoy": 2994.08,
+        "roe_waa": 28.73,
+        "ocf_yoy": 2347.2775,
+        "performance_score": 0.9843478260869567,
+        "market_cap_yi": 590.62095848,
+        "return_3m": -0.012088349417968436
+      },
+      {
+        "symbol": "603986",
+        "name": "兆易创新",
+        "ann_date": "2026-08-19",
+        "revenue_yi": 115.6576043215,
+        "net_profit_yi": 68.5678641368,
+        "tr_yoy": 178.6723,
+        "netprofit_yoy": 1091.4991,
+        "dt_netprofit_yoy": 796.9,
+        "roe_waa": 23.13,
+        "ocf_yoy": 531.4689,
+        "performance_score": 0.9565217391304348,
+        "market_cap_yi": 2754.34925845,
+        "return_3m": -0.2541142487932804
+      },
+      {
+        "symbol": "688110",
+        "name": "东芯股份",
+        "ann_date": "2026-08-22",
+        "revenue_yi": 14.969600256400001,
+        "net_profit_yi": 6.5925868409,
+        "tr_yoy": 336.4421,
+        "netprofit_yoy": 694.0953,
+        "dt_netprofit_yoy": 602.1954,
+        "roe_waa": 17.36,
+        "ocf_yoy": 1115.187,
+        "performance_score": 0.9530434782608695,
+        "market_cap_yi": 501.6559716,
+        "return_3m": -0.2690001933861922
+      },
+      {
+        "symbol": "688536",
+        "name": "思瑞浦",
+        "ann_date": "2026-08-20",
+        "revenue_yi": 16.0582443686,
+        "net_profit_yi": 3.0775783193,
+        "tr_yoy": 69.1856,
+        "netprofit_yoy": 368.5237,
+        "dt_netprofit_yoy": 617.36,
+        "roe_waa": 4.81,
+        "ocf_yoy": 435.0853,
+        "performance_score": 0.8539130434782608,
+        "market_cap_yi": 427.49555555,
+        "return_3m": 0.015048193561078005
+      },
+      {
+        "symbol": "688012",
+        "name": "中微公司",
+        "ann_date": "2026-08-20",
+        "revenue_yi": 66.9128732767,
+        "net_profit_yi": 28.251946249099998,
+        "tr_yoy": 34.8886,
+        "netprofit_yoy": 300.2165,
+        "dt_netprofit_yoy": 108.36,
+        "roe_waa": 11.56,
+        "ocf_yoy": 237.3904,
+        "performance_score": 0.8295652173913043,
+        "market_cap_yi": 3525.33858515,
+        "return_3m": -0.20595024918556226
+      },
+      {
+        "symbol": "301666",
+        "name": "大普微-UW",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 47.222436084399995,
+        "net_profit_yi": 13.3397884292,
+        "tr_yoy": 531.1702,
+        "netprofit_yoy": 477.0837,
+        "dt_netprofit_yoy": 468.13,
+        "roe_waa": 77.43,
+        "ocf_yoy": -88.8715,
+        "performance_score": 0.8156521739130435,
+        "market_cap_yi": 1705.6057329999996,
+        "return_3m": null
+      },
+      {
+        "symbol": "688385",
+        "name": "复旦微电",
+        "ann_date": "2026-08-18",
+        "revenue_yi": 22.2549408521,
+        "net_profit_yi": 8.491535664299999,
+        "tr_yoy": 21.0263,
+        "netprofit_yoy": 338.5805,
+        "dt_netprofit_yoy": 125.88,
+        "roe_waa": 12.9,
+        "ocf_yoy": 315.09,
+        "performance_score": 0.8034782608695652,
+        "market_cap_yi": 422.23851318,
+        "return_3m": -0.24450994841562268
+      },
+      {
+        "symbol": "301308",
+        "name": "江波龙",
+        "ann_date": "2026-08-11",
+        "revenue_yi": 240.8836328495,
+        "net_profit_yi": 105.76875808950001,
+        "tr_yoy": 136.2611,
+        "netprofit_yoy": 71528.661,
+        "dt_netprofit_yoy": 31096.33,
+        "roe_waa": 79.03,
+        "ocf_yoy": -554.8172,
+        "performance_score": 0.8,
+        "market_cap_yi": 1564.8515844,
+        "return_3m": -0.3242415808516561
+      },
+      {
+        "symbol": "688525",
+        "name": "佰维存储",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 155.7494337135,
+        "net_profit_yi": 71.6558028151,
+        "tr_yoy": 298.0982,
+        "netprofit_yoy": 3273.4823,
+        "dt_netprofit_yoy": 2962.9739,
+        "roe_waa": 78.69,
+        "ocf_yoy": -793.7342,
+        "performance_score": 0.7930434782608696,
+        "market_cap_yi": 1053.24422445,
+        "return_3m": -0.274201410327235
+      },
+      {
+        "symbol": "688045",
+        "name": "必易微",
+        "ann_date": "2026-08-15",
+        "revenue_yi": 4.5197750907,
+        "net_profit_yi": 0.37598349719999996,
+        "tr_yoy": 59.9453,
+        "netprofit_yoy": 526.5475,
+        "dt_netprofit_yoy": 313.6194,
+        "roe_waa": 2.63,
+        "ocf_yoy": 199.8998,
+        "performance_score": 0.7895652173913044,
+        "market_cap_yi": 40.10185140000001,
+        "return_3m": -0.16441176470588237
+      }
+    ],
+    "基础化工": [
+      {
+        "symbol": "002407",
+        "name": "多氟多",
+        "ann_date": "2026-08-18",
+        "revenue_yi": 70.35840642720001,
+        "net_profit_yi": 5.118616219100001,
+        "tr_yoy": 62.5493,
+        "netprofit_yoy": 897.1941,
+        "dt_netprofit_yoy": 10407.5455,
+        "roe_waa": 5.94,
+        "ocf_yoy": 1186.7562,
+        "performance_score": 0.9368852459016394,
+        "market_cap_yi": 405.3423003,
+        "return_3m": -0.06146637265711141
+      },
+      {
+        "symbol": "603822",
+        "name": "ST嘉澳",
+        "ann_date": "2026-08-08",
+        "revenue_yi": 22.863874571,
+        "net_profit_yi": 0.6715897723,
+        "tr_yoy": 76.1032,
+        "netprofit_yoy": 185.8429,
+        "dt_netprofit_yoy": 190.227,
+        "roe_waa": 16.33,
+        "ocf_yoy": 929.5389,
+        "performance_score": 0.9357010353753236,
+        "market_cap_yi": 43.92904962,
+        "return_3m": null
+      },
+      {
+        "symbol": "603255",
+        "name": "鼎际得",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 7.0371584861,
+        "net_profit_yi": 0.4357809731,
+        "tr_yoy": 60.5052,
+        "netprofit_yoy": 931.0953,
+        "dt_netprofit_yoy": 1339.77,
+        "roe_waa": 2.73,
+        "ocf_yoy": 483.856,
+        "performance_score": 0.858602243313201,
+        "market_cap_yi": 41.60226356,
+        "return_3m": -0.09751824817518251
+      },
+      {
+        "symbol": "002648",
+        "name": "卫星化学",
+        "ann_date": "2026-08-15",
+        "revenue_yi": 307.13154590560003,
+        "net_profit_yi": 62.26634598,
+        "tr_yoy": 30.9168,
+        "netprofit_yoy": 126.9412,
+        "dt_netprofit_yoy": 109.01,
+        "roe_waa": 17.28,
+        "ocf_yoy": 90.5904,
+        "performance_score": 0.8444176013805004,
+        "market_cap_yi": 887.9750065199999,
+        "return_3m": 0.10200668896321052
+      },
+      {
+        "symbol": "002810",
+        "name": "山东赫达",
+        "ann_date": "2026-08-19",
+        "revenue_yi": 12.2482976277,
+        "net_profit_yi": 2.1299808844,
+        "tr_yoy": 26.0455,
+        "netprofit_yoy": 88.2655,
+        "dt_netprofit_yoy": 94.92,
+        "roe_waa": 9.28,
+        "ocf_yoy": 567.7411,
+        "performance_score": 0.8438481449525452,
+        "market_cap_yi": 74.92631897,
+        "return_3m": -0.1322047561467149
+      },
+      {
+        "symbol": "920694",
+        "name": "中裕科技",
+        "ann_date": "2026-08-20",
+        "revenue_yi": 4.4544580041,
+        "net_profit_yi": 0.8898803039000001,
+        "tr_yoy": 24.1206,
+        "netprofit_yoy": 69.1613,
+        "dt_netprofit_yoy": 64.96,
+        "roe_waa": 9.55,
+        "ocf_yoy": 1313.5336,
+        "performance_score": 0.8255133735979292,
+        "market_cap_yi": 21.43604557,
+        "return_3m": -0.22046867527498804
+      },
+      {
+        "symbol": "002748",
+        "name": "世龙实业",
+        "ann_date": "2026-08-25",
+        "revenue_yi": 11.6950446262,
+        "net_profit_yi": 1.0006425670999999,
+        "tr_yoy": 14.8656,
+        "netprofit_yoy": 146.187,
+        "dt_netprofit_yoy": 141.87,
+        "roe_waa": 6.96,
+        "ocf_yoy": 415.5246,
+        "performance_score": 0.8228106125970666,
+        "market_cap_yi": 28.944,
+        "return_3m": 0.05052264808362361
+      },
+      {
+        "symbol": "300721",
+        "name": "怡达股份",
+        "ann_date": "2026-08-22",
+        "revenue_yi": 11.3515628198,
+        "net_profit_yi": 0.3078975493,
+        "tr_yoy": 64.4302,
+        "netprofit_yoy": 148.8852,
+        "dt_netprofit_yoy": 147.37,
+        "roe_waa": 2.8,
+        "ocf_yoy": 721.3817,
+        "performance_score": 0.8153429680759275,
+        "market_cap_yi": 36.20033532,
+        "return_3m": -0.23055360896986676
+      },
+      {
+        "symbol": "301216",
+        "name": "万凯新材",
+        "ann_date": "2026-08-24",
+        "revenue_yi": 96.52163586309999,
+        "net_profit_yi": 5.6190573137,
+        "tr_yoy": 17.518,
+        "netprofit_yoy": 910.093,
+        "dt_netprofit_yoy": 971.52,
+        "roe_waa": 8.56,
+        "ocf_yoy": 14.4956,
+        "performance_score": 0.8134210526315788,
+        "market_cap_yi": 102.58013792,
+        "return_3m": -0.3471196454948301
+      },
+      {
+        "symbol": "002274",
+        "name": "华昌化工",
+        "ann_date": "2026-08-21",
+        "revenue_yi": 40.15952154,
+        "net_profit_yi": 1.2310570532,
+        "tr_yoy": 24.8486,
+        "netprofit_yoy": 1026.8957,
+        "dt_netprofit_yoy": 2667.54,
+        "roe_waa": 2.33,
+        "ocf_yoy": 317.6713,
+        "performance_score": 0.8133067299396032,
+        "market_cap_yi": null,
+        "return_3m": 0.10977701543739271
+      }
+    ]
+  },
+  "market_cap_extremes": {
+    "医药生物": {
+      "largest": {
+        "symbol": "603259",
+        "name": "药明康德",
+        "market_cap_yi": 4751.633341
+      },
+      "smallest": {
+        "symbol": "920504",
+        "name": "博迅生物",
+        "market_cap_yi": 7.68295863
+      }
+    },
+    "半导体": {
+      "largest": {
+        "symbol": "688825",
+        "name": "长鑫科技",
+        "market_cap_yi": 37520.17710210001
+      },
+      "smallest": {
+        "symbol": "920012",
+        "name": "创达新材",
+        "market_cap_yi": 25.79298974
+      }
+    },
+    "基础化工": {
+      "largest": {
+        "symbol": "600309",
+        "name": "万华化学",
+        "market_cap_yi": 2331.88829484
+      },
+      "smallest": {
+        "symbol": "920719",
+        "name": "宁新新材",
+        "market_cap_yi": 6.572394040000002
+      }
+    }
+  },
+  "bottom_3m": {
+    "医药生物": [
+      {
+        "symbol": "688238",
+        "name": "和元生物",
+        "return_3m": -0.6496565260058882,
+        "market_cap_yi": 46.34122038
+      },
+      {
+        "symbol": "688399",
+        "name": "硕世生物",
+        "return_3m": -0.49130044843049325,
+        "market_cap_yi": 35.20329636
+      },
+      {
+        "symbol": "688301",
+        "name": "奕瑞科技",
+        "return_3m": -0.4737844011748069,
+        "market_cap_yi": 303.2235945
+      },
+      {
+        "symbol": "688576",
+        "name": "西山科技",
+        "return_3m": -0.4622763806066892,
+        "market_cap_yi": 28.05839936
+      },
+      {
+        "symbol": "920047",
+        "name": "诺思兰德",
+        "return_3m": -0.42763836369886565,
+        "market_cap_yi": 45.66628367
+      },
+      {
+        "symbol": "301097",
+        "name": "天益医疗",
+        "return_3m": -0.4231433506044905,
+        "market_cap_yi": 27.2575396
+      },
+      {
+        "symbol": "301093",
+        "name": "华兰股份",
+        "return_3m": -0.4193473193473193,
+        "market_cap_yi": 159.27309522
+      },
+      {
+        "symbol": "300255",
+        "name": "常山药业",
+        "return_3m": -0.40270135067533763,
+        "market_cap_yi": 219.47174292
+      },
+      {
+        "symbol": "301363",
+        "name": "美好医疗",
+        "return_3m": -0.3940506793977231,
+        "market_cap_yi": 131.334522
+      },
+      {
+        "symbol": "603538",
+        "name": "美诺华",
+        "return_3m": -0.38068181818181823,
+        "market_cap_yi": 88.92521712
+      },
+      {
+        "symbol": "688607",
+        "name": "康众医疗",
+        "return_3m": -0.3733705772811917,
+        "market_cap_yi": 35.5864902
+      },
+      {
+        "symbol": "688410",
+        "name": "山外山",
+        "return_3m": -0.3709028177113284,
+        "market_cap_yi": 48.95003446
+      },
+      {
+        "symbol": "688553",
+        "name": "汇宇制药-W",
+        "return_3m": -0.36199575371549897,
+        "market_cap_yi": 75.23328818
+      },
+      {
+        "symbol": "688166",
+        "name": "博瑞医药",
+        "return_3m": -0.359780621572212,
+        "market_cap_yi": 152.615409
+      },
+      {
+        "symbol": "688091",
+        "name": "上海谊众",
+        "return_3m": -0.35458651841556643,
+        "market_cap_yi": 76.79040226
+      },
+      {
+        "symbol": "688677",
+        "name": "海泰新光",
+        "return_3m": -0.3531561223758687,
+        "market_cap_yi": 108.22495560000002
+      },
+      {
+        "symbol": "688759",
+        "name": "必贝特-U",
+        "return_3m": -0.3415474297827239,
+        "market_cap_yi": 111.83411995000002
+      },
+      {
+        "symbol": "603567",
+        "name": "珍宝岛",
+        "return_3m": -0.3329411764705883,
+        "market_cap_yi": 53.31134151
+      },
+      {
+        "symbol": "688273",
+        "name": "麦澜德",
+        "return_3m": -0.32980877390326213,
+        "market_cap_yi": 29.79
+      },
+      {
+        "symbol": "688765",
+        "name": "禾元生物-U",
+        "return_3m": -0.32666424154237894,
+        "market_cap_yi": 132.3465
+      }
+    ],
+    "半导体": [
+      {
+        "symbol": "300672",
+        "name": "国科微",
+        "return_3m": -0.5140696553386359,
+        "market_cap_yi": 350.16462225
+      },
+      {
+        "symbol": "688486",
+        "name": "龙迅股份",
+        "return_3m": -0.503001200480192,
+        "market_cap_yi": 77.3646768
+      },
+      {
+        "symbol": "688270",
+        "name": "ST臻镭",
+        "return_3m": -0.4934898953590543,
+        "market_cap_yi": 189.92220786
+      },
+      {
+        "symbol": "688691",
+        "name": "灿芯股份",
+        "return_3m": -0.4930544467507585,
+        "market_cap_yi": 76.2
+      },
+      {
+        "symbol": "688368",
+        "name": "晶丰明源",
+        "return_3m": -0.46863636363636363,
+        "market_cap_yi": 238.2502661
+      },
+      {
+        "symbol": "688167",
+        "name": "炬光科技",
+        "return_3m": -0.43413749163085025,
+        "market_cap_yi": 340.96418
+      },
+      {
+        "symbol": "688608",
+        "name": "恒玄科技",
+        "return_3m": -0.422262956173971,
+        "market_cap_yi": 246.3851286
+      },
+      {
+        "symbol": "688720",
+        "name": "艾森股份",
+        "return_3m": -0.421186286958099,
+        "market_cap_yi": 78.2675716
+      },
+      {
+        "symbol": "001309",
+        "name": "德明利",
+        "return_3m": -0.40723714155666824,
+        "market_cap_yi": 886.25252601
+      },
+      {
+        "symbol": "603316",
+        "name": "诚邦股份",
+        "return_3m": -0.403364969801553,
+        "market_cap_yi": 37.34086170000001
+      },
+      {
+        "symbol": "688416",
+        "name": "恒烁股份",
+        "return_3m": -0.40026182294223533,
+        "market_cap_yi": 79.0765531
+      },
+      {
+        "symbol": "300831",
+        "name": "ST派瑞",
+        "return_3m": -0.39518072289156625,
+        "market_cap_yi": 48.192
+      },
+      {
+        "symbol": "688018",
+        "name": "乐鑫科技",
+        "return_3m": -0.3913872989915508,
+        "market_cap_yi": 261.69007095
+      },
+      {
+        "symbol": "301369",
+        "name": "联动科技",
+        "return_3m": -0.38064516129032255,
+        "market_cap_yi": 132.5907792
+      },
+      {
+        "symbol": "688286",
+        "name": "敏芯股份",
+        "return_3m": -0.3777502750275027,
+        "market_cap_yi": 35.43685875
+      },
+      {
+        "symbol": "688135",
+        "name": "利扬芯片",
+        "return_3m": -0.37299432238953345,
+        "market_cap_yi": 59.2083906
+      },
+      {
+        "symbol": "688807",
+        "name": "优迅股份",
+        "return_3m": -0.3661632262692277,
+        "market_cap_yi": 254.488
+      },
+      {
+        "symbol": "688107",
+        "name": "安路科技",
+        "return_3m": -0.36450788240306775,
+        "market_cap_yi": 119.57337601999998
+      },
+      {
+        "symbol": "688709",
+        "name": "成都华微",
+        "return_3m": -0.3601919676686033,
+        "market_cap_yi": 161.31337043000002
+      },
+      {
+        "symbol": "688262",
+        "name": "国芯科技",
+        "return_3m": -0.3570207570207571,
+        "market_cap_yi": 88.46877367
+      }
+    ],
+    "基础化工": [
+      {
+        "symbol": "301538",
+        "name": "骏鼎达",
+        "return_3m": -0.618375604460673,
+        "market_cap_yi": 42.444192
+      },
+      {
+        "symbol": "300731",
+        "name": "科创新源",
+        "return_3m": -0.5459441635524291,
+        "market_cap_yi": 73.23626825999999
+      },
+      {
+        "symbol": "688625",
+        "name": "呈和科技",
+        "return_3m": -0.5421117142356855,
+        "market_cap_yi": 135.80578870000002
+      },
+      {
+        "symbol": "603826",
+        "name": "坤彩科技",
+        "return_3m": -0.5239819004524887,
+        "market_cap_yi": 134.407728
+      },
+      {
+        "symbol": "603281",
+        "name": "江瀚新材",
+        "return_3m": -0.4981263383297645,
+        "market_cap_yi": 97.2444
+      },
+      {
+        "symbol": "603360",
+        "name": "百傲化学",
+        "return_3m": -0.4833206974981046,
+        "market_cap_yi": 96.25829031
+      },
+      {
+        "symbol": "688267",
+        "name": "中触媒",
+        "return_3m": -0.47045191193511005,
+        "market_cap_yi": 41.70331564
+      },
+      {
+        "symbol": "300905",
+        "name": "宝丽迪",
+        "return_3m": -0.4684561722778283,
+        "market_cap_yi": 62.74500285
+      },
+      {
+        "symbol": "688386",
+        "name": "泛亚微透",
+        "return_3m": -0.45672131147540984,
+        "market_cap_yi": 49.5156339
+      },
+      {
+        "symbol": "600714",
+        "name": "金瑞矿业",
+        "return_3m": -0.45189873417721516,
+        "market_cap_yi": 49.91213516
+      },
+      {
+        "symbol": "300876",
+        "name": "蒙泰高新",
+        "return_3m": -0.435097897026831,
+        "market_cap_yi": 23.68745808
+      },
+      {
+        "symbol": "603683",
+        "name": "晶华新材",
+        "return_3m": -0.433982683982684,
+        "market_cap_yi": 45.72356265
+      },
+      {
+        "symbol": "300910",
+        "name": "瑞丰新材",
+        "return_3m": -0.4256842105263158,
+        "market_cap_yi": 104.49393944
+      },
+      {
+        "symbol": "688089",
+        "name": "ST嘉必优",
+        "return_3m": -0.4146520146520146,
+        "market_cap_yi": 13.292164000000003
+      },
+      {
+        "symbol": "688157",
+        "name": "松井股份",
+        "return_3m": -0.4058421379738968,
+        "market_cap_yi": 35.89154776
+      },
+      {
+        "symbol": "301076",
+        "name": "新瀚新材",
+        "return_3m": -0.40278188813258364,
+        "market_cap_yi": 46.0446051
+      },
+      {
+        "symbol": "920099",
+        "name": "瑞华技术",
+        "return_3m": -0.3993388429752066,
+        "market_cap_yi": 17.09433545
+      },
+      {
+        "symbol": "605077",
+        "name": "华康股份",
+        "return_3m": -0.3980317113176599,
+        "market_cap_yi": 33.32768838
+      },
+      {
+        "symbol": "301618",
+        "name": "长联科技",
+        "return_3m": -0.39760837070254107,
+        "market_cap_yi": 40.71982928
+      },
+      {
+        "symbol": "002361",
+        "name": "神剑股份",
+        "return_3m": -0.390661938534279,
+        "market_cap_yi": 98.0517085
+      }
+    ]
+  }
+}

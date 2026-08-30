@@ -1,0 +1,51 @@
+{
+  "endpoint": "https://fast.xiaodefa.cn",
+  "api": "fina_indicator_vip",
+  "periods": [
+    {
+      "period": "20161231",
+      "row_count": 10425
+    },
+    {
+      "period": "20171231",
+      "row_count": 11055
+    },
+    {
+      "period": "20181231",
+      "row_count": 11627
+    },
+    {
+      "period": "20191231",
+      "row_count": 11780
+    },
+    {
+      "period": "20201231",
+      "row_count": 11914
+    },
+    {
+      "period": "20211231",
+      "row_count": 12036
+    },
+    {
+      "period": "20221231",
+      "row_count": 12207
+    },
+    {
+      "period": "20231231",
+      "row_count": 7542
+    },
+    {
+      "period": "20241231",
+      "row_count": 7505
+    },
+    {
+      "period": "20251231",
+      "row_count": 6817
+    }
+  ],
+  "row_count": 102908,
+  "output": {
+    "path": "overall/a-share-annual-eps.csv",
+    "sha256": "cb5f03c2346e905e79d4170e1acab6169365ca9d9a99389a3cb3c7396e7d96ff"
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "endpoint": "https://fast.xiaodefa.cn",
+  "api": "fina_indicator_vip",
+  "periods": [
+    {
+      "period": "20150331",
+      "row_count": 6062
+    },
+    {
+      "period": "20150630",
+      "row_count": 7742
+    },
+    {
+      "period": "20150930",
+      "row_count": 6047
+    },
+    {
+      "period": "20151231",
+      "row_count": 9859
+    },
+    {
+      "period": "20160331",
+      "row_count": 6879
+    },
+    {
+      "period": "20160630",
+      "row_count": 8954
+    },
+    {
+      "period": "20160930",
+      "row_count": 7169
+    },
+    {
+      "period": "20161231",
+      "row_count": 10425
+    },
+    {
+      "period": "20170331",
+      "row_count": 7704
+    },
+    {
+      "period": "20170630",
+      "row_count": 9305
+    },
+    {
+      "period": "20170930",
+      "row_count": 7691
+    },
+    {
+      "period": "20171231",
+      "row_count": 11055
+    },
+    {
+      "period": "20180331",
+      "row_count": 7918
+    },
+    {
+      "period": "20180630",
+      "row_count": 9291
+    },
+    {
+      "period": "20180930",
+      "row_count": 8091
+    },
+    {
+      "period": "20181231",
+      "row_count": 11627
+    },
+    {
+      "period": "20190331",
+      "row_count": 8424
+    },
+    {
+      "period": "20190630",
+      "row_count": 9832
+    },
+    {
+      "period": "20190930",
+      "row_count": 8953
+    },
+    {
+      "period": "20191231",
+      "row_count": 11780
+    },
+    {
+      "period": "20200331",
+      "row_count": 9451
+    },
+    {
+      "period": "20200630",
+      "row_count": 10706
+    },
+    {
+      "period": "20200930",
+      "row_count": 10046
+    },
+    {
+      "period": "20201231",
+      "row_count": 11914
+    },
+    {
+      "period": "20210331",
+      "row_count": 10575
+    },
+    {
+      "period": "20210630",
+      "row_count": 11509
+    },
+    {
+      "period": "20210930",
+      "row_count": 11102
+    },
+    {
+      "period": "20211231",
+      "row_count": 12036
+    },
+    {
+      "period": "20220331",
+      "row_count": 11417
+    },
+    {
+      "period": "20220630",
+      "row_count": 11817
+    },
+    {
+      "period": "20220930",
+      "row_count": 11383
+    },
+    {
+      "period": "20221231",
+      "row_count": 12207
+    },
+    {
+      "period": "20230331",
+      "row_count": 11308
+    },
+    {
+      "period": "20230630",
+      "row_count": 7470
+    },
+    {
+      "period": "20230930",
+      "row_count": 7112
+    },
+    {
+      "period": "20231231",
+      "row_count": 7542
+    },
+    {
+      "period": "20240331",
+      "row_count": 6959
+    },
+    {
+      "period": "20240630",
+      "row_count": 7274
+    },
+    {
+      "period": "20240930",
+      "row_count": 7256
+    },
+    {
+      "period": "20241231",
+      "row_count": 7505
+    },
+    {
+      "period": "20250331",
+      "row_count": 8809
+    },
+    {
+      "period": "20250630",
+      "row_count": 8086
+    },
+    {
+      "period": "20250930",
+      "row_count": 7087
+    },
+    {
+      "period": "20251231",
+      "row_count": 6817
+    },
+    {
+      "period": "20260331",
+      "row_count": 6871
+    },
+    {
+      "period": "20260630",
+      "row_count": 4495
+    }
+  ],
+  "row_count": 413562,
+  "output": {
+    "path": "overall/a-share-fundamental-momentum.csv",
+    "sha256": "09bb575e3dee3aba03fd37da284af60b398081550010a63a3549ab5bfaebe989"
+  }
+}

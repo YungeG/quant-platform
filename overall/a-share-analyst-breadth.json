@@ -1,0 +1,140 @@
+{
+  "study": "a-share-analyst-breadth-v1",
+  "data": {
+    "panel_version": "775de5b40310be21",
+    "report_rows": 2058970,
+    "decision_count": 116,
+    "selected_symbols": 784,
+    "factor": "breadth"
+  },
+  "ic": {
+    "count": 114,
+    "mean": 0.01951807295203208,
+    "median": 0.02375420030308393,
+    "win_rate": 0.5614035087719298,
+    "t_stat": 1.8937040193634511,
+    "average_coverage": 435.1140350877193,
+    "folds": {
+      "2017-2019": {
+        "count": 36,
+        "mean_ic": 0.02281745275211604
+      },
+      "2020-2022": {
+        "count": 36,
+        "mean_ic": 0.010202935156774272
+      },
+      "2023-2026": {
+        "count": 42,
+        "mean_ic": 0.024674436947895374
+      }
+    }
+  },
+  "portfolio": {
+    "metrics": {
+      "cagr": 0.09345315569403256,
+      "volatility": 0.20912119284491035,
+      "sharpe": 0.5320178659052879,
+      "max_drawdown": -0.4082863328700116,
+      "calmar": 0.22889121719336555
+    },
+    "gross_metrics": {
+      "cagr": 0.12378828070173054,
+      "volatility": 0.21392567654719724,
+      "sharpe": 0.6527891203458248,
+      "max_drawdown": -0.3833628812690033,
+      "calmar": 0.3229010599356099
+    },
+    "benchmark_metrics": {
+      "cagr": 0.05314482141661392,
+      "volatility": 0.18936475926772683,
+      "sharpe": 0.36816903283843316,
+      "max_drawdown": -0.4215534708063582,
+      "calmar": 0.12606899265935861
+    },
+    "excess_cagr": 0.040308334277418645,
+    "gross_to_net_cagr_retention": 0.7549434822445684,
+    "folds": {
+      "2017-2019": {
+        "cagr": 0.09245290729422928,
+        "volatility": 0.20849699019682721,
+        "sharpe": 0.5284261943285602,
+        "max_drawdown": -0.3209705436883742,
+        "calmar": 0.2880417194419888,
+        "benchmark_cagr": 0.08949711193388366,
+        "excess_cagr": 0.0029557953603456255
+      },
+      "2020-2022": {
+        "cagr": 0.08672341913818427,
+        "volatility": 0.22432105075585868,
+        "sharpe": 0.48353749517862754,
+        "max_drawdown": -0.34401552889902975,
+        "calmar": 0.2520915826553807,
+        "benchmark_cagr": -0.0037175343467520383,
+        "excess_cagr": 0.0904409534849363
+      },
+      "2023-2026": {
+        "cagr": 0.09985861240496186,
+        "volatility": 0.19652444203840289,
+        "sharpe": 0.5823526801424695,
+        "max_drawdown": -0.23686566947289822,
+        "calmar": 0.421583307649349,
+        "benchmark_cagr": 0.07189586043274776,
+        "excess_cagr": 0.027962751972214095
+      }
+    },
+    "positive_excess_folds": 3,
+    "yearly_returns": {
+      "2017": 0.1598994792682602,
+      "2018": -0.27359838633470857,
+      "2019": 0.5339147601334857,
+      "2020": 0.33879195001703044,
+      "2021": 0.08279940822629861,
+      "2022": -0.12283205673352482,
+      "2023": -0.13747153886053864,
+      "2024": 0.24959499919465578,
+      "2025": 0.3179272783176692,
+      "2026": -0.01695608379985092
+    },
+    "best_year": "2019",
+    "best_year_return": 0.5339147601334857,
+    "cagr_excluding_best_year": 0.04577601348328053,
+    "annual_turnover": 6.692193513309765,
+    "average_positions": 28.41741357234315,
+    "minimum_positions": 0,
+    "average_cash_fraction": 0.13018289246086528,
+    "trade_count": 4080,
+    "buy_count": 2055,
+    "sell_count": 2025,
+    "fees": 120197.86780668618,
+    "blocked_buys": 3,
+    "blocked_sells": 322,
+    "lot_failures": 169,
+    "expired_buys": 170,
+    "execution_failure_rate": 0.07723394701392007,
+    "missing_valuation_rate": 0.006202877654621369
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "signal_checks": {
+      "mean_ic": false,
+      "t_stat": false,
+      "positive_folds": true
+    },
+    "portfolio_checks": {
+      "cagr": false,
+      "excess": true,
+      "sharpe": false,
+      "drawdown": false,
+      "folds": true,
+      "turnover": true,
+      "lots": false,
+      "cost_retention": false
+    }
+  },
+  "signals": "overall/a-share-analyst-breadth-signals.csv",
+  "limitations": [
+    "report_rc is source-bounded and lacks provider revision/completeness authority",
+    "report_date has day-level timing and execution is delayed to the next open",
+    "the interval is not virgin OOS"
+  ]
+}

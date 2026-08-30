@@ -1,0 +1,67 @@
+{
+  "endpoint": "https://fast.xiaodefa.cn",
+  "api": "fina_indicator_vip",
+  "periods": [
+    {
+      "period": "20121231",
+      "row_count": 7876
+    },
+    {
+      "period": "20131231",
+      "row_count": 9079
+    },
+    {
+      "period": "20141231",
+      "row_count": 9784
+    },
+    {
+      "period": "20151231",
+      "row_count": 9859
+    },
+    {
+      "period": "20161231",
+      "row_count": 10425
+    },
+    {
+      "period": "20171231",
+      "row_count": 11055
+    },
+    {
+      "period": "20181231",
+      "row_count": 11627
+    },
+    {
+      "period": "20191231",
+      "row_count": 11780
+    },
+    {
+      "period": "20201231",
+      "row_count": 11914
+    },
+    {
+      "period": "20211231",
+      "row_count": 12036
+    },
+    {
+      "period": "20221231",
+      "row_count": 12207
+    },
+    {
+      "period": "20231231",
+      "row_count": 7542
+    },
+    {
+      "period": "20241231",
+      "row_count": 7505
+    },
+    {
+      "period": "20251231",
+      "row_count": 6817
+    }
+  ],
+  "row_count": 139506,
+  "output": {
+    "path": "overall/a-share-pit-quality.csv",
+    "sha256": "500a7e5251a17bfde125b5d5637bd2a7063006cbdd8f02a71335ddaa9f38036e"
+  }
+}

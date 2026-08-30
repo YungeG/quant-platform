@@ -1,0 +1,1434 @@
+{
+  "study": "a-share-ground-volume-validation-v1",
+  "duckdb_path": "/srv/bcache-8t/ygguo/duckdb/quant-a50/quant_a50.duckdb",
+  "data_through": "2026-08-25",
+  "signal_go_count": 4,
+  "portfolio_go_count": 0,
+  "verdict": "MARGINAL",
+  "carriers": [
+    {
+      "label": "csi300_total_return",
+      "code": "H00300.CSI",
+      "start": "2014-02-10",
+      "end": "2026-08-25",
+      "n_days": 3053,
+      "prediction_20": {
+        "full": {
+          "spread": 0.008585486424861623,
+          "ground_mean": 0.008263049173698776,
+          "high_volume_mean": -0.0003224372511628467,
+          "ground_n": 23,
+          "high_volume_n": 33
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.004300997146674151,
+            "ground_mean": 0.01423756227001357,
+            "high_volume_mean": 0.009936565123339418,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.004072821007448435,
+            "ground_mean": 0.010573602703905838,
+            "high_volume_mean": 0.006500781696457403,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.009208893628635313,
+            "ground_mean": -0.017367918359215695,
+            "high_volume_mean": -0.008159024730580382,
+            "ground_n": 4,
+            "high_volume_n": 17
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.011493099475943663,
+            "ground_mean": 0.012674311288120438,
+            "high_volume_mean": 0.0011812118121767746,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.05452767296905353,
+            "ground_mean": -0.012223532159817835,
+            "high_volume_mean": 0.042304140809235696,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": -0.019609793913617706,
+            "ground_mean": -0.02674375428783604,
+            "high_volume_mean": -0.007133960374218336,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": -0.0020311875499622323,
+            "ground_mean": -0.03574163056859292,
+            "high_volume_mean": -0.03371044301863069,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.07184924137480643,
+            "ground_mean": 0.033393319794409786,
+            "high_volume_mean": -0.038455921580396644,
+            "ground_n": 7,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 5,
+            "spread": 0.0008821946413018877,
+            "ground_mean": 0.010544158269202963,
+            "high_volume_mean": 0.009661963627901076,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 2,
+        "positive_offsets": 3,
+        "median_offset_spread": -0.0005744964543301723,
+        "minimum_offset_spread": -0.05452767296905353,
+        "ground_entry": {
+          "mean_forward_return": 0.006732278572051101,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 137
+      },
+      "prediction_60": {
+        "full": {
+          "spread": 0.015471037941660905,
+          "ground_mean": 0.018333015993215206,
+          "high_volume_mean": 0.0028619780515543,
+          "ground_n": 23,
+          "high_volume_n": 32
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.05687677504677989,
+            "ground_mean": 0.04249388046723981,
+            "high_volume_mean": -0.014382894579540086,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": -0.03785269081818336,
+            "ground_mean": -0.021982264642488463,
+            "high_volume_mean": 0.015870426175694896,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.05116333918393445,
+            "ground_mean": -0.048073981426105444,
+            "high_volume_mean": 0.003089357757829009,
+            "ground_n": 4,
+            "high_volume_n": 16
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": -0.051787639608308594,
+            "ground_mean": 0.012546946068167864,
+            "high_volume_mean": 0.06433458567647646,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.057808456648864553,
+            "ground_mean": -0.03866803483455672,
+            "high_volume_mean": 0.019140421814307834,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.07778232103979574,
+            "ground_mean": 0.037973750228247116,
+            "high_volume_mean": -0.03980857081154863,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": 0.20156782409292298,
+            "ground_mean": 0.07609669216209392,
+            "high_volume_mean": -0.12547113193082907,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.12834130900300605,
+            "ground_mean": 0.060551278535652564,
+            "high_volume_mean": -0.06779003046735349,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.035079420167674936,
+            "ground_mean": -0.017576472278499546,
+            "high_volume_mean": 0.01750294788917539,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 3,
+        "median_offset_spread": 0.0213514504360604,
+        "minimum_offset_spread": -0.057808456648864553,
+        "ground_entry": {
+          "mean_forward_return": 0.014810007940842378,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 136
+      },
+      "prediction_120": {
+        "full": {
+          "spread": 0.04871824743791589,
+          "ground_mean": 0.0675430156211069,
+          "high_volume_mean": 0.018824768183191006,
+          "ground_n": 23,
+          "high_volume_n": 30
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.1437991910786409,
+            "ground_mean": 0.08308370196613465,
+            "high_volume_mean": -0.06071548911250624,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": -0.09071755839304703,
+            "ground_mean": 0.010477325560061609,
+            "high_volume_mean": 0.10119488395310863,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": 0.04253685823640159,
+            "ground_mean": 0.048179537786779886,
+            "high_volume_mean": 0.005642679550378298,
+            "ground_n": 4,
+            "high_volume_n": 14
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.01205428258114924,
+            "ground_mean": 0.07863679536823412,
+            "high_volume_mean": 0.06658251278708488,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": 0.1212095491577001,
+            "ground_mean": 0.07093037949754749,
+            "high_volume_mean": -0.05027916966015261,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.12327897597650295,
+            "ground_mean": 0.08109203758078376,
+            "high_volume_mean": -0.04218693839571919,
+            "ground_n": 1,
+            "high_volume_n": 5
+          },
+          {
+            "offset": 3,
+            "spread": 0.24476808241815795,
+            "ground_mean": 0.13527518949756578,
+            "high_volume_mean": -0.10949289292059217,
+            "ground_n": 2,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 4,
+            "spread": 0.028639104587504835,
+            "ground_mean": 0.06791194081925277,
+            "high_volume_mean": 0.03927283623174793,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.03884812587220991,
+            "ground_mean": 0.025638931502329543,
+            "high_volume_mean": 0.06448705737453946,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 2,
+        "positive_offsets": 5,
+        "median_offset_spread": 0.07492432687260248,
+        "minimum_offset_spread": -0.03884812587220991,
+        "ground_entry": {
+          "mean_forward_return": 0.029659710342432193,
+          "n": 14
+        },
+        "signal_go": true,
+        "monthly_sample_count": 133
+      },
+      "portfolio": {
+        "timing": {
+          "cagr": 0.05985773928468907,
+          "sharpe": 0.5347768496012354,
+          "max_drawdown": -0.25414952061780605,
+          "calmar": 0.23552174774590293
+        },
+        "constant_same_average_exposure": {
+          "cagr": 0.06274065285813801,
+          "sharpe": 0.5569349391160869,
+          "max_drawdown": -0.28286423253273185,
+          "calmar": 0.22180482946311683
+        },
+        "buy_and_hold": {
+          "cagr": 0.08488320770220903,
+          "sharpe": 0.4882765334216057,
+          "max_drawdown": -0.4605893911544985,
+          "calmar": 0.18429258105455604
+        },
+        "average_exposure": 0.5740498034076016,
+        "total_turnover": 14.5,
+        "annual_turnover": 1.1972477064220184,
+        "calmar_delta": 0.013716918282786095,
+        "positive_fold_calmar": 1,
+        "folds": {
+          "2015-2018": {
+            "timing": {
+              "cagr": 0.016922311531128997,
+              "sharpe": 0.18536328776243763,
+              "max_drawdown": -0.2541495206178056,
+              "calmar": 0.0665840781048612
+            },
+            "constant": {
+              "cagr": 0.0006698738020090023,
+              "sharpe": 0.08793813462895009,
+              "max_drawdown": -0.31883413152724827,
+              "calmar": 0.002101010324083679
+            },
+            "calmar_delta": 0.06448306778077752
+          },
+          "2019-2022": {
+            "timing": {
+              "cagr": 0.05682329015781806,
+              "sharpe": 0.5617521094066292,
+              "max_drawdown": -0.2214725630638239,
+              "calmar": 0.2565703370735035
+            },
+            "constant": {
+              "cagr": 0.06219483723896868,
+              "sharpe": 0.6121355476197629,
+              "max_drawdown": -0.19958516123337544,
+              "calmar": 0.3116205476129766
+            },
+            "calmar_delta": -0.055050210539473066
+          },
+          "2023-end": {
+            "timing": {
+              "cagr": 0.05215375092594754,
+              "sharpe": 0.584304806002417,
+              "max_drawdown": -0.13269872905738866,
+              "calmar": 0.3930237410442148
+            },
+            "constant": {
+              "cagr": 0.055372362249941354,
+              "sharpe": 0.6020573421003278,
+              "max_drawdown": -0.12173124094550669,
+              "calmar": 0.45487388298891107
+            },
+            "calmar_delta": -0.06185014194469629
+          }
+        },
+        "portfolio_go": false
+      }
+    },
+    {
+      "label": "csi500_total_return",
+      "code": "H00905.CSI",
+      "start": "2014-02-10",
+      "end": "2026-08-25",
+      "n_days": 3053,
+      "prediction_20": {
+        "full": {
+          "spread": 0.0017825893112243868,
+          "ground_mean": 0.0038892577931065307,
+          "high_volume_mean": 0.002106668481882144,
+          "ground_n": 23,
+          "high_volume_n": 33
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": -0.03716699912013639,
+            "ground_mean": 0.0024806977392634946,
+            "high_volume_mean": 0.03964769685939989,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.055450324909848664,
+            "ground_mean": 0.06068614690960842,
+            "high_volume_mean": 0.005235821999759755,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.018066156116455023,
+            "ground_mean": -0.03307416882889774,
+            "high_volume_mean": -0.01500801271244272,
+            "ground_n": 4,
+            "high_volume_n": 17
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.013248506963957457,
+            "ground_mean": 0.016280140472828414,
+            "high_volume_mean": 0.003031633508870957,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.033494969416528825,
+            "ground_mean": -0.0030488245494013078,
+            "high_volume_mean": 0.030446144867127517,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": -0.05527026402900174,
+            "ground_mean": -0.04415565823742751,
+            "high_volume_mean": 0.011114605791574231,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": -0.022461570033833995,
+            "ground_mean": -0.04907621994421124,
+            "high_volume_mean": -0.026614649910377246,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.08826328328393383,
+            "ground_mean": 0.012830823064016157,
+            "high_volume_mean": -0.07543246021991767,
+            "ground_n": 7,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 5,
+            "spread": -0.004606405410094334,
+            "ground_mean": 0.017804000445095735,
+            "high_volume_mean": 0.02241040585519007,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 2,
+        "median_offset_spread": -0.013533987721964165,
+        "minimum_offset_spread": -0.05527026402900174,
+        "ground_entry": {
+          "mean_forward_return": 0.00643727682473566,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 137
+      },
+      "prediction_60": {
+        "full": {
+          "spread": 0.00476044438295823,
+          "ground_mean": 0.010435811030663995,
+          "high_volume_mean": 0.005675366647705765,
+          "ground_n": 23,
+          "high_volume_n": 32
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": -0.011927195821270012,
+            "ground_mean": 0.03417636393695299,
+            "high_volume_mean": 0.046103559758223,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.002968852949098001,
+            "ground_mean": -0.011175475405843849,
+            "high_volume_mean": -0.01414432835494185,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.06745454636795485,
+            "ground_mean": -0.0683179357671111,
+            "high_volume_mean": -0.0008633893991562419,
+            "ground_n": 4,
+            "high_volume_n": 16
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": -0.06757844301347579,
+            "ground_mean": -0.006622118353046269,
+            "high_volume_mean": 0.060956324660429516,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.08859991376332821,
+            "ground_mean": -0.04017073390386164,
+            "high_volume_mean": 0.04842917985946657,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.07735265721578354,
+            "ground_mean": 0.04739905250869003,
+            "high_volume_mean": -0.0299536047070935,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": 0.15505189156363736,
+            "ground_mean": 0.03839909744450459,
+            "high_volume_mean": -0.11665279411913276,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.16577557103370838,
+            "ground_mean": 0.06502896484629948,
+            "high_volume_mean": -0.10074660618740888,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.04608455766909271,
+            "ground_mean": -0.030440987717778412,
+            "high_volume_mean": 0.015643569951314298,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 3,
+        "median_offset_spread": 0.015634049773345413,
+        "minimum_offset_spread": -0.08859991376332821,
+        "ground_entry": {
+          "mean_forward_return": 0.01400207242051855,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 136
+      },
+      "prediction_120": {
+        "full": {
+          "spread": 0.02871696832472654,
+          "ground_mean": 0.04232396877724813,
+          "high_volume_mean": 0.013607000452521589,
+          "ground_n": 23,
+          "high_volume_n": 30
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.08237922772083188,
+            "ground_mean": 0.041788554985904246,
+            "high_volume_mean": -0.040590672734927634,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.010633493531224253,
+            "ground_mean": 0.04938717332374443,
+            "high_volume_mean": 0.038753679792520174,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": 0.01462810591936146,
+            "ground_mean": 0.03916822053275143,
+            "high_volume_mean": 0.02454011461338997,
+            "ground_n": 4,
+            "high_volume_n": 14
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.002536813181416811,
+            "ground_mean": 0.0639552966303415,
+            "high_volume_mean": 0.061418483448924685,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": 0.10905376123893581,
+            "ground_mean": 0.07647779590926823,
+            "high_volume_mean": -0.03257596532966758,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.10094657191979406,
+            "ground_mean": 0.08582044633255159,
+            "high_volume_mean": -0.015126125587242467,
+            "ground_n": 1,
+            "high_volume_n": 5
+          },
+          {
+            "offset": 3,
+            "spread": 0.22441737181293642,
+            "ground_mean": 0.11191678867941135,
+            "high_volume_mean": -0.11250058313352507,
+            "ground_n": 2,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 4,
+            "spread": 0.04415638864616218,
+            "ground_mean": 0.020141143955128622,
+            "high_volume_mean": -0.024015244691033555,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.04678338450185857,
+            "ground_mean": -0.007784623931801326,
+            "high_volume_mean": 0.038998760570057245,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 3,
+        "positive_offsets": 5,
+        "median_offset_spread": 0.07255148028297811,
+        "minimum_offset_spread": -0.04678338450185857,
+        "ground_entry": {
+          "mean_forward_return": 0.00798523869632298,
+          "n": 14
+        },
+        "signal_go": true,
+        "monthly_sample_count": 133
+      },
+      "portfolio": {
+        "timing": {
+          "cagr": 0.047775110040812585,
+          "sharpe": 0.39313945586598437,
+          "max_drawdown": -0.39012124309669416,
+          "calmar": 0.12246221113617031
+        },
+        "constant_same_average_exposure": {
+          "cagr": 0.055650464898518104,
+          "sharpe": 0.4470395940832463,
+          "max_drawdown": -0.4071907513146321,
+          "calmar": 0.13666927531838158
+        },
+        "buy_and_hold": {
+          "cagr": 0.06817943052223585,
+          "sharpe": 0.3887269669762756,
+          "max_drawdown": -0.6414326708373363,
+          "calmar": 0.10629241948844505
+        },
+        "average_exposure": 0.5740498034076016,
+        "total_turnover": 14.5,
+        "annual_turnover": 1.1972477064220184,
+        "calmar_delta": -0.014207064182211265,
+        "positive_fold_calmar": 1,
+        "folds": {
+          "2015-2018": {
+            "timing": {
+              "cagr": -0.018367839471429948,
+              "sharpe": 5.131747014711385e-05,
+              "max_drawdown": -0.39012124309669305,
+              "calmar": -0.04708238732561766
+            },
+            "constant": {
+              "cagr": -0.018248414746264485,
+              "sharpe": 0.008254184258587864,
+              "max_drawdown": -0.45809089154697813,
+              "calmar": -0.03983579478002582
+            },
+            "calmar_delta": -0.007246592545591839
+          },
+          "2019-2022": {
+            "timing": {
+              "cagr": 0.07663551752657827,
+              "sharpe": 0.6967124198225705,
+              "max_drawdown": -0.14899998836807926,
+              "calmar": 0.5143323725453132
+            },
+            "constant": {
+              "cagr": 0.07228064870358253,
+              "sharpe": 0.6607723454238708,
+              "max_drawdown": -0.17357378653747202,
+              "calmar": 0.41642606378226477
+            },
+            "calmar_delta": 0.0979063087630484
+          },
+          "2023-end": {
+            "timing": {
+              "cagr": 0.05902528748293334,
+              "sharpe": 0.5187211200311513,
+              "max_drawdown": -0.186769273625906,
+              "calmar": 0.31603318006772063
+            },
+            "constant": {
+              "cagr": 0.07102637690759916,
+              "sharpe": 0.5948497422959393,
+              "max_drawdown": -0.17087232245261963,
+              "calmar": 0.41566928972533707
+            },
+            "calmar_delta": -0.09963610965761643
+          }
+        },
+        "portfolio_go": false
+      }
+    },
+    {
+      "label": "csi1000_total_return",
+      "code": "H00852.CSI",
+      "start": "2014-02-10",
+      "end": "2026-08-25",
+      "n_days": 3053,
+      "prediction_20": {
+        "full": {
+          "spread": -0.0018057615236940802,
+          "ground_mean": 0.0011620665895446958,
+          "high_volume_mean": 0.002967828113238776,
+          "ground_n": 23,
+          "high_volume_n": 33
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": -0.05287221984504805,
+            "ground_mean": -0.0037260129035757497,
+            "high_volume_mean": 0.0491462069414723,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.07420643733604682,
+            "ground_mean": 0.07705192549964275,
+            "high_volume_mean": 0.0028454881635959404,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.020220979366088833,
+            "ground_mean": -0.036203009620547066,
+            "high_volume_mean": -0.015982030254458233,
+            "ground_n": 4,
+            "high_volume_n": 17
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.014586569392902659,
+            "ground_mean": 0.017341494828890747,
+            "high_volume_mean": 0.002754925435988087,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.02990891497538578,
+            "ground_mean": 0.007623238462641069,
+            "high_volume_mean": 0.03753215343802685,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": -0.08526958008053626,
+            "ground_mean": -0.049909805107386185,
+            "high_volume_mean": 0.03535977497315007,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": -0.01300922549301764,
+            "ground_mean": -0.05946924661080122,
+            "high_volume_mean": -0.04646002111778358,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.10479090040168791,
+            "ground_mean": 0.005522133998803779,
+            "high_volume_mean": -0.09926876640288414,
+            "ground_n": 7,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 5,
+            "spread": -0.009343061446417998,
+            "ground_mean": 0.011412391746152583,
+            "high_volume_mean": 0.02075545319257058,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 2,
+        "median_offset_spread": -0.01117614346971782,
+        "minimum_offset_spread": -0.08526958008053626,
+        "ground_entry": {
+          "mean_forward_return": 0.002334254290672498,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 137
+      },
+      "prediction_60": {
+        "full": {
+          "spread": 0.00021453980171741438,
+          "ground_mean": 0.006490678975901783,
+          "high_volume_mean": 0.006276139174184368,
+          "ground_n": 23,
+          "high_volume_n": 32
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": -0.03806345203611219,
+            "ground_mean": 0.029621770444610805,
+            "high_volume_mean": 0.06768522248072299,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.0024315226663942247,
+            "ground_mean": -0.01282980615179452,
+            "high_volume_mean": -0.015261328818188745,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.06306781402644568,
+            "ground_mean": -0.07154332305316208,
+            "high_volume_mean": -0.008475509026716406,
+            "ground_n": 4,
+            "high_volume_n": 16
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": -0.07495094414931866,
+            "ground_mean": -0.0002558755197198115,
+            "high_volume_mean": 0.07469506862959885,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.1158438164342997,
+            "ground_mean": -0.03413737568270023,
+            "high_volume_mean": 0.08170644075159947,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.0858118671533552,
+            "ground_mean": 0.04096603282234623,
+            "high_volume_mean": -0.04484583433100897,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": 0.17461127696224105,
+            "ground_mean": 0.033616808045939084,
+            "high_volume_mean": -0.14099446891630196,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.1653430612806927,
+            "ground_mean": 0.05444270706974706,
+            "high_volume_mean": -0.11090035421094563,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.04633358477631573,
+            "ground_mean": -0.04048799542940653,
+            "high_volume_mean": 0.0058455893469092,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 3,
+        "median_offset_spread": 0.019739141188519736,
+        "minimum_offset_spread": -0.1158438164342997,
+        "ground_entry": {
+          "mean_forward_return": 0.009014853408148052,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 136
+      },
+      "prediction_120": {
+        "full": {
+          "spread": 0.0318354340336933,
+          "ground_mean": 0.03450992519984299,
+          "high_volume_mean": 0.002674491166149695,
+          "ground_n": 23,
+          "high_volume_n": 30
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.054140517484572055,
+            "ground_mean": 0.02206668399470897,
+            "high_volume_mean": -0.032073833489863084,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.06175047214360892,
+            "ground_mean": 0.08052820209465798,
+            "high_volume_mean": 0.01877772995104907,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": 0.04007261093111852,
+            "ground_mean": 0.04976918234926786,
+            "high_volume_mean": 0.009696571418149344,
+            "ground_n": 4,
+            "high_volume_n": 14
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.01908039876364155,
+            "ground_mean": 0.05777804827174418,
+            "high_volume_mean": 0.03869764950810263,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": 0.08087883663912576,
+            "ground_mean": 0.067461892952551,
+            "high_volume_mean": -0.013416943686574756,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.07981943792893449,
+            "ground_mean": 0.0789693924186099,
+            "high_volume_mean": -0.0008500455103245929,
+            "ground_n": 1,
+            "high_volume_n": 5
+          },
+          {
+            "offset": 3,
+            "spread": 0.24165827909900822,
+            "ground_mean": 0.145139794612405,
+            "high_volume_mean": -0.09651848448660322,
+            "ground_n": 2,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 4,
+            "spread": 0.012289512570954548,
+            "ground_mean": 0.0033616559335141022,
+            "high_volume_mean": -0.008927856637440446,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": -0.014583686617115505,
+            "ground_mean": -0.02000241169576209,
+            "high_volume_mean": -0.005418725078646587,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 3,
+        "positive_offsets": 5,
+        "median_offset_spread": 0.04944991834628802,
+        "minimum_offset_spread": -0.014583686617115505,
+        "ground_entry": {
+          "mean_forward_return": -0.003051233711904585,
+          "n": 14
+        },
+        "signal_go": true,
+        "monthly_sample_count": 133
+      },
+      "portfolio": {
+        "timing": {
+          "cagr": 0.033645999401087145,
+          "sharpe": 0.28854103970646955,
+          "max_drawdown": -0.4845634496872291,
+          "calmar": 0.06943569396908622
+        },
+        "constant_same_average_exposure": {
+          "cagr": 0.04377336463095216,
+          "sharpe": 0.3521671313947069,
+          "max_drawdown": -0.48104314858971287,
+          "calmar": 0.09099675311722807
+        },
+        "buy_and_hold": {
+          "cagr": 0.044837131490577775,
+          "sharpe": 0.2983228009970106,
+          "max_drawdown": -0.7178889982876931,
+          "calmar": 0.06245691408772551
+        },
+        "average_exposure": 0.5740498034076016,
+        "total_turnover": 14.5,
+        "annual_turnover": 1.1972477064220184,
+        "calmar_delta": -0.021561059148141853,
+        "positive_fold_calmar": 1,
+        "folds": {
+          "2015-2018": {
+            "timing": {
+              "cagr": -0.03986223960560609,
+              "sharpe": -0.09714557645474194,
+              "max_drawdown": -0.48456344968722864,
+              "calmar": -0.08226423109571303
+            },
+            "constant": {
+              "cagr": -0.02925311441294398,
+              "sharpe": -0.03484611594772115,
+              "max_drawdown": -0.5347506688828418,
+              "calmar": -0.054704212851303655
+            },
+            "calmar_delta": -0.027560018244409373
+          },
+          "2019-2022": {
+            "timing": {
+              "cagr": 0.0784916439793224,
+              "sharpe": 0.6484109525420614,
+              "max_drawdown": -0.16095803975122103,
+              "calmar": 0.4876528323819063
+            },
+            "constant": {
+              "cagr": 0.0722732743789567,
+              "sharpe": 0.6059998377169054,
+              "max_drawdown": -0.1947508821681091,
+              "calmar": 0.37110627471546115
+            },
+            "calmar_delta": 0.11654655766644517
+          },
+          "2023-end": {
+            "timing": {
+              "cagr": 0.04415533685766038,
+              "sharpe": 0.37839345414470243,
+              "max_drawdown": -0.2343896355203885,
+              "calmar": 0.18838434028717752
+            },
+            "constant": {
+              "cagr": 0.05414015262975713,
+              "sharpe": 0.44062201696253983,
+              "max_drawdown": -0.22730509642441565,
+              "calmar": 0.23818274856745247
+            },
+            "calmar_delta": -0.04979840828027496
+          }
+        },
+        "portfolio_go": false
+      }
+    },
+    {
+      "label": "csi_dividend_total_return",
+      "code": "H00922.CSI",
+      "start": "2014-02-10",
+      "end": "2026-08-25",
+      "n_days": 3053,
+      "prediction_20": {
+        "full": {
+          "spread": 0.001436473199761196,
+          "ground_mean": 0.011675688899017012,
+          "high_volume_mean": 0.010239215699255816,
+          "ground_n": 23,
+          "high_volume_n": 33
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": -0.011563093338995582,
+            "ground_mean": 0.019410310869789983,
+            "high_volume_mean": 0.030973404208785565,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.011718401064964764,
+            "ground_mean": 0.021574996981846173,
+            "high_volume_mean": 0.009856595916881409,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.028591452126315,
+            "ground_mean": -0.02668728004619675,
+            "high_volume_mean": 0.00190417208011825,
+            "ground_n": 4,
+            "high_volume_n": 17
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.009093430185387736,
+            "ground_mean": 0.016835395345561138,
+            "high_volume_mean": 0.007741965160173403,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.06339357166508724,
+            "ground_mean": -0.01949577215101911,
+            "high_volume_mean": 0.043897799514068137,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": -0.04304762038673271,
+            "ground_mean": -0.031145093817164904,
+            "high_volume_mean": 0.011902526569567806,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": 0.035348395395506695,
+            "ground_mean": -0.008201129215950675,
+            "high_volume_mean": -0.04354952461145737,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.02076685371373267,
+            "ground_mean": 0.026507149851642535,
+            "high_volume_mean": 0.005740296137909866,
+            "ground_n": 7,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 5,
+            "spread": 0.0101079604058339,
+            "ground_mean": 0.02823593103735833,
+            "high_volume_mean": 0.01812797063152443,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 1,
+        "positive_offsets": 4,
+        "median_offset_spread": 0.009600695295610818,
+        "minimum_offset_spread": -0.06339357166508724,
+        "ground_entry": {
+          "mean_forward_return": 0.014366567703487218,
+          "n": 14
+        },
+        "signal_go": false,
+        "monthly_sample_count": 137
+      },
+      "prediction_60": {
+        "full": {
+          "spread": 0.02195768538586379,
+          "ground_mean": 0.03152607274759217,
+          "high_volume_mean": 0.009568387361728381,
+          "ground_n": 23,
+          "high_volume_n": 32
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.015860867075930457,
+            "ground_mean": 0.05103530173627648,
+            "high_volume_mean": 0.035174434660346025,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.014096636405418979,
+            "ground_mean": 0.017102854121985905,
+            "high_volume_mean": 0.0030062177165669254,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": -0.03775039133192687,
+            "ground_mean": -0.03569342923794039,
+            "high_volume_mean": 0.0020569620939864808,
+            "ground_n": 4,
+            "high_volume_n": 16
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": -0.03402896116879532,
+            "ground_mean": 0.03486893326497037,
+            "high_volume_mean": 0.06889789443376569,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": -0.06075491640754904,
+            "ground_mean": -0.014987470385716711,
+            "high_volume_mean": 0.04576744602183233,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.06935888122357707,
+            "ground_mean": 0.04365080468628957,
+            "high_volume_mean": -0.0257080765372875,
+            "ground_n": 1,
+            "high_volume_n": 6
+          },
+          {
+            "offset": 3,
+            "spread": 0.1436427228703664,
+            "ground_mean": 0.06109575124780714,
+            "high_volume_mean": -0.08254697162255924,
+            "ground_n": 2,
+            "high_volume_n": 3
+          },
+          {
+            "offset": 4,
+            "spread": 0.1330748005570223,
+            "ground_mean": 0.054620572469398505,
+            "high_volume_mean": -0.07845422808762381,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": 0.020486430382414905,
+            "ground_mean": 0.01947750144198237,
+            "high_volume_mean": -0.0010089289404325377,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 2,
+        "positive_offsets": 4,
+        "median_offset_spread": 0.04492265580299599,
+        "minimum_offset_spread": -0.06075491640754904,
+        "ground_entry": {
+          "mean_forward_return": 0.03271051491332368,
+          "n": 14
+        },
+        "signal_go": true,
+        "monthly_sample_count": 136
+      },
+      "prediction_120": {
+        "full": {
+          "spread": 0.0644850043543076,
+          "ground_mean": 0.082800174891087,
+          "high_volume_mean": 0.018315170536779397,
+          "ground_n": 23,
+          "high_volume_n": 30
+        },
+        "folds": {
+          "2015-2018": {
+            "spread": 0.10857312340716828,
+            "ground_mean": 0.10067502934762339,
+            "high_volume_mean": -0.007898094059544891,
+            "ground_n": 16,
+            "high_volume_n": 7
+          },
+          "2019-2022": {
+            "spread": 0.011876897168964416,
+            "ground_mean": 0.05630518718247187,
+            "high_volume_mean": 0.044428290013507454,
+            "ground_n": 3,
+            "high_volume_n": 9
+          },
+          "2023-end": {
+            "spread": 0.016537200389357853,
+            "ground_mean": 0.031171997846402788,
+            "high_volume_mean": 0.014634797457044935,
+            "ground_n": 4,
+            "high_volume_n": 14
+          }
+        },
+        "offsets": [
+          {
+            "offset": 0,
+            "spread": 0.056846969904966654,
+            "ground_mean": 0.1246988240412682,
+            "high_volume_mean": 0.06785185413630154,
+            "ground_n": 4,
+            "high_volume_n": 10
+          },
+          {
+            "offset": 1,
+            "spread": 0.13899505527056058,
+            "ground_mean": 0.10668155948192937,
+            "high_volume_mean": -0.032313495788631214,
+            "ground_n": 4,
+            "high_volume_n": 4
+          },
+          {
+            "offset": 2,
+            "spread": 0.13385706336794775,
+            "ground_mean": 0.111609988359759,
+            "high_volume_mean": -0.022247075008188767,
+            "ground_n": 1,
+            "high_volume_n": 5
+          },
+          {
+            "offset": 3,
+            "spread": 0.14632400288220837,
+            "ground_mean": 0.07913518552840715,
+            "high_volume_mean": -0.06718881735380122,
+            "ground_n": 2,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 4,
+            "spread": 0.03379189172499343,
+            "ground_mean": 0.04894716108552501,
+            "high_volume_mean": 0.015155269360531576,
+            "ground_n": 7,
+            "high_volume_n": 2
+          },
+          {
+            "offset": 5,
+            "spread": 0.042489681859910394,
+            "ground_mean": 0.07327440027739247,
+            "high_volume_mean": 0.030784718417482076,
+            "ground_n": 5,
+            "high_volume_n": 7
+          }
+        ],
+        "positive_folds": 3,
+        "positive_offsets": 6,
+        "median_offset_spread": 0.0953520166364572,
+        "minimum_offset_spread": 0.03379189172499343,
+        "ground_entry": {
+          "mean_forward_return": 0.05428628421212628,
+          "n": 14
+        },
+        "signal_go": true,
+        "monthly_sample_count": 133
+      },
+      "portfolio": {
+        "timing": {
+          "cagr": 0.0814059920351693,
+          "sharpe": 0.7276103890926653,
+          "max_drawdown": -0.24399965799419476,
+          "calmar": 0.3336315825373251
+        },
+        "constant_same_average_exposure": {
+          "cagr": 0.08513750502299122,
+          "sharpe": 0.7539822250896779,
+          "max_drawdown": -0.27831708150069945,
+          "calmar": 0.3059011130898815
+        },
+        "buy_and_hold": {
+          "cagr": 0.12589564085161986,
+          "sharpe": 0.6822499391535147,
+          "max_drawdown": -0.45659245673813664,
+          "calmar": 0.2757286919521386
+        },
+        "average_exposure": 0.5740498034076016,
+        "total_turnover": 14.5,
+        "annual_turnover": 1.1972477064220184,
+        "calmar_delta": 0.027730469447443618,
+        "positive_fold_calmar": 2,
+        "folds": {
+          "2015-2018": {
+            "timing": {
+              "cagr": 0.07370845805768678,
+              "sharpe": 0.5306471655373027,
+              "max_drawdown": -0.24399965799419543,
+              "calmar": 0.30208426791909787
+            },
+            "constant": {
+              "cagr": 0.05571748703341606,
+              "sharpe": 0.40369674093881847,
+              "max_drawdown": -0.3142037012643155,
+              "calmar": 0.17732918743228043
+            },
+            "calmar_delta": 0.12475508048681744
+          },
+          "2019-2022": {
+            "timing": {
+              "cagr": 0.07430325309835406,
+              "sharpe": 0.7635582029142218,
+              "max_drawdown": -0.09606276314014717,
+              "calmar": 0.7734865276564251
+            },
+            "constant": {
+              "cagr": 0.07550988576958506,
+              "sharpe": 0.7785256552463021,
+              "max_drawdown": -0.10227697428537208,
+              "calmar": 0.7382882246682251
+            },
+            "calmar_delta": 0.035198302988200036
+          },
+          "2023-end": {
+            "timing": {
+              "cagr": 0.04709160994690231,
+              "sharpe": 0.6007102781482688,
+              "max_drawdown": -0.10351888423546529,
+              "calmar": 0.45490839951276113
+            },
+            "constant": {
+              "cagr": 0.0648427771746245,
+              "sharpe": 0.8017920461262701,
+              "max_drawdown": -0.08029271158369378,
+              "calmar": 0.807579864917566
+            },
+            "calmar_delta": -0.3526714654048048
+          }
+        },
+        "portfolio_go": false
+      }
+    }
+  ]
+}
