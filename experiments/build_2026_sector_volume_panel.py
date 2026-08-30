@@ -1,0 +1,21 @@
+"""Aggregate PIT daily sector price and volume features for the 2026 launch study."""
+from __future__ import annotations
+import argparse,json
+import numpy as np,pandas as pd
+from factormine.config import Config
+from factormine.data.db import connect
+from factormine.data.panel import load_or_build_panel
+from factormine.research.combination import repair_point_in_time_size
+def top5_share(group):
+ total=group.Amount.sum();return float(group.nlargest(5,"Amount").Amount.sum()/total) if total>0 else np.nan
+def run(members_path,benchmark_path,start,end,out_path):
+ m=pd.read_csv(members_path,dtype=str);m["Symbol"]=m.ts_code.str[:6];m["in_date"]=pd.to_datetime(m.in_date,errors="coerce");m["out_date"]=pd.to_datetime(m.out_date,errors="coerce");cfg=Config();con=connect(cfg,read_only=True)
+ try:built=load_or_build_panel(cfg,start,end,con=con)
+ finally:con.close()
+ p=repair_point_in_time_size(built.df);p.TradingDay=pd.to_datetime(p.TradingDay);p=p[p.TradingDay.between(start,end)].sort_values(["Symbol","TradingDay"]).copy();g=p.groupby("Symbol",sort=False);p["stock_return"]=p.adj_close/g.adj_close.shift(1)-1;p["volume_median20"]=g.Volume.transform(lambda s:s.rolling(20,min_periods=20).median());p["ma20"]=g.adj_close.transform(lambda s:s.rolling(20,min_periods=20).mean());market_amount=p.groupby("TradingDay").Amount.sum();joined=p.merge(m[["Symbol","l1_name","l2_name","in_date","out_date"]],on="Symbol",how="inner");joined=joined[(joined.TradingDay>=joined.in_date)&(joined.out_date.isna()|(joined.TradingDay<=joined.out_date))];l1=joined.assign(sector=joined.l1_name);semi=joined[joined.l2_name.eq("半导体")].assign(sector="半导体");x=pd.concat([l1,semi],ignore_index=True);x["volume_above20"]=x.Volume>x.volume_median20;x["above_ma20"]=x.adj_close>x.ma20;x["up_amount"]=np.where(x.stock_return>0,x.Amount,0.0);rows=[]
+ for (day,sector),s in x.groupby(["TradingDay","sector"]):
+  amount=float(s.Amount.sum());circ=float(s.CircMV.sum());rows.append({"trade_date":day,"sector":sector,"member_count":s.Symbol.nunique(),"sector_return":float(s.stock_return.mean()),"amount":amount,"amount_share":amount/market_amount.get(day,np.nan),"turnover_proxy":amount/circ if circ>0 else np.nan,"volume_breadth":float(s.volume_above20.mean()),"up_amount_share":float(s.up_amount.sum()/amount) if amount>0 else np.nan,"price_breadth":float(s.above_ma20.mean()),"top5_amount_concentration":top5_share(s)})
+ panel=pd.DataFrame(rows).sort_values(["sector","trade_date"]);etf=pd.read_csv(benchmark_path);etf=etf[etf.asset=="equity"].copy();etf.trade_date=pd.to_datetime(etf.trade_date,format="mixed");etf=etf.sort_values("trade_date");etf["benchmark_return"]=etf.adj_close/etf.adj_close.shift(1)-1;panel=panel.merge(etf[["trade_date","benchmark_return"]],on="trade_date",how="left");panel["sector_index"]=panel.groupby("sector").sector_return.transform(lambda s:(1+s.fillna(0)).cumprod());panel["benchmark_index"]=panel.groupby("sector").benchmark_return.transform(lambda s:(1+s.fillna(0)).cumprod());panel["relative20"]=panel.sector_index/panel.groupby("sector").sector_index.shift(20)-panel.benchmark_index/panel.groupby("sector").benchmark_index.shift(20);panel["future35"]=panel.groupby("sector").sector_index.shift(-35)/panel.sector_index-1;panel["benchmark_future35"]=panel.groupby("sector").benchmark_index.shift(-35)/panel.benchmark_index-1;panel["active_future35"]=panel.future35-panel.benchmark_future35;panel.to_csv(out_path,index=False,date_format="%Y-%m-%d");return {"panel_version":built.version_hash,"rows":len(panel),"sectors":panel.sector.nunique(),"start":str(panel.trade_date.min().date()),"end":str(panel.trade_date.max().date()),"output":out_path}
+def main(argv=None):
+ p=argparse.ArgumentParser();p.add_argument("--members",default="overall/a-share-sw2021-members.csv");p.add_argument("--benchmark",default="overall/a-share-equity-etf-daily-current.csv");p.add_argument("--start",default="2025-10-01");p.add_argument("--end",default="2026-08-27");p.add_argument("--out",default="overall/a-share-2026-sector-volume-panel.csv");a=p.parse_args(argv);print(json.dumps(run(a.members,a.benchmark,a.start,a.end,a.out),ensure_ascii=False,indent=2));return 0
+if __name__=="__main__":raise SystemExit(main())

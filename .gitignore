@@ -4,3 +4,21 @@
 .ruff_cache/
 __pycache__/
 *.py[cod]
+# A-share research datasets and generated paths (commit manifests and summaries only)
+overall/*-raw/
+overall/*.parquet
+overall/*-panel.csv
+overall/*-focus.csv
+overall/*-events.csv
+overall/*-event-states.csv
+overall/*-states.csv
+overall/*-signals.csv
+overall/*-nav.csv
+overall/*-daily.csv
+overall/*-paths.csv
+overall/*-waves.csv
+overall/a-share-forecast-vip.csv
+overall/a-share-cyq-month-ends.csv
+overall/a-share-sw2021-members.csv
+overall/a-share-sector-daily-*.csv
+overall/a-share-fundamental-momentum.csv
