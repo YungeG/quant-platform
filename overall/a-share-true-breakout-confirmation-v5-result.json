@@ -1,0 +1,69 @@
+{
+  "study": "a-share-true-breakout-confirmation-v5",
+  "method": "hold both D0 breakout levels through D10, D10 sector return>=7%, D10 active>=3%",
+  "label": "D0 forward10>=4%, forward20>=8%, relative20>=4%",
+  "overall": {
+    "signals": 1459,
+    "true_breakouts": 136,
+    "confirmed": 85,
+    "confirmed_true": 52,
+    "precision": 0.611764705882353,
+    "recall": 0.38235294117647056,
+    "base_true_rate": 0.0932145305003427,
+    "precision_lift": 6.562975778546713,
+    "remaining_return_median": 0.014938961934755302,
+    "remaining_active_median": 0.019395843914436828
+  },
+  "periods": {
+    "2018-2022": {
+      "signals": 863,
+      "true_breakouts": 88,
+      "confirmed": 50,
+      "confirmed_true": 30,
+      "precision": 0.6,
+      "recall": 0.3409090909090909,
+      "base_true_rate": 0.10196987253765932,
+      "precision_lift": 5.884090909090909,
+      "remaining_return_median": 0.02037741905955448,
+      "remaining_active_median": 0.01770575772772276
+    },
+    "2023-2024": {
+      "signals": 367,
+      "true_breakouts": 24,
+      "confirmed": 21,
+      "confirmed_true": 12,
+      "precision": 0.5714285714285714,
+      "recall": 0.5,
+      "base_true_rate": 0.0653950953678474,
+      "precision_lift": 8.738095238095239,
+      "remaining_return_median": -0.01686056659474444,
+      "remaining_active_median": 0.019395843914436828
+    },
+    "2025": {
+      "signals": 229,
+      "true_breakouts": 24,
+      "confirmed": 14,
+      "confirmed_true": 10,
+      "precision": 0.7142857142857143,
+      "recall": 0.4166666666666667,
+      "base_true_rate": 0.10480349344978165,
+      "precision_lift": 6.815476190476191,
+      "remaining_return_median": 0.03263359987505221,
+      "remaining_active_median": 0.010060320146828228
+    }
+  },
+  "checks": {
+    "validation_signals": true,
+    "holdout_signals": true,
+    "overall_precision": true,
+    "validation_precision": true,
+    "holdout_precision": true,
+    "overall_recall": true,
+    "validation_recall": true,
+    "holdout_recall": true,
+    "remaining_return": true,
+    "remaining_active": true
+  },
+  "verdict": "GO-TRUE-BREAKOUT-CONFIRMATION",
+  "trade_authorized": false
+}

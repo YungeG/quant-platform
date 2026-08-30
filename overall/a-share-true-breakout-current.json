@@ -1,0 +1,252 @@
+{
+  "as_of": "2026-08-27",
+  "method_verdict": "GO-TRUE-BREAKOUT-CONFIRMATION",
+  "trade_authorized": false,
+  "signals": [
+    {
+      "signal_date": "2026-07-08",
+      "sector": "银行",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": 0.0407196028537735,
+      "progress_active_10": 0.0479271048252685
+    },
+    {
+      "signal_date": "2026-07-10",
+      "sector": "传媒",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": -0.08155627094141,
+      "progress_active_10": -0.0565486561106294
+    },
+    {
+      "signal_date": "2026-07-10",
+      "sector": "房地产",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": -0.0562504712964808,
+      "progress_active_10": -0.030553823844013
+    },
+    {
+      "signal_date": "2026-07-14",
+      "sector": "石油石化",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": -0.0238599359774838,
+      "progress_active_10": 0.0204429413609057
+    },
+    {
+      "signal_date": "2026-07-15",
+      "sector": "煤炭",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": 0.0135022486228189,
+      "progress_active_10": 0.0528932529175865
+    },
+    {
+      "signal_date": "2026-07-15",
+      "sector": "食品饮料",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": 0.0131858755309306,
+      "progress_active_10": 0.0525645835985923
+    },
+    {
+      "signal_date": "2026-07-20",
+      "sector": "公用事业",
+      "status": "FALSE_BREAKOUT_REJECTED",
+      "progress_return_10": 0.0261869016558695,
+      "progress_active_10": 0.0375666650793204
+    },
+    {
+      "signal_date": "2026-07-29",
+      "sector": "社会服务",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.0806021944341528,
+      "progress_active_10": 0.0598914110109205
+    },
+    {
+      "signal_date": "2026-07-29",
+      "sector": "钢铁",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.014538646093801,
+      "progress_active_10": -0.004905965699488
+    },
+    {
+      "signal_date": "2026-07-29",
+      "sector": "食品饮料",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0571597079061623,
+      "progress_active_10": 0.0368982223502523
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "传媒",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0322492115860177,
+      "progress_active_10": 0.0163046088679095
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "商贸零售",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0225422713771876,
+      "progress_active_10": 0.006747606584438
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "家用电器",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0518244502680014,
+      "progress_active_10": 0.0355774792841747
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "建筑装饰",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0565325990463227,
+      "progress_active_10": 0.0402129038007912
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "房地产",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0466445669900641,
+      "progress_active_10": 0.03047760689902
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "汽车",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0522751265660332,
+      "progress_active_10": 0.0360211942259314
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "电力设备",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.0737982039680058,
+      "progress_active_10": 0.0572118161369297
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "纺织服饰",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0556711050764222,
+      "progress_active_10": 0.0393647168685129
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "综合",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0662862316763492,
+      "progress_active_10": 0.0498158772725461
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "计算机",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0603967048652722,
+      "progress_active_10": 0.0440173228392113
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "轻工制造",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0653543074067111,
+      "progress_active_10": 0.0488983479397855
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "医药生物",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.1124922329347353,
+      "progress_active_10": 0.0656846030549569
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "国防军工",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0744778235841225,
+      "progress_active_10": 0.0292696335478819
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "基础化工",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.0854835723276328,
+      "progress_active_10": 0.0398123201697111
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "建筑材料",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0633694812564769,
+      "progress_active_10": 0.0186286699226281
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "机械设备",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.1152488443089256,
+      "progress_active_10": 0.0683252311969901
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "环保",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0653399399118017,
+      "progress_active_10": 0.0205162223816657
+    },
+    {
+      "signal_date": "2026-08-04",
+      "sector": "有色金属",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.0915655745355377,
+      "progress_active_10": 0.0605538932869826
+    },
+    {
+      "signal_date": "2026-08-04",
+      "sector": "通信",
+      "status": "TRUE_BREAKOUT_CONFIRMED",
+      "progress_return_10": 0.1057632948214923,
+      "progress_active_10": 0.0743482523949785
+    },
+    {
+      "signal_date": "2026-08-05",
+      "sector": "电子",
+      "status": "UNCONFIRMED_BREAKOUT",
+      "progress_return_10": 0.0417034963033176,
+      "progress_active_10": 0.0551332792380405
+    },
+    {
+      "signal_date": "2026-08-19",
+      "sector": "银行",
+      "status": "PENDING_D10",
+      "progress_return_10": NaN,
+      "progress_active_10": NaN
+    },
+    {
+      "signal_date": "2026-08-25",
+      "sector": "交通运输",
+      "status": "PENDING_D10",
+      "progress_return_10": NaN,
+      "progress_active_10": NaN
+    },
+    {
+      "signal_date": "2026-08-26",
+      "sector": "钢铁",
+      "status": "PENDING_D10",
+      "progress_return_10": NaN,
+      "progress_active_10": NaN
+    },
+    {
+      "signal_date": "2026-08-26",
+      "sector": "非银金融",
+      "status": "PENDING_D10",
+      "progress_return_10": NaN,
+      "progress_active_10": NaN
+    },
+    {
+      "signal_date": "2026-08-27",
+      "sector": "农林牧渔",
+      "status": "PENDING_D10",
+      "progress_return_10": NaN,
+      "progress_active_10": NaN
+    }
+  ]
+}
