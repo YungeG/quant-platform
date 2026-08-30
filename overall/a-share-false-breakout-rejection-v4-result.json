@@ -1,0 +1,68 @@
+{
+  "study": "a-share-false-breakout-rejection-v4",
+  "method": "reject if either absolute or relative index closes below D0 breakout level during D1-D3",
+  "label": "false unless D0 forward10>=4%, forward20>=8%, relative20>=4%",
+  "overall": {
+    "signals": 1459,
+    "rejected": 839,
+    "false_breakouts": 1323,
+    "true_breakouts": 136,
+    "true_false_rejections": 785,
+    "false_rejections_of_true": 54,
+    "false_detection_precision": 0.9356376638855781,
+    "false_detection_recall": 0.5933484504913077,
+    "true_breakout_retention": 0.6029411764705882,
+    "survivor_true_rate": 0.13225806451612904
+  },
+  "periods": {
+    "2018-2022": {
+      "signals": 863,
+      "rejected": 516,
+      "false_breakouts": 775,
+      "true_breakouts": 88,
+      "true_false_rejections": 479,
+      "false_rejections_of_true": 37,
+      "false_detection_precision": 0.9282945736434108,
+      "false_detection_recall": 0.6180645161290322,
+      "true_breakout_retention": 0.5795454545454546,
+      "survivor_true_rate": 0.14697406340057637
+    },
+    "2023-2024": {
+      "signals": 367,
+      "rejected": 192,
+      "false_breakouts": 343,
+      "true_breakouts": 24,
+      "true_false_rejections": 183,
+      "false_rejections_of_true": 9,
+      "false_detection_precision": 0.953125,
+      "false_detection_recall": 0.5335276967930029,
+      "true_breakout_retention": 0.625,
+      "survivor_true_rate": 0.08571428571428572
+    },
+    "2025": {
+      "signals": 229,
+      "rejected": 131,
+      "false_breakouts": 205,
+      "true_breakouts": 24,
+      "true_false_rejections": 123,
+      "false_rejections_of_true": 8,
+      "false_detection_precision": 0.9389312977099237,
+      "false_detection_recall": 0.6,
+      "true_breakout_retention": 0.6666666666666666,
+      "survivor_true_rate": 0.16326530612244897
+    }
+  },
+  "checks": {
+    "validation_rejections": true,
+    "holdout_rejections": true,
+    "overall_precision": true,
+    "validation_precision": true,
+    "holdout_precision": true,
+    "overall_recall": true,
+    "validation_recall": true,
+    "holdout_recall": true,
+    "true_retention": true
+  },
+  "verdict": "GO-RISK-FILTER",
+  "trade_authorized": false
+}

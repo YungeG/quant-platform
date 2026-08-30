@@ -1,0 +1,102 @@
+{
+  "study": "a-share-sector-confirmed-breakout-filter-v3",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "detection": {
+    "summary": {
+      "trend_labels": 726,
+      "detected": 82,
+      "recall": 0.11294765840220386,
+      "signals": 230,
+      "precision": 0.3217391304347826,
+      "false_positive_rate": 0.6782608695652175,
+      "median_delay": 0.0,
+      "median_capture_ratio": 1.0,
+      "periods": {
+        "2018-2022": {
+          "trend_count": 439,
+          "signal_count": 136,
+          "recall": 0.1275626423690205,
+          "precision": 0.36764705882352944
+        },
+        "2023-2024": {
+          "trend_count": 168,
+          "signal_count": 55,
+          "recall": 0.05357142857142857,
+          "precision": 0.16363636363636364
+        },
+        "2025": {
+          "trend_count": 119,
+          "signal_count": 39,
+          "recall": 0.14285714285714285,
+          "precision": 0.358974358974359
+        },
+        "2026": {
+          "trend_count": 49,
+          "signal_count": 23,
+          "recall": 0.08163265306122448,
+          "precision": 0.08695652173913043
+        }
+      }
+    },
+    "checks": {
+      "validation_signals": true,
+      "holdout_signals": true,
+      "precision": false,
+      "validation_precision": false,
+      "holdout_precision": false,
+      "recall": false,
+      "delay": true,
+      "capture": true
+    },
+    "verdict": "NO-GO"
+  },
+  "trading": {
+    "summary": {
+      "source_events": 305,
+      "mapped_events": 133,
+      "complete_events": 115,
+      "mapping_rate": 0.4360655737704918,
+      "absolute_positive20": 0.4434782608695652,
+      "outperform20": 0.40869565217391307,
+      "success20": 0.33043478260869563,
+      "median_active20": -0.007855643646280108,
+      "median_active35": -0.007645203479811347,
+      "bootstrap95_active20": [
+        -0.015458298526754307,
+        0.005867964889497199
+      ],
+      "trim_best5_mean_active20": -0.013082255320268429,
+      "periods": {
+        "2018-2022": {
+          "count": 54,
+          "mean_active20": -0.005980558513518947,
+          "success_rate": 0.3148148148148148
+        },
+        "2023-2024": {
+          "count": 39,
+          "mean_active20": -0.01145461387815404,
+          "success_rate": 0.28205128205128205
+        },
+        "2025": {
+          "count": 22,
+          "mean_active20": 0.009370792606368578,
+          "success_rate": 0.45454545454545453
+        }
+      }
+    },
+    "checks": {
+      "count": true,
+      "mapping": false,
+      "absolute": false,
+      "outperform": false,
+      "active20": false,
+      "active35": false,
+      "bootstrap": false,
+      "trim": false,
+      "periods": false,
+      "holdout": false
+    },
+    "verdict": "NO-GO"
+  },
+  "events": "overall/a-share-sector-confirmed-breakout-etf-events.csv"
+}

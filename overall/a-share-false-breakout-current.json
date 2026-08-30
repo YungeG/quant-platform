@@ -1,0 +1,203 @@
+{
+  "as_of": "2026-08-27",
+  "method_verdict": "GO-RISK-FILTER",
+  "trade_authorized": false,
+  "signals": [
+    {
+      "signal_date": "2026-07-29",
+      "sector": "社会服务",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.6666666666666666,
+      "relative20": 0.0375308849643731
+    },
+    {
+      "signal_date": "2026-07-29",
+      "sector": "钢铁",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.8571428571428571,
+      "relative20": 0.0873441425859465
+    },
+    {
+      "signal_date": "2026-07-29",
+      "sector": "食品饮料",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.8083333333333333,
+      "relative20": 0.1147353163818859
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "传媒",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.8951612903225806,
+      "relative20": 0.0828227485789828
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "商贸零售",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.8556701030927835,
+      "relative20": 0.0499829283217357
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "家用电器",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.696969696969697,
+      "relative20": -0.0285141929836882
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "建筑装饰",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7083333333333334,
+      "relative20": -0.012891906916845
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "房地产",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7816091954022989,
+      "relative20": 0.0508347141310304
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "汽车",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.617363344051447,
+      "relative20": -0.0551014310816591
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "电力设备",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.5126262626262627,
+      "relative20": -0.0921134810632239
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "纺织服饰",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7171717171717171,
+      "relative20": -0.0084359224276167
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "综合",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.8,
+      "relative20": 0.0093280937760847
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "计算机",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7046783625730995,
+      "relative20": 0.0106017168408948
+    },
+    {
+      "signal_date": "2026-07-31",
+      "sector": "轻工制造",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.6459627329192547,
+      "relative20": -0.0205642794042832
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "医药生物",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.5987654320987654,
+      "relative20": 0.0280853623118259
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "国防军工",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.5454545454545454,
+      "relative20": -0.0699427337081634
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "基础化工",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.6212471131639723,
+      "relative20": -0.044102709003471
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "建筑材料",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7162162162162162,
+      "relative20": -0.0267943713781151
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "机械设备",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.559931506849315,
+      "relative20": -0.0820149725365227
+    },
+    {
+      "signal_date": "2026-08-03",
+      "sector": "环保",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.689922480620155,
+      "relative20": 0.0052096580891248
+    },
+    {
+      "signal_date": "2026-08-04",
+      "sector": "有色金属",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.7535211267605634,
+      "relative20": -0.0373584163524748
+    },
+    {
+      "signal_date": "2026-08-04",
+      "sector": "通信",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.6166666666666667,
+      "relative20": -0.0258804275485819
+    },
+    {
+      "signal_date": "2026-08-05",
+      "sector": "电子",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.3838383838383838,
+      "relative20": -0.1552563892881574
+    },
+    {
+      "signal_date": "2026-08-19",
+      "sector": "银行",
+      "status": "BREAKOUT_HELD",
+      "price_breadth": 0.5,
+      "relative20": 0.0408986888394778
+    },
+    {
+      "signal_date": "2026-08-25",
+      "sector": "交通运输",
+      "status": "PENDING_D3",
+      "price_breadth": 0.6048387096774194,
+      "relative20": 0.0480876558878825
+    },
+    {
+      "signal_date": "2026-08-26",
+      "sector": "钢铁",
+      "status": "PENDING_D3",
+      "price_breadth": 0.7380952380952381,
+      "relative20": 0.0309470688689692
+    },
+    {
+      "signal_date": "2026-08-26",
+      "sector": "非银金融",
+      "status": "PENDING_D3",
+      "price_breadth": 0.7564102564102564,
+      "relative20": 0.0154535253850836
+    },
+    {
+      "signal_date": "2026-08-27",
+      "sector": "农林牧渔",
+      "status": "PENDING_D3",
+      "price_breadth": 0.7962962962962963,
+      "relative20": 0.1159379138718625
+    }
+  ]
+}

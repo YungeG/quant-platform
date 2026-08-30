@@ -1,0 +1,98 @@
+{
+  "discovery_period": "2018-2022",
+  "candidate_rules": [
+    {
+      "kind": "held3",
+      "breadth_cap": 0.5,
+      "signals": 67,
+      "true": 47,
+      "precision": 0.7014925373134329,
+      "recall": 0.15771812080536912
+    },
+    {
+      "kind": "held3",
+      "breadth_cap": 0.55,
+      "signals": 87,
+      "true": 60,
+      "precision": 0.6896551724137931,
+      "recall": 0.20134228187919462
+    },
+    {
+      "kind": "held3",
+      "breadth_cap": 0.6,
+      "signals": 117,
+      "true": 72,
+      "precision": 0.6153846153846154,
+      "recall": 0.24161073825503357
+    },
+    {
+      "kind": "held3",
+      "breadth_cap": 0.65,
+      "signals": 136,
+      "true": 84,
+      "precision": 0.6176470588235294,
+      "recall": 0.28187919463087246
+    },
+    {
+      "kind": "held3",
+      "breadth_cap": 0.7,
+      "signals": 163,
+      "true": 93,
+      "precision": 0.5705521472392638,
+      "recall": 0.31208053691275167
+    },
+    {
+      "kind": "followthrough3",
+      "breadth_cap": 0.5,
+      "signals": 57,
+      "true": 41,
+      "precision": 0.7192982456140351,
+      "recall": 0.13758389261744966
+    },
+    {
+      "kind": "followthrough3",
+      "breadth_cap": 0.55,
+      "signals": 71,
+      "true": 52,
+      "precision": 0.7323943661971831,
+      "recall": 0.174496644295302
+    },
+    {
+      "kind": "followthrough3",
+      "breadth_cap": 0.6,
+      "signals": 94,
+      "true": 61,
+      "precision": 0.648936170212766,
+      "recall": 0.20469798657718122
+    },
+    {
+      "kind": "followthrough3",
+      "breadth_cap": 0.65,
+      "signals": 104,
+      "true": 68,
+      "precision": 0.6538461538461539,
+      "recall": 0.22818791946308725
+    },
+    {
+      "kind": "followthrough3",
+      "breadth_cap": 0.7,
+      "signals": 117,
+      "true": 71,
+      "precision": 0.6068376068376068,
+      "recall": 0.23825503355704697
+    }
+  ],
+  "eligibility": {
+    "min_signals": 80,
+    "min_precision": 0.6
+  },
+  "selection_policy": "maximize recall, then precision, signals, lower breadth cap, lexical kind",
+  "selected_rule": {
+    "kind": "held3",
+    "breadth_cap": 0.65,
+    "signals": 136,
+    "true": 84,
+    "precision": 0.6176470588235294,
+    "recall": 0.28187919463087246
+  }
+}

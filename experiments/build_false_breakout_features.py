@@ -1,0 +1,22 @@
+"""Build decision-time and three-session follow-through features for V1 sector breakouts."""
+from __future__ import annotations
+import argparse,json
+import numpy as np,pandas as pd
+from experiments.false_breakout import BreakoutStatus,classify_three_day_hold
+FEATURES=["relative20","price_breadth","volume_breadth","up_amount_share","top5_amount_concentration","turnover_proxy","amount_share"]
+def run(panel_path,states_path,labels_path,out_path):
+ panel=pd.read_csv(panel_path);panel["trade_date"]=pd.to_datetime(panel.trade_date);panel=panel[panel.sector.ne("半导体")].sort_values(["sector","trade_date"]);states=pd.read_csv(states_path);states["trade_date"]=pd.to_datetime(states.trade_date);entries=states[states.enter_signal.astype(str).str.lower().eq("true")].copy();labels=pd.read_csv(labels_path);true_ids=set(labels.loc[labels.detected.astype(str).str.lower().eq("true"),"position_id"].dropna());rows=[]
+ for sector,g in panel.groupby("sector"):
+  g=g.reset_index(drop=True).copy();g["relative_index"]=g.sector_index/g.benchmark_index;g["sector_return3"]=g.sector_index/g.sector_index.shift(3)-1;g["sector_return5"]=g.sector_index/g.sector_index.shift(5)-1;g["sector_return10"]=g.sector_index/g.sector_index.shift(10)-1;g["relative_return3"]=g.relative_index/g.relative_index.shift(3)-1;g["relative_return5"]=g.relative_index/g.relative_index.shift(5)-1;g["relative_return10"]=g.relative_index/g.relative_index.shift(10)-1;g["volatility10"]=g.sector_return.rolling(10,min_periods=10).std()
+  for feature in FEATURES:g[f"{feature}_change3"]=g[feature]-g[feature].shift(3);g[f"{feature}_change5"]=g[feature]-g[feature].shift(5)
+  lookup={d:i for i,d in enumerate(g.trade_date)}
+  for entry in entries[entries.sector.eq(sector)].itertuples(index=False):
+   i=lookup.get(pd.Timestamp(entry.trade_date))
+   if i is None:continue
+   row=g.iloc[i];future=g.iloc[i+1:i+4];hold_status=classify_three_day_hold(future.sector_index,future.relative_index,entry.abs_high10_prev,entry.rel_high10_prev);confirmation_complete=hold_status!=BreakoutStatus.PENDING_D3;held_abs=confirmation_complete and bool(future.sector_index.ge(entry.abs_high10_prev).all());held_rel=confirmation_complete and bool(future.relative_index.ge(entry.rel_high10_prev).all());follow_abs=float(g.at[i+3,"sector_index"]/row.sector_index-1) if i+3<len(g) else np.nan;follow_rel=float(g.at[i+3,"relative_index"]/row.relative_index-1) if i+3<len(g) else np.nan;future10=float(g.at[i+10,"sector_index"]/row.sector_index-1) if i+10<len(g) else np.nan;future20=float(g.at[i+20,"sector_index"]/row.sector_index-1) if i+20<len(g) else np.nan;future_active20=float(g.at[i+20,"relative_index"]/row.relative_index-1) if i+20<len(g) else np.nan;direct_true=bool(future10>=.04 and future20>=.08 and future_active20>=.04) if pd.notna(future20) else False;record={"position_id":entry.position_id,"signal_date":entry.trade_date,"sector":sector,"year":pd.Timestamp(entry.trade_date).year,"true_trend":entry.position_id in true_ids,"direct_true":direct_true,"future10":future10,"future20":future20,"future_active20":future_active20,"confirmation_complete":confirmation_complete,"hold_status":str(hold_status),"held_abs_3":held_abs,"held_rel_3":held_rel,"follow_return3":follow_abs,"follow_active3":follow_rel,"followthrough_confirm3":held_abs and held_rel and follow_abs>0 and follow_rel>0,"breakout_abs_excess":row.sector_index/entry.abs_high10_prev-1,"breakout_rel_excess":row.relative_index/entry.rel_high10_prev-1}
+   for column in FEATURES+["sector_return3","sector_return5","sector_return10","relative_return3","relative_return5","relative_return10","volatility10"]+[f"{f}_change{n}" for f in FEATURES for n in [3,5]]:record[column]=row[column]
+   rows.append(record)
+ out=pd.DataFrame(rows);out.to_csv(out_path,index=False);return {"rows":len(out),"position_overlap_true":int(out.true_trend.sum()),"direct_true":int(out.direct_true.sum()),"years":{str(k):len(v) for k,v in out.groupby("year")},"output":out_path}
+def main(argv=None):
+ p=argparse.ArgumentParser();p.add_argument("--panel",default="overall/a-share-sector-daily-2017-2026.csv");p.add_argument("--states",default="overall/a-share-sector-trend-states.csv");p.add_argument("--labels",default="overall/a-share-sector-month-trend-labels.csv");p.add_argument("--out",default="overall/a-share-sector-false-breakout-features.csv");a=p.parse_args(argv);print(json.dumps(run(a.panel,a.states,a.labels,a.out),ensure_ascii=False,indent=2));return 0
+if __name__=="__main__":raise SystemExit(main())
