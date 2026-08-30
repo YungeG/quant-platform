@@ -1,0 +1,57 @@
+{
+  "study": "a-share-true-breakout-correlated-etf-v7",
+  "mapping_mode": "correlation",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "summary": {
+    "source_signals": 85,
+    "mapped": 52,
+    "mapping_rate": 0.611764705882353,
+    "complete10": 52,
+    "absolute_positive10": 0.5769230769230769,
+    "outperform10": 0.5576923076923077,
+    "success10": 0.4807692307692308,
+    "median_active10": 0.004410180080249793,
+    "median_active20": -0.00947833585430119,
+    "bootstrap95_active10": [
+      -0.006898988937096228,
+      0.024565953176372758
+    ],
+    "trim_best5_mean_active10": -0.0015601690329902637,
+    "periods": {
+      "2018-2022": {
+        "count": 28,
+        "mean_active10": 0.014687968865077256,
+        "median_active10": 0.00893209060551503,
+        "success_rate": 0.5357142857142857
+      },
+      "2023-2024": {
+        "count": 14,
+        "mean_active10": -0.014016867295101392,
+        "median_active10": -0.00039045808429510886,
+        "success_rate": 0.2857142857142857
+      },
+      "2025": {
+        "count": 10,
+        "mean_active10": 0.021846690735611872,
+        "median_active10": 0.021613235352253013,
+        "success_rate": 0.6
+      }
+    }
+  },
+  "checks": {
+    "mapping": true,
+    "count": true,
+    "absolute": true,
+    "outperform": true,
+    "success": false,
+    "active10": true,
+    "active20": false,
+    "bootstrap": false,
+    "trim": false,
+    "periods": false,
+    "holdout": true
+  },
+  "verdict": "NO-GO",
+  "events": "overall/a-share-true-breakout-correlated-etf-events.csv",
+  "trade_authorized": false
+}
