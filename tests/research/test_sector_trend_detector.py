@@ -4,7 +4,7 @@ import pandas as pd,pytest
 from experiments.build_sector_trend_states import run
 from experiments.evaluate_false_breakout_rejection import metrics
 from experiments.false_breakout import BreakoutStatus,classify_three_day_hold
-from experiments.true_breakout import TrueBreakoutStatus,classify_ten_day_progress
+from experiments.true_breakout import TrueBreakoutStatus,classify_ten_day_progress,liquidated_basket_return
 from experiments.evaluate_true_breakout_etf_execution import net_horizon_return,select_correlated_etf
 
 def test_breakout_uses_prior_ten_sessions_and_enters_once(tmp_path):
@@ -33,3 +33,6 @@ def test_true_breakout_etf_return_charges_both_sides():
 
 def test_correlated_etf_mapping_prefers_tracking_match():
  dates=pd.bdate_range("2024-01-02",periods=80);sector=pd.Series([.01 if i%2 else -.005 for i in range(80)],index=dates);prices={"MATCH.SH":pd.DataFrame({"adj_close":(1+sector).cumprod(),"amount":20000},index=dates),"OTHER.SH":pd.DataFrame({"adj_close":(1-sector).cumprod(),"amount":30000},index=dates)};candidates=pd.DataFrame({"ts_code":["MATCH.SH","OTHER.SH"],"industry":["钢铁","钢铁"],"list_date":[dates[0],dates[0]],"delist_date":[pd.NaT,pd.NaT]});code,_,correlation,common=select_correlated_etf(dates[-1]+timedelta(days=3),"钢铁",candidates,prices,{"钢铁":sector});assert code=="MATCH.SH";assert correlation>0.99;assert common==79
+
+def test_stock_basket_liquidation_charges_sell_cost():
+ assert liquidated_basket_return([400000,440000],[1.0,0.0],1)==pytest.approx(1.1*(1-.00155)-1)

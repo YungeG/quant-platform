@@ -3,6 +3,8 @@ from __future__ import annotations
 from enum import StrEnum
 class TrueBreakoutStatus(StrEnum):
  PENDING_D10="PENDING_D10";FALSE_BREAKOUT_REJECTED="FALSE_BREAKOUT_REJECTED";UNCONFIRMED_BREAKOUT="UNCONFIRMED_BREAKOUT";TRUE_BREAKOUT_CONFIRMED="TRUE_BREAKOUT_CONFIRMED"
+def liquidated_basket_return(nav,cash_fraction,index,sell_cost=.00155):
+ value=float(nav[index]);cash=float(cash_fraction[index]);return value*(cash+(1-cash)*(1-sell_cost))/float(nav[0])-1
 def classify_ten_day_progress(absolute_closes,relative_closes,absolute_breakout,relative_breakout,sector_return10,active_return10):
  absolute=list(absolute_closes)[:10];relative=list(relative_closes)[:10]
  if len(absolute)<10 or len(relative)<10:return TrueBreakoutStatus.PENDING_D10

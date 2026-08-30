@@ -1,0 +1,59 @@
+{
+  "study": "a-share-true-breakout-stock-basket-v8",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "panel_version": "ef118f5d09a00249",
+  "summary": {
+    "source_signals": 85,
+    "complete10": 84,
+    "absolute_positive10": 0.44047619047619047,
+    "outperform10": 0.44047619047619047,
+    "success10": 0.39285714285714285,
+    "median_return10": -0.005616857169114808,
+    "median_active10": -0.005287313841307595,
+    "median_active20": -0.021035521547458136,
+    "bootstrap95_active10": [
+      -0.013251995218420673,
+      0.015555140694711813
+    ],
+    "trim_best5_mean_active10": -0.010451991762959028,
+    "periods": {
+      "2018-2022": {
+        "count": 49,
+        "mean_return10": 0.003850058267079209,
+        "mean_active10": 0.003912690760960018,
+        "median_active10": -0.004955006962886754,
+        "success_rate": 0.42857142857142855
+      },
+      "2023-2024": {
+        "count": 21,
+        "mean_return10": -0.03260077183912843,
+        "mean_active10": -0.014035036870739143,
+        "median_active10": -0.021219027474580487,
+        "success_rate": 0.2857142857142857
+      },
+      "2025": {
+        "count": 14,
+        "mean_return10": 0.027694412603379157,
+        "mean_active10": 0.012380629724367589,
+        "median_active10": -0.00935106803631891,
+        "success_rate": 0.42857142857142855
+      }
+    }
+  },
+  "checks": {
+    "count": true,
+    "absolute": false,
+    "outperform": false,
+    "success": false,
+    "return10": false,
+    "active10": false,
+    "active20": false,
+    "bootstrap": false,
+    "trim": false,
+    "periods": false,
+    "holdout": false
+  },
+  "verdict": "NO-GO",
+  "trade_authorized": false,
+  "events": "overall/a-share-true-breakout-stock-basket-events.csv"
+}

@@ -1,0 +1,60 @@
+{
+  "study": "a-share-true-breakout-analyst-basket-v9",
+  "target_mode": "analyst",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "panel_version": "ef118f5d09a00249",
+  "summary": {
+    "source_signals": 85,
+    "complete10": 65,
+    "absolute_positive10": 0.46153846153846156,
+    "outperform10": 0.4307692307692308,
+    "success10": 0.36923076923076925,
+    "median_return10": -0.011161737411523487,
+    "median_active10": -0.010067375088963049,
+    "median_active20": -0.002327176014214949,
+    "bootstrap95_active10": [
+      -0.0072003108434290615,
+      0.025279503803362215
+    ],
+    "trim_best5_mean_active10": -0.004641965062001688,
+    "periods": {
+      "2018-2022": {
+        "count": 41,
+        "mean_return10": 0.015616970754421025,
+        "mean_active10": 0.017475975081513943,
+        "median_active10": -0.0042748677456738715,
+        "success_rate": 0.3902439024390244
+      },
+      "2023-2024": {
+        "count": 14,
+        "mean_return10": -0.02779114164054807,
+        "mean_active10": -0.007186873585824237,
+        "median_active10": -0.012411152118143143,
+        "success_rate": 0.21428571428571427
+      },
+      "2025": {
+        "count": 10,
+        "mean_return10": 0.008168904880092077,
+        "mean_active10": -0.010779378271532702,
+        "median_active10": -0.014998166263617552,
+        "success_rate": 0.5
+      }
+    }
+  },
+  "checks": {
+    "count": true,
+    "absolute": false,
+    "outperform": false,
+    "success": false,
+    "return10": false,
+    "active10": false,
+    "active20": false,
+    "bootstrap": false,
+    "trim": false,
+    "periods": false,
+    "holdout": false
+  },
+  "verdict": "NO-GO",
+  "trade_authorized": false,
+  "events": "overall/a-share-true-breakout-analyst-basket-events.csv"
+}

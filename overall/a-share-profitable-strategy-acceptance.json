@@ -1,0 +1,56 @@
+{
+  "strategy_id": "a-share-stock-bond-gold-equal-1n-v1",
+  "status": "GO_RESEARCH_GRADE",
+  "trade_authorized": false,
+  "shadow_required": true,
+  "period": {
+    "start": "2017-01-03",
+    "end": "2026-08-25",
+    "sessions": 2342
+  },
+  "instruments": {
+    "510300.SH": 0.3333333333333333,
+    "511010.SH": 0.3333333333333333,
+    "518880.SH": 0.3333333333333333
+  },
+  "rebalance_sessions": 63,
+  "execution": "signal close, T+1 open",
+  "cost_per_side": 0.0008,
+  "metrics": {
+    "cagr": 0.08130329947278603,
+    "cumulative_return_approx": 1.1245157852047205,
+    "sharpe": 0.9531160355527347,
+    "max_drawdown": -0.12513116956022718,
+    "calmar": 0.6497445820935426,
+    "annual_turnover": 0.134872843792556,
+    "gross_to_net_cagr_retention": 0.9971374009613259,
+    "lot_feasibility": 1.0
+  },
+  "fold_cagr": {
+    "2017-2019": 0.07339358788316863,
+    "2020-2022": 0.0325545240355245,
+    "2023-2026": 0.13006883477783338
+  },
+  "current": {
+    "last_data_date": "2026-08-25",
+    "last_signal_date": "2026-08-03",
+    "sessions_to_next_rebalance": 47,
+    "target_weights": {
+      "510300.SH": 0.3333333333333333,
+      "511010.SH": 0.3333333333333333,
+      "518880.SH": 0.3333333333333333
+    }
+  },
+  "evidence": {
+    "result": "overall/a-share-multi-asset.json",
+    "conclusion": "overall/a-share-multi-asset-conclusion.md",
+    "input_sha256": "a6b128c8a049e60e48d82c242c1a94502a5dbdefd2346bc870449bb18fbcafdd",
+    "replay_tolerance": 1e-12,
+    "original_verdict": "GO"
+  },
+  "limitations": [
+    "not virgin OOS",
+    "returns are allocation/rebalancing premia rather than stock alpha",
+    "do not add timing or optimize weights on the same history"
+  ]
+}
