@@ -1,0 +1,24 @@
+{
+  "shadow_id": "a-share-low-turnover-buffer-v18-forward-shadow-v1",
+  "strategy_id": "a-share-low-turnover-top20-buffer40-v1",
+  "freeze_data_cutoff": "2026-08-31",
+  "candidate_as_of": "2026-08-25",
+  "candidate_source_commit": "b66ea2e",
+  "candidate_sha256": "969ebb92495e659d4ec0fa99803bfd4fa712222bd9cabaa1e4f4bb61fb47151a",
+  "result_sha256": "e32f4f482caab05d048a3af65046304c3c382444e1ae61176da0dba278b7fc88",
+  "data_version": "948866fd1dd6a1dd",
+  "parameters": {
+    "lookback_sessions": 20,
+    "enter_rank": 20,
+    "retain_rank": 40,
+    "rebalance_sessions": 5,
+    "cost_per_side": 0.0012,
+    "schedule_anchor_start": "2016-01-01"
+  },
+  "first_eligible_new_record": "next frozen rebalance session after 2026-08-31",
+  "minimum_forward_months": 12,
+  "historical_backfill_forbidden": true,
+  "parameter_changes_forbidden": true,
+  "formal_order_replay_status": "CAPABILITY_BLOCKED",
+  "trade_authorized": false
+}
