@@ -47,18 +47,18 @@ def parse_text(text: str) -> dict:
     normalized = re.sub(r"(?m)^[ \t\f]*(?:证券代码|债券代码)[:：][^\n]*$", "", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*第?\s*\d+\s*页[^\n]*$", "", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*\d+\s*/\s*\d+\s*$", "", normalized)
-    normalized = re.sub(r"(?m)^[ \t\f]*权益分派实施公告\s*$", "", normalized)
+    normalized = re.sub(r"(?m)^[^\n]{0,100}权益分派实施公告\s*$", "", normalized)
     normalized = re.sub(r"(?m)^\s*\d+\s*$", "", normalized)
     compact = re.sub(r"[ \t]+", " ", normalized)
     dense = re.sub(r"\s+", "", normalized)
     payment = None
-    sentence = re.search(r"股权登记日(?:期)?为?[:：]?" + DATE + r".*?(?:除权除息日|除息日)(?:\(红利发放日\))?为?[:：]?" + DATE, dense)
+    sentence = re.search(r"股权登记日(?:期)?为?[:：]?" + DATE + r".*?(?:除权除息日|除息日|除权\(除息\)日|除权日\(除息日\))(?:\(红利发放日\))?为?[:：]?" + DATE, dense)
     if sentence:
         groups = sentence.groups()
         record = _date_from_groups(groups[:6])
         ex_date = _date_from_groups(groups[6:12])
     else:
-        table = re.search(r"(?:Ａ股|A\s*股)\s*" + DATE + r"\s*(?:－|/|-)?\s*" + DATE + r"\s*" + DATE, compact)
+        table = re.search(r"(?:Ａ股|A\s*股|普通股)\s*" + DATE + r"\s*(?:－|/|-|—)*\s*" + DATE + r"\s*" + DATE, compact)
         table_payment_group = 12
         if table is None:
             table = re.search(r"股权登记日.*?除权\(息\)日.*?现金红利发放日\s*" + DATE + r"\s*" + DATE + r"\s*" + DATE + r"\s*" + DATE, compact, flags=re.S)
@@ -73,8 +73,8 @@ def parse_text(text: str) -> dict:
             payment = _date_from_groups(groups[table_payment_group:table_payment_group + 6])
         else:
             record = _first_date(r"股权登记日(?:期)?为?[:：]?", dense)
-            ex_date = _first_date(r"(?:除权除息日|除息日|除权\(息\)日)(?:\(红利发放日\))?为?[:：]?", dense)
-    payment_date = payment or _first_date(r"(?:现金红利|现金股利|现金分红|红利)[,，]?(?:发放日|将于)\)?[:：]?", dense)
+            ex_date = _first_date(r"(?:除权除息日|除息日|除权\(息\)日|除权\(除息\)日|除权日\(除息日\))(?:\(红利发放日\))?为?[:：]?", dense)
+    payment_date = payment or _first_date(r"(?:现金红利|现金股利|现金分红|红利|股息)[,，]?(?:发放日|将于)\)?[:：]?", dense) or _first_date(r"现金红(?:.{0,60}?)?利(?:.{0,100}?)?将于", dense)
     cash = None
     for pattern, divisor in (
         (r"A股每股(?:现金红利|现金股利)(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 1),
@@ -86,7 +86,7 @@ def parse_text(text: str) -> dict:
         if match:
             cash = float(match.group(1)) / divisor
             break
-    no_cash = cash is None and ("不派发现金" in dense or "不进行现金分红" in dense or re.search(r"现金红利(?:为|=)0(?:\.0+)?", dense) or ("每股转增" in dense and "现金红利" not in dense))
+    no_cash = cash in (None, 0.0) and ("不派发现金" in dense or "不进行现金分红" in dense or re.search(r"(?:现金红利|现金股利)(?:为|=)?0(?:\.0+)?元", dense) or ("每股转增" in dense and "现金红利" not in dense))
     return {
         "record_date": record,
         "ex_date": ex_date,
@@ -111,6 +111,8 @@ def run(capture_dir: str, out_csv: str, out_manifest: str) -> dict:
         raw = subprocess.run(["pdftotext", "-raw", str(path), "-"], check=True, capture_output=True, text=True)
         candidates = (parse_text(layout.stdout), parse_text(raw.stdout))
         parsed = max(candidates, key=lambda item: sum(item[field] not in (None, "") for field in ("record_date", "ex_date", "payment_date", "cash_per_share")))
+        if "更正公告" in notice["title"]:
+            parsed["status"] = "CORRECTION_NOTICE"
         rows.append({
             "announcement_id": notice["announcement_id"],
             "security_code": notice["security_code"],
@@ -127,7 +129,7 @@ def run(capture_dir: str, out_csv: str, out_manifest: str) -> dict:
         writer = csv.DictWriter(handle, fieldnames=FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-    cash_rows = [row for row in rows if row["status"] != "NO_CASH_DIVIDEND"]
+    cash_rows = [row for row in rows if row["status"] not in {"NO_CASH_DIVIDEND", "CORRECTION_NOTICE"}]
     incomplete = [row["announcement_id"] for row in cash_rows if row["status"] != "COMPLETE"]
     in_scope = [row for row in cash_rows if row["security_code"].startswith(("0", "3", "6"))]
     in_scope_incomplete = [row["announcement_id"] for row in in_scope if row["status"] != "COMPLETE"]
@@ -135,7 +137,7 @@ def run(capture_dir: str, out_csv: str, out_manifest: str) -> dict:
         "source_capture": str(capture),
         "row_count": len(rows),
         "cash_dividend_count": len(cash_rows),
-        "non_cash_dividend_count": len(rows) - len(cash_rows),
+        "non_cash_or_correction_count": len(rows) - len(cash_rows),
         "complete_count": len(cash_rows) - len(incomplete),
         "incomplete_announcement_ids": incomplete,
         "sh_sz_ordinary_count": len(in_scope),

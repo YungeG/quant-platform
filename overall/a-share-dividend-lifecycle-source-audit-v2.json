@@ -1,6 +1,6 @@
 {
   "audit_id": "a-share-dividend-lifecycle-source-audit-v2",
-  "status": "SOURCE_FOUND_BOUNDED_CAPTURE",
+  "status": "SOURCE_CAPTURED_2025_IMPLEMENTATION_LIFECYCLE",
   "backtest_status": "NO_BACKTEST_RUN",
   "official_source": {
     "platform": "CNINFO official disclosure platform",
@@ -9,22 +9,25 @@
     "keyword": "权益分派实施公告",
     "availability_rule": "announcement date only; conservatively available after that date close"
   },
-  "bounded_capture_through_2025_05_31": {
-    "completed_periods": ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05"],
-    "captured_announcements": 1602,
-    "cash_dividend_announcements": 1590,
-    "non_cash_dividend_announcements": 12,
-    "sh_sz_ordinary_cash_announcements": 1466,
-    "sh_sz_ordinary_complete_lifecycle": 1466,
+  "capture_2025_complete": {
+    "completed_months": 12,
+    "captured_unique_announcements": 4507,
+    "cash_dividend_announcements": 4488,
+    "non_cash_or_correction_announcements": 19,
+    "sh_sz_ordinary_cash_announcements": 4222,
+    "sh_sz_ordinary_complete_lifecycle": 4222,
     "sh_sz_ordinary_parse_rate": 1.0,
-    "out_of_scope_incomplete": 124,
-    "capture_summary": "overall/a-share-cninfo-dividend-2025-capture-summary.csv"
+    "out_of_scope_incomplete": 266,
+    "capture_summary": "overall/a-share-cninfo-dividend-2025-capture-summary.csv",
+    "normalized_dataset": "overall/a-share-cninfo-dividend-2025-normalized.csv",
+    "normalized_sha256": "bbe2964b91b065f3ac8a81a3fdd354c62aa6c24c9989ad435e558672f574195e"
   },
-  "full_2025_query": {
-    "exact_title_matches": 4552,
-    "capture_status": "IN_PROGRESS_BOUNDED_SLICES",
-    "completed_months": 5,
-    "total_months": 12
+  "full_year_query_reliability": {
+    "returned_rows": 4552,
+    "returned_unique_ids": 2550,
+    "monthly_unique_ids": 4507,
+    "monthly_ids_missing_from_full_year_query": 1957,
+    "decision": "Use bounded monthly queries; the one-year query is duplicate-heavy and incomplete."
   },
   "remaining_requirements": [
     "capture the complete multi-year implementation-announcement history month by month",

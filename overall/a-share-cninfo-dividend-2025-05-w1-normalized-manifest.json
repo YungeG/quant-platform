@@ -2,7 +2,7 @@
   "source_capture": "overall/a-share-cninfo-dividend-2025-05-w1-raw",
   "row_count": 31,
   "cash_dividend_count": 31,
-  "non_cash_dividend_count": 0,
+  "non_cash_or_correction_count": 0,
   "complete_count": 28,
   "incomplete_announcement_ids": [
     "1223491661",

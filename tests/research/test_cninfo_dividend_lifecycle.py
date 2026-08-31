@@ -39,7 +39,7 @@ def test_parse_shanghai_table_lifecycle_and_per_share_cash():
     text = """
 A 股每股现金红利 0.15 元
 股份类别 股权登记日 最后交易日 除权（息）日 现金红利发放日
-Ａ股 2025/2/10 － 2025/2/11 2025/2/11
+普通股 2025/2/10 － 2025/2/11 2025/2/11
 """
 
     assert parse_text(text) == {
@@ -72,7 +72,7 @@ def test_parse_four_date_table_uses_final_date_for_cash_payment():
 
 
 def test_non_cash_stock_dividend_is_excluded_from_cash_lifecycle():
-    text = "公司以资本公积每股转增0.2股，共计转增股份，不送红股。"
+    text = "公司每10股派发现金股利0元，以资本公积每股转增0.2股，共计转增股份。"
 
     assert parse_text(text)["status"] == "NO_CASH_DIVIDEND"
 

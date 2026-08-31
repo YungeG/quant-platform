@@ -1,0 +1,23 @@
+{
+  "dataset_id": "a-share-cninfo-dividend-lifecycle-2025-v1",
+  "interval": [
+    "2025-01-01",
+    "2026-01-01"
+  ],
+  "announcement_count": 4507,
+  "all_cash_announcement_count": 4488,
+  "excluded_non_cash_or_correction_count": 19,
+  "sh_sz_ordinary_cash_count": 4222,
+  "sh_sz_ordinary_complete_count": 4222,
+  "sh_sz_ordinary_parse_complete": true,
+  "source": "CNINFO official implementation announcements",
+  "availability_rule": "publication date close",
+  "sha256": "bbe2964b91b065f3ac8a81a3fdd354c62aa6c24c9989ad435e558672f574195e",
+  "backtest_ready": false,
+  "trade_authorized": false,
+  "limitations": [
+    "implementation lifecycle only; proposal/approval/cancellation/correction linkage incomplete",
+    "cash-flow and base-share authority not bound",
+    "single-year capture is insufficient for three-year dividend growth"
+  ]
+}
