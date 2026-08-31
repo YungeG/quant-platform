@@ -1,0 +1,269 @@
+{
+  "audit_id": "a-share-pit-st-contamination-audit-v1",
+  "fix_commit": "6b9ac8e",
+  "correct_panel_generation": "build3",
+  "authority": "NameChangeData effective ST intervals; current names and full-history 5% limit proxies are forbidden",
+  "scope": "direct-stock portfolios or stock event/basket evidence produced before the PIT ST fix and dependent on the old panel is_st field",
+  "policy": {
+    "promotion_eligible": false,
+    "historical_metrics_may_be_cited": true,
+    "citation_label": "PIT_ST_CONTAMINATED",
+    "rerun_rule": "Rerun only if a strategy is reconsidered for promotion; preserve old failed results otherwise."
+  },
+  "entries": [
+    {
+      "strategy_id": "analyst-revision-v1",
+      "artifact_prefix": "a-share-analyst-revision",
+      "script": "experiments/run_analyst_revision.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / STRONG ALPHA, EXCESSIVE RISK",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": "a-share-analyst-revision-pit-st-v2",
+      "required_action": "USE_CORRECTED_SUCCESSOR"
+    },
+    {
+      "strategy_id": "analyst-breadth-v2",
+      "artifact_prefix": "a-share-analyst-breadth",
+      "script": "experiments/run_analyst_revision.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / INFERIOR TO V1",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "analyst-core-satellite",
+      "artifact_prefix": "a-share-analyst-core-satellite",
+      "script": "experiments/run_analyst_core_satellite.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "breakout-retest-v2",
+      "artifact_prefix": "a-share-breakout-retest-v2",
+      "script": "experiments/run_breakout_retest_v2.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "chip-pressure",
+      "artifact_prefix": "a-share-chip-pressure",
+      "script": "experiments/run_chip_pressure.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "earnings-surprise",
+      "artifact_prefix": "a-share-earnings-surprise",
+      "script": "experiments/run_earnings_surprise.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / STRONG EVENT SIGNAL",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "fundamental-momentum",
+      "artifact_prefix": "a-share-fundamental-momentum",
+      "script": "experiments/run_fundamental_momentum.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "largecap-lowvol",
+      "artifact_prefix": "a-share-largecap-lowvol",
+      "script": "experiments/run_largecap_lowvol.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO / PASSIVE-ONLY MARGINAL",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "livermore-v2",
+      "artifact_prefix": "a-share-livermore-v2",
+      "script": "experiments/run_livermore_v2.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "lowturn-livermore",
+      "artifact_prefix": "a-share-lowturn-livermore",
+      "script": "experiments/run_lowturn_livermore.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / NO DEPLOY",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "low-turnover-replication",
+      "artifact_prefix": "a-share-low-turnover-replication",
+      "script": "experiments/run_low_turnover_replication.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / SHADOW-ONLY",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": "a-share-low-turnover-pit-st-v17",
+      "required_action": "USE_CORRECTED_SUCCESSOR"
+    },
+    {
+      "strategy_id": "margin-crowding",
+      "artifact_prefix": "a-share-margin-crowding",
+      "script": "experiments/run_margin_crowding.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO AS FILTER",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "market-gated-analyst-v10",
+      "artifact_prefix": "a-share-market-gated-analyst-v10",
+      "script": "experiments/run_market_gated_analyst.py",
+      "last_evidence_commit": "3e65229",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "revision-regime-analyst-v11",
+      "artifact_prefix": "a-share-revision-regime-analyst-v11",
+      "script": "experiments/run_market_gated_analyst.py",
+      "last_evidence_commit": "3e65229",
+      "original_verdict": "NO-GO / SIGNIFICANT RETURN, EXCESSIVE RISK",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": "a-share-revision-regime-pit-st-v12",
+      "required_action": "USE_CORRECTED_SUCCESSOR"
+    },
+    {
+      "strategy_id": "pead",
+      "artifact_prefix": "a-share-pead",
+      "script": "experiments/run_pead.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "pharma-chemical-rotation",
+      "artifact_prefix": "a-share-pharma-chemical-rotation",
+      "script": "experiments/run_pharma_chemical_rotation.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "MARGINAL / NO-GO ACTIVE ROTATION",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "quality-overlay",
+      "artifact_prefix": "a-share-quality-overlay",
+      "script": "experiments/run_quality_overlay.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "shareholder-events",
+      "artifact_prefix": "a-share-shareholder-events",
+      "script": "experiments/run_shareholder_events.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "short-reversal",
+      "artifact_prefix": "a-share-short-reversal",
+      "script": "experiments/run_short_reversal.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "technical-momentum",
+      "artifact_prefix": "a-share-technical-momentum",
+      "script": "experiments/run_technical_momentum.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "three-industry-historical-validation",
+      "artifact_prefix": "a-share-three-industry-historical-validation",
+      "script": "experiments/run_three_industry_historical_validation.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO GENERAL STRATEGY",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "true-breakout-analyst-basket-v9",
+      "artifact_prefix": "a-share-true-breakout-analyst-basket-v9",
+      "script": "experiments/evaluate_true_breakout_stock_basket.py",
+      "last_evidence_commit": "f155b8b",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "true-breakout-stock-basket-v8",
+      "artifact_prefix": "a-share-true-breakout-stock-basket-v8",
+      "script": "experiments/evaluate_true_breakout_stock_basket.py",
+      "last_evidence_commit": "f155b8b",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    },
+    {
+      "strategy_id": "value-composite",
+      "artifact_prefix": "a-share-value-composite",
+      "script": "experiments/run_value_composite.py",
+      "last_evidence_commit": "80569bd",
+      "original_verdict": "NO-GO",
+      "status": "PIT_ST_CONTAMINATED",
+      "corrected_successor": null,
+      "required_action": "RERUN_WITH_NAMECHANGEDATA_ONLY_IF_REVISITED"
+    }
+  ],
+  "known_clean_successors": [
+    "a-share-analyst-revision-pit-st-v2",
+    "a-share-revision-regime-pit-st-v12",
+    "a-share-higher-return-analyst-grid-v13",
+    "a-share-price-normalized-eps-revision-v14",
+    "a-share-price-normalized-no-runup-v15",
+    "a-share-normalized-eps-buffer-v16",
+    "a-share-low-turnover-pit-st-v17",
+    "a-share-low-turnover-buffer-v18",
+    "a-share-low-turnover-buffer10-v19",
+    "a-share-quarterly-sue",
+    "a-share-early-reporting-peer-diffusion-v1"
+  ],
+  "excluded_scope": "ETF-only, multi-asset, sector-classification-only, and source-blocked studies are not labeled by this direct-stock audit; their separate PIT authorities still apply."
+}
