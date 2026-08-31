@@ -44,6 +44,7 @@ def _first_date(pattern: str, text: str) -> str | None:
 def parse_text(text: str) -> dict:
     normalized = text.replace("（", "(").replace("）", ")")
     normalized = re.sub(r"证券代码[:：]\s*\d{6}.*?公告编号[:：][^\n]*", "", normalized)
+    normalized = re.sub(r"(?m)^\s*\d+\s*$", "", normalized)
     compact = re.sub(r"[ \t]+", " ", normalized)
     dense = re.sub(r"\s+", "", normalized)
     payment = None
@@ -81,7 +82,7 @@ def parse_text(text: str) -> dict:
         if match:
             cash = float(match.group(1)) / divisor
             break
-    no_cash = cash is None and ("不派发现金" in dense or re.search(r"现金红利(?:为|=)0(?:\.0+)?", dense))
+    no_cash = cash is None and ("不派发现金" in dense or re.search(r"现金红利(?:为|=)0(?:\.0+)?", dense) or ("每股转增" in dense and "现金红利" not in dense))
     return {
         "record_date": record,
         "ex_date": ex_date,

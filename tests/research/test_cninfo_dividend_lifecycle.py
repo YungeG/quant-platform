@@ -64,7 +64,7 @@ def test_parse_four_date_table_uses_final_date_for_cash_payment():
 
 
 def test_non_cash_stock_dividend_is_excluded_from_cash_lifecycle():
-    text = "公司以资本公积每10股转增4.9股，公司不派发现金，不送红股。现金红利为0。"
+    text = "公司以资本公积每股转增0.2股，共计转增股份，不送红股。"
 
     assert parse_text(text)["status"] == "NO_CASH_DIVIDEND"
 
@@ -73,7 +73,7 @@ def test_parse_shenzhen_sentence_lifecycle_and_per_ten_cash():
     text = """
 公司向全体股东每 10 股派 0.400000 元人民币现金。
 本次权益分派股权登记日为：2025 年 2 月 7 日，除权除息日为：2025 年 2 月 10 日。
-本公司现金红利将于 2025 年 2 月 10 日发放。
+本公司现金红利将于 2025\n3\n年 2 月 10 日发放。
 """
 
     assert parse_text(text) == {
