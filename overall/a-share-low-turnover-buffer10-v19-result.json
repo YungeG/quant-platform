@@ -1,0 +1,117 @@
+{
+  "study": "a-share-low-turnover-buffer10-v19",
+  "data_version": "948866fd1dd6a1dd",
+  "parameters": {
+    "enter_rank": 20,
+    "retain_rank": 40,
+    "anchor": 10,
+    "cost_per_side": 0.0012
+  },
+  "real": {
+    "periods": 257,
+    "absolute": {
+      "mean": 0.005690711873894117,
+      "cagr": 0.10989562170612177,
+      "sharpe": 0.5086197378218205,
+      "max_drawdown": -0.46517011196670033
+    },
+    "active": {
+      "mean": 0.0027354234000295037,
+      "cagr": 0.0654343460943847,
+      "sharpe": 0.6563371853889293,
+      "max_drawdown": -0.15016053790627615
+    },
+    "gross_absolute": {
+      "mean": 0.006578338333038087,
+      "cagr": 0.13491493443433433,
+      "sharpe": 0.5878899880084999,
+      "max_drawdown": -0.4540746559007429
+    },
+    "gross_active": {
+      "mean": 0.0036171421500295034,
+      "cagr": 0.0893044789004882,
+      "sharpe": 0.8677403206592351,
+      "max_drawdown": -0.14295580836575406
+    },
+    "benchmark": {
+      "mean": 0.0029868928171220104,
+      "cagr": 0.045333870924215924,
+      "sharpe": 0.3007838521250997,
+      "max_drawdown": -0.44561312568082
+    },
+    "annual_turnover": 9.320077821011674,
+    "missing_rate": 0.01303501945525292,
+    "positive_folds": 3,
+    "folds": {
+      "2016-2019": {
+        "count": 96,
+        "active": {
+          "mean": 0.0024463608762527287,
+          "cagr": 0.06021766688574992,
+          "sharpe": 0.7751704653765865,
+          "max_drawdown": -0.1314827125331901
+        }
+      },
+      "2020-2022": {
+        "count": 73,
+        "active": {
+          "mean": 0.00041842377487916096,
+          "cagr": 0.004312937572754194,
+          "sharpe": 0.09404912974264791,
+          "max_drawdown": -0.11948719696803278
+        }
+      },
+      "2023-2026": {
+        "count": 88,
+        "active": {
+          "mean": 0.004998538054265657,
+          "cagr": 0.12566117148704103,
+          "sharpe": 1.030242259204383,
+          "max_drawdown": -0.15016053790627593
+        }
+      }
+    }
+  },
+  "placebo_median": -0.9352909100776319,
+  "checks": {
+    "cagr": false,
+    "active_sharpe": true,
+    "turnover": true,
+    "folds": true,
+    "missing": true,
+    "placebo": true
+  },
+  "verdict": "NO-GO",
+  "latest_lot_feasibility": {
+    "date": "2026-08-25",
+    "selected": 20,
+    "lot_feasible": 20,
+    "minimum_target_shares": 300
+  },
+  "current": {
+    "as_of": "2026-08-25",
+    "holdings": [
+      "688100",
+      "688055",
+      "300256",
+      "688683",
+      "002992",
+      "605118",
+      "001308",
+      "600651",
+      "600621",
+      "605365",
+      "000045",
+      "603685",
+      "600751",
+      "688539",
+      "000532",
+      "603421",
+      "000058",
+      "603303",
+      "600050",
+      "603206"
+    ]
+  },
+  "trade_authorized": false
+}
