@@ -8,17 +8,15 @@
   "all_cash_announcement_count": 15505,
   "excluded_non_cash_or_correction_count": 147,
   "sh_sz_ordinary_cash_count": 14691,
-  "sh_sz_ordinary_complete_count": 14690,
-  "sh_sz_ordinary_incomplete_announcement_ids": [
-    "1212668618"
-  ],
-  "sh_sz_ordinary_parse_complete": false,
-  "override_count": 2,
-  "annual_cash_rows": 12484,
+  "sh_sz_ordinary_complete_count": 14691,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
+  "sh_sz_ordinary_parse_complete": true,
+  "override_count": 3,
+  "annual_cash_rows": 12485,
   "unknown_fiscal_period_rows": 109,
-  "source": "CNINFO official implementation announcements",
+  "source": "CNINFO official implementation announcements plus one captured Eastmoney supplemental payment date",
   "availability_rule": "publication date close",
-  "sha256": "9158b314270c672456f5df889e53fef1b141a537cc32e39c626354fed79a417d",
+  "sha256": "0e381e5755ec18e1bba00e136aae8e4a64cd95d2d4c7d1e55a90d4dfbe6c0a55",
   "backtest_ready": false,
   "trade_authorized": false
 }

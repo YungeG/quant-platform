@@ -1,9 +1,9 @@
 {
   "audit_id": "a-share-dividend-cashflow-coverage-v1",
-  "dividend_rows_sh_sz_complete": 14690,
-  "annual_dividend_rows_by_title": 12484,
-  "annual_rows_with_pit_cashflow": 12484,
-  "annual_unique_symbol_years_with_pit_cashflow": 12470,
+  "dividend_rows_sh_sz_complete": 14691,
+  "annual_dividend_rows_by_title": 12485,
+  "annual_rows_with_pit_cashflow": 12485,
+  "annual_unique_symbol_years_with_pit_cashflow": 12471,
   "annual_rows_missing_title_year": 0,
   "annual_rows_missing_pit_cashflow": 0,
   "coverage_rate": 1.0,

@@ -1,0 +1,28 @@
+{
+  "study": "a-share-dividend-growth-cash-coverage-state-v1",
+  "as_of": "2025-12-31",
+  "fiscal_years": [
+    2022,
+    2023,
+    2024
+  ],
+  "rule": {
+    "strict_dividend_growth": true,
+    "minimum_cash_coverage_each_year": 1.2
+  },
+  "annual_implementation_rows": 9540,
+  "symbol_year_groups": 9527,
+  "symbols_with_three_years": 2371,
+  "eligible_symbols": 299,
+  "missing_share_rows": 0,
+  "missing_cashflow_pairs": 0,
+  "status": "STATE_BUILT_NO_BACKTEST",
+  "limitations": [
+    "cash payout uses PIT TotalShare at record date multiplied by announced cash per share",
+    "one payment date is supplemented by captured Eastmoney vendor data",
+    "no listing/ST/liquidity portfolio filter or return evaluation is performed",
+    "no public multi-instrument A-share Backtest preparation operation exists"
+  ],
+  "backtest_ready": false,
+  "trade_authorized": false
+}

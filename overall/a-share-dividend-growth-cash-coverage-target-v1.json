@@ -1,0 +1,12 @@
+{
+  "study": "a-share-dividend-growth-cash-coverage-target-v1",
+  "as_of": "2025-12-31",
+  "decision_day": "2025-12-31",
+  "data_version": "f074d0edc3706228",
+  "fundamental_eligible_symbols": 299,
+  "practical_target_symbols": 56,
+  "target_weight": 0.017857142857142856,
+  "status": "TARGET_STATE_BUILT_NO_BACKTEST",
+  "backtest_ready": false,
+  "trade_authorized": false
+}

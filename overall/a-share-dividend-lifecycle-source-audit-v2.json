@@ -1,6 +1,6 @@
 {
   "audit_id": "a-share-dividend-lifecycle-source-audit-v2",
-  "status": "SOURCE_CAPTURED_2022_2025_ONE_UNRESOLVED",
+  "status": "SOURCE_CAPTURED_2022_2025_LIFECYCLE_COMPLETE_RESEARCH_GRADE",
   "backtest_status": "NO_BACKTEST_RUN",
   "official_source": {
     "platform": "CNINFO official disclosure platform",
@@ -15,13 +15,14 @@
     "cash_dividend_announcements": 15505,
     "non_cash_or_correction_announcements": 147,
     "sh_sz_ordinary_cash_announcements": 14691,
-    "sh_sz_ordinary_complete_lifecycle": 14690,
-    "sh_sz_ordinary_incomplete_announcement_ids": ["1212668618"],
-    "manual_extraction_overrides": 2,
+    "sh_sz_ordinary_complete_lifecycle": 14691,
+    "sh_sz_ordinary_incomplete_announcement_ids": [],
+    "manual_extraction_overrides": 3,
+    "supplemental_vendor_payment_dates": 1,
     "normalized_dataset": "overall/a-share-cninfo-dividend-2022-2025-normalized.csv",
-    "normalized_sha256": "9158b314270c672456f5df889e53fef1b141a537cc32e39c626354fed79a417d",
-    "annual_cash_dividend_rows": 12484,
-    "annual_rows_with_pit_operating_cashflow": 12484,
+    "normalized_sha256": "0e381e5755ec18e1bba00e136aae8e4a64cd95d2d4c7d1e55a90d4dfbe6c0a55",
+    "annual_cash_dividend_rows": 12485,
+    "annual_rows_with_pit_operating_cashflow": 12485,
     "annual_cashflow_coverage_rate": 1.0
   },
   "full_year_query_reliability_2025": {
@@ -32,7 +33,7 @@
     "decision": "Use bounded monthly queries; the one-year query is duplicate-heavy and incomplete."
   },
   "remaining_requirements": [
-    "resolve the missing payment date in official announcement 1212668618 through an accepted supplemental source",
+    "decide whether the one Eastmoney-supplemented payment date is acceptable for research-grade authority",
     "capture proposal, shareholder-approval, cancellation and correction lineage rather than implementation PDFs only",
     "qualify the captured PIT operating-cash-flow CSV as immutable/terminal-complete authority and bind the dividend payout denominator",
     "qualify historical listing/ST/suspension, fee, tax and corporate-action execution authorities",
