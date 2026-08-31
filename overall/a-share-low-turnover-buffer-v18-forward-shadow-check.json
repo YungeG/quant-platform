@@ -1,0 +1,9 @@
+{
+  "shadow_id": "a-share-low-turnover-buffer-v18-forward-shadow-v1",
+  "checked_cutoff": "2026-08-31",
+  "data_version": "22022f99d8f7201d",
+  "appended": 0,
+  "latest_signal_date": "2026-08-25",
+  "reason": "Only four new trading sessions followed the frozen 2026-08-25 signal; the next five-session rebalance point is not yet present.",
+  "trade_authorized": false
+}

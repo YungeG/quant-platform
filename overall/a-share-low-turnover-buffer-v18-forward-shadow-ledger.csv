@@ -1,2 +1,2 @@
-recorded_cutoff,signal_date,record_type,status,observed_sessions_since_signal,target_holdings,period_return,benchmark_return,active_return,trade_authorized,notes
-2026-08-31,2026-08-25,BASELINE,BASELINE_ONLY,4,688100|300256|001308|688683|605118|002992|600651|600621|605365|603685|600751|688055|000532|603421|603303|000058|688093|603206|600776|600050,,,,false,No new frozen rebalance point or completed forward observation; do not score
+recorded_cutoff,data_version,signal_date,record_type,status,observed_sessions_since_signal,target_holdings,period_return,benchmark_return,active_return,trade_authorized,notes
+2026-08-31,948866fd1dd6a1dd,2026-08-25,BASELINE,BASELINE_ONLY,4,688100|300256|001308|688683|605118|002992|600651|600621|605365|603685|600751|688055|000532|603421|603303|000058|688093|603206|600776|600050,,,,false,No new frozen rebalance point or completed forward observation; do not score

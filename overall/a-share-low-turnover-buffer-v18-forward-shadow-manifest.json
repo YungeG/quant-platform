@@ -15,6 +15,7 @@
     "cost_per_side": 0.0012,
     "schedule_anchor_start": "2016-01-01"
   },
+  "updater": "experiments/run_low_turnover_buffer_shadow.py",
   "first_eligible_new_record": "next frozen rebalance session after 2026-08-31",
   "minimum_forward_months": 12,
   "historical_backfill_forbidden": true,

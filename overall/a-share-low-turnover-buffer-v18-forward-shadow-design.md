@@ -23,9 +23,9 @@ Shadow只记录冻结日之后新到达的数据，不回填历史事件，不�
 
 ## 记录规则
 
-每个冻结调仓点追加一行，记录信号日、目标持仓、可观察期、组合收益、基准收益、active收益、缺失与失败原因。任何缺失价格、停牌或未完成5日观察期保持空值，不填零。
+每个冻结调仓点追加一行，记录信号日、目标持仓和数据版本。`experiments/run_low_turnover_buffer_shadow.py --end YYYY-MM-DD`只追加新目标，不计算自定义PnL；重复运行同一截止日必须为no-op。
 
-正式订单成交、最低佣金、涨跌停延迟退出仍受`a-share-low-turnover-buffer-v18-order-replay-capability-review.md`所述公共Backtest入口阻塞；Shadow账本不得冒充订单级回放。
+组合收益、基准收益和active收益在正式证据可用前保持空值，不填零。正式订单成交、最低佣金、涨跌停延迟退出仍受`a-share-low-turnover-buffer-v18-order-replay-capability-review.md`所述公共Backtest入口阻塞；Shadow账本不得冒充订单级回放。
 
 ## 晋级要求
 
