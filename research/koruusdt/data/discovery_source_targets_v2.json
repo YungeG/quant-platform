@@ -141,7 +141,7 @@
       "binance_usdm_koru_tradifi_development_profile_v1",
       "binance_usdm_koru_tradifi_execution_bundle_v2"
     ],
-    "backtest_head": "3362326a13ebd8344442f3196b31c96fc4d99196",
+    "backtest_head": "609eabcd57163e63040c005d55cdb89ffe536f4d",
     "network_performed": false,
     "path": "research/koruusdt/build_discovery_source_targets_v2.py",
     "sha256": "sha256:01a4c8ea5f993908bb5aa6e3ff7696395a8938410d67535aed597c5f20215a39"
@@ -1255,7 +1255,7 @@
     ]
   },
   "development_profile_v1": {
-    "financial_dispatcher_spec_hash": "sha256:2f5b4b4bbd4f0a1219cadb19ffbce5eca0b093aa2dfd4ec4d189854d45ea288c",
+    "financial_dispatcher_spec_hash": "sha256:c3dc3238b9c8d6d2ba8ff203d4fb2e04b4110bb2a772465be66b083de9356a7e",
     "limitations": [
       "development_profile",
       "retained_source_projection_v2_only",
@@ -1265,11 +1265,11 @@
       "single_instrument_single_usdt_cross_account_only",
       "deployment_unauthorized"
     ],
-    "profile_composition_request_hash": "sha256:da0a7dc7d0068d4114a55552da5fb8ac5810d1fecd498299caa40cf2df68adf0",
-    "profile_registry_hash": "sha256:36e8a0ed4491a83dc46ba1b97a15320a55b76e9b91a76aa049c8d78f481d5fe0",
+    "profile_composition_request_hash": "sha256:3dd5183b9b191e096def06225fc7ab87dcaa319a1c0a5d6b88eeda41c9d2e9e4",
+    "profile_registry_hash": "sha256:2f5cd47c3c904f3fd7b5c73140fef42b13ca3582e403a46e3754571fc7e679fb",
     "request_hash": "sha256:2e3d264dcd916d512a9f7698a2199ebe243fe656df2801431f7dc2148c6b108b",
-    "resolved_profile_hash": "sha256:a8e11e6fcc139fa3760ed4dcbd8508149dd7f4f09a32c5bd045a1346ff83aa77",
-    "result_digest": "sha256:fead88c5b173d662dbfd1cbf745c333a9c30986fa0983ef1e4251c96fc8c91d7",
+    "resolved_profile_hash": "sha256:6a0d4394d029892523c17336755127f435ca58c9f4f21ad783faf67754efb9aa",
+    "result_digest": "sha256:0528cd97f01ed4e0a072181c2104b85ea023329cf4d9840290435ac061c969c9",
     "source_authority_verified": true,
     "source_event_count": 5531,
     "source_profile_authority_hash": "sha256:1c79ff9945bda06b752a63c7418fcf582707e4ef08287147f18214c3a0cdad03",
@@ -1390,10 +1390,10 @@
         "type": "artifact_ref"
       }
     ],
-    "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a5bda6f7d37e7e55f1f9922bd532c3011eade4fa18728a631e97744e80232c2b",
+    "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-21497a6f9919bc3913f2a81913a9ef9b27c90c6b9811df8a6151e5dac6141945",
     "bundle_ref": {
-      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a5bda6f7d37e7e55f1f9922bd532c3011eade4fa18728a631e97744e80232c2b",
-      "manifest_hash": "sha256:a400160a56802da199bd2b98fe298972799d467ca4e4677a1f63b9fd4f7e82a4",
+      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-21497a6f9919bc3913f2a81913a9ef9b27c90c6b9811df8a6151e5dac6141945",
+      "manifest_hash": "sha256:9fac49524741f80e55bfc87c7c40f1d2938c9897f6bd1366f7f5dc7197a28004",
       "type": "market_bundle_ref"
     },
     "bundle_schema_version": 2,
@@ -1406,16 +1406,16 @@
       "v2_projection_target_and_authority_identities",
       "development_only"
     ],
-    "manifest_content_hash": "sha256:293a4561a0323fb62fe50ea9ae38ba4209719c3a68f2066bd8343b799b07e9cc",
-    "manifest_hash": "sha256:a400160a56802da199bd2b98fe298972799d467ca4e4677a1f63b9fd4f7e82a4",
-    "reader_hash": "sha256:c65750bc4227c3c043dc1486623be66872254d2dd93349540f15b1e04053edb5",
+    "manifest_content_hash": "sha256:ffeb446c916298380a3a9ba030042831abc4b8eac0f5cf2cf7704d201bc3be5a",
+    "manifest_hash": "sha256:9fac49524741f80e55bfc87c7c40f1d2938c9897f6bd1366f7f5dc7197a28004",
+    "reader_hash": "sha256:eeb18ef8a352ac99b32854dde271802780c5cea7fe3bf80d227bc53dc1f71f35",
     "reader_ref": {
-      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-a5bda6f7d37e7e55f1f9922bd532c3011eade4fa18728a631e97744e80232c2b",
-      "manifest_hash": "sha256:a400160a56802da199bd2b98fe298972799d467ca4e4677a1f63b9fd4f7e82a4",
+      "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-21497a6f9919bc3913f2a81913a9ef9b27c90c6b9811df8a6151e5dac6141945",
+      "manifest_hash": "sha256:9fac49524741f80e55bfc87c7c40f1d2938c9897f6bd1366f7f5dc7197a28004",
       "type": "market_bundle_ref"
     },
-    "request_hash": "sha256:39186c80d1dedb19e0147966c7441ce73ab23bb91d73c4c6ad636b572fbfdd22",
-    "result_digest": "sha256:abe9b2b5584f0eee5b9749ce0c08b9e8f34b9ad5161d0138efd3255007b235d0",
+    "request_hash": "sha256:78f1629f58c34c06446970f79be8e216960d252b24e8051fd97f6792acc9412a",
+    "result_digest": "sha256:8215f544c47c7dc374b31f838ffdaa6ddb380d31d43e6eb6ba5d8d6d23c99423",
     "stream_count": 19,
     "stream_manifests": [
       {
@@ -1508,7 +1508,7 @@
           "type": "market_bundle_capability",
           "version": 1
         },
-        "content_hash": "sha256:fa3d3575e19002494d598c38cd7942c27dca6bbae2b4617cbc5cd2a491e1f08b",
+        "content_hash": "sha256:29ee09b5af28f72665576514063bef8650bda2738001ffc96f53119f5027ac52",
         "event_count": 1,
         "event_type": "account_financial_event",
         "stream_key": "binance_usdm.tradifi.account.authority.koruusdt.v2",
@@ -1532,7 +1532,7 @@
           "type": "market_bundle_capability",
           "version": 1
         },
-        "content_hash": "sha256:92bd26f3935200ffbcafb9839622dcb3e37f82f0873425ae0f176280b0f57982",
+        "content_hash": "sha256:969b12d4a5b2bc3a6ddbfc039a564d32193ed562990dba23c0b820dac45ab282",
         "event_count": 1,
         "event_type": "binance_usdm_tradifi_preparation_authority_v2",
         "stream_key": "binance_usdm.tradifi.preparation_authority.v2",
@@ -1544,7 +1544,7 @@
           "type": "market_bundle_capability",
           "version": 1
         },
-        "content_hash": "sha256:a537f551c3db02b356192fc407b80a65ee5441ce5e28ab3aaeced37e7db39d60",
+        "content_hash": "sha256:e7b33830755fc44f1f1508902ddcbb7314d320bd1ce0428daec2a4b63226c287",
         "event_count": 1,
         "event_type": "binance_usdm_tradifi_price_purpose_binding_v2",
         "stream_key": "binance_usdm.tradifi.price_purpose.authority.koruusdt.v2",
@@ -1662,8 +1662,8 @@
     "gap_audit": {
       "eligible_boundary_count": 611,
       "event_hashes_sha256": "sha256:87564465a575c934738a9ed4e35c2091a900e4a1d14ff08fd2b8bf34c5719be6",
-      "file_sha256": "sha256:7f563b49dd5b63b67a7edea223452a0a25612a5e86355d36d0db5e6b8dac1f8b",
-      "manifest_sha256": "sha256:13df12b5cd80bf78bdfa94aaa7cb102810d82f79666ec2e49e22451d8e1a2b1b",
+      "file_sha256": "sha256:93a642ac7907f4abe7c2455783f9a30b5bd2b3027f3ebfab243a2db98de8b544",
+      "manifest_sha256": "sha256:dcb1c76164ecd2b28bb9c5d32d02f6d522a27a57a1b070c829ab30974d67aa62",
       "path": "research/koruusdt/data/execution_gap_impact.json",
       "status": "clear"
     }
@@ -1681,7 +1681,7 @@
     "instrument_catalog_hash_is_local_retained_discovery_binding_not_deployment_catalog",
     "official_archive_acquisition_is_conservatively_bound_to_repository_retention_commits"
   ],
-  "manifest_sha256": "sha256:2ef1cb5931c824b3a6987cac8257d942535754508b4b50242b2f251c6b33d55f",
+  "manifest_sha256": "sha256:9a52a99b350fa4dfdae6303ed6ecbbf4d8db5ad6c57428e7fb29cc50b561ef7e",
   "repository_retention": {
     "aggregate_trades": {
       "commit": "a61ef741ce582cd61dbc6e3a623066de7c6b8bf4",

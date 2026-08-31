@@ -10480,7 +10480,7 @@
     "source_objects_reconstructed": true
   },
   "frozen_target_builder": {
-    "backtest_head": "3362326a13ebd8344442f3196b31c96fc4d99196",
+    "backtest_head": "609eabcd57163e63040c005d55cdb89ffe536f4d",
     "file_sha256": "sha256:52f6ad60875b4ae79452d2b6f8240c21b530e46189ba9d11688d623503ab7e60",
     "imported_symbols": [
       "_stream_events",
@@ -10493,7 +10493,7 @@
     "path": "backtest/packages/market-bundle-builder/src/crypto_quant_bundle_builder/binance_usdm_koru_closed_market_range_targets_v1.py"
   },
   "instrument": "KORUUSDT",
-  "manifest_sha256": "sha256:13df12b5cd80bf78bdfa94aaa7cb102810d82f79666ec2e49e22451d8e1a2b1b",
+  "manifest_sha256": "sha256:dcb1c76164ecd2b28bb9c5d32d02f6d522a27a57a1b070c829ab30974d67aa62",
   "missing_aggtrades_interval": {
     "end_utc_exclusive": "2026-08-24T06:34:20.640Z",
     "semantics": "half-open",
