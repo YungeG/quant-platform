@@ -1,0 +1,146 @@
+{
+  "study": "a-share-low-turnover-buffer-v18",
+  "data_version": "948866fd1dd6a1dd",
+  "parameters": {
+    "enter_rank": 20,
+    "retain_rank": 40,
+    "anchor": 5,
+    "cost_per_side": 0.0012
+  },
+  "real": {
+    "n_periods": 514,
+    "active": {
+      "mean": 0.001624288280005355,
+      "cagr": 0.07831951821441852,
+      "sharpe": 0.7206720403292269,
+      "max_drawdown": -0.1642103973313399
+    },
+    "absolute": {
+      "mean": 0.0031746239210597377,
+      "cagr": 0.12045445571922242,
+      "sharpe": 0.5125405837536603,
+      "max_drawdown": -0.479700441527936
+    },
+    "gross_active": {
+      "mean": 0.002161475780005355,
+      "cagr": 0.1078621026681803,
+      "sharpe": 0.9589013480804479,
+      "max_drawdown": -0.1556607585743086
+    },
+    "gross_absolute": {
+      "mean": 0.003719059718725108,
+      "cagr": 0.15157479479856173,
+      "sharpe": 0.6004450377557206,
+      "max_drawdown": -0.4528143761440706
+    },
+    "benchmark": {
+      "mean": 0.0015721115157460233,
+      "cagr": 0.04442439366168971,
+      "sharpe": 0.2899698581889623,
+      "max_drawdown": -0.4531160670111467
+    },
+    "average_cost_drag": 0.0005444357976653695,
+    "annual_turnover": 11.433151750972765,
+    "selected_missing_rate": 0.009824902723735412,
+    "average_executed_names": 19.80739299610895,
+    "positive_folds": 3,
+    "folds": {
+      "2016-2019": {
+        "n_periods": 191,
+        "active": {
+          "mean": 0.0013082169455307835,
+          "cagr": 0.06457626668756333,
+          "sharpe": 0.8059148017833346,
+          "max_drawdown": -0.11976961230031613
+        }
+      },
+      "2020-2022": {
+        "n_periods": 146,
+        "active": {
+          "mean": 0.001057686508441477,
+          "cagr": 0.047090796077189356,
+          "sharpe": 0.4407649810407347,
+          "max_drawdown": -0.09879701735160396
+        }
+      },
+      "2023-2026": {
+        "n_periods": 177,
+        "active": {
+          "mean": 0.00244196532876518,
+          "cagr": 0.12066437065949254,
+          "sharpe": 0.9087047144452441,
+          "max_drawdown": -0.16421039733133957
+        }
+      }
+    }
+  },
+  "placebo_sharpes": [
+    -0.8948835638149009,
+    -1.1268725786530267,
+    -1.7117521273792125,
+    -1.4937518131693137,
+    -0.9179443748796972,
+    -1.3280125634657678,
+    -1.528486678017873,
+    -2.0470607369620932,
+    -1.2300606860035388,
+    -1.155107088176155,
+    -0.8520367075402661,
+    -0.8371605813984051,
+    -1.569869080374542,
+    -1.2773088061904776,
+    -1.1335855988548398,
+    -1.2432974330103708,
+    -1.364365153687912,
+    -0.9005583885145131,
+    -1.2689126709564975,
+    -1.3980945715751831
+  ],
+  "placebo_median": -1.2561050519834343,
+  "checks": {
+    "cagr": true,
+    "active_sharpe": true,
+    "turnover": true,
+    "folds": true,
+    "missing": true,
+    "placebo": true
+  },
+  "verdict": "GO-CANDIDATE",
+  "latest_lot_feasibility": {
+    "date": "2026-08-25",
+    "selected": 20,
+    "lot_feasible": 20,
+    "minimum_target_shares": 300
+  },
+  "current": {
+    "as_of": "2026-08-25",
+    "holdings": [
+      "688100",
+      "300256",
+      "001308",
+      "688683",
+      "605118",
+      "002992",
+      "600651",
+      "600621",
+      "605365",
+      "603685",
+      "600751",
+      "688055",
+      "000532",
+      "603421",
+      "603303",
+      "000058",
+      "688093",
+      "603206",
+      "600776",
+      "600050"
+    ]
+  },
+  "limitations": [
+    "research forward-return portfolio, not order-level delayed-exit simulation",
+    "missing scheduled forward return is treated as cash",
+    "rolling historical evidence, not virgin OOS"
+  ],
+  "trade_authorized": false
+}

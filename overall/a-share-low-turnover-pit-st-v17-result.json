@@ -1,0 +1,218 @@
+{
+  "study": "a-share-cross-sectional-low-turnover-replication-v1",
+  "data_version": "948866fd1dd6a1dd",
+  "start": "2016-01-01",
+  "end": "2026-08-25",
+  "parameters": {
+    "window": 20,
+    "top_n": 20,
+    "anchor": 5,
+    "cost_per_side": 0.0012,
+    "small_size_exclusion": 0.3,
+    "placebo_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "real": {
+    "n_periods": 514,
+    "active": {
+      "mean": 0.0011131297916363186,
+      "cagr": 0.0505007945907896,
+      "sharpe": 0.4782340931432512,
+      "max_drawdown": -0.15209105096069686
+    },
+    "absolute": {
+      "mean": 0.002665454376225212,
+      "cagr": 0.09171292101959483,
+      "sharpe": 0.42635061639801203,
+      "max_drawdown": -0.48822871934067147
+    },
+    "gross_active": {
+      "mean": 0.0018896141666363186,
+      "cagr": 0.09237200624524622,
+      "sharpe": 0.8117134328677178,
+      "max_drawdown": -0.14062587769320012
+    },
+    "gross_absolute": {
+      "mean": 0.003448255932645446,
+      "cagr": 0.13558857299035876,
+      "sharpe": 0.5515494329707618,
+      "max_drawdown": -0.4492805963785238
+    },
+    "benchmark": {
+      "mean": 0.0015721115157460233,
+      "cagr": 0.04442439366168971,
+      "sharpe": 0.2899698581889623,
+      "max_drawdown": -0.4531160670111467
+    },
+    "average_cost_drag": 0.0007828015564202332,
+    "annual_turnover": 16.4388326848249,
+    "selected_missing_rate": 0.01001945525291829,
+    "average_executed_names": 19.799610894941633,
+    "positive_folds": 3,
+    "folds": {
+      "2016-2019": {
+        "n_periods": 191,
+        "active": {
+          "mean": 0.000628093949985351,
+          "cagr": 0.029099456307453586,
+          "sharpe": 0.4097891539147335,
+          "max_drawdown": -0.14362042102306816
+        }
+      },
+      "2020-2022": {
+        "n_periods": 146,
+        "active": {
+          "mean": 0.0005290670215483942,
+          "cagr": 0.018849763924479568,
+          "sharpe": 0.210282549290403,
+          "max_drawdown": -0.11200144730564343
+        }
+      },
+      "2023-2026": {
+        "n_periods": 177,
+        "active": {
+          "mean": 0.002129786992711586,
+          "cagr": 0.10214116097443982,
+          "sharpe": 0.7511829955555989,
+          "max_drawdown": -0.15209105096069686
+        }
+      }
+    }
+  },
+  "placebo_sharpes": [
+    -1.03979011426301,
+    -1.2002413597433632,
+    -1.7066747967818277,
+    -1.585785459979994,
+    -0.9006934373019597,
+    -1.307173783194298,
+    -1.486579142337972,
+    -2.033392516143268,
+    -1.2688130339549784,
+    -1.1125790050640727,
+    -0.8607427754711586,
+    -0.8269082647577778,
+    -1.6331379727519852,
+    -1.2831173717021764,
+    -1.1821975758371353,
+    -1.2905671117013906,
+    -1.47405695756265,
+    -0.887375771781845,
+    -1.348252392224267,
+    -1.415778136968084
+  ],
+  "verdict": {
+    "verdict": "MARGINAL",
+    "checks": {
+      "active_edge_positive": true,
+      "active_sharpe": false,
+      "positive_folds": true,
+      "placebo_margin": true,
+      "turnover": false,
+      "missing_rate": true,
+      "absolute_cagr": true
+    },
+    "placebo_median_sharpe": -1.2868422417017835,
+    "placebo_positive_count": 0
+  },
+  "post_2026_07_21_observation": {
+    "status": "HOLDOUT_INCOMPLETE",
+    "n_periods": 5,
+    "active": {
+      "mean": -0.003528053931030357,
+      "cagr": -0.1665822669467102,
+      "sharpe": -1.6068945633044636,
+      "max_drawdown": -0.02444675568701804
+    },
+    "absolute": {
+      "mean": 0.01553935610552488,
+      "cagr": 1.1423688494881792,
+      "sharpe": 3.934401876203811,
+      "max_drawdown": -0.01329925842046109
+    },
+    "gross_active": {
+      "mean": -0.003048053931030357,
+      "cagr": -0.14605166532271707,
+      "sharpe": -1.3985720088731144,
+      "max_drawdown": -0.023379319537693122
+    },
+    "gross_absolute": {
+      "mean": 0.016787356105524877,
+      "cagr": 1.2808738035789369,
+      "sharpe": 4.354203039549832,
+      "max_drawdown": -0.007945989947306109
+    },
+    "benchmark": {
+      "mean": 0.031026980773571817,
+      "cagr": 3.6323433180097915,
+      "sharpe": 10.557263138332193,
+      "max_drawdown": 0.0
+    },
+    "average_cost_drag": 0.001248,
+    "annual_turnover": 26.208,
+    "selected_missing_rate": 0.4,
+    "average_executed_names": 12.0,
+    "positive_folds": 0,
+    "folds": {
+      "2016-2019": {
+        "n_periods": 0,
+        "active": {
+          "mean": 0.0,
+          "cagr": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0
+        }
+      },
+      "2020-2022": {
+        "n_periods": 0,
+        "active": {
+          "mean": 0.0,
+          "cagr": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0
+        }
+      },
+      "2023-2026": {
+        "n_periods": 5,
+        "active": {
+          "mean": -0.003528053931030357,
+          "cagr": -0.1665822669467102,
+          "sharpe": -1.6068945633044636,
+          "max_drawdown": -0.02444675568701804
+        }
+      }
+    }
+  },
+  "latest_lot_feasibility": {
+    "date": "2026-08-25",
+    "selected": 20,
+    "lot_feasible": 20,
+    "minimum_target_shares": 300
+  },
+  "limitations": [
+    "rolling replication, not a virgin untouched holdout",
+    "current-name/ST proxy is not complete point-in-time status authority",
+    "missing scheduled forward return is treated as cash rather than delayed execution",
+    "portfolio uses equal-weight research returns, not order-level lot execution"
+  ]
+}

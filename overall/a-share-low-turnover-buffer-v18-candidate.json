@@ -1,0 +1,51 @@
+{
+  "strategy_id": "a-share-low-turnover-top20-buffer40-v1",
+  "status": "GO_CANDIDATE_RESEARCH_GRADE",
+  "trade_authorized": false,
+  "signal_source": "20-session mean Amount / PIT CircMV, long low",
+  "holdings": 20,
+  "entry_rank": 20,
+  "retention_rank": 40,
+  "rebalance_sessions": 5,
+  "cost_per_side": 0.0012,
+  "metrics": {
+    "cagr": 0.12045445571922242,
+    "sharpe": 0.5125405837536603,
+    "max_drawdown": -0.479700441527936,
+    "active_cagr": 0.07831951821441852,
+    "active_sharpe": 0.7206720403292269,
+    "annual_one_way_turnover": 11.433151750972765,
+    "selected_missing_rate": 0.009824902723735412
+  },
+  "current": {
+    "as_of": "2026-08-25",
+    "holdings": [
+      "688100",
+      "300256",
+      "001308",
+      "688683",
+      "605118",
+      "002992",
+      "600651",
+      "600621",
+      "605365",
+      "603685",
+      "600751",
+      "688055",
+      "000532",
+      "603421",
+      "603303",
+      "000058",
+      "688093",
+      "603206",
+      "600776",
+      "600050"
+    ]
+  },
+  "evidence": "overall/a-share-low-turnover-buffer-v18-result.json",
+  "required_next_steps": [
+    "order-level limit-down and delayed-exit replay",
+    "minimum commission",
+    "forward shadow"
+  ]
+}
