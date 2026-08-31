@@ -221,7 +221,10 @@ def _trial_summary(parameter_id: str, prepared: Any, executed: Any) -> dict[str,
         "funding_usdt": _money(snapshot.financing),
         "final_position_count": len(snapshot.positions),
         "financial_artifact_count": len(result.financial_artifacts),
-        "funding_accounting_count": roles.count("funding_accounting"),
+        "funding_accounting_count": sum(
+            value == "funding_accounting" or value.startswith("funding_accounting.")
+            for value in roles
+        ),
         "liquidation_audit_count": sum(
             value.startswith("liquidation_audit.hourly.") for value in roles
         ),
