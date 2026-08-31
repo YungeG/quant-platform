@@ -122,7 +122,7 @@ def consensus_revisions(reports: pd.DataFrame, day: pd.Timestamp) -> pd.DataFram
     return merged.sort_values(["Symbol", "quarter_year"]).drop_duplicates("Symbol", keep="first")
 
 
-def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tuple:
+def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str, target_limit: int | None = 30) -> tuple:
     cfg = Config()
     connection = connect(cfg, read_only=True)
     try:
@@ -134,6 +134,7 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
     panel = panel.sort_values(["Symbol", "TradingDay"]).reset_index(drop=True)
     grouped = panel.groupby("Symbol", sort=False)
     panel["_fwd20"] = grouped["adj_open"].shift(-21) / grouped["adj_open"].shift(-1) - 1.0
+    panel["_past20"] = panel["adj_close"] / grouped["adj_close"].shift(20) - 1.0
     adv_pct = panel.groupby("TradingDay")["adv20"].rank(pct=True, method="first")
     panel["practical"] = (
         (~panel["is_st"].fillna(True))
@@ -163,7 +164,11 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
                 )
             ]
         benchmark = float(universe["_fwd20"].mean())
+        prior_benchmark = float(universe["_past20"].mean())
         candidates["active20"] = candidates["_fwd20"] - benchmark
+        candidates["past20"] = candidates["_past20"]
+        candidates["prior_active20"] = candidates["past20"] - prior_benchmark
+        candidates["prior_runup_pct"] = candidates["prior_active20"].rank(pct=True, method="average")
         for row in candidates.itertuples(index=False):
             signal_rows.append(
                 {
@@ -179,12 +184,17 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
                     "paired_count": row.paired_count,
                     "current_count": row.current_count,
                     "prior_count": row.prior_count,
+                    "prior_return20": row.past20,
+                    "prior_active20": row.prior_active20,
+                    "prior_runup_pct": row.prior_runup_pct,
                     "active20": row.active20,
                 }
             )
         selected = candidates[candidates[factor] > 0].sort_values(
             [factor, "paired_count", "Symbol"], ascending=[False, False, True]
-        ).head(30)
+        )
+        if target_limit is not None:
+            selected = selected.head(target_limit)
         key = day.date().isoformat()
         targets[key] = selected["Symbol"].astype(str).tolist()
         all_symbols.update(targets[key])
@@ -218,6 +228,7 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
         "report_rows": len(reports),
         "decision_count": len(targets),
         "selected_symbols": len(all_symbols),
+        "target_limit": target_limit,
     }
     del panel
     gc.collect()

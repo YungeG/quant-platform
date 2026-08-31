@@ -1,6 +1,6 @@
 {
   "strategy_id": "a-share-revision-breadth-top10-v1",
-  "status": "HIGH_RETURN_CANDIDATE_WITH_DENOMINATOR_RISK",
+  "status": "REJECTED_RIGHT_TAIL_AND_DIRECTION_CONTAMINATED",
   "selection_authorized": false,
   "trade_authorized": false,
   "reason_not_selected": "The frozen discovery-only selection policy chose always_top10; this pre-registered secondary candidate cannot replace it after validation observation.",
@@ -33,5 +33,5 @@
     "targets": ["300782", "600105", "688469", "601168", "000636", "688126", "603986", "600663", "300418", "000703"]
   },
   "evidence": "overall/a-share-higher-return-analyst-grid-v13-result.json",
-  "required_next_step": "do not promote; ratio ranking has near-zero prior-EPS denominator risk, while the validated price-normalized replacement produced lower CAGR"
+  "required_next_step": "do not promote; attribution found negative-EPS deterioration misclassified as positive, all categories dependent on right-tail winners, and high prior price run-up associated with weaker future returns"
 }
