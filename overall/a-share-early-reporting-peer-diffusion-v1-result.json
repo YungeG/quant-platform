@@ -1,41 +1,171 @@
 {
   "study": "a-share-early-reporting-peer-diffusion-v1",
-  "status": "blocked_before_full_metrics",
-  "end": "2026-08-28",
   "trade_authorized": false,
+  "frozen_rule": {
+    "horizon_sessions": 20,
+    "round_trip_cost": 0.0031,
+    "min_reporters": 3,
+    "early_fraction": [
+      0.1,
+      0.35
+    ],
+    "min_positive_acceleration_share": 0.6,
+    "execution": "announcement-day close decision; next session open entry"
+  },
+  "data": {
+    "panel_version": "7804fa5fcb0fd83e",
+    "financials": "/home/ygguo/agent-projs/ai-crypt/platform-a-share-research/overall/a-share-quarterly-statements-raw/fina_indicator_vip.csv",
+    "members": "/home/ygguo/agent-projs/ai-crypt/platform-a-share-research/overall/a-share-sw2021-members.csv"
+  },
+  "arms": {
+    "unreported_peer_stock": {
+      "signals": 190,
+      "complete": 187,
+      "mean_return_20d": 0.0015084362245098757,
+      "median_return_20d": 0.006180557989006447,
+      "win_rate": 0.5454545454545454,
+      "folds": {
+        "2015": {
+          "count": 6,
+          "mean_return_20d": -0.10576482129049658,
+          "win_rate": 0.16666666666666666
+        },
+        "2016": {
+          "count": 21,
+          "mean_return_20d": 0.03026692877422537,
+          "win_rate": 0.6666666666666666
+        },
+        "2017": {
+          "count": 21,
+          "mean_return_20d": -0.021708700450294396,
+          "win_rate": 0.42857142857142855
+        },
+        "2018": {
+          "count": 11,
+          "mean_return_20d": -0.004489205635644888,
+          "win_rate": 0.36363636363636365
+        },
+        "2019": {
+          "count": 8,
+          "mean_return_20d": -0.021524232630881126,
+          "win_rate": 0.25
+        },
+        "2020": {
+          "count": 41,
+          "mean_return_20d": 0.009189503483405,
+          "win_rate": 0.5853658536585366
+        },
+        "2021": {
+          "count": 39,
+          "mean_return_20d": 0.018339268994615004,
+          "win_rate": 0.6153846153846154
+        },
+        "2022": {
+          "count": 3,
+          "mean_return_20d": 0.040544824112796314,
+          "win_rate": 1.0
+        },
+        "2023": {
+          "count": 12,
+          "mean_return_20d": -0.014245353864004912,
+          "win_rate": 0.5
+        },
+        "2024": {
+          "count": 6,
+          "mean_return_20d": 0.02916636375652514,
+          "win_rate": 0.8333333333333334
+        },
+        "2025": {
+          "count": 13,
+          "mean_return_20d": -0.01375206637621734,
+          "win_rate": 0.5384615384615384
+        },
+        "2026": {
+          "count": 6,
+          "mean_return_20d": -0.013398974877554462,
+          "win_rate": 0.5
+        }
+      },
+      "holdout_2025": {
+        "count": 13,
+        "mean_return_20d": -0.01375206637621734,
+        "win_rate": 0.5384615384615384
+      }
+    },
+    "direct_industry_etf": {
+      "signals": 190,
+      "complete": 83,
+      "mean_return_20d": -0.0010974483117361061,
+      "median_return_20d": -0.0005219421369234783,
+      "win_rate": 0.4819277108433735,
+      "folds": {
+        "2018": {
+          "count": 7,
+          "mean_return_20d": 0.003573920124185423,
+          "win_rate": 0.42857142857142855
+        },
+        "2019": {
+          "count": 3,
+          "mean_return_20d": -0.056829848016198885,
+          "win_rate": 0.0
+        },
+        "2020": {
+          "count": 20,
+          "mean_return_20d": 0.017745749770969037,
+          "win_rate": 0.65
+        },
+        "2021": {
+          "count": 23,
+          "mean_return_20d": 0.01831244585210613,
+          "win_rate": 0.6086956521739131
+        },
+        "2022": {
+          "count": 2,
+          "mean_return_20d": -0.022502733685166816,
+          "win_rate": 0.0
+        },
+        "2023": {
+          "count": 7,
+          "mean_return_20d": -0.040774925011623185,
+          "win_rate": 0.14285714285714285
+        },
+        "2024": {
+          "count": 4,
+          "mean_return_20d": 0.016400401666970814,
+          "win_rate": 0.75
+        },
+        "2025": {
+          "count": 11,
+          "mean_return_20d": -0.021578861103236088,
+          "win_rate": 0.36363636363636365
+        },
+        "2026": {
+          "count": 6,
+          "mean_return_20d": -0.03658692479886839,
+          "win_rate": 0.3333333333333333
+        }
+      },
+      "holdout_2025": {
+        "count": 11,
+        "mean_return_20d": -0.021578861103236088,
+        "win_rate": 0.36363636363636365
+      }
+    }
+  },
   "verdict": "NO-GO",
-  "full_study_metrics": null,
-  "holdout_2025": {
-    "unreported_peer_stock": null,
-    "direct_industry_etf": null
+  "status": "full_study_completed",
+  "end": "2026-08-28",
+  "execution": {
+    "elapsed_seconds": 79,
+    "full_run_timeout_seconds": 600,
+    "signal_implementation": "incremental visible-symbol sets by report period; active PIT industry sets cached by announcement day",
+    "equivalence_test": "optimized build_signals matched legacy semantics across multiple periods, dates, industries, and a non-member row"
   },
   "bounded_smoke": {
     "panel_version": "e9ef44a4ef6b0e45",
     "signal_date": "2024-08-01",
     "entry_date": "2024-08-02",
-    "unreported_peer_stock": {
-      "signals": 1,
-      "complete": 1,
-      "eligible_peers": 7,
-      "priced_peers": 2,
-      "mean_return_20d": -0.03302163259218811,
-      "median_return_20d": -0.03302163259218811,
-      "win_rate": 0.0
-    },
-    "direct_industry_etf": {
-      "signals": 1,
-      "complete": 1,
-      "etf_code": "159662.SZ",
-      "mean_return_20d": -0.05836590198123038,
-      "median_return_20d": -0.05836590198123038,
-      "win_rate": 0.0
-    }
-  },
-  "execution": {
-    "full_run_timeout_seconds": 600,
-    "announcements_loaded": 245404,
-    "bottleneck": "build_signals repeatedly filters the full announcements frame at experiments/run_early_reporting_peer_diffusion.py:58 (events.Symbol.isin(symbols)) for each announcement-day/period and active industry",
-    "diagnostic": "announcement and member loading completed in 0.97 seconds; build_signals remained inside pandas/pyarrow isin after 60 seconds",
-    "smallest_next_step": "pre-index announcement events by report period and symbol (or period and industry membership) so each loop scans only the relevant period subset; preserve the frozen thresholds and event ordering"
+    "unreported_peer_stock_return_20d": -0.03302163259218811,
+    "direct_industry_etf_return_20d": -0.05836590198123038
   }
 }

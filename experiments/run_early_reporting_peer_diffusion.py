@@ -49,16 +49,35 @@ def build_signals(members: pd.DataFrame, announcements: pd.DataFrame) -> pd.Data
     events["revenue_acceleration"] = events.tr_yoy - events.prior_revenue_yoy
     events["profit_acceleration"] = events.netprofit_yoy - events.prior_profit_yoy
     events["positive"] = (events.revenue_acceleration > 0) & (events.profit_acceleration > 0) & (events.prior_ann_date <= events.ann_date)
+    event_values = {
+        period: frame.set_index("Symbol")[["revenue_acceleration", "profit_acceleration", "positive"]].to_dict("index")
+        for period, frame in events.groupby("period", sort=False)
+    }
+    visible_symbols = {period: set() for period in event_values}
     rows: list[dict] = []
     emitted: set[tuple[str, pd.Period]] = set()
+    active_day: pd.Timestamp | None = None
+    active_industries: list[tuple[str, set[str]]] = []
     for (day, period), batch in events.groupby(["ann_date", "period"], sort=True):
-        active = _members_at(members, day)
-        for industry, industry_members in active.groupby("l1_name", sort=True):
-            symbols = set(industry_members.Symbol)
-            reported = events[(events.period == period) & (events.ann_date <= day) & events.Symbol.isin(symbols)]
-            valid = reported.dropna(subset=["revenue_acceleration", "profit_acceleration"])
-            fraction = len(reported) / len(symbols) if symbols else 0.0
-            positive_share = float(valid.positive.mean()) if len(valid) else np.nan
+        visible_symbols[period].update(batch.Symbol)
+        if day != active_day:
+            active = _members_at(members, day)
+            active_industries = [
+                (industry, set(industry_members.Symbol))
+                for industry, industry_members in active.groupby("l1_name", sort=True)
+            ]
+            active_day = day
+        values = event_values[period]
+        for industry, symbols in active_industries:
+            reported_symbols = sorted(symbols & visible_symbols[period])
+            valid = [
+                values[symbol]
+                for symbol in reported_symbols
+                if pd.notna(values[symbol]["revenue_acceleration"])
+                and pd.notna(values[symbol]["profit_acceleration"])
+            ]
+            fraction = len(reported_symbols) / len(symbols) if symbols else 0.0
+            positive_share = float(np.mean([row["positive"] for row in valid])) if valid else np.nan
             key = (industry, period)
             if key in emitted or len(valid) < MIN_REPORTERS or not MIN_EARLY_FRACTION <= fraction <= MAX_EARLY_FRACTION or not positive_share >= MIN_POSITIVE_SHARE:
                 continue
@@ -68,14 +87,14 @@ def build_signals(members: pd.DataFrame, announcements: pd.DataFrame) -> pd.Data
                 "report_period": str(period),
                 "industry": industry,
                 "industry_members": len(symbols),
-                "reported_count": len(reported),
+                "reported_count": len(reported_symbols),
                 "valid_reporter_count": len(valid),
                 "early_fraction": fraction,
                 "positive_share": positive_share,
-                "median_revenue_acceleration": float(valid.revenue_acceleration.median()),
-                "median_profit_acceleration": float(valid.profit_acceleration.median()),
-                "reported_symbols": json.dumps(sorted(reported.Symbol.unique())),
-                "peer_symbols": json.dumps(sorted(symbols - set(reported.Symbol))),
+                "median_revenue_acceleration": float(np.median([row["revenue_acceleration"] for row in valid])),
+                "median_profit_acceleration": float(np.median([row["profit_acceleration"] for row in valid])),
+                "reported_symbols": json.dumps(reported_symbols),
+                "peer_symbols": json.dumps(sorted(symbols - set(reported_symbols))),
             })
     return pd.DataFrame(rows)
 
