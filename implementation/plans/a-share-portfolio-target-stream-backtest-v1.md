@@ -96,10 +96,10 @@ The controlling agent approves `CnAShareRebalanceExecutionPolicyV1` for fixture-
 5. T+1-unavailable quantities cannot be sold;
 6. a newer complete target snapshot deterministically supersedes stale working orders.
 
-The decision is supported by the frozen V18 execution requirements and the independent oracle review in `a-share-portfolio-target-stream-oracle-review.md`.
+The decision is supported by the frozen V18 execution requirements, the first oracle review in `a-share-portfolio-target-stream-oracle-review.md`, and the expanded V2 runtime decision in `a-share-portfolio-runtime-v2-oracle-decision.md`.
 
 ## Readiness decision
 
-**READY for fixture-level contract implementation.** Exact additive public symbols and write set are defined by the oracle review: a dedicated `cn_a_share_portfolio_provider.py`, public-root exports, provider tests and architecture boundary tests; kernel files are included only for the approved side-specific lifetime policy. Existing cash/fixed-singleton identities must remain byte/hash stable.
+**READY for fixture-level contract implementation.** The expanded oracle decision freezes a parallel V2 portfolio execution path, execution-input bundle V7, terminal/cancellation evidence, decision-time snapshot refresh, availability/fee-aware capping, atomic supersession and an additive multi-instrument portfolio profile. Implementation must follow Phases 0—7 in order and stop at each preservation gate. Existing cash/fixed-singleton identities must remain byte/hash stable.
 
 **Real-data execution remains NOT_READY** until full-market MarketBundle, historical fee/tax, status, price-limit and corporate-action authorities are terminal complete. V18 and dividend-growth remain `backtest_ready=false` and `trade_authorized=false`.
