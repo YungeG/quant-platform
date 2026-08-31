@@ -1,0 +1,126 @@
+{
+  "study": "a-share-actual-quarterly-sue-v1",
+  "data": {
+    "panel_version": "0337aebbc63810d8",
+    "statement_sue_rows": 150821,
+    "target_days": 2186,
+    "start": "2017-01-03",
+    "end": "2025-12-31",
+    "st_source": "DuckDB PIT is_st",
+    "sw2021_member_rows": 5897,
+    "signal_sw2021_coverage": 1.0,
+    "etf_rows": 2602
+  },
+  "portfolio": {
+    "metrics": {
+      "cagr": 0.08636869074580766,
+      "volatility": 0.2059252789389301,
+      "sharpe": 0.5052231814728023,
+      "max_drawdown": -0.47971805759214836,
+      "calmar": 0.18004052459338
+    },
+    "gross_metrics": {
+      "cagr": 0.11794766186377692,
+      "volatility": 0.20997184709729488,
+      "sharpe": 0.6360123872976682,
+      "max_drawdown": -0.4515540822063223,
+      "calmar": 0.26120384359604737
+    },
+    "benchmark_metrics": {
+      "cagr": 0.23271963032105059,
+      "volatility": 0.20595261305340914,
+      "sharpe": 1.1194121033818651,
+      "max_drawdown": -0.2987686219437621,
+      "calmar": 0.778929289183708
+    },
+    "excess_cagr": -0.14635093957524292,
+    "gross_to_net_cagr_retention": 0.7322628476142136,
+    "folds": {
+      "discovery": {
+        "cagr": 0.1561488409535272,
+        "volatility": 0.20944719082550114,
+        "sharpe": 0.7978062932237442,
+        "max_drawdown": -0.27157352967300497,
+        "calmar": 0.5749781325946686,
+        "benchmark_cagr": 0.275696444897642,
+        "excess_cagr": -0.11954760394411479,
+        "benchmark_sharpe": 1.2592046793877103
+      },
+      "validation": {
+        "cagr": -0.10128821539445709,
+        "volatility": 0.20534732878543246,
+        "sharpe": -0.4180321054264974,
+        "max_drawdown": -0.4081510380298108,
+        "calmar": -0.24816356190930267,
+        "benchmark_cagr": 0.08707260359352831,
+        "excess_cagr": -0.1883608189879854,
+        "benchmark_sharpe": 0.5091026225373033
+      },
+      "holdout": {
+        "cagr": 0.4016056603388527,
+        "volatility": 0.18803301929909436,
+        "sharpe": 1.8907035900462172,
+        "max_drawdown": -0.11727902063027107,
+        "calmar": 3.4243606246076856,
+        "benchmark_cagr": 0.5117145370019702,
+        "excess_cagr": -0.11010887666311753,
+        "benchmark_sharpe": 2.386778332163228
+      }
+    },
+    "positive_excess_folds": 0,
+    "yearly_returns": {
+      "2017": 0.022135828976258543,
+      "2018": -0.18014913250294107,
+      "2019": 0.28396974072129977,
+      "2020": 0.5833505083202166,
+      "2021": 0.18288103173566905,
+      "2022": -0.20318670621314794,
+      "2023": -0.1641548707473982,
+      "2024": 0.10382518579807165,
+      "2025": 0.38480685747759646
+    },
+    "best_year": "2020",
+    "best_year_return": 0.5833505083202166,
+    "cagr_excluding_best_year": 0.03291337861338017,
+    "annual_turnover": 9.151549979508564,
+    "average_positions": 16.914455626715462,
+    "minimum_positions": 0,
+    "average_cash_fraction": 0.21953832496532527,
+    "trade_count": 3403,
+    "buy_count": 1710,
+    "sell_count": 1693,
+    "fees": 139104.74149499097,
+    "blocked_buys": 7,
+    "blocked_sells": 93,
+    "lot_failures": 1686,
+    "expired_buys": 1687,
+    "execution_failure_rate": 0.497502203937702,
+    "missing_valuation_rate": 0.0026774847870182556
+  },
+  "etf_descriptive_metrics": {
+    "cagr": 0.05887864195525694,
+    "volatility": 0.18923687107810147,
+    "sharpe": 0.39697350131051284,
+    "max_drawdown": -0.42155347080635774,
+    "calmar": 0.1396706373752123
+  },
+  "decision": {
+    "verdict": "NO-GO",
+    "checks": {
+      "validation_excess_cagr": false,
+      "validation_sharpe": false,
+      "validation_drawdown": true,
+      "holdout_excess_cagr": false,
+      "holdout_sharpe": false,
+      "holdout_drawdown": true,
+      "cost_retention": false,
+      "positive_folds": false
+    }
+  },
+  "limitations": [
+    "Day-level ann_date requires conservative next-open execution.",
+    "PIT ST is the corrected DuckDB is_st field; announcement timestamps are unavailable.",
+    "ETF is descriptive; Top-500 equal-weight is the specified execution benchmark."
+  ],
+  "ledger": "overall/a-share-quarterly-sue-signals.csv"
+}
