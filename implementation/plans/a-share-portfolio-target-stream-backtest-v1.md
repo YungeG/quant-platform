@@ -103,3 +103,11 @@ The decision is supported by the frozen V18 execution requirements, the first or
 **READY for fixture-level contract implementation.** The expanded oracle decision freezes a parallel V2 portfolio execution path, execution-input bundle V7, terminal/cancellation evidence, decision-time snapshot refresh, availability/fee-aware capping, atomic supersession and an additive multi-instrument portfolio profile. Implementation must follow Phases 0—7 in order and stop at each preservation gate. Existing cash/fixed-singleton identities must remain byte/hash stable.
 
 **Real-data execution remains NOT_READY** until full-market MarketBundle, historical fee/tax, status, price-limit and corporate-action authorities are terminal complete. V18 and dividend-growth remain `backtest_ready=false` and `trade_authorized=false`.
+
+## Implementation progress
+
+- Phase 0–1 implementation: `8beb324`, repaired by `9a6c8a1`; handoff commits `0555296` and `7362772`.
+- Independent re-review: **ACCEPT Phase 1**, recorded in `a-share-portfolio-phase1-independent-rereview.md`.
+- Controlling-agent confirmation: focused 5 passed; clean-tree preservation gate 127 passed; LSP clean.
+- Remote branch: `quant-backtest/feature/cn-a-share-portfolio-provider-v1`.
+- Next authorized phase: Phase 2 decision-time snapshot refresh only.
