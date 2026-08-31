@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "overrides": {
+    "1212885582": {
+      "fields": {
+        "payment_date": "2022-04-20"
+      },
+      "evidence": "Official CNINFO PDF page 2 visibly states cash dividend payment on 2022-04-20; pdftotext omitted the month numeral.",
+      "source_sha256": "04cef40e58734298b64987095f4dba7a2b3d59015e13ff57c803a6009f98dd90"
+    },
+    "1213500956": {
+      "fields": {
+        "ex_date": "2022-06-02",
+        "payment_date": "2022-06-02"
+      },
+      "evidence": "Official CNINFO PDF pages 1-2 visibly state ex-date and cash payment date 2022-06-02; pdftotext omitted a page-boundary glyph.",
+      "source_sha256": "584162e373334fdb1d3174d9791a63c3ba5e860839cab3460707cc894478ec93"
+    }
+  }
+}

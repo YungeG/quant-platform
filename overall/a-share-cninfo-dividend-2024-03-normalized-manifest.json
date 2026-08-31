@@ -1,0 +1,17 @@
+{
+  "source_capture": "overall/a-share-cninfo-dividend-2024-03-raw",
+  "row_count": 8,
+  "cash_dividend_count": 8,
+  "non_cash_or_correction_count": 0,
+  "complete_count": 8,
+  "incomplete_announcement_ids": [],
+  "sh_sz_ordinary_count": 7,
+  "sh_sz_ordinary_complete_count": 7,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
+  "sh_sz_ordinary_parse_complete": true,
+  "override_count": 0,
+  "output_sha256": "a6d0f280f6a9c23075698bf574fdc87a69a33ec03618681d5db576899e2138fd",
+  "lifecycle_parse_complete": true,
+  "backtest_ready": false,
+  "trade_authorized": false
+}

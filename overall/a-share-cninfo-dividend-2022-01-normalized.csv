@@ -1,0 +1,4 @@
+announcement_id,security_code,security_name,publish_date,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
+1212136113,838030,德众汽车,2022-01-10,2022-01-19,2022-01-20,2022-01-20,0.0670992,2021年第三季度权益分派实施公告,pdf/1212136113.pdf,2b7ae13cfd06aa8b8486c2bce799cb154ae8c6426b5795ce04f87f252afc7711,false,COMPLETE
+1212217721,601686,友发集团,2022-01-20,2022-01-25,2022-01-26,2022-01-26,0.15,2021年前三季度权益分派实施公告,pdf/1212217721.pdf,3969f21754564410e9e9006ea198edee36371d5f0e1132e35309dcb09d6492b9,false,COMPLETE
+1212219020,688711,宏微科技,2022-01-20,2022-01-25,2022-01-26,2022-01-26,0.203,江苏宏微科技股份有限公司2021年前三季度权益分派实施公告,pdf/1212219020.pdf,361fb7635116c8f3ec7c75bc138e0d194c2ed393ccd1756d9d8a3bb32d2fa37d,false,COMPLETE

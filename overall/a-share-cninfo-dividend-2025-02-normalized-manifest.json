@@ -3,16 +3,15 @@
   "row_count": 21,
   "cash_dividend_count": 20,
   "non_cash_or_correction_count": 1,
-  "complete_count": 19,
-  "incomplete_announcement_ids": [
-    "1222536534"
-  ],
+  "complete_count": 20,
+  "incomplete_announcement_ids": [],
   "sh_sz_ordinary_count": 19,
   "sh_sz_ordinary_complete_count": 19,
   "sh_sz_ordinary_incomplete_announcement_ids": [],
   "sh_sz_ordinary_parse_complete": true,
-  "output_sha256": "e49a35dc07dd4888710d3dbf47b244dc893263f9b1ab1df9713a755a2fc3fa8b",
-  "lifecycle_parse_complete": false,
+  "override_count": 0,
+  "output_sha256": "8adccec56c01592e9713e6b0974efd9cc4d20e09c46c0dbe2fdee073fdb6c2af",
+  "lifecycle_parse_complete": true,
   "backtest_ready": false,
   "trade_authorized": false
 }

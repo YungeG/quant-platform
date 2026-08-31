@@ -2,39 +2,40 @@
 
 ## 结论
 
-**`SOURCE_CAPTURED_2025 / IMPLEMENTATION_LIFECYCLE_COMPLETE / NO_BACKTEST_RUN`**
+**`SOURCE_CAPTURED_2022_2025 / ONE_PAYMENT_DATE_UNRESOLVED / NO_BACKTEST_RUN`**
 
 已确认巨潮资讯网第一方公告接口可按日期和关键字分页获取全市场`权益分派实施公告`，并从`static.cninfo.com.cn`下载官方PDF。公告提供证券代码、公告日期、公告ID和原始PDF；仅有日期没有可靠的日内时间，因此统一按公告日收盘后可用处理。
 
-## 2025全年验证
+## 2022—2025验证
 
-- 已完整覆盖12个月；
-- 唯一实施公告：4507份；
-- 现金分红公告：4488份，纯送转或更正公告19份；
-- 当前沪深普通A股现金分红范围：4222份；
-- 沪深普通A股完整解析：4222/4222；
+- 已完整按月捕获4个自然年；
+- 唯一实施公告：15652份；
+- 现金分红公告：15505份，纯送转、更正或补充公告147份；
+- 当前沪深普通A股现金分红范围：14691份；
+- 完整生命周期：14690/14691；
+- 唯一未闭合项：公告`1212668618`未在官方PDF中声明普通股现金红利支付日期；
 - 提取字段：公告日、股权登记日、除权除息日、现金红利发放日、税前每股现金红利；
-- 北交所范围7份仍有格式差异，但不属于当前`.SH/.SZ`策略范围；
-- 各批次原始与规范化SHA256见`a-share-cninfo-dividend-2025-capture-summary.csv`。
+- 两处PDF文字提取缺字已通过官方页面视觉复核并记录在`a-share-cninfo-dividend-extraction-overrides-v1.json`；
+- 统一数据：`a-share-cninfo-dividend-2022-2025-normalized.csv`，SHA256 `7d99cde98f0b3eb981a6ab6120b1e599ee5756811f916614bcc7d471921ec26b`。
 
 采集与解析入口：
 
 - `experiments/fetch_cninfo_dividend_lifecycle.py`
 - `experiments/parse_cninfo_dividend_lifecycle.py`
-- `overall/a-share-cninfo-dividend-2025-01-normalized.csv`
+- `overall/a-share-cninfo-dividend-2022-2025-normalized.csv`
 
 ## 尚未解除的阻塞
 
 官网一次性全年查询返回4552行但仅2550个唯一公告ID，并遗漏月度查询可见的1957个ID，因此不能作为完整性权威。按月查询得到4507个互不重复公告ID，月度分页捕获数与落盘记录逐月一致。
 
-更重要的是，实施公告只证明最终登记、除权和支付安排，尚不构成完整的声明、股东大会批准、取消、更正和替换链；单年数据也不足以验证连续三年分红增长。
+实施公告只证明最终登记、除权和支付安排，尚不构成完整的声明、股东大会批准、取消、更正和替换链。四年窗口已足以覆盖三年分红增长所需实施记录，但单个缺失支付日期仍使冻结的fail-closed规则无法运行。
 
 分红增长＋现金覆盖策略仍缺：
 
-1. 多年完整实施公告及修订终端集；
+1. 为公告`1212668618`取得可接受的补充支付日期权威，并闭合声明/取消/更正链；
 2. PIT年度经营现金流和基准股本单位权威；
 3. 全市场状态、费用、税费及公司行动执行权威；
 4. 正式多股票A股Backtest准备入口；
 5. 预先冻结的独立holdout。
 
-因此来源状态由完全未知改善为有界可采集，但仍禁止回测和交易，`trade_authorized=false`。
+因此实施生命周期数据已接近完整，但尚未达到冻结策略的全局完整性Gate，仍禁止回测和交易，`trade_authorized=false`。

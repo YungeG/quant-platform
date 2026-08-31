@@ -1,0 +1,22 @@
+{
+  "dataset_id": "a-share-cninfo-dividend-lifecycle-2022-v1",
+  "interval": [
+    "2022-01-01",
+    "2023-01-01"
+  ],
+  "announcement_count": 3195,
+  "all_cash_announcement_count": 3152,
+  "excluded_non_cash_or_correction_count": 43,
+  "sh_sz_ordinary_cash_count": 3053,
+  "sh_sz_ordinary_complete_count": 3052,
+  "sh_sz_ordinary_incomplete_announcement_ids": [
+    "1212668618"
+  ],
+  "sh_sz_ordinary_parse_complete": false,
+  "override_count": 2,
+  "source": "CNINFO official implementation announcements",
+  "availability_rule": "publication date close",
+  "sha256": "0ecb6c218bf91a8f74623fc3f78475bf6007736938f904a9de29aca7f1bb934a",
+  "backtest_ready": false,
+  "trade_authorized": false
+}

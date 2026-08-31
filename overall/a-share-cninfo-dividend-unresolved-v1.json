@@ -1,0 +1,20 @@
+{
+  "audit_id": "a-share-cninfo-dividend-unresolved-v1",
+  "unresolved": [
+    {
+      "announcement_id": "1212668618",
+      "security_code": "300692",
+      "security_name": "中环环保",
+      "publish_date": "2022-03-25",
+      "record_date": "2022-03-31",
+      "ex_date": "2022-04-01",
+      "payment_date": null,
+      "cash_per_share": 0.05,
+      "source_sha256": "77030865f5ba5922a0a895db758a0d1e4fb02a38f3cc92531157032cd423d02c",
+      "finding": "The official implementation PDF does not state a general cash payment date; it only lists two self-paid shareholders.",
+      "required_resolution": "Accepted CSDC/exchange/vendor payment authority with immutable source and revision lineage; do not infer payment_date=ex_date."
+    }
+  ],
+  "backtest_ready": false,
+  "trade_authorized": false
+}

@@ -1,0 +1,2 @@
+announcement_id,security_code,security_name,publish_date,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
+1215908147,000651,格力电器,2023-02-21,2023-02-24,2023-02-27,2023-02-27,1.0,2022年中期权益分派实施公告,pdf/1215908147.pdf,38cae00aa0354049d70e20f85fe388307c916a15f998a856079b3889ab602cb9,false,COMPLETE

@@ -1,6 +1,6 @@
 {
   "audit_id": "a-share-dividend-lifecycle-source-audit-v2",
-  "status": "SOURCE_CAPTURED_2025_IMPLEMENTATION_LIFECYCLE",
+  "status": "SOURCE_CAPTURED_2022_2025_ONE_UNRESOLVED",
   "backtest_status": "NO_BACKTEST_RUN",
   "official_source": {
     "platform": "CNINFO official disclosure platform",
@@ -9,20 +9,19 @@
     "keyword": "权益分派实施公告",
     "availability_rule": "announcement date only; conservatively available after that date close"
   },
-  "capture_2025_complete": {
-    "completed_months": 12,
-    "captured_unique_announcements": 4507,
-    "cash_dividend_announcements": 4488,
-    "non_cash_or_correction_announcements": 19,
-    "sh_sz_ordinary_cash_announcements": 4222,
-    "sh_sz_ordinary_complete_lifecycle": 4222,
-    "sh_sz_ordinary_parse_rate": 1.0,
-    "out_of_scope_incomplete": 266,
-    "capture_summary": "overall/a-share-cninfo-dividend-2025-capture-summary.csv",
-    "normalized_dataset": "overall/a-share-cninfo-dividend-2025-normalized.csv",
-    "normalized_sha256": "bbe2964b91b065f3ac8a81a3fdd354c62aa6c24c9989ad435e558672f574195e"
+  "capture_2022_2025": {
+    "completed_years": [2022, 2023, 2024, 2025],
+    "captured_unique_announcements": 15652,
+    "cash_dividend_announcements": 15505,
+    "non_cash_or_correction_announcements": 147,
+    "sh_sz_ordinary_cash_announcements": 14691,
+    "sh_sz_ordinary_complete_lifecycle": 14690,
+    "sh_sz_ordinary_incomplete_announcement_ids": ["1212668618"],
+    "manual_extraction_overrides": 2,
+    "normalized_dataset": "overall/a-share-cninfo-dividend-2022-2025-normalized.csv",
+    "normalized_sha256": "7d99cde98f0b3eb981a6ab6120b1e599ee5756811f916614bcc7d471921ec26b"
   },
-  "full_year_query_reliability": {
+  "full_year_query_reliability_2025": {
     "returned_rows": 4552,
     "returned_unique_ids": 2550,
     "monthly_unique_ids": 4507,
@@ -30,7 +29,7 @@
     "decision": "Use bounded monthly queries; the one-year query is duplicate-heavy and incomplete."
   },
   "remaining_requirements": [
-    "capture the complete multi-year implementation-announcement history month by month",
+    "resolve the missing payment date in official announcement 1212668618 through an accepted supplemental source",
     "capture proposal, shareholder-approval, cancellation and correction lineage rather than implementation PDFs only",
     "bind PIT annual operating cash flow and base-share units with revision completeness",
     "qualify historical listing/ST/suspension, fee, tax and corporate-action execution authorities",

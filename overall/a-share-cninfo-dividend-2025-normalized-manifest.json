@@ -5,19 +5,16 @@
     "2026-01-01"
   ],
   "announcement_count": 4507,
-  "all_cash_announcement_count": 4488,
-  "excluded_non_cash_or_correction_count": 19,
+  "all_cash_announcement_count": 4485,
+  "excluded_non_cash_or_correction_count": 22,
   "sh_sz_ordinary_cash_count": 4222,
   "sh_sz_ordinary_complete_count": 4222,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
   "sh_sz_ordinary_parse_complete": true,
+  "override_count": 0,
   "source": "CNINFO official implementation announcements",
   "availability_rule": "publication date close",
-  "sha256": "bbe2964b91b065f3ac8a81a3fdd354c62aa6c24c9989ad435e558672f574195e",
+  "sha256": "3fb2305c8abe12a72337742786182dd4850ba3b07ad2b642abaeef4540af3975",
   "backtest_ready": false,
-  "trade_authorized": false,
-  "limitations": [
-    "implementation lifecycle only; proposal/approval/cancellation/correction linkage incomplete",
-    "cash-flow and base-share authority not bound",
-    "single-year capture is insufficient for three-year dividend growth"
-  ]
+  "trade_authorized": false
 }

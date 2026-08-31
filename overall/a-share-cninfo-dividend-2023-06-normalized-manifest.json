@@ -1,0 +1,19 @@
+{
+  "source_capture": "overall/a-share-cninfo-dividend-2023-06-raw",
+  "row_count": 1318,
+  "cash_dividend_count": 1294,
+  "non_cash_or_correction_count": 24,
+  "complete_count": 1293,
+  "incomplete_announcement_ids": [
+    "1217003728"
+  ],
+  "sh_sz_ordinary_count": 1245,
+  "sh_sz_ordinary_complete_count": 1245,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
+  "sh_sz_ordinary_parse_complete": true,
+  "override_count": 0,
+  "output_sha256": "f28386bf7ac4cb0ade9f7d6fa9485154773d7bf0a8cfb0598ba7b3c10eba7c2b",
+  "lifecycle_parse_complete": false,
+  "backtest_ready": false,
+  "trade_authorized": false
+}

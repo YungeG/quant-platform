@@ -1,0 +1,17 @@
+{
+  "source_capture": "overall/a-share-cninfo-dividend-2022-09-raw",
+  "row_count": 66,
+  "cash_dividend_count": 58,
+  "non_cash_or_correction_count": 8,
+  "complete_count": 58,
+  "incomplete_announcement_ids": [],
+  "sh_sz_ordinary_count": 48,
+  "sh_sz_ordinary_complete_count": 48,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
+  "sh_sz_ordinary_parse_complete": true,
+  "override_count": 0,
+  "output_sha256": "9ff77492cbf1fc9afcd4a4826dc24a6f3c911381c032e3376e77f16012c6c2fc",
+  "lifecycle_parse_complete": true,
+  "backtest_ready": false,
+  "trade_authorized": false
+}

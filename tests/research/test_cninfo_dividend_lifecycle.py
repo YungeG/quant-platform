@@ -51,6 +51,22 @@ A 股每股现金红利 0.15 元
     }
 
 
+def test_page_header_inside_date_is_ignored():
+    text = "股权登记日为2024年6月14日，除权除息日为2024年某某公司2023年度权益分派实施公告6月17日。现金红利将于2024年某某公司6月17日发放。每10股派2元。"
+
+    parsed = parse_text(text)
+
+    assert (parsed["record_date"], parsed["ex_date"], parsed["payment_date"]) == ("2024-06-14", "2024-06-17", "2024-06-17")
+
+
+def test_combined_ex_and_payment_date_and_missing_yu_are_supported():
+    text = "股权登记日为2024年6月6日，除权除息及红利发放日为2024年6月7日。本公司现金红利将2024年6月7日发放。每10股派0.65元。"
+
+    parsed = parse_text(text)
+
+    assert (parsed["record_date"], parsed["ex_date"], parsed["payment_date"]) == ("2024-06-06", "2024-06-07", "2024-06-07")
+
+
 def test_font_mapped_year_glyphs_are_normalized_to_month_and_day():
     text = "股权登记日为：2025年6年3年；除权除息日为：2025年6年4年。现金红利将于2025年6年4年发放。每10股派1.50元。"
 
@@ -72,7 +88,7 @@ def test_parse_four_date_table_uses_final_date_for_cash_payment():
 
 
 def test_non_cash_stock_dividend_is_excluded_from_cash_lifecycle():
-    text = "公司每10股派发现金股利0元，以资本公积每股转增0.2股，共计转增股份。"
+    text = "公司以资本公积每10股转增4股，不送红股。"
 
     assert parse_text(text)["status"] == "NO_CASH_DIVIDEND"
 
