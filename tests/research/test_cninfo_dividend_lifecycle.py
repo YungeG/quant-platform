@@ -51,6 +51,24 @@ A 股每股现金红利 0.15 元
     }
 
 
+def test_parse_four_date_table_uses_final_date_for_cash_payment():
+    text = """
+每股现金红利0.70元
+股权登记日 除权（息）日 新增无限售条件流通股份上市日 现金红利发放日
+2025/4/24 2025/4/25 2025/4/25 2025/4/25
+"""
+
+    parsed = parse_text(text)
+
+    assert (parsed["record_date"], parsed["ex_date"], parsed["payment_date"]) == ("2025-04-24", "2025-04-25", "2025-04-25")
+
+
+def test_non_cash_stock_dividend_is_excluded_from_cash_lifecycle():
+    text = "公司以资本公积每10股转增4.9股，公司不派发现金，不送红股。现金红利为0。"
+
+    assert parse_text(text)["status"] == "NO_CASH_DIVIDEND"
+
+
 def test_parse_shenzhen_sentence_lifecycle_and_per_ten_cash():
     text = """
 公司向全体股东每 10 股派 0.400000 元人民币现金。

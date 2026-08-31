@@ -9,21 +9,22 @@
     "keyword": "权益分派实施公告",
     "availability_rule": "announcement date only; conservatively available after that date close"
   },
-  "bounded_capture_2025_01": {
-    "captured_announcements": 129,
-    "sh_sz_ordinary_announcements": 122,
-    "sh_sz_ordinary_complete_lifecycle": 122,
+  "bounded_capture_2025_01_to_04": {
+    "completed_months": ["2025-01", "2025-02", "2025-03", "2025-04"],
+    "captured_announcements": 329,
+    "cash_dividend_announcements": 327,
+    "non_cash_dividend_announcements": 2,
+    "sh_sz_ordinary_cash_announcements": 309,
+    "sh_sz_ordinary_complete_lifecycle": 309,
     "sh_sz_ordinary_parse_rate": 1.0,
-    "all_market_complete_lifecycle": 122,
-    "all_market_parse_rate": 0.9457364341085271,
-    "out_of_scope_incomplete": 7,
-    "records_sha256": "44e814469872e5c82116297d5605b7ba4caccebeefbf411a40179107766d9932",
-    "normalized_sha256": "938cfb2e433180c762b39d7ad11284b4ed30a41a908da1c4243f4192e939a7a7"
+    "out_of_scope_incomplete": 18,
+    "monthly_summary": "overall/a-share-cninfo-dividend-2025-monthly-summary.csv"
   },
   "full_2025_query": {
     "exact_title_matches": 4552,
-    "capture_status": "NOT_STARTED_LARGE_SCALE",
-    "reason": "requires checkpointed month-by-month acquisition and storage budget"
+    "capture_status": "IN_PROGRESS_MONTHLY",
+    "completed_months": 4,
+    "total_months": 12
   },
   "remaining_requirements": [
     "capture the complete multi-year implementation-announcement history month by month",
