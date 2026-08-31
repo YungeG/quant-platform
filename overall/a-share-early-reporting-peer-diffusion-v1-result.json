@@ -1,0 +1,41 @@
+{
+  "study": "a-share-early-reporting-peer-diffusion-v1",
+  "status": "blocked_before_full_metrics",
+  "end": "2026-08-28",
+  "trade_authorized": false,
+  "verdict": "NO-GO",
+  "full_study_metrics": null,
+  "holdout_2025": {
+    "unreported_peer_stock": null,
+    "direct_industry_etf": null
+  },
+  "bounded_smoke": {
+    "panel_version": "e9ef44a4ef6b0e45",
+    "signal_date": "2024-08-01",
+    "entry_date": "2024-08-02",
+    "unreported_peer_stock": {
+      "signals": 1,
+      "complete": 1,
+      "eligible_peers": 7,
+      "priced_peers": 2,
+      "mean_return_20d": -0.03302163259218811,
+      "median_return_20d": -0.03302163259218811,
+      "win_rate": 0.0
+    },
+    "direct_industry_etf": {
+      "signals": 1,
+      "complete": 1,
+      "etf_code": "159662.SZ",
+      "mean_return_20d": -0.05836590198123038,
+      "median_return_20d": -0.05836590198123038,
+      "win_rate": 0.0
+    }
+  },
+  "execution": {
+    "full_run_timeout_seconds": 600,
+    "announcements_loaded": 245404,
+    "bottleneck": "build_signals repeatedly filters the full announcements frame at experiments/run_early_reporting_peer_diffusion.py:58 (events.Symbol.isin(symbols)) for each announcement-day/period and active industry",
+    "diagnostic": "announcement and member loading completed in 0.97 seconds; build_signals remained inside pandas/pyarrow isin after 60 seconds",
+    "smallest_next_step": "pre-index announcement events by report period and symbol (or period and industry membership) so each loop scans only the relevant period subset; preserve the frozen thresholds and event ordering"
+  }
+}
