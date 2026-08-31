@@ -1,6 +1,6 @@
 # A-share portfolio target-stream Backtest Full Implementation Packet
 
-Status: **NOT_READY**
+Status: **READY for fixture-level contract implementation; real-data execution remains NOT_READY**
 
 ## Outcome
 
@@ -85,10 +85,21 @@ These decisions affect request hashes, semantic run identity, evidence bytes and
 - Target-stream tamper, market-bundle tamper and retention loss fail before an attempt.
 - Existing cash-development and fixed-singleton suites remain byte/hash stable.
 
-## Open decision
+## Approved contract decision
 
-**Material blocker:** no accepted Backtest contract defines the six missing decisions above, and real full-market A-share rule/fee/corporate-action authority is not terminal complete. The packet cannot name exact new symbols, preimages or failure codes without inventing Backtest architecture.
+The controlling agent approves `CnAShareRebalanceExecutionPolicyV1` for fixture-level implementation with these indivisible semantics:
+
+1. sell orders are GTC and remain working after lower-limit/suspension blocks;
+2. buy orders are DAY and failed buys expire to cash;
+3. sells are planned before buys;
+4. buy sizing uses settled, unreserved cash only and never expected sell proceeds;
+5. T+1-unavailable quantities cannot be sold;
+6. a newer complete target snapshot deterministically supersedes stale working orders.
+
+The decision is supported by the frozen V18 execution requirements and the independent oracle review in `a-share-portfolio-target-stream-oracle-review.md`.
 
 ## Readiness decision
 
-**NOT_READY.** The next owner is the Backtest contract owner, who must first approve a public multi-instrument provider contract and immutable source profile. Until then, V18 and dividend-growth remain research target states with `backtest_ready=false` and `trade_authorized=false`.
+**READY for fixture-level contract implementation.** Exact additive public symbols and write set are defined by the oracle review: a dedicated `cn_a_share_portfolio_provider.py`, public-root exports, provider tests and architecture boundary tests; kernel files are included only for the approved side-specific lifetime policy. Existing cash/fixed-singleton identities must remain byte/hash stable.
+
+**Real-data execution remains NOT_READY** until full-market MarketBundle, historical fee/tax, status, price-limit and corporate-action authorities are terminal complete. V18 and dividend-growth remain `backtest_ready=false` and `trade_authorized=false`.
