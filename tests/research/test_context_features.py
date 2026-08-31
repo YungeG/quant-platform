@@ -2,7 +2,7 @@ import pytest
 
 pd = pytest.importorskip("pandas")
 
-from experiments.context_features import analyst_eps_revision, holm_adjust
+from experiments.context_features import analyst_eps_revision, eps_revision_to_price, holm_adjust
 
 
 def test_analyst_revision_uses_latest_per_org_at_each_cutoff():
@@ -20,6 +20,12 @@ def test_analyst_revision_uses_latest_per_org_at_each_cutoff():
     assert result["quarter"] == "2026Q4"
     assert result["current_count"] == result["prior_count"] == 3
     assert result["revision"] == pytest.approx(0.2)
+
+
+def test_eps_revision_to_price_has_no_prior_eps_denominator():
+    assert eps_revision_to_price(0.05, 0.01, 10.0) == pytest.approx(0.004)
+    assert eps_revision_to_price(0.05, 0.0, 10.0) == pytest.approx(0.005)
+    assert pd.isna(eps_revision_to_price(0.05, 0.01, 0.0))
 
 
 def test_analyst_revision_requires_three_orgs_at_both_cutoffs():

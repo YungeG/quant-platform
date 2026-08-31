@@ -52,6 +52,12 @@ def analyst_eps_revision(rows: pd.DataFrame, signal_date: pd.Timestamp) -> dict:
     }
 
 
+def eps_revision_to_price(current_eps: float, prior_eps: float, price: float) -> float:
+    if not all(np.isfinite(value) for value in (current_eps, prior_eps, price)) or price <= 0:
+        return np.nan
+    return float((current_eps - prior_eps) / price)
+
+
 def holm_adjust(p_values: dict[str, float]) -> dict[str, float]:
     ordered = sorted(p_values, key=lambda key: p_values[key])
     adjusted: dict[str, float] = {}

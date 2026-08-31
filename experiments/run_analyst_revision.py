@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
+from experiments.context_features import eps_revision_to_price
 from experiments.quarterly_portfolio import Bar, BasketConfig, simulate_basket
 from experiments.run_largecap_lowvol import summarize_basket
 from experiments.run_lowturn_livermore import _clean
@@ -154,6 +155,13 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
             continue
         revision = consensus_revisions(reports, day)
         candidates = universe.merge(revision, on="Symbol", how="inner")
+        if factor == "revision_to_price":
+            candidates["revision_to_price"] = [
+                eps_revision_to_price(current, prior, price)
+                for current, prior, price in zip(
+                    candidates["current_eps"], candidates["prior_eps"], candidates["Close"], strict=True
+                )
+            ]
         benchmark = float(universe["_fwd20"].mean())
         candidates["active20"] = candidates["_fwd20"] - benchmark
         for row in candidates.itertuples(index=False):
@@ -164,6 +172,9 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
                     "quarter": row.quarter,
                     "signal_value": getattr(row, factor),
                     "revision": row.revision,
+                    "revision_to_price": getattr(row, "revision_to_price", np.nan),
+                    "current_eps": row.current_eps,
+                    "prior_eps": row.prior_eps,
                     "breadth": row.breadth,
                     "paired_count": row.paired_count,
                     "current_count": row.current_count,
@@ -349,7 +360,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--end", default="2026-08-26")
     parser.add_argument("--benchmark", default="overall/a-share-multi-asset-etf-daily.csv")
     parser.add_argument("--signals", default="overall/a-share-analyst-revision-signals.csv")
-    parser.add_argument("--factor", choices=["revision", "breadth"], default="revision")
+    parser.add_argument("--factor", choices=["revision", "breadth", "revision_to_price"], default="revision")
     parser.add_argument("--nav")
     parser.add_argument("--out-json", default="overall/a-share-analyst-revision.json")
     parser.add_argument("--out-md", default="overall/a-share-analyst-revision.md")

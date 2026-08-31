@@ -10,8 +10,8 @@ def market_states(path,decision_dates):
  x=pd.read_csv(path);x=x[x.asset.eq("equity")].copy();x.trade_date=pd.to_datetime(x.trade_date,format="mixed");x=x.sort_values("trade_date");x["sma200"]=x.adj_close.rolling(200,min_periods=200).mean();lookup=x.set_index("trade_date");return {date:bool(pd.Timestamp(date) in lookup.index and pd.notna(lookup.at[pd.Timestamp(date),"sma200"]) and float(lookup.at[pd.Timestamp(date),"adj_close"])>float(lookup.at[pd.Timestamp(date),"sma200"])) for date in decision_dates}
 def yearly_return(returns,year):
  x=returns[pd.to_datetime(returns.index).year==year];return float((1+x).prod()-1) if len(x) else 0.0
-def revision_breadth_states(signals,decision_dates):
- frame=signals.copy();frame["signal_date"]=pd.to_datetime(frame.signal_date);breadth=frame.groupby("signal_date").revision.apply(lambda values:float((values>0).mean()));states={}
+def revision_breadth_states(signals,decision_dates,value_column="revision"):
+ frame=signals.copy();frame["signal_date"]=pd.to_datetime(frame.signal_date);breadth=frame.groupby("signal_date")[value_column].apply(lambda values:float((values>0).mean()));states={}
  for date in sorted(decision_dates):
   day=pd.Timestamp(date);history=breadth[breadth.index<day].tail(24);states[date]=bool(len(history)==24 and day in breadth.index and float(breadth.loc[day])>float(history.median()))
  return states,breadth
