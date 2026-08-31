@@ -1,5 +1,5 @@
-announcement_id,security_code,security_name,publish_date,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
-1219065374,600123,兰花科创,2024-02-02,2024-02-07,2024-02-08,2024-02-08,0.75,兰花科创2023年前三季度权益分派实施公告,pdf/1219065374.pdf,e6d884a41f0b39d51620b7f38bb492a84c74f32166050247f889446dbc1bdadb,false,COMPLETE
-1219111815,301019,宁波色母,2024-02-07,2024-02-21,2024-02-22,2024-02-22,0.4,2023年第三季度权益分派实施公告,pdf/1219111815.pdf,0a580ab410114921aafe3338162d9b5b6dbf169ec053f186b365da8e015e8072,false,COMPLETE
-1219122457,603279,景津装备,2024-02-08,2024-02-22,2024-02-23,2024-02-23,1.06,景津装备股份有限公司2023年前三季度权益分派实施公告,pdf/1219122457.pdf,282caf7c56cb3b1c090e686f1d9771dc14a3778e77153bf663af55a397fbdee2,false,COMPLETE
-1219143156,300708,聚灿光电,2024-02-21,2024-02-27,2024-02-28,2024-02-28,0.16,2023年年度权益分派实施公告,pdf/1219143156.pdf,db03140ce6e29845e9f26bd1f3443a72604f5d044f01fd40ebacc2339184f574,false,COMPLETE
+announcement_id,security_code,security_name,publish_date,fiscal_year,fiscal_period_type,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
+1219065374,600123,兰花科创,2024-02-02,2023,INTERIM,2024-02-07,2024-02-08,2024-02-08,0.75,兰花科创2023年前三季度权益分派实施公告,pdf/1219065374.pdf,e6d884a41f0b39d51620b7f38bb492a84c74f32166050247f889446dbc1bdadb,false,COMPLETE
+1219111815,301019,宁波色母,2024-02-07,2023,INTERIM,2024-02-21,2024-02-22,2024-02-22,0.4,2023年第三季度权益分派实施公告,pdf/1219111815.pdf,0a580ab410114921aafe3338162d9b5b6dbf169ec053f186b365da8e015e8072,false,COMPLETE
+1219122457,603279,景津装备,2024-02-08,2023,INTERIM,2024-02-22,2024-02-23,2024-02-23,1.06,景津装备股份有限公司2023年前三季度权益分派实施公告,pdf/1219122457.pdf,282caf7c56cb3b1c090e686f1d9771dc14a3778e77153bf663af55a397fbdee2,false,COMPLETE
+1219143156,300708,聚灿光电,2024-02-21,2023,ANNUAL,2024-02-27,2024-02-28,2024-02-28,0.16,2023年年度权益分派实施公告,pdf/1219143156.pdf,db03140ce6e29845e9f26bd1f3443a72604f5d044f01fd40ebacc2339184f574,false,COMPLETE

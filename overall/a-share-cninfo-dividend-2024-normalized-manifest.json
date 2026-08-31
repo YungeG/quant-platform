@@ -12,9 +12,11 @@
   "sh_sz_ordinary_incomplete_announcement_ids": [],
   "sh_sz_ordinary_parse_complete": true,
   "override_count": 0,
+  "annual_cash_rows": 3376,
+  "unknown_fiscal_period_rows": 33,
   "source": "CNINFO official implementation announcements",
   "availability_rule": "publication date close",
-  "sha256": "a825f8458536b8142e01b6bb7c4aac8066b84839ca86ab4fc6082567f4e12d90",
+  "sha256": "d301046cdac260bfdb2cdf25e1845468c4ce444ba052dc1a676d5b13fff86e3b",
   "backtest_ready": false,
   "trade_authorized": false
 }

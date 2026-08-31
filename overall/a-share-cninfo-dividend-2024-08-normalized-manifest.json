@@ -10,7 +10,7 @@
   "sh_sz_ordinary_incomplete_announcement_ids": [],
   "sh_sz_ordinary_parse_complete": true,
   "override_count": 0,
-  "output_sha256": "020d0302da01d5a56103fcd4bb5b3035f8a01f7b2a0abffa50c1992ad772f607",
+  "output_sha256": "c57f0c910ff9238a7cb1cbf26fc478b9d7681876cae5e30bea28600079214f3c",
   "lifecycle_parse_complete": true,
   "backtest_ready": false,
   "trade_authorized": false

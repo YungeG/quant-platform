@@ -1,4 +1,4 @@
-announcement_id,security_code,security_name,publish_date,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
-1215526063,002027,分众传媒,2023-01-05,2023-01-10,2023-01-11,2023-01-11,0.13999999999999999,公司2022年前三季度权益分派实施公告,pdf/1215526063.pdf,95b45aa797a634055bb43a0b65e21574a09838d5a276cdcfc2b1db2015802bf6,false,COMPLETE
-1215557504,605009,豪悦护理,2023-01-10,2023-01-13,2023-01-16,2023-01-16,0.5,杭州豪悦护理用品股份有限公司2022年前三季度权益分派实施公告,pdf/1215557504.pdf,f57867fb864527a92a2c905e30de8743635dd7d839f4e48f06980fbf11add7ea,false,COMPLETE
-1215605860,601686,友发集团,2023-01-14,2023-01-19,2023-01-20,2023-01-20,0.15,2022年前三季度权益分派实施公告,pdf/1215605860.pdf,c05ee9cea73a458e3318a5f2d13dd3935e2bfa4548615219afbbcc97e5c7f221,false,COMPLETE
+announcement_id,security_code,security_name,publish_date,fiscal_year,fiscal_period_type,record_date,ex_date,payment_date,cash_per_share,title,source_file,source_sha256,override_applied,status
+1215526063,002027,分众传媒,2023-01-05,2022,INTERIM,2023-01-10,2023-01-11,2023-01-11,0.13999999999999999,公司2022年前三季度权益分派实施公告,pdf/1215526063.pdf,95b45aa797a634055bb43a0b65e21574a09838d5a276cdcfc2b1db2015802bf6,false,COMPLETE
+1215557504,605009,豪悦护理,2023-01-10,2022,INTERIM,2023-01-13,2023-01-16,2023-01-16,0.5,杭州豪悦护理用品股份有限公司2022年前三季度权益分派实施公告,pdf/1215557504.pdf,f57867fb864527a92a2c905e30de8743635dd7d839f4e48f06980fbf11add7ea,false,COMPLETE
+1215605860,601686,友发集团,2023-01-14,2022,INTERIM,2023-01-19,2023-01-20,2023-01-20,0.15,2022年前三季度权益分派实施公告,pdf/1215605860.pdf,c05ee9cea73a458e3318a5f2d13dd3935e2bfa4548615219afbbcc97e5c7f221,false,COMPLETE

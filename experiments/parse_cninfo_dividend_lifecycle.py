@@ -14,6 +14,8 @@ FIELDS = (
     "security_code",
     "security_name",
     "publish_date",
+    "fiscal_year",
+    "fiscal_period_type",
     "record_date",
     "ex_date",
     "payment_date",
@@ -51,9 +53,27 @@ def _page_broken_date(pattern: str, text: str) -> str | None:
     return f"{int(match.group(1)):04d}-{int(match.group(2)):02d}-{int(match.group(3)):02d}" if match else None
 
 
+def _fiscal_period(dense: str) -> tuple[int | None, str]:
+    head = dense[:2000]
+    interim = re.search(r"(20\d{2})(?:年|年度)(?:第[一二三四]次)?(中期|半年度|半年年度|前三季度|第一季度|第二季度|第三季度|特别分红)权益分派", head)
+    if interim:
+        return int(interim.group(1)), "SPECIAL" if interim.group(2) == "特别分红" else "INTERIM"
+    annual = re.search(r"(20\d{2})(?:年年度|年度)(?:普通股)?权益分派", head)
+    if annual:
+        return int(annual.group(1)), "ANNUAL"
+    annual_plan = re.search(r"(20\d{2})(?:年年度|年度).*?权益分派方案", head)
+    if annual_plan:
+        return int(annual_plan.group(1)), "ANNUAL"
+    declared = re.search(r"发放年度[:：]?(20\d{2})(?:年年度|年度)", dense)
+    if declared:
+        return int(declared.group(1)), "ANNUAL"
+    return None, "UNKNOWN"
+
+
 def parse_text(text: str) -> dict:
     normalized = text.replace("（", "(").replace("）", ")")
     normalized = re.sub(r"(\d{4})年(\d{1,2})年(\d{1,2})年", r"\1年\2月\3日", normalized)
+    fiscal_dense = re.sub(r"\s+", "", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*(?:证券代码|债券代码)[:：][^\n]*$", "", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*第?\s*\d+\s*页[^\n]*$", "", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*\d+\s*/\s*\d+\s*$", "", normalized)
@@ -108,7 +128,10 @@ def parse_text(text: str) -> dict:
             cash = float(match.group(1)) / divisor
             break
     no_cash = cash in (None, 0.0) and ("不派发现金" in dense or "不进行现金分红" in dense or "本次不分红" in dense or re.search(r"(?:现金红利|现金股利)(?:为|=)?0(?:\.0+)?元", dense) or "转增股本方案" in dense or "每股转增" in dense or "每10股转增" in dense)
+    year, period_type = _fiscal_period(fiscal_dense)
     return {
+        "fiscal_year": year,
+        "fiscal_period_type": period_type,
         "record_date": record,
         "ex_date": ex_date,
         "payment_date": payment_date,
@@ -132,9 +155,11 @@ def run(capture_dir: str, out_csv: str, out_manifest: str, overrides_path: str |
         notice = json.loads(line)
         path = capture / notice["local_file"]
         layout = subprocess.run(["pdftotext", "-layout", str(path), "-"], check=True, capture_output=True, text=True)
-        raw = subprocess.run(["pdftotext", "-raw", str(path), "-"], check=True, capture_output=True, text=True)
-        candidates = (parse_text(layout.stdout), parse_text(raw.stdout))
-        parsed = max(candidates, key=lambda item: sum(item[field] not in (None, "") for field in ("record_date", "ex_date", "payment_date", "cash_per_share")))
+        parsed = parse_text(layout.stdout)
+        if parsed["status"] == "INCOMPLETE" or parsed["fiscal_year"] is None:
+            raw = subprocess.run(["pdftotext", "-raw", str(path), "-"], check=True, capture_output=True, text=True)
+            candidates = (parsed, parse_text(raw.stdout))
+            parsed = max(candidates, key=lambda item: sum(item[field] not in (None, "", "UNKNOWN") for field in ("record_date", "ex_date", "payment_date", "cash_per_share", "fiscal_year", "fiscal_period_type")))
         if "更正公告" in notice["title"]:
             parsed["status"] = "CORRECTION_NOTICE"
         elif "补充公告" in notice["title"]:

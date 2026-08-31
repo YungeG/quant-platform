@@ -24,6 +24,14 @@ class _Session:
         return _Response({"totalAnnouncement": 31, "announcements": [{"page": page}] * count})
 
 
+def test_fiscal_period_comes_from_pdf_text():
+    annual = parse_text("发放年度：2022年度。每10股派1元。")
+    interim = parse_text("2024年半年年度权益分派实施公告。每10股派1元。")
+
+    assert (annual["fiscal_year"], annual["fiscal_period_type"]) == (2022, "ANNUAL")
+    assert (interim["fiscal_year"], interim["fiscal_period_type"]) == (2024, "INTERIM")
+
+
 def test_cninfo_query_paginates_and_strips_highlight_markup():
     session = _Session()
 
@@ -43,6 +51,8 @@ A 股每股现金红利 0.15 元
 """
 
     assert parse_text(text) == {
+        "fiscal_year": None,
+        "fiscal_period_type": "UNKNOWN",
         "record_date": "2025-02-10",
         "ex_date": "2025-02-11",
         "payment_date": "2025-02-11",
@@ -107,6 +117,8 @@ def test_parse_shenzhen_sentence_lifecycle_and_per_ten_cash():
 """
 
     assert parse_text(text) == {
+        "fiscal_year": None,
+        "fiscal_period_type": "UNKNOWN",
         "record_date": "2025-02-07",
         "ex_date": "2025-02-10",
         "payment_date": "2025-02-10",

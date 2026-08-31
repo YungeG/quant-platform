@@ -1,0 +1,23 @@
+{
+  "audit_id": "a-share-dividend-cashflow-coverage-v1",
+  "dividend_rows_sh_sz_complete": 14690,
+  "annual_dividend_rows_by_title": 12484,
+  "annual_rows_with_pit_cashflow": 12484,
+  "annual_unique_symbol_years_with_pit_cashflow": 12470,
+  "annual_rows_missing_title_year": 0,
+  "annual_rows_missing_pit_cashflow": 0,
+  "coverage_rate": 1.0,
+  "cashflow_annual_source_rows": 92326,
+  "cashflow_symbol_year_pairs": 61465,
+  "cashflow_earliest_announcement": "2016-01-16",
+  "cashflow_latest_announcement": "2026-08-06",
+  "missing_title_year_ids": [],
+  "missing_pit_cashflow": [],
+  "limitations": [
+    "annual/interim classification uses official PDF text; UNKNOWN period rows are excluded from annual coverage",
+    "cash-flow source is a captured vendor CSV and still needs immutable source/terminal completeness authority",
+    "dividend payout denominator and proposal/cancellation lineage are not yet bound"
+  ],
+  "backtest_ready": false,
+  "trade_authorized": false
+}
