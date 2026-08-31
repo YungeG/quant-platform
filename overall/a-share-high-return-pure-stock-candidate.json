@@ -1,0 +1,37 @@
+{
+  "strategy_id": "a-share-revision-breadth-top10-v1",
+  "status": "HIGH_RETURN_FORWARD_CANDIDATE",
+  "selection_authorized": false,
+  "trade_authorized": false,
+  "reason_not_selected": "The frozen discovery-only selection policy chose always_top10; this pre-registered secondary candidate cannot replace it after validation observation.",
+  "rules": {
+    "universe": "PIT non-ST, listed>=252 sessions, close>=5, volume>0, ADV20 top half, PIT CircMV top500",
+    "signal": "positive EPS revision share > prior 24-month median",
+    "portfolio": "top 10 positive EPS revisions, equal weight",
+    "inactive_state": "cash",
+    "rebalance": "month-end signal, T+1 open",
+    "cost_per_side": 0.00155
+  },
+  "metrics": {
+    "cagr": 0.178095,
+    "excess_cagr": 0.124071,
+    "sharpe": 0.891,
+    "max_drawdown": -0.435063,
+    "cagr_excluding_best_year": 0.123609,
+    "annual_turnover": 3.849324,
+    "gross_to_net_cagr_retention": 0.9616,
+    "lot_failures": 1
+  },
+  "periods": {
+    "2017-2022": {"cagr": 0.133623, "excess_cagr": 0.091679},
+    "2023-2024": {"cagr": 0.083509, "excess_cagr": 0.052919},
+    "2025": {"return": 0.446357, "benchmark_return": 0.208364}
+  },
+  "current": {
+    "as_of": "2026-08-26",
+    "enabled": true,
+    "targets": ["300782", "600105", "688469", "601168", "000636", "688126", "603986", "600663", "300418", "000703"]
+  },
+  "evidence": "overall/a-share-higher-return-analyst-grid-v13-result.json",
+  "required_next_step": "forward shadow without changing rules"
+}

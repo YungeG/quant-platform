@@ -1,0 +1,661 @@
+{
+  "study": "a-share-higher-return-analyst-grid-v13",
+  "authority": "exploratory_only_no_platform_prepare_operation",
+  "data": {
+    "panel_version": "7f5683312674cab5",
+    "report_rows": 2058970,
+    "decision_count": 116,
+    "selected_symbols": 700
+  },
+  "selection": {
+    "eligible": [
+      "always_top10",
+      "always_top20",
+      "always_top30",
+      "revision_breadth_top10",
+      "revision_breadth_top20",
+      "revision_breadth_top30"
+    ],
+    "policy": "discovery CAGR, Sharpe, max drawdown, fewer holdings",
+    "selected": "always_top10"
+  },
+  "variants": {
+    "always_top10": {
+      "top_k": 10,
+      "gate_mode": "always",
+      "participation": 1.0,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.19590774376656772,
+          "volatility": 0.30002863275244923,
+          "sharpe": 0.7466289888873389,
+          "max_drawdown": -0.5147493969689876,
+          "calmar": 0.380588583338099
+        },
+        "gross_metrics": {
+          "cagr": 0.21846869866592367,
+          "volatility": 0.30176499521729766,
+          "sharpe": 0.8060349822614048,
+          "max_drawdown": -0.4989243630732977,
+          "calmar": 0.43787939582703467
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.1418825904159331,
+        "gross_to_net_cagr_retention": 0.8967314080363726,
+        "folds": {
+          "discovery": {
+            "cagr": 0.18340224992800414,
+            "volatility": 0.3089742201402262,
+            "sharpe": 0.7001612647466869,
+            "max_drawdown": -0.44055188938445844,
+            "calmar": 0.41630113125664897,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.14145862864483982
+          },
+          "validation": {
+            "cagr": 0.025665196760806808,
+            "volatility": 0.2548093724308179,
+            "sharpe": 0.22497166715850797,
+            "max_drawdown": -0.3011399133282717,
+            "calmar": 0.08522681858126609,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": -0.004925423444963384
+          },
+          "holdout": {
+            "cagr": 0.48140359784484343,
+            "volatility": 0.2538108513905045,
+            "sharpe": 1.6764838161824256,
+            "max_drawdown": -0.16120237825782757,
+            "calmar": 2.9863306177461295,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.2645396094206347
+          }
+        },
+        "positive_excess_folds": 2,
+        "yearly_returns": {
+          "2017": 0.15494307123326978,
+          "2018": -0.29119279475389714,
+          "2019": 0.8774284570977282,
+          "2020": 0.19884697249769623,
+          "2021": 0.5991364101150938,
+          "2022": -0.10027049043314351,
+          "2023": -0.20762118229072934,
+          "2024": 0.32496656508967225,
+          "2025": 0.46075680000021824,
+          "2026": 0.29799910529654383
+        },
+        "best_year": "2019",
+        "best_year_return": 0.8774284570977282,
+        "cagr_excluding_best_year": 0.12168551802696714,
+        "annual_turnover": 6.996096044374039,
+        "average_positions": 9.855313700384123,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.041430944245227606,
+        "trade_count": 1362,
+        "buy_count": 686,
+        "sell_count": 676,
+        "fees": 183034.02950636775,
+        "blocked_buys": 5,
+        "blocked_sells": 46,
+        "lot_failures": 9,
+        "expired_buys": 10,
+        "execution_failure_rate": 0.02,
+        "missing_valuation_rate": 0.003204711792473258
+      }
+    },
+    "always_top20": {
+      "top_k": 20,
+      "gate_mode": "always",
+      "participation": 1.0,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.1612547825763222,
+          "volatility": 0.2679201307371295,
+          "sharpe": 0.6923177327229887,
+          "max_drawdown": -0.4123181222296902,
+          "calmar": 0.39109312417389197
+        },
+        "gross_metrics": {
+          "cagr": 0.1807150652761471,
+          "volatility": 0.2705994565871839,
+          "sharpe": 0.7496035563969828,
+          "max_drawdown": -0.388533000034362,
+          "calmar": 0.46512153474779394
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.10722962922568757,
+        "gross_to_net_cagr_retention": 0.8923151057157961,
+        "folds": {
+          "discovery": {
+            "cagr": 0.1783990826011903,
+            "volatility": 0.2756465820476268,
+            "sharpe": 0.7339994792212189,
+            "max_drawdown": -0.3754209586197793,
+            "calmar": 0.47519745103488004,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.136455461318026
+          },
+          "validation": {
+            "cagr": 0.03736978193745122,
+            "volatility": 0.225891027056902,
+            "sharpe": 0.27355190179102823,
+            "max_drawdown": -0.26047746903164326,
+            "calmar": 0.14346646593418594,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": 0.006779161731681027
+          },
+          "holdout": {
+            "cagr": 0.3336050207715,
+            "volatility": 0.22155260694472645,
+            "sharpe": 1.4116790850060525,
+            "max_drawdown": -0.14933386311142294,
+            "calmar": 2.233954267442919,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.11674103234729127
+          }
+        },
+        "positive_excess_folds": 3,
+        "yearly_returns": {
+          "2017": 0.10813227880216081,
+          "2018": -0.2827426316303675,
+          "2019": 0.6462164230717449,
+          "2020": 0.43942553373573734,
+          "2021": 0.4497762555025042,
+          "2022": -0.0526366055941897,
+          "2023": -0.18544796366668814,
+          "2024": 0.31729723886051775,
+          "2025": 0.31996362703464376,
+          "2026": 0.09583808029075791
+        },
+        "best_year": "2019",
+        "best_year_return": 0.6462164230717449,
+        "cagr_excluding_best_year": 0.10413070192418772,
+        "annual_turnover": 6.354188852780358,
+        "average_positions": 19.5872812633376,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.055349313411465914,
+        "trade_count": 2502,
+        "buy_count": 1261,
+        "sell_count": 1241,
+        "fees": 155695.56038174924,
+        "blocked_buys": 3,
+        "blocked_sells": 236,
+        "lot_failures": 40,
+        "expired_buys": 41,
+        "execution_failure_rate": 0.032975460122699383,
+        "missing_valuation_rate": 0.006929161310003705
+      }
+    },
+    "always_top30": {
+      "top_k": 30,
+      "gate_mode": "always",
+      "participation": 1.0,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.14317540686429076,
+          "volatility": 0.2514593142231253,
+          "sharpe": 0.6582673354871471,
+          "max_drawdown": -0.40755633702963745,
+          "calmar": 0.351302124039551
+        },
+        "gross_metrics": {
+          "cagr": 0.1711389207162679,
+          "volatility": 0.25325511124878847,
+          "sharpe": 0.7508199479619149,
+          "max_drawdown": -0.3839144036007427,
+          "calmar": 0.44577363889229404
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.08915025351365613,
+        "gross_to_net_cagr_retention": 0.8366034229096372,
+        "folds": {
+          "discovery": {
+            "cagr": 0.16256983103380196,
+            "volatility": 0.25648020449449566,
+            "sharpe": 0.7161910036516888,
+            "max_drawdown": -0.3616760972881895,
+            "calmar": 0.44949011630222174,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.12062620975063765
+          },
+          "validation": {
+            "cagr": 0.05191843013170638,
+            "volatility": 0.2052084493666393,
+            "sharpe": 0.3478801645798199,
+            "max_drawdown": -0.24298221965221034,
+            "calmar": 0.2136717254703624,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": 0.021327809925936192
+          },
+          "holdout": {
+            "cagr": 0.34274610125804994,
+            "volatility": 0.21290387407254752,
+            "sharpe": 1.4919594721429887,
+            "max_drawdown": -0.13209024556253934,
+            "calmar": 2.594787372817576,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.1258821128338412
+          }
+        },
+        "positive_excess_folds": 3,
+        "yearly_returns": {
+          "2017": 0.10131189364457294,
+          "2018": -0.23472587116480637,
+          "2019": 0.6199452143182711,
+          "2020": 0.4574092777844043,
+          "2021": 0.3055667029139757,
+          "2022": -0.07923831149372995,
+          "2023": -0.1646816230337843,
+          "2024": 0.3193726716031575,
+          "2025": 0.3286870106686397,
+          "2026": -0.009365108464928329
+        },
+        "best_year": "2019",
+        "best_year_return": 0.6199452143182711,
+        "cagr_excluding_best_year": 0.08832042728568434,
+        "annual_turnover": 5.87953236418136,
+        "average_positions": 29.12291933418694,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.07267558794438952,
+        "trade_count": 3524,
+        "buy_count": 1777,
+        "sell_count": 1747,
+        "fees": 139008.08065028733,
+        "blocked_buys": 10,
+        "blocked_sells": 279,
+        "lot_failures": 86,
+        "expired_buys": 89,
+        "execution_failure_rate": 0.05125467164975974,
+        "missing_valuation_rate": 0.005920715175496446
+      }
+    },
+    "revision_breadth_top10": {
+      "top_k": 10,
+      "gate_mode": "revision_breadth",
+      "participation": 0.4051724137931034,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.1780959813966907,
+          "volatility": 0.2083967102248625,
+          "sharpe": 0.8907349725875743,
+          "max_drawdown": -0.4350626632153721,
+          "calmar": 0.4093570799214425
+        },
+        "gross_metrics": {
+          "cagr": 0.18513790728561896,
+          "volatility": 0.20887445935640883,
+          "sharpe": 0.9177153749425178,
+          "max_drawdown": -0.428668896775136,
+          "calmar": 0.4318902273489078
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.12407082804605607,
+        "gross_to_net_cagr_retention": 0.9619638895557762,
+        "folds": {
+          "discovery": {
+            "cagr": 0.13362305170722144,
+            "volatility": 0.18799921349078486,
+            "sharpe": 0.7614614017866496,
+            "max_drawdown": -0.4350626632153721,
+            "calmar": 0.30713518535391554,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.09167943042405713
+          },
+          "validation": {
+            "cagr": 0.08350917885748133,
+            "volatility": 0.15499791367676738,
+            "sharpe": 0.592321662882964,
+            "max_drawdown": -0.15548819182933282,
+            "calmar": 0.5370773039096293,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": 0.052918558651711134
+          },
+          "holdout": {
+            "cagr": 0.46626228891683597,
+            "volatility": 0.2373092566069282,
+            "sharpe": 1.7327527896792663,
+            "max_drawdown": -0.16370401408634683,
+            "calmar": 2.848203152006417,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.24939830049262723
+          }
+        },
+        "positive_excess_folds": 3,
+        "yearly_returns": {
+          "2017": 0.0,
+          "2018": 0.0,
+          "2019": 0.13719536931069443,
+          "2020": 0.33925924140474684,
+          "2021": 0.6079504252266903,
+          "2022": -0.15591941749388682,
+          "2023": 0.0,
+          "2024": 0.16654285467988617,
+          "2025": 0.4463571076116808,
+          "2026": 0.31606780376547383
+        },
+        "best_year": "2021",
+        "best_year_return": 0.6079504252266903,
+        "cagr_excluding_best_year": 0.12360936164391845,
+        "annual_turnover": 3.8493244648689457,
+        "average_positions": 3.9722577891591975,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.618368032459925,
+        "trade_count": 574,
+        "buy_count": 292,
+        "sell_count": 282,
+        "fees": 85929.48577043063,
+        "blocked_buys": 0,
+        "blocked_sells": 9,
+        "lot_failures": 1,
+        "expired_buys": 1,
+        "execution_failure_rate": 0.0034129692832764505,
+        "missing_valuation_rate": 0.002148920167615773
+      }
+    },
+    "revision_breadth_top20": {
+      "top_k": 20,
+      "gate_mode": "revision_breadth",
+      "participation": 0.4051724137931034,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.14450959646025652,
+          "volatility": 0.18668213293263422,
+          "sharpe": 0.8164434210961954,
+          "max_drawdown": -0.3253806327886277,
+          "calmar": 0.4441247631174538
+        },
+        "gross_metrics": {
+          "cagr": 0.15236062352508717,
+          "volatility": 0.18802408029373394,
+          "sharpe": 0.8483311190971627,
+          "max_drawdown": -0.3261174179117685,
+          "calmar": 0.4671956024327058
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.09048444310962189,
+        "gross_to_net_cagr_retention": 0.9484707604682523,
+        "folds": {
+          "discovery": {
+            "cagr": 0.13745501746241362,
+            "volatility": 0.16782751345672234,
+            "sharpe": 0.8517235945298427,
+            "max_drawdown": -0.31903634598727626,
+            "calmar": 0.430844382438782,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.09551139617924931
+          },
+          "validation": {
+            "cagr": 0.08227729443089782,
+            "volatility": 0.14817856151068448,
+            "sharpe": 0.604920238107226,
+            "max_drawdown": -0.1189276384519522,
+            "calmar": 0.691826521588071,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": 0.05168667422512763
+          },
+          "holdout": {
+            "cagr": 0.30657677444769726,
+            "volatility": 0.205788831813518,
+            "sharpe": 1.4038360462742174,
+            "max_drawdown": -0.14947529517067437,
+            "calmar": 2.051019695914571,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.08971278602348853
+          }
+        },
+        "positive_excess_folds": 3,
+        "yearly_returns": {
+          "2017": 0.0,
+          "2018": 0.0,
+          "2019": 0.12451115736016849,
+          "2020": 0.40825298417336864,
+          "2021": 0.4428839450278803,
+          "2022": -0.07750166878880338,
+          "2023": 0.0,
+          "2024": 0.16399687148214248,
+          "2025": 0.2941578701314569,
+          "2026": 0.10469069980050527
+        },
+        "best_year": "2021",
+        "best_year_return": 0.4428839450278803,
+        "cagr_excluding_best_year": 0.10373682887935409,
+        "annual_turnover": 3.444842825260732,
+        "average_positions": 7.736235595390525,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.6291203485879873,
+        "trade_count": 1070,
+        "buy_count": 545,
+        "sell_count": 525,
+        "fees": 74279.66256146872,
+        "blocked_buys": 0,
+        "blocked_sells": 22,
+        "lot_failures": 26,
+        "expired_buys": 26,
+        "execution_failure_rate": 0.04553415061295972,
+        "missing_valuation_rate": 0.0022619441685975948
+      }
+    },
+    "revision_breadth_top30": {
+      "top_k": 30,
+      "gate_mode": "revision_breadth",
+      "participation": 0.4051724137931034,
+      "portfolio": {
+        "metrics": {
+          "cagr": 0.11579734011832232,
+          "volatility": 0.16857459241039283,
+          "sharpe": 0.7343084649744261,
+          "max_drawdown": -0.32107493638139095,
+          "calmar": 0.3606551835636641
+        },
+        "gross_metrics": {
+          "cagr": 0.11987066760151932,
+          "volatility": 0.17051406954817544,
+          "sharpe": 0.7493225566424705,
+          "max_drawdown": -0.33638660891987926,
+          "calmar": 0.3563479176130646
+        },
+        "benchmark_metrics": {
+          "cagr": 0.054025153350634625,
+          "volatility": 0.18938080575713956,
+          "sharpe": 0.3725670751338312,
+          "max_drawdown": -0.4215534708063582,
+          "calmar": 0.128157296978943
+        },
+        "excess_cagr": 0.0617721867676877,
+        "gross_to_net_cagr_retention": 0.9660189805838257,
+        "folds": {
+          "discovery": {
+            "cagr": 0.11003928100743776,
+            "volatility": 0.14967343287514387,
+            "sharpe": 0.7726605501911775,
+            "max_drawdown": -0.3110958478122735,
+            "calmar": 0.3537150424258939,
+            "benchmark_cagr": 0.04194362128316431,
+            "excess_cagr": 0.06809565972427345
+          },
+          "validation": {
+            "cagr": 0.08153958640985848,
+            "volatility": 0.13391476297094626,
+            "sharpe": 0.6501486129396903,
+            "max_drawdown": -0.10485854134431538,
+            "calmar": 0.7776151123647013,
+            "benchmark_cagr": 0.03059062020577019,
+            "excess_cagr": 0.050948966204088286
+          },
+          "holdout": {
+            "cagr": 0.2617286026253489,
+            "volatility": 0.18424550302271916,
+            "sharpe": 1.3550075748005908,
+            "max_drawdown": -0.12837906992807335,
+            "calmar": 2.0387170803775647,
+            "benchmark_cagr": 0.21686398842420873,
+            "excess_cagr": 0.044864614201140185
+          }
+        },
+        "positive_excess_folds": 3,
+        "yearly_returns": {
+          "2017": 0.0,
+          "2018": 0.0,
+          "2019": 0.11556640993999157,
+          "2020": 0.362649347245527,
+          "2021": 0.2957991361653922,
+          "2022": -0.07086801447206681,
+          "2023": 0.0,
+          "2024": 0.16247349831278646,
+          "2025": 0.25129590023102555,
+          "2026": 0.04038114590668407
+        },
+        "best_year": "2020",
+        "best_year_return": 0.362649347245527,
+        "cagr_excluding_best_year": 0.08200020340583958,
+        "annual_turnover": 3.10991428273673,
+        "average_positions": 11.283824157063593,
+        "minimum_positions": 0,
+        "average_cash_fraction": 0.6471174691943503,
+        "trade_count": 1530,
+        "buy_count": 779,
+        "sell_count": 751,
+        "fees": 59624.56819076506,
+        "blocked_buys": 0,
+        "blocked_sells": 27,
+        "lot_failures": 76,
+        "expired_buys": 76,
+        "execution_failure_rate": 0.08888888888888889,
+        "missing_valuation_rate": 0.0024585823435963384
+      }
+    }
+  },
+  "selected_result": {
+    "name": "always_top10",
+    "portfolio": {
+      "metrics": {
+        "cagr": 0.19590774376656772,
+        "volatility": 0.30002863275244923,
+        "sharpe": 0.7466289888873389,
+        "max_drawdown": -0.5147493969689876,
+        "calmar": 0.380588583338099
+      },
+      "gross_metrics": {
+        "cagr": 0.21846869866592367,
+        "volatility": 0.30176499521729766,
+        "sharpe": 0.8060349822614048,
+        "max_drawdown": -0.4989243630732977,
+        "calmar": 0.43787939582703467
+      },
+      "benchmark_metrics": {
+        "cagr": 0.054025153350634625,
+        "volatility": 0.18938080575713956,
+        "sharpe": 0.3725670751338312,
+        "max_drawdown": -0.4215534708063582,
+        "calmar": 0.128157296978943
+      },
+      "excess_cagr": 0.1418825904159331,
+      "gross_to_net_cagr_retention": 0.8967314080363726,
+      "folds": {
+        "discovery": {
+          "cagr": 0.18340224992800414,
+          "volatility": 0.3089742201402262,
+          "sharpe": 0.7001612647466869,
+          "max_drawdown": -0.44055188938445844,
+          "calmar": 0.41630113125664897,
+          "benchmark_cagr": 0.04194362128316431,
+          "excess_cagr": 0.14145862864483982
+        },
+        "validation": {
+          "cagr": 0.025665196760806808,
+          "volatility": 0.2548093724308179,
+          "sharpe": 0.22497166715850797,
+          "max_drawdown": -0.3011399133282717,
+          "calmar": 0.08522681858126609,
+          "benchmark_cagr": 0.03059062020577019,
+          "excess_cagr": -0.004925423444963384
+        },
+        "holdout": {
+          "cagr": 0.48140359784484343,
+          "volatility": 0.2538108513905045,
+          "sharpe": 1.6764838161824256,
+          "max_drawdown": -0.16120237825782757,
+          "calmar": 2.9863306177461295,
+          "benchmark_cagr": 0.21686398842420873,
+          "excess_cagr": 0.2645396094206347
+        }
+      },
+      "positive_excess_folds": 2,
+      "yearly_returns": {
+        "2017": 0.15494307123326978,
+        "2018": -0.29119279475389714,
+        "2019": 0.8774284570977282,
+        "2020": 0.19884697249769623,
+        "2021": 0.5991364101150938,
+        "2022": -0.10027049043314351,
+        "2023": -0.20762118229072934,
+        "2024": 0.32496656508967225,
+        "2025": 0.46075680000021824,
+        "2026": 0.29799910529654383
+      },
+      "best_year": "2019",
+      "best_year_return": 0.8774284570977282,
+      "cagr_excluding_best_year": 0.12168551802696714,
+      "annual_turnover": 6.996096044374039,
+      "average_positions": 9.855313700384123,
+      "minimum_positions": 0,
+      "average_cash_fraction": 0.041430944245227606,
+      "trade_count": 1362,
+      "buy_count": 686,
+      "sell_count": 676,
+      "fees": 183034.02950636775,
+      "blocked_buys": 5,
+      "blocked_sells": 46,
+      "lot_failures": 9,
+      "expired_buys": 10,
+      "execution_failure_rate": 0.02,
+      "missing_valuation_rate": 0.003204711792473258
+    },
+    "holdout_2025": {
+      "strategy_return": 0.46075680000021824,
+      "benchmark_return": 0.20836372792825553,
+      "excess": 0.2523930720719627
+    }
+  },
+  "checks": {
+    "higher_cagr": true,
+    "validation": false,
+    "holdout": true,
+    "sharpe": true,
+    "drawdown": false,
+    "cost_retention": true,
+    "turnover": true
+  },
+  "verdict": "NO-GO",
+  "trade_authorized": false
+}
