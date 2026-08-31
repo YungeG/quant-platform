@@ -135,7 +135,8 @@ def build_inputs(start: str, end: str, reports: pd.DataFrame, factor: str) -> tu
     panel["_fwd20"] = grouped["adj_open"].shift(-21) / grouped["adj_open"].shift(-1) - 1.0
     adv_pct = panel.groupby("TradingDay")["adv20"].rank(pct=True, method="first")
     panel["practical"] = (
-        (~panel["suspended"].fillna(True))
+        (~panel["is_st"].fillna(True))
+        & (~panel["suspended"].fillna(True))
         & (panel["age"] >= 252)
         & (panel["Close"] >= 5.0)
         & (panel["Volume"] > 0)

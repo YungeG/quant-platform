@@ -1,0 +1,141 @@
+{
+  "study": "a-share-analyst-revision-v1",
+  "data": {
+    "panel_version": "7f5683312674cab5",
+    "report_rows": 2058970,
+    "decision_count": 116,
+    "selected_symbols": 700,
+    "factor": "revision"
+  },
+  "ic": {
+    "count": 114,
+    "mean": 0.023897801322963146,
+    "median": 0.025660535982982638,
+    "win_rate": 0.5877192982456141,
+    "t_stat": 2.15785402325674,
+    "average_coverage": 440.6140350877193,
+    "folds": {
+      "2017-2019": {
+        "count": 36,
+        "mean_ic": 0.012739348145217672
+      },
+      "2020-2022": {
+        "count": 36,
+        "mean_ic": 0.02308058770928933
+      },
+      "2023-2026": {
+        "count": 42,
+        "mean_ic": 0.03416265857275109
+      }
+    }
+  },
+  "portfolio": {
+    "metrics": {
+      "cagr": 0.14317540686429076,
+      "volatility": 0.2514593142231253,
+      "sharpe": 0.6582673354871471,
+      "max_drawdown": -0.40755633702963745,
+      "calmar": 0.351302124039551
+    },
+    "gross_metrics": {
+      "cagr": 0.1711389207162679,
+      "volatility": 0.25325511124878847,
+      "sharpe": 0.7508199479619149,
+      "max_drawdown": -0.3839144036007427,
+      "calmar": 0.44577363889229404
+    },
+    "benchmark_metrics": {
+      "cagr": 0.054025153350634625,
+      "volatility": 0.18938080575713956,
+      "sharpe": 0.3725670751338312,
+      "max_drawdown": -0.4215534708063582,
+      "calmar": 0.128157296978943
+    },
+    "excess_cagr": 0.08915025351365613,
+    "gross_to_net_cagr_retention": 0.8366034229096372,
+    "folds": {
+      "2017-2019": {
+        "cagr": 0.11331351039995075,
+        "volatility": 0.2447713468985428,
+        "sharpe": 0.5611501401504654,
+        "max_drawdown": -0.3158104823407708,
+        "calmar": 0.3588022460815009,
+        "benchmark_cagr": 0.08949711193388366,
+        "excess_cagr": 0.02381639846606709
+      },
+      "2020-2022": {
+        "cagr": 0.21422199894738725,
+        "volatility": 0.26785950281242665,
+        "sharpe": 0.8594621226658865,
+        "max_drawdown": -0.3616760972881897,
+        "calmar": 0.5923034465191419,
+        "benchmark_cagr": -0.0037175343467520383,
+        "excess_cagr": 0.2179395332941393
+      },
+      "2023-2026": {
+        "cagr": 0.11187093294458506,
+        "volatility": 0.24307740127603433,
+        "sharpe": 0.5576535968052512,
+        "max_drawdown": -0.36086569368789667,
+        "calmar": 0.31000711594751734,
+        "benchmark_cagr": 0.07427232043888066,
+        "excess_cagr": 0.0375986125057044
+      }
+    },
+    "positive_excess_folds": 3,
+    "yearly_returns": {
+      "2017": 0.10131189364457294,
+      "2018": -0.23472587116480637,
+      "2019": 0.6199452143182711,
+      "2020": 0.4574092777844043,
+      "2021": 0.3055667029139757,
+      "2022": -0.07923831149372995,
+      "2023": -0.1646816230337843,
+      "2024": 0.3193726716031575,
+      "2025": 0.3286870106686397,
+      "2026": -0.009365108464928329
+    },
+    "best_year": "2019",
+    "best_year_return": 0.6199452143182711,
+    "cagr_excluding_best_year": 0.08832042728568434,
+    "annual_turnover": 5.87953236418136,
+    "average_positions": 29.12291933418694,
+    "minimum_positions": 0,
+    "average_cash_fraction": 0.07267558794438952,
+    "trade_count": 3524,
+    "buy_count": 1777,
+    "sell_count": 1747,
+    "fees": 139008.08065028733,
+    "blocked_buys": 10,
+    "blocked_sells": 279,
+    "lot_failures": 86,
+    "expired_buys": 89,
+    "execution_failure_rate": 0.05125467164975974,
+    "missing_valuation_rate": 0.005920715175496446
+  },
+  "decision": {
+    "verdict": "MARGINAL",
+    "signal_checks": {
+      "mean_ic": true,
+      "t_stat": true,
+      "positive_folds": true
+    },
+    "portfolio_checks": {
+      "cagr": true,
+      "excess": true,
+      "sharpe": false,
+      "drawdown": false,
+      "folds": true,
+      "turnover": true,
+      "lots": false,
+      "cost_retention": false
+    }
+  },
+  "signals": "overall/a-share-analyst-revision-pit-st-v2-signals.csv",
+  "nav": "overall/a-share-analyst-revision-pit-st-v2-nav.csv",
+  "limitations": [
+    "report_rc is source-bounded and lacks provider revision/completeness authority",
+    "report_date has day-level timing and execution is delayed to the next open",
+    "the interval is not virgin OOS"
+  ]
+}
