@@ -43,7 +43,11 @@ def _first_date(pattern: str, text: str) -> str | None:
 
 def parse_text(text: str) -> dict:
     normalized = text.replace("（", "(").replace("）", ")")
+    normalized = re.sub(r"(\d{4})年(\d{1,2})年(\d{1,2})年", r"\1年\2月\3日", normalized)
     normalized = re.sub(r"(?m)^[ \t\f]*(?:证券代码|债券代码)[:：][^\n]*$", "", normalized)
+    normalized = re.sub(r"(?m)^[ \t\f]*第?\s*\d+\s*页[^\n]*$", "", normalized)
+    normalized = re.sub(r"(?m)^[ \t\f]*\d+\s*/\s*\d+\s*$", "", normalized)
+    normalized = re.sub(r"(?m)^[ \t\f]*权益分派实施公告\s*$", "", normalized)
     normalized = re.sub(r"(?m)^\s*\d+\s*$", "", normalized)
     compact = re.sub(r"[ \t]+", " ", normalized)
     dense = re.sub(r"\s+", "", normalized)
@@ -54,7 +58,7 @@ def parse_text(text: str) -> dict:
         record = _date_from_groups(groups[:6])
         ex_date = _date_from_groups(groups[6:12])
     else:
-        table = re.search(r"(?:Ａ股|A\s*股)\s*" + DATE + r"\s*(?:－|-)?\s*" + DATE + r"\s*" + DATE, compact)
+        table = re.search(r"(?:Ａ股|A\s*股)\s*" + DATE + r"\s*(?:－|/|-)?\s*" + DATE + r"\s*" + DATE, compact)
         table_payment_group = 12
         if table is None:
             table = re.search(r"股权登记日.*?除权\(息\)日.*?现金红利发放日\s*" + DATE + r"\s*" + DATE + r"\s*" + DATE + r"\s*" + DATE, compact, flags=re.S)
@@ -82,7 +86,7 @@ def parse_text(text: str) -> dict:
         if match:
             cash = float(match.group(1)) / divisor
             break
-    no_cash = cash is None and ("不派发现金" in dense or re.search(r"现金红利(?:为|=)0(?:\.0+)?", dense) or ("每股转增" in dense and "现金红利" not in dense))
+    no_cash = cash is None and ("不派发现金" in dense or "不进行现金分红" in dense or re.search(r"现金红利(?:为|=)0(?:\.0+)?", dense) or ("每股转增" in dense and "现金红利" not in dense))
     return {
         "record_date": record,
         "ex_date": ex_date,

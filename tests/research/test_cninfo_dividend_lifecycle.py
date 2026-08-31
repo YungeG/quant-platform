@@ -51,6 +51,14 @@ A 股每股现金红利 0.15 元
     }
 
 
+def test_font_mapped_year_glyphs_are_normalized_to_month_and_day():
+    text = "股权登记日为：2025年6年3年；除权除息日为：2025年6年4年。现金红利将于2025年6年4年发放。每10股派1.50元。"
+
+    parsed = parse_text(text)
+
+    assert (parsed["record_date"], parsed["ex_date"], parsed["payment_date"]) == ("2025-06-03", "2025-06-04", "2025-06-04")
+
+
 def test_parse_four_date_table_uses_final_date_for_cash_payment():
     text = """
 每股现金红利0.70元

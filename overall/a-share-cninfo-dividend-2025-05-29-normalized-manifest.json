@@ -1,0 +1,25 @@
+{
+  "source_capture": "overall/a-share-cninfo-dividend-2025-05-29-raw",
+  "row_count": 111,
+  "cash_dividend_count": 109,
+  "non_cash_dividend_count": 2,
+  "complete_count": 101,
+  "incomplete_announcement_ids": [
+    "1223720794",
+    "1223720872",
+    "1223720886",
+    "1223720890",
+    "1223721510",
+    "1223721512",
+    "1223721519",
+    "1223721522"
+  ],
+  "sh_sz_ordinary_count": 101,
+  "sh_sz_ordinary_complete_count": 101,
+  "sh_sz_ordinary_incomplete_announcement_ids": [],
+  "sh_sz_ordinary_parse_complete": true,
+  "output_sha256": "2f615d411af69b3b0088a9a0a4c3e614bc0dfa4292e0924ca24f7fa1e87a12c0",
+  "lifecycle_parse_complete": false,
+  "backtest_ready": false,
+  "trade_authorized": false
+}
