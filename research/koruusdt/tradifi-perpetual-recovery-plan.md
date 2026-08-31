@@ -43,7 +43,9 @@ P0 Freeze & classify current diff
             ├─ P2a raw price-purpose authority/model closure
             ├─ P2b mutation-window batch audit + Schema7 durable closure
             └─ P2c multiple-funding identity/role closure
-                 └─ P3 Integrated public smoke acceptance
+                 └─ P2d thin funding-evidence Schema8 closure
+                      └─ P2e V2 authority-reverification throughput closure
+                           └─ P3 Integrated public smoke acceptance
                       ├─ P4 one retained context rebuild + canonical validation
                       │    └─ P5 actual p01 single-arm gate
                       │         └─ P6 same-context eight-arm local diagnostic run
@@ -52,7 +54,7 @@ P0 Freeze & classify current diff
                                 └─ P9 holdout after 2026-10-05T00:00:00Z
 ```
 
-`P4` requires `P3`; `P5` requires `P4`; `P6` requires a successful `P5`; `P8` requires `P7`. No phase may skip an unmet upstream gate.
+`P3` requires P2a–P2e; `P4` requires `P3`; `P5` requires `P4`; `P6` requires a successful `P5`; `P8` requires `P7`. No phase may skip an unmet upstream gate.
 
 ## Phases
 
@@ -112,6 +114,38 @@ P0 Freeze & classify current diff
 - Roles are exactly derived from settlement identity; no prefix, absent-role, or arbitrary-role fallback.
 - All retained KORU funding resolutions preflight to unique settlement identities and role pairs.
 - V1 funding source and ordinary profile golden suites pass.
+
+#### P2d — Thin funding-evidence Schema8 closure
+
+**Outcome:** KORU V2 funding eligibility/settlement evidence no longer embeds a growing full ledger replay in every one of 120 slots.
+
+**Required versioned seam:**
+- `LinearFundingEligibilityPositionSnapshotV2` carries exact snapshot/series/revision/slot/timing identity, availability and cutoff cursors, ledger-state hashes, replay hashes, and immutable position states; it never carries an `AccountingJournal` or `LinearDerivativeLedgerProjection` object.
+- A distinct V2 eligibility and settlement/accounting lane validates those thin attestations, preserves the existing funding formula/rate/mark/journal semantics, and is selected only by explicit KORU V2 financing authority.
+- `execution_input_bundle@8` with `execution_case_plan@4` persists the thin evidence; schemas 1–7 remain byte-compatible and reject V2 thin funding authority.
+- Dispatcher and durable rebuild independently derive thin snapshots from the full current ledger replay. The cache is process-local optimization only and is never persisted/trusted.
+
+**Acceptance:**
+- Actual 120-slot source-profile wire resolves one-record V2 funding books and preserves bounded V2 funding-resolution cache counters.
+- A public two-slot Schema8 execution has thin funding artifacts, exact current/cutoff replay counters, and hash/cursor/position-state tamper failure before funding accounting.
+- Schema8 fresh durable rebuild preserves funding journals and final result hash.
+- V1 funding/profile/input golden hashes remain exact.
+
+#### P2e — V2 authority-reverification throughput closure
+
+**Outcome:** Repeated KORU V2 source-projection and Bundle authority verification no longer reconstructs and canonical-hashes the same immutable authority object at every internal seam.
+
+**Evidence and diagnosis:** The accepted 8-slot hour-aligned same-path public-preparation preflight completed, but cProfile measured 236 seconds and 950M calls; a 120-slot preparation-only test timed out fail-closed at 900 seconds before Engine execution. Dominant work is repeated V2 `_trusted_result` rebuild/canonical validation (source projection: 25 calls / 73.5s; execution bundle: 2 calls / 42s), not thin funding replay validation.
+
+**Required seam:**
+- Add only V2, bounded, process-local, successful-result identity caches to the source-projection and execution-bundle `_trusted_result` helpers.
+- Cache entries retain the original object and use `is` identity checks, never digest/canonical bytes as a key. A miss runs the full existing reconstruct-and-canonical verification before insertion; cache hit returns only that verified reconstruction.
+- No V1 cache, wire byte change, cross-process persistence, or caching of funding/journal/cutoff/state attestation is allowed.
+
+**Acceptance:**
+- Exact-object cache hit/miss and bounded-eviction tests prove reconstructed authority is reused only after full validation; `replace`-forged authorities miss and fail closed.
+- Existing source projection and execution bundle V2 tamper/round-trip suites pass with V1 golden suites unchanged.
+- The 8-slot public preparation completes after a fresh-process cache reset. A 120-slot preparation-only smoke completes under a declared 15-minute cap before P3/P4.
 
 ### P3 — Integrated public smoke acceptance
 
@@ -198,4 +232,4 @@ prepare_binance_usdm_tradifi_bar_backtest
 
 ## Current next gate
 
-**P2c is active.** Resolve exact multi-funding roles and prove the two-funding public Schema7 smoke before any more retained reconstruction or p01 run.
+**P2d is active.** Implement thin V2 funding evidence and Schema8 durable replay before any more retained reconstruction or p01 run.
