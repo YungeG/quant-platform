@@ -1,0 +1,28 @@
+"""Run V15 with a frozen Top-10 entry / Top-20 retention buffer."""
+from __future__ import annotations
+import argparse,json
+from pathlib import Path
+import numpy as np,pandas as pd
+from experiments.quarterly_portfolio import BasketConfig,simulate_basket
+from experiments.run_analyst_revision import benchmark_returns,build_inputs,load_reports
+from experiments.run_largecap_lowvol import summarize_basket
+from experiments.run_market_gated_analyst import revision_breadth_states
+FOLDS=(("discovery","2017-01-01","2022-12-31"),("validation","2023-01-01","2024-12-31"),("holdout","2025-01-01","2025-12-31"));BASELINE=.1432;V15_TURNOVER=4.387633281193091;V15_FEES=73399.4011771353
+def encode(value):return value.item() if hasattr(value,"item") else str(value)
+def yearly_return(returns,year):
+ x=returns[pd.to_datetime(returns.index).year==year];return float((1+x).prod()-1) if len(x) else 0.0
+def run(raw_dir,start,end,benchmark_path,signals_path,nav_path,out_json,out_md,current_json,current_md):
+ reports=load_reports(raw_dir);dates,lookup,_,signals,metadata=build_inputs(start,end,reports,"revision_to_price",target_limit=None);signals.to_csv(signals_path,index=False,date_format="%Y-%m-%d");decision_dates=[d.date().isoformat() for d in sorted(signals.signal_date.unique())];states,_=revision_breadth_states(signals,decision_dates,"signal_value");targets={};previous=[]
+ for day,g in signals.groupby("signal_date"):
+  key=day.date().isoformat();ranked=g[g.signal_value.gt(0)&g.prior_runup_pct.lt(.80)].sort_values(["signal_value","paired_count","symbol"],ascending=[False,False,True]);rank={symbol:i+1 for i,symbol in enumerate(ranked.symbol.astype(str))}
+  if not states[key]:target=[]
+  else:
+   target=[symbol for symbol in previous if rank.get(symbol,10**9)<=20]
+   for symbol in ranked.symbol.astype(str):
+    if symbol not in target:target.append(symbol)
+    if len(target)>=10:break
+  targets[key]=target;previous=target
+ config=BasketConfig(name="normalized_eps_buffer_top10",target_count=10,initial_nav=400000,buy_cost=.00155,sell_cost=.00155);gross_config=BasketConfig(name="normalized_eps_buffer_top10_gross",target_count=10,initial_nav=400000,buy_cost=0,sell_cost=0);result=simulate_basket(dates,lookup,targets,config);gross=simulate_basket(dates,lookup,targets,gross_config);benchmark=benchmark_returns(benchmark_path,dates);portfolio=summarize_basket(result,gross,benchmark,config,folds=FOLDS);pd.DataFrame({"date":result.dates,"nav":result.nav,"gross_nav":gross.nav,"benchmark_return":benchmark.to_numpy()}).to_csv(nav_path,index=False);validation=portfolio["folds"]["validation"];holdout=float(portfolio["yearly_returns"].get("2025",0));benchmark_2025=yearly_return(benchmark,2025);checks={"higher_cagr":portfolio["metrics"]["cagr"]>BASELINE,"validation":validation["cagr"]>0 and validation["excess_cagr"]>0,"holdout":holdout>0 and holdout>benchmark_2025,"sharpe":portfolio["metrics"]["sharpe"]>=.60,"drawdown":portfolio["metrics"]["max_drawdown"]>=-.50,"cost_retention":portfolio["gross_to_net_cagr_retention"]>=.80,"turnover":portfolio["annual_turnover"]<V15_TURNOVER,"fees":portfolio["fees"]<V15_FEES};payload={"study":"a-share-normalized-eps-buffer-v16","authority":"exploratory_only_no_platform_prepare_operation","data":{**metadata,"buffer":"enter top10, retain through top20","enabled_months":sum(states.values())},"portfolio":portfolio,"holdout_2025":{"strategy_return":holdout,"benchmark_return":benchmark_2025,"excess":holdout-benchmark_2025},"checks":checks,"verdict":"GO-HIGH-RETURN-CANDIDATE" if all(checks.values()) else "NO-GO","trade_authorized":False};Path(out_json).write_text(json.dumps(payload,ensure_ascii=False,indent=2,default=encode)+"\n");m=portfolio["metrics"];lines=["# A股价格归一化EPS持仓缓冲V16结果","",f"- verdict: **{payload['verdict']}**",f"- CAGR/Sharpe/MDD: {m['cagr']:.2%} / {m['sharpe']:.3f} / {m['max_drawdown']:.2%}",f"- turnover/fees: {portfolio['annual_turnover']:.2f} / {portfolio['fees']:.0f}",f"- validation CAGR/excess: {validation['cagr']:.2%} / {validation['excess_cagr']:.2%}",f"- 2025 strategy/benchmark: {holdout:.2%} / {benchmark_2025:.2%}"];Path(out_md).write_text("\n".join(lines)+"\n");last=max(targets);current={"as_of":end,"last_decision":last,"enabled":states[last],"targets":targets[last],"strategy_verdict":payload["verdict"],"trade_authorized":False};Path(current_json).write_text(json.dumps(current,ensure_ascii=False,indent=2)+"\n");Path(current_md).write_text("# A股价格归一化EPS缓冲当前状态\n\n"+f"- enabled: **{states[last]}**\n- targets: {len(targets[last])}\n- trade authorized: **NO**\n");print("\n".join(lines));return payload
+def main(argv=None):
+ p=argparse.ArgumentParser();p.add_argument("--raw-dir",default="overall/a-share-report-rc-raw");p.add_argument("--start",default="2017-01-03");p.add_argument("--end",default="2026-08-26");p.add_argument("--benchmark",default="overall/a-share-equity-etf-daily-current.csv");p.add_argument("--signals",default="overall/a-share-normalized-eps-buffer-signals.csv");p.add_argument("--nav",default="overall/a-share-normalized-eps-buffer-nav.csv");p.add_argument("--out-json",default="overall/a-share-normalized-eps-buffer-v16-result.json");p.add_argument("--out-md",default="overall/a-share-normalized-eps-buffer-v16-result.md");p.add_argument("--current-json",default="overall/a-share-normalized-eps-buffer-current.json");p.add_argument("--current-md",default="overall/a-share-normalized-eps-buffer-current.md");a=p.parse_args(argv);run(a.raw_dir,a.start,a.end,a.benchmark,a.signals,a.nav,a.out_json,a.out_md,a.current_json,a.current_md);return 0
+if __name__=="__main__":raise SystemExit(main())
