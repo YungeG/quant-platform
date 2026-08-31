@@ -1,0 +1,17 @@
+{
+  "source_capture": "/tmp/csi-rebalance-smoke",
+  "row_count": 668,
+  "counts": {
+    "000300:IN": 28,
+    "000300:OUT": 28,
+    "000852:IN": 206,
+    "000852:OUT": 206,
+    "000905:IN": 100,
+    "000905:OUT": 100
+  },
+  "unresolved": [],
+  "output_sha256": "3064156ef9b8adb951b206e64e164bd68e6147a2867e3a6c120302c0c84aca1a",
+  "attachment_parse_complete": true,
+  "backtest_ready": false,
+  "trade_authorized": false
+}

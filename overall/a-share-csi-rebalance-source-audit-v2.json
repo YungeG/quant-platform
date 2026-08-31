@@ -26,6 +26,20 @@
     "latest_publish_date": "2024-11-29",
     "records_sha256": "b556dea7868a19cb808d787a0055afe9242948514ff6306a09347d421f8b3bb5"
   },
+  "bounded_normalization_2024": {
+    "row_count": 668,
+    "counts": {
+      "000300:IN": 28,
+      "000300:OUT": 28,
+      "000905:IN": 100,
+      "000905:OUT": 100,
+      "000852:IN": 206,
+      "000852:OUT": 206
+    },
+    "unresolved": 0,
+    "output_sha256": "3064156ef9b8adb951b206e64e164bd68e6147a2867e3a6c120302c0c84aca1a",
+    "backtest_ready": false
+  },
   "full_capture_attempt": {
     "requested_interval": ["2016-01-01", "2026-08-31"],
     "result": "FAILED_SAFE",
