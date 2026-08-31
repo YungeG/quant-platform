@@ -9,22 +9,22 @@
     "keyword": "权益分派实施公告",
     "availability_rule": "announcement date only; conservatively available after that date close"
   },
-  "bounded_capture_through_2025_05_14": {
-    "completed_periods": ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05-01..2025-05-07", "2025-05-08..2025-05-14"],
-    "captured_announcements": 520,
-    "cash_dividend_announcements": 517,
-    "non_cash_dividend_announcements": 3,
-    "sh_sz_ordinary_cash_announcements": 480,
-    "sh_sz_ordinary_complete_lifecycle": 480,
+  "bounded_capture_through_2025_05_21": {
+    "completed_periods": ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05-01..2025-05-07", "2025-05-08..2025-05-14", "2025-05-15..2025-05-19", "2025-05-20", "2025-05-21"],
+    "captured_announcements": 909,
+    "cash_dividend_announcements": 904,
+    "non_cash_dividend_announcements": 5,
+    "sh_sz_ordinary_cash_announcements": 828,
+    "sh_sz_ordinary_complete_lifecycle": 828,
     "sh_sz_ordinary_parse_rate": 1.0,
-    "out_of_scope_incomplete": 37,
+    "out_of_scope_incomplete": 76,
     "capture_summary": "overall/a-share-cninfo-dividend-2025-capture-summary.csv"
   },
   "full_2025_query": {
     "exact_title_matches": 4552,
     "capture_status": "IN_PROGRESS_BOUNDED_SLICES",
     "completed_months": 4,
-    "additional_completed_slices": ["2025-05-01..2025-05-07", "2025-05-08..2025-05-14"],
+    "additional_completed_slices": ["2025-05-01..2025-05-07", "2025-05-08..2025-05-14", "2025-05-15..2025-05-19", "2025-05-20", "2025-05-21"],
     "total_months": 12
   },
   "remaining_requirements": [

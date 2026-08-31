@@ -69,6 +69,12 @@ def test_non_cash_stock_dividend_is_excluded_from_cash_lifecycle():
     assert parse_text(text)["status"] == "NO_CASH_DIVIDEND"
 
 
+def test_cash_dividend_uses_first_pre_tax_cash_stock_amount():
+    text = "向全体股东每10股派发现金股利3.00元人民币（含税），扣税后每10股派2.70元。"
+
+    assert parse_text(text)["cash_per_share"] == 0.3
+
+
 def test_parse_shenzhen_sentence_lifecycle_and_per_ten_cash():
     text = """
 公司向全体股东每 10 股派 0.400000 元人民币现金。

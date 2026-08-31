@@ -43,12 +43,12 @@ def _first_date(pattern: str, text: str) -> str | None:
 
 def parse_text(text: str) -> dict:
     normalized = text.replace("（", "(").replace("）", ")")
-    normalized = re.sub(r"证券代码[:：]\s*\d{6}.*?公告编号[:：][^\n]*", "", normalized)
+    normalized = re.sub(r"(?m)^[ \t\f]*(?:证券代码|债券代码)[:：][^\n]*$", "", normalized)
     normalized = re.sub(r"(?m)^\s*\d+\s*$", "", normalized)
     compact = re.sub(r"[ \t]+", " ", normalized)
     dense = re.sub(r"\s+", "", normalized)
     payment = None
-    sentence = re.search(r"股权登记日(?:期)?为?[:：]?" + DATE + r".*?(?:除权除息日|除息日)为?[:：]?" + DATE, dense)
+    sentence = re.search(r"股权登记日(?:期)?为?[:：]?" + DATE + r".*?(?:除权除息日|除息日)(?:\(红利发放日\))?为?[:：]?" + DATE, dense)
     if sentence:
         groups = sentence.groups()
         record = _date_from_groups(groups[:6])
@@ -69,13 +69,13 @@ def parse_text(text: str) -> dict:
             payment = _date_from_groups(groups[table_payment_group:table_payment_group + 6])
         else:
             record = _first_date(r"股权登记日(?:期)?为?[:：]?", dense)
-            ex_date = _first_date(r"(?:除权除息日|除息日|除权\(息\)日)为?[:：]?", dense)
-    payment_date = payment or _first_date(r"(?:现金红利|现金分红|红利)[,，]?(?:发放日|将于)[:：]?", dense)
+            ex_date = _first_date(r"(?:除权除息日|除息日|除权\(息\)日)(?:\(红利发放日\))?为?[:：]?", dense)
+    payment_date = payment or _first_date(r"(?:现金红利|现金股利|现金分红|红利)[,，]?(?:发放日|将于)\)?[:：]?", dense)
     cash = None
     for pattern, divisor in (
-        (r"A股每股现金红利(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 1),
-        (r"每股(?:派发)?现金红利(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 1),
-        (r"每10股派(?:发)?(?:现金红利)?(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 10),
+        (r"A股每股(?:现金红利|现金股利)(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 1),
+        (r"每股(?:派发)?(?:现金红利|现金股利)(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 1),
+        (r"每10股(?:派|分配)(?:发)?(?:现金红利|现金股利)?(?:人民币)?([0-9]+(?:\.[0-9]+)?)元", 10),
         (r"每10股派现金([0-9]+(?:\.[0-9]+)?)元", 10),
     ):
         match = re.search(pattern, dense, flags=re.I)
