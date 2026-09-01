@@ -1,0 +1,87 @@
+{
+  "study": "a-share-propane-cp-cfr-source-smoke-v1",
+  "decision": "SOURCE-BLOCKED / NO BACKTEST",
+  "captured_source": "UN Comtrade public API",
+  "raw_directory": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw",
+  "raw_directory_git_ignored": true,
+  "raw_tree_sha256": "13a32a8df74af5fdffc69091774fe091013ecf69f9e83c80181bf7abc72a8e74",
+  "requests": [
+    {
+      "name": "comtrade-propane-202401",
+      "url": "https://comtradeapi.un.org/public/v1/preview/C/M/HS?period=202401&reporterCode=156&cmdCode=271112&flowCode=M&partnerCode=0&partner2Code=0&customsCode=C00&motCode=0&maxRecords=500",
+      "observed_at_utc": "2026-09-01T08:41:59Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-propane-202401.json",
+      "raw_sha256": "8b0f80ee2951e85598597553ea5891a16dca8e7d0e4ec4e8755f7b49fc2b01b0",
+      "http_headers_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-headers-202401.txt",
+      "http_headers_sha256": "e31aeed2d5f921a326058ae1dd2c4a7baeca3d79d217196f1bb3957c5eb1d93e",
+      "count": 1,
+      "cifvalue_usd": 1410311821.0,
+      "net_weight_kg": 2261539280.0,
+      "is_reported": false,
+      "is_aggregate": true
+    },
+    {
+      "name": "comtrade-availability-202401",
+      "url": "https://comtradeapi.un.org/public/v1/getDa/C/M/HS?reportercode=156&period=202401",
+      "observed_at_utc": "2026-09-01T08:43:37Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-da-202401.json",
+      "raw_sha256": "c3f5955a7d7892b585151a910f654dcdbd3f2513c3b74f35a62907a4680e6bdc",
+      "count": 1,
+      "first_released": "2025-06-12T01:47:07.73",
+      "last_released": "2025-07-05T01:13:58.7",
+      "dataset_checksum": 7166829,
+      "total_records": 529522
+    },
+    {
+      "name": "comtrade-availability-202412",
+      "url": "https://comtradeapi.un.org/public/v1/getDa/C/M/HS?reportercode=156&period=202412",
+      "observed_at_utc": "2026-09-01T08:47:09Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-da-202412.json",
+      "raw_sha256": "4ca55d6f05a260ed0bb7fca9cc1c7906e78c80fa17c993f89dc67a4d4ada42e2",
+      "count": 1,
+      "first_released": "2025-06-12T21:27:01.16",
+      "last_released": "2025-07-04T23:51:36.4233333",
+      "dataset_checksum": 826207983,
+      "total_records": 564840
+    },
+    {
+      "name": "comtrade-propane-202412",
+      "url": "https://comtradeapi.un.org/public/v1/preview/C/M/HS?period=202412&reporterCode=156&cmdCode=271112&flowCode=M&partnerCode=0&partner2Code=0&customsCode=C00&motCode=0&maxRecords=500",
+      "observed_at_utc": "2026-09-01T08:47:12Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-propane-202412.json",
+      "raw_sha256": "c931c3c114b84b314577b7db416e13c0731daf70494c4d715a3557bd343affb9",
+      "count": 1,
+      "cifvalue_usd": 1658718597.0,
+      "net_weight_kg": null,
+      "alternate_quantity": 2621701573.0,
+      "alternate_quantity_unit_code": 8,
+      "is_reported": false,
+      "is_aggregate": true
+    },
+    {
+      "name": "comtrade-availability-202501",
+      "url": "https://comtradeapi.un.org/public/v1/getDa/C/M/HS?reportercode=156&period=202501",
+      "observed_at_utc": "2026-09-01T08:47:14Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-da-202501.json",
+      "raw_sha256": "0f48794e774fadb67770df6eadb0f3844d14aca4dc4c12226de2e63facc771ad",
+      "count": 0
+    },
+    {
+      "name": "comtrade-propane-202501",
+      "url": "https://comtradeapi.un.org/public/v1/preview/C/M/HS?period=202501&reporterCode=156&cmdCode=271112&flowCode=M&partnerCode=0&partner2Code=0&customsCode=C00&motCode=0&maxRecords=500",
+      "observed_at_utc": "2026-09-01T08:47:19Z",
+      "raw_path": "overall/a-share-propane-cp-cfr-source-smoke-v1-raw/comtrade-propane-202501.json",
+      "raw_sha256": "74fb9e013d2918f975bfabd9d7de6ec6c766547ddfcbaed48bfea66fe1eb2e96",
+      "count": 0
+    }
+  ],
+  "interpretation": {
+    "economic_object": "delayed China aggregate import CIF unit-value proxy",
+    "seller_cp": false,
+    "first_party_china_customs": false,
+    "value_vintage_archive": false,
+    "usable_no_earlier_than": "max(dataset.lastReleased, request.observed_at_utc) when a retained contemporaneous response exists",
+    "timely_through_research_cutoff": false,
+    "reason": "UN Comtrade re-disseminates current reporter datasets; dataset-level release metadata does not reproduce prior value vintages, China monthly availability stopped at 2024-12, and the quantity field changed between the sampled months."
+  }
+}
