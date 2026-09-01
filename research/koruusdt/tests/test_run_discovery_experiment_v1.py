@@ -198,6 +198,34 @@ def test_clean_worktree_gate_rejects_renamed_managed_paths(
         runner._verify_clean_worktrees()
 
 
+def test_persistent_state_migrates_only_platform_descendant(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    formal_root = tmp_path / "formal"
+    state_identity = formal_root / "state_identity.json"
+    monkeypatch.setattr(runner, "FORMAL_ROOT", formal_root)
+    monkeypatch.setattr(runner, "OUTPUT", tmp_path / "summary.json")
+    monkeypatch.setattr(runner, "STATE_IDENTITY", state_identity)
+    runner._prepare_state()
+    existing = json.loads(state_identity.read_text())
+    existing["commits"]["platform"] = "ancestor"
+    runner._write_canonical(state_identity, existing)
+    original_run = runner.subprocess.run
+
+    def run(args: object, *call_args: object, **call_kwargs: object):
+        if isinstance(args, list) and "merge-base" in args:
+            return type("Result", (), {"returncode": 0})()
+        return original_run(args, *call_args, **call_kwargs)
+
+    monkeypatch.setattr(runner.subprocess, "run", run)
+
+    runner._prepare_state()
+
+    assert runner._validate_canonical(
+        state_identity, "koruusdt_formal_discovery_state_identity_v1"
+    ) == json.loads(runner.retained.manifest_bytes(runner._state_value()))
+
+
 def test_persistent_state_replays_compatible_and_rejects_unmanaged(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

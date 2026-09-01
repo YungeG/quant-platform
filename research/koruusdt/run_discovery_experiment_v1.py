@@ -406,7 +406,32 @@ def _prepare_state() -> None:
             )
             expected = json.loads(retained.manifest_bytes(_state_value()))
             if existing != expected:
-                raise ValueError("formal discovery root contains incompatible state")
+                existing_semantics = json.loads(json.dumps(existing))
+                expected_semantics = json.loads(json.dumps(expected))
+                existing_platform = existing_semantics["commits"]["platform"]
+                expected_platform = expected_semantics["commits"]["platform"]
+                existing_semantics["commits"]["platform"] = ""
+                expected_semantics["commits"]["platform"] = ""
+                existing_semantics["manifest_sha256"] = ""
+                expected_semantics["manifest_sha256"] = ""
+                if (
+                    existing_semantics != expected_semantics
+                    or subprocess.run(
+                        [
+                            "git",
+                            "-C",
+                            str(ROOT),
+                            "merge-base",
+                            "--is-ancestor",
+                            existing_platform,
+                            expected_platform,
+                        ],
+                        check=False,
+                    ).returncode
+                    != 0
+                ):
+                    raise ValueError("formal discovery root contains incompatible state")
+                _write_canonical(STATE_IDENTITY, _state_value())
             return
     if OUTPUT.exists():
         raise ValueError("discovery summary exists without compatible evidence state")
