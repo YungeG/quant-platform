@@ -113,4 +113,7 @@ The decision is supported by the frozen V18 execution requirements, the first or
 - Phase 2 implementation: `c52b5d1`, repaired by `be813af`.
 - Phase 2 independent re-review: **ACCEPT**, recorded in `a-share-portfolio-phase2-independent-rereview.md`.
 - Controlling-agent confirmation: Phase 2 focused 10 passed; clean-tree preservation gate 137 passed; LSP clean.
-- Next authorized phase: Phase 3 availability/fee-aware capping and side-specific order policy only.
+- Phase 3 implementation: `7f616ed`, repaired by `567fb7b`.
+- Phase 3 independent re-review: **ACCEPT**, recorded in `a-share-portfolio-phase3-independent-rereview.md`.
+- Controlling-agent confirmation: focused portfolio/engine 21 passed; clean-tree preservation gate 147 passed; LSP clean.
+- Next authorized phase: Phase 4 atomic cancellation/replacement supersession only.
