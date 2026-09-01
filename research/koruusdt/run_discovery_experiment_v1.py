@@ -964,10 +964,12 @@ def _validate_summary_shape(summary: Mapping[str, object]) -> None:
     ):
         raise ValueError("summary completed/analysis refs are invalid")
     sample = summary.get("sample_ledger")
+    discovery_count = len(frozen_inputs().trial_executions)
     if (
         type(sample) is not dict
-        or sample.get("record_count") != 2
-        or sample.get("purpose_counts") != {"discovery": 1, "selection": 1}
+        or sample.get("record_count") != discovery_count + 1
+        or sample.get("purpose_counts")
+        != {"discovery": discovery_count, "selection": 1}
         or sample.get("dataset_revisions") != [DATASET_REVISION]
         or sample.get("intervals") != [[DISCOVERY_START, DISCOVERY_END]]
     ):

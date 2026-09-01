@@ -299,8 +299,8 @@ def test_validate_only_rejects_fabricated_summary_without_owner_logs(
             "completed_publication_refs": [],
             "analysis_refs": [],
             "sample_ledger": {
-                "record_count": 2,
-                "purpose_counts": {"discovery": 1, "selection": 1},
+                "record_count": 9,
+                "purpose_counts": {"discovery": 8, "selection": 1},
                 "dataset_revisions": [runner.DATASET_REVISION],
                 "intervals": [[runner.DISCOVERY_START, runner.DISCOVERY_END]],
             },
