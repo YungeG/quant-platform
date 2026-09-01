@@ -24,6 +24,11 @@
       "path": "overall/a-share-oil-polyolefin-v1-raw/raw",
       "files": 637,
       "sha256": "7e51b81a05cca3522b8d879485f9dd113e38c863a8debd718e8aaa64ea908554"
+    },
+    "query_ledger": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/queries.csv",
+      "rows": 637,
+      "sha256": "cd0c23db612a8fbe28ecea0f0aee9be35fb248e235e6f8fae66a9a6c54b0f5aa"
     }
   },
   "products": {

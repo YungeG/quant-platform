@@ -105,6 +105,10 @@ def append(path: Path, rows: list[dict], keys: list[str]) -> None:
     old = pd.read_parquet(path) if path.exists() else pd.DataFrame()
     data = pd.concat([old, pd.DataFrame(rows)], ignore_index=True)
     if len(data):
+        duplicates = data[data.duplicated(keys, keep=False)]
+        for _, group in duplicates.groupby(keys, dropna=False, sort=False):
+            if len(group.drop_duplicates()) > 1:
+                raise ValueError(f"conflicting duplicate source rows for {keys}: {group.iloc[0][keys].to_dict()}")
         data = data.drop_duplicates(keys, keep="last")
     data.to_parquet(path, index=False, compression="zstd")
 
@@ -132,6 +136,16 @@ def run(
     token = Path(token_file).read_text().strip()
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    manifest_path = out / "manifest.json"
+    if manifest_path.exists():
+        try:
+            existing_manifest = json.loads(manifest_path.read_text())
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(f"invalid existing manifest: {manifest_path}") from error
+        existing_scope = (existing_manifest.get("start"), existing_manifest.get("end"), existing_manifest.get("products"))
+        requested_scope = (start, end, selected)
+        if existing_scope != requested_scope:
+            raise ValueError(f"output directory scope mismatch: existing={existing_scope}, requested={requested_scope}")
     query_path = out / "queries.csv"
     queries = pd.read_csv(query_path, dtype=str) if query_path.exists() else pd.DataFrame(columns=QUERY_COLUMNS)
     for column in QUERY_COLUMNS:
@@ -145,7 +159,9 @@ def run(
             for row in queries.itertuples(index=False)
             if row.status == "success"
             and isinstance(row.raw_path, str)
+            and isinstance(row.response_sha256, str)
             and (out / row.raw_path).exists()
+            and hashlib.sha256((out / row.raw_path).read_bytes()).hexdigest() == row.response_sha256
         }
         updates: list[dict] = []
         continuous_rows: list[dict] = []
@@ -233,6 +249,9 @@ def run(
                             {"ts_code": contract, "start_date": chunk_start, "end_date": chunk_end},
                         )
                     )
+                if native_rows:
+                    allowed = mapping[["mapping_ts_code", "trade_date"]].rename(columns={"mapping_ts_code": "ts_code"})
+                    native_rows = pd.DataFrame(native_rows).merge(allowed, on=["ts_code", "trade_date"], how="inner").to_dict("records")
 
         if continuous_rows:
             append(out / "fut_daily.parquet", continuous_rows, ["ts_code", "trade_date"])
@@ -247,6 +266,19 @@ def run(
             queries = queries.drop_duplicates(["api", "product", "start", "end"], keep="last")
             queries = queries.sort_values(["api", "product", "start"])
             queries.to_csv(query_path, index=False)
+
+    if LINEAGE_PRODUCTS.intersection(selected):
+        mapping = _existing(out / "fut_mapping.parquet")
+        native = _existing(out / "fut_native_daily.parquet")
+        selected_codes = set(selected.values())
+        mapping = mapping[mapping.ts_code.isin(selected_codes)].copy()
+        mapping["trade_date"] = mapping.trade_date.astype(str)
+        mapping = mapping[mapping.trade_date.between(pd.Timestamp(start).strftime("%Y%m%d"), pd.Timestamp(end).strftime("%Y%m%d"))]
+        expected = set(mapping[["mapping_ts_code", "trade_date"]].itertuples(index=False, name=None))
+        actual = set(native[["ts_code", "trade_date"]].astype(str).itertuples(index=False, name=None))
+        missing, extra = expected - actual, actual - expected
+        if missing or extra:
+            raise RuntimeError(f"mapping/native exact-cover failure: missing={len(missing)}, extra={len(extra)}")
 
     successful = queries[queries.status.eq("success")]
     manifest = {
@@ -267,6 +299,11 @@ def run(
             "rows": len(data),
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None,
         }
+    manifest["query_ledger"] = {
+        "path": str(query_path),
+        "rows": len(queries),
+        "sha256": hashlib.sha256(query_path.read_bytes()).hexdigest() if query_path.exists() else None,
+    }
     raw_files = sorted((out / "raw").rglob("*.json")) if (out / "raw").exists() else []
     raw_digest = hashlib.sha256()
     for path in raw_files:
@@ -277,7 +314,7 @@ def run(
         "files": len(raw_files),
         "sha256": raw_digest.hexdigest() if raw_files else None,
     }
-    (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     return manifest
 
 

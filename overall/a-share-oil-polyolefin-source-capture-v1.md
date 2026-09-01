@@ -20,7 +20,8 @@ SC、PP、L 的供应商连续结算价、连续到月合约映射、月合约�
 
 - 成功请求：637；失败请求：0。
 - 原始响应：637份；目录树 SHA-256：`7e51b81a05cca3522b8d879485f9dd113e38c863a8debd718e8aaa64ea908554`。
-- 原始响应不包含调用凭证；每份响应均有独立 SHA-256、获取时间和查询记录。
+- 查询账本：637行；SHA-256：`cd0c23db612a8fbe28ecea0f0aee9be35fb248e235e6f8fae66a9a6c54b0f5aa`。
+- 原始响应不包含调用凭证；每份响应均有独立 SHA-256、获取时间和查询记录；重放会验证原始响应摘要。
 - 原始目录：`overall/a-share-oil-polyolefin-v1-raw/`（被 Git 忽略，需在本机保留）。
 - 机器可读清单：`overall/a-share-oil-polyolefin-source-capture-v1.json`。
 
@@ -58,7 +59,7 @@ SC 同时存在桶和吨，必须按单位分组，禁止直接相加。PP、L �
 - 烟雾测试重放：0秒，无网络调用，数据与原始响应逐字节不变。
 - 完整捕获：429秒。
 - 完整重放：0秒，637份响应、查询账本和Parquet文件未变化。
-- 聚焦测试：`tests/research/test_fetch_resource_cycle_history.py`，1 passed。
+- 聚焦测试：`tests/research/test_fetch_resource_cycle_history.py`，2 passed；覆盖旧账本升级、摘要校验、范围冲突和映射缺口拒绝。
 
 ## 仍然阻塞
 
