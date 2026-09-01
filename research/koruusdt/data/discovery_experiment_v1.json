@@ -1,0 +1,252 @@
+{
+  "analysis_refs": [
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:0436f236f84b258d4fa18cffb4389f36a5a17a0c92bcb8415bb311a93b178ffe",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:05ea3b60ad9af9c686b823764f887906da370d10d0873806857192945a755e73",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:4dee61e311d190a4469a904afc587b3bae61350902755358a466db15fecc5881",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:546aa4926315262e22c39f292e744d8f07fa79dd4963a4e4cc2fc2a011aa9552",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:c3d95b0a7ff5dec2c410c38eeb4bef680ddcf692f32821f6f032c2392c9d20ba",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:d87c23971693f31e6a02b8af86424adde8e5b28a066801bdd9d4efd0cbed8f86",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:f3d8fa0202d35b8a18d2fb0254d0692a4efc86fb7ce611ee3fb1640804c1cbdf",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "backtest_analysis",
+        "content_hash": "sha256:fa4ca8f6ebb32bb7432d8602395865594c49a578f2dfd56d89ad5215f96f5cd7",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "analysis_artifact_ref"
+    }
+  ],
+  "commits": {
+    "backtest": "ed32bb578ffa792f6429aaad94ce8fc05c3eec2f",
+    "platform": "04831fcacf1c8cefa8b8d71933fa65251c2d447c",
+    "platform_pin": "5371e0d8707a0f1717bcd0df9c4722d0b8e4162b",
+    "research": "37c5f59454494802257e10b4b9fb2497c75f8c06"
+  },
+  "completed_publication_refs": [
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:1be032aa5500053a4eba2c814bf884f9d19f0a2b4f1f72636be7bd155ccf6319",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:3275da5734b4902be4657e3389f3de1d7db7ff4a1ee865889dc93dba5c1b7592",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:46aeacf1b24c40697a3a275a62f204d73214ee9bf829a65216af1f6fc34606ea",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:49d61863a40ecc488a2d70b34cc84e49a1344da1c4bb979704766cac8741a9fd",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:55a4f1fd06a0f5ada2bf310382051c7215caf59198f676c9567ad7b43574852d",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:a9b6bdf17b0286cb7570f0be0508460a41c2739221784408183833192a0867a9",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:c8ffee22fac10752acd982f0be259a89b6f8613232f281bb0f8b563021882c5c",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    },
+    {
+      "artifact_ref": {
+        "artifact_type": "canonical_publication_manifest",
+        "content_hash": "sha256:f855f9eebef95b5df36e013fa72c3c35fbaea0fa75301c75731995bb55993caf",
+        "schema_version": 1,
+        "type": "artifact_ref"
+      },
+      "type": "backtest_canonical_publication_ref"
+    }
+  ],
+  "evidence": {
+    "file_count": 391,
+    "root": "research/koruusdt/data/formal_discovery_v1",
+    "tree_sha256": "sha256:01999d52c0cc49b7e373c1dbac52402582af00d997e9ac3258fb6429ba2027f9"
+  },
+  "experiment_ref": "rp-core:experiment_spec@1:sha256:121bed61e4b17c3fbd50b14eb3eff5ac73542b6f68710cdfdd7c1f9aef27572d",
+  "holdout_touched": false,
+  "manifest_sha256": "sha256:f9edac999e69a061c64b0e57b5edeefdfd48ecb04aadfb0ce3cdfb04664e7977",
+  "network_performed": false,
+  "owner_log_checkpoints": {
+    "research.artifacts.v1": {
+      "as_of": "2026-08-26T12:00:01.000000Z",
+      "head_receipt_hash": "sha256:d11e21c50be790b4e38c2451c04871fa6320997d956c09829e97b9b0b4ba068b",
+      "log_name": "research.artifacts.v1",
+      "upper_log_sequence": 28
+    },
+    "research.execution.v1": {
+      "as_of": "2026-08-26T12:00:01.000000Z",
+      "head_receipt_hash": "sha256:7dd44dd43dc32a218dcaf146a7e2b433435b8599997e9e6a94281feafce72f79",
+      "log_name": "research.execution.v1",
+      "upper_log_sequence": 49
+    },
+    "validation.sample-consumption.v1": {
+      "as_of": "2026-08-26T12:00:01.000000Z",
+      "head_receipt_hash": "sha256:dc53af1132960cc2a7357b6d5da7ccaac2af82861a5b668367feb666f4562ec0",
+      "log_name": "validation.sample-consumption.v1",
+      "upper_log_sequence": 9
+    }
+  },
+  "replay_verified": true,
+  "retained_hashes": {
+    "bundle_result_digest": "sha256:d122adc40979100dfe707cb87a11cf08c13613abcfc97e47f88baf98a2cd8ebb",
+    "diagnostic_file": "sha256:ebf720bb2b1df7fef3080e573cc072f74f611518272da4a0efa93dfbd5982322",
+    "diagnostic_manifest": "sha256:60d1d9173803957feb23deace6debd62798d43795e03195adb7dac44a4779ce8",
+    "profile_result_digest": "sha256:3e8c794912c0339c1c8c36660e53c256d4cd8c6910de148224bf4bb7f039d402",
+    "source_profile_authority_ref": {
+      "artifact_type": "binance_usdm_koru_source_profile_authority",
+      "content_hash": "sha256:1c79ff9945bda06b752a63c7418fcf582707e4ef08287147f18214c3a0cdad03",
+      "schema_version": 2,
+      "type": "artifact_ref"
+    },
+    "source_targets_file": "sha256:eb38679a2ec9b2a31420ae58bdd50fcb1a1d362cd90bce0a3f30753c397ba47e",
+    "source_targets_manifest": "sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df"
+  },
+  "sample_ledger": {
+    "dataset_revisions": [
+      "koruusdt.discovery.bundle-v2.cf512bdee193cceb"
+    ],
+    "intervals": [
+      [
+        "2026-07-15T10:00:00.000000Z",
+        "2026-08-24T11:00:00.000000Z"
+      ]
+    ],
+    "purpose_counts": {
+      "discovery": 8,
+      "selection": 1
+    },
+    "record_count": 9
+  },
+  "schema_version": 1,
+  "selection": {
+    "candidate_family_ref": {
+      "artifact_type": "candidate_family",
+      "content_hash": "sha256:d59c94602bd943d7f05e5c3176aa1bd5f70ad8ed66c9fd16cd48b983ebf7d518",
+      "schema_version": 1,
+      "type": "artifact_ref"
+    },
+    "execution_manifest_ref": {
+      "artifact_type": "experiment_execution_manifest",
+      "content_hash": "sha256:0ba345e469eeee66b10ddc7b8cb3237c64f985a1fdf90a1fed080c96b5b43919",
+      "schema_version": 1,
+      "type": "artifact_ref"
+    },
+    "manifest_cutoff": {
+      "log_name": "research.execution.v1",
+      "log_sequence": 49,
+      "receipt_hash": "sha256:7dd44dd43dc32a218dcaf146a7e2b433435b8599997e9e6a94281feafce72f79"
+    },
+    "no_selection_ref": {
+      "artifact_type": "candidate_family",
+      "content_hash": "sha256:d59c94602bd943d7f05e5c3176aa1bd5f70ad8ed66c9fd16cd48b983ebf7d518",
+      "schema_version": 1,
+      "type": "artifact_ref"
+    },
+    "reason_code": "NO_ELIGIBLE_TRIAL",
+    "type": "discovery_no_selection"
+  },
+  "selection_policy_ref": "rp-core:selection_policy@1:sha256:7a1d32667c8103402e4389fa24908414046a504ca695606387d3aeae817217d2",
+  "task_outcomes": {
+    "count": 16,
+    "states": {
+      "COMPLETED": 16
+    }
+  },
+  "type": "koruusdt_discovery_experiment_v1"
+}
