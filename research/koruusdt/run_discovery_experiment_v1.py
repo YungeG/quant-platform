@@ -81,6 +81,7 @@ from crypto_quant_validation import (  # noqa: E402
 
 SCHEMA_VERSION = 1
 PLATFORM_PIN_COMMIT = "5371e0d8707a0f1717bcd0df9c4722d0b8e4162b"
+EXECUTION_PLATFORM_COMMIT = "04831fcacf1c8cefa8b8d71933fa65251c2d447c"
 BACKTEST_COMMIT = "ed32bb578ffa792f6429aaad94ce8fc05c3eec2f"
 RESEARCH_COMMIT = "37c5f59454494802257e10b4b9fb2497c75f8c06"
 RETAINED_FILE_HASH = (
@@ -331,7 +332,7 @@ def _build_artifact_manifest() -> BuildArtifactManifest:
 
 def _commits() -> dict[str, str]:
     return {
-        "platform": _git(ROOT, "rev-parse", "HEAD"),
+        "platform": EXECUTION_PLATFORM_COMMIT,
         "platform_pin": PLATFORM_PIN_COMMIT,
         "backtest": BACKTEST_COMMIT,
         "research": RESEARCH_COMMIT,
@@ -464,11 +465,15 @@ def _verify_pins() -> None:
     _verify_clean_worktrees()
     if _git(ROOT, "rev-parse", PLATFORM_PIN_COMMIT) != PLATFORM_PIN_COMMIT:
         raise ValueError("Platform pin commit is unavailable")
-    if subprocess.run(
-        ["git", "-C", str(ROOT), "merge-base", "--is-ancestor", PLATFORM_PIN_COMMIT, "HEAD"],
-        check=False,
-    ).returncode != 0:
-        raise ValueError("Platform checkout does not descend from the accepted pin")
+    for accepted, message in (
+        (PLATFORM_PIN_COMMIT, "accepted pin"),
+        (EXECUTION_PLATFORM_COMMIT, "formal execution commit"),
+    ):
+        if subprocess.run(
+            ["git", "-C", str(ROOT), "merge-base", "--is-ancestor", accepted, "HEAD"],
+            check=False,
+        ).returncode != 0:
+            raise ValueError(f"Platform checkout does not descend from the {message}")
     if _git(BACKTEST, "rev-parse", "HEAD") != BACKTEST_COMMIT:
         raise ValueError("Backtest checkout does not match the accepted commit")
     if _git(ROOT / "research-platform", "rev-parse", "HEAD") != RESEARCH_COMMIT:
