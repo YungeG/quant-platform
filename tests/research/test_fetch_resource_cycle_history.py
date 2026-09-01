@@ -1,0 +1,71 @@
+import hashlib
+from pathlib import Path
+
+import pandas as pd
+
+from experiments import fetch_resource_cycle_history as fetcher
+
+
+def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_path: Path):
+    token_file = tmp_path / "token"
+    token_file.write_text("secret")
+    output = tmp_path / "raw"
+    calls = []
+
+    def fake_call(token, api, params):
+        assert token == "secret"
+        calls.append((api, params.copy()))
+        code = params.get("ts_code")
+        if api == "fut_mapping":
+            return [
+                {"ts_code": "SCL.INE", "trade_date": "20240102", "mapping_ts_code": "SC2402.INE"},
+                {"ts_code": "SCL.INE", "trade_date": "20240103", "mapping_ts_code": "SC2402.INE"},
+            ], ""
+        if api == "fut_daily" and code == "SCL.INE":
+            return [{"ts_code": code, "trade_date": "20240102", "settle": 550.0}], ""
+        if api == "fut_daily" and code == "SC2402.INE":
+            return [{"ts_code": code, "trade_date": "20240102", "settle": 551.0}], ""
+        if api == "fut_wsr":
+            return [
+                {
+                    "trade_date": "20240102",
+                    "symbol": "SC",
+                    "fut_name": "中质含硫原油",
+                    "warehouse": "test",
+                    "pre_vol": 10,
+                    "vol": 11,
+                    "vol_chg": 1,
+                    "unit": "桶",
+                }
+            ], ""
+        raise AssertionError((api, params))
+
+    monkeypatch.setattr(fetcher, "call", fake_call)
+    first = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+
+    assert first["products"] == {"SC": "SCL.INE"}
+    assert not first["failed_queries"]
+    assert {api for api, _ in calls} == {"fut_daily", "fut_mapping", "fut_wsr"}
+    warehouse_call = next(params for api, params in calls if api == "fut_wsr")
+    assert warehouse_call["start_date"] == "20240102"
+    assert warehouse_call["end_date"] == "20240103"
+
+    mapping = pd.read_parquet(output / "fut_mapping.parquet")
+    native = pd.read_parquet(output / "fut_native_daily.parquet")
+    assert mapping[["ts_code", "trade_date", "mapping_ts_code"]].to_dict("records") == [
+        {"ts_code": "SCL.INE", "trade_date": "20240102", "mapping_ts_code": "SC2402.INE"},
+        {"ts_code": "SCL.INE", "trade_date": "20240103", "mapping_ts_code": "SC2402.INE"},
+    ]
+    assert native[["ts_code", "trade_date", "settle"]].to_dict("records") == [
+        {"ts_code": "SC2402.INE", "trade_date": "20240102", "settle": 551.0}
+    ]
+    for name in ["fut_daily", "fut_wsr", "fut_mapping", "fut_native_daily"]:
+        path = output / f"{name}.parquet"
+        assert first["outputs"][name]["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+
+    query_rows = pd.read_csv(output / "queries.csv")
+    assert set(query_rows.api) == {"fut_daily", "fut_daily_native", "fut_mapping", "fut_wsr"}
+    call_count = len(calls)
+    second = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    assert len(calls) == call_count
+    assert second["outputs"] == first["outputs"]
