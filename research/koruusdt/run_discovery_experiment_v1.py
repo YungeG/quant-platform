@@ -833,9 +833,15 @@ def _sample_summary(foundation: LocalFoundation) -> dict[str, object]:
         "record_count": len(records),
         "purpose_counts": dict(sorted(purposes.items())),
         "dataset_revisions": sorted({record["dataset_revision"] for record in records}),
-        "intervals": sorted(
-            {(record["interval_start"], record["interval_end"]) for record in records}
-        ),
+        "intervals": [
+            list(value)
+            for value in sorted(
+                {
+                    (record["interval_start"], record["interval_end"])
+                    for record in records
+                }
+            )
+        ],
     }
 
 
