@@ -42,7 +42,7 @@ def test_p01_tiny_bundle_smoke_reaches_schema7_engine_summary_and_selection() ->
 
     assert first == second
     assert first["status"] == "completed"
-    assert first["execution_input_ref"]["schema_version"] == 7
+    assert first["execution_input_ref"]["schema_version"] == 8
     assert first["fill_count"] == 2
     assert first["fill_times_epoch_nanoseconds"] == [
         1_784_347_500_000_000_000,
@@ -107,3 +107,45 @@ def test_broken_preparation_is_failed_and_blocks_report_publication() -> None:
             retained_metadata={},
             emit=lambda *args, **kwargs: None,
         )
+
+
+def test_validate_only_checks_existing_output_without_economic_execution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    output = tmp_path / "discovery_backtests_v1.json"
+    output.write_bytes(
+        runner.retained.manifest_bytes(
+            {
+                "type": "koruusdt_discovery_backtests_v1",
+                "schema_version": 1,
+                "trial_count": 1,
+                "manifest_sha256": "",
+            }
+        )
+    )
+    monkeypatch.setattr(runner, "OUTPUT", output)
+    monkeypatch.setattr(
+        runner,
+        "build_results",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("validate-only must not execute Backtest")
+        ),
+    )
+
+    assert runner.main(["--validate-only"]) == 0
+
+
+def test_validate_only_fails_fast_when_output_is_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(runner, "OUTPUT", tmp_path / "missing.json")
+    monkeypatch.setattr(
+        runner,
+        "build_results",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("validate-only must not execute Backtest")
+        ),
+    )
+
+    with pytest.raises(SystemExit, match="output is absent"):
+        runner.main(["--validate-only"])

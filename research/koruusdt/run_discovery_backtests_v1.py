@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import faulthandler
 import hashlib
 import json
 import subprocess
@@ -258,7 +259,11 @@ def _failure_label(failure: object) -> str:
 
 
 def _run_trial(
-    context: _PublicExecutionContext, parameter_id: str, *, emit: Any = print
+    context: _PublicExecutionContext,
+    parameter_id: str,
+    *,
+    emit: Any = print,
+    engine_stack_sample_seconds: int | None = None,
 ) -> dict[str, Any]:
     bundle = context.bundle
     emit(f"stage: preparing {parameter_id}", file=sys.stderr)
@@ -283,9 +288,17 @@ def _run_trial(
             context.build_artifact_manifest, INITIAL_EQUITY
         ),
     )
-    outcome = prepare_binance_usdm_tradifi_bar_backtest(
-        intent, context.artifact_reader, bundle.reader
-    )
+    if engine_stack_sample_seconds is not None:
+        faulthandler.dump_traceback_later(
+            engine_stack_sample_seconds, repeat=True, file=sys.stderr
+        )
+    try:
+        outcome = prepare_binance_usdm_tradifi_bar_backtest(
+            intent, context.artifact_reader, bundle.reader
+        )
+    finally:
+        if engine_stack_sample_seconds is not None:
+            faulthandler.cancel_dump_traceback_later()
     if outcome.failure is not None or outcome.result is None:
         trial = {
             "parameter_id": parameter_id,
@@ -303,15 +316,21 @@ def _run_trial(
         )
         return trial
     emit(f"stage: executing {parameter_id}", file=sys.stderr)
-    trial = _trial_summary(
-        parameter_id,
-        outcome.result,
-        DeterministicBarEngine().run(outcome.result.execution_case),
-    )
+    if engine_stack_sample_seconds is not None:
+        faulthandler.dump_traceback_later(
+            engine_stack_sample_seconds, repeat=True, file=sys.stderr
+        )
+    try:
+        execution = DeterministicBarEngine().run(outcome.result.execution_case)
+    finally:
+        if engine_stack_sample_seconds is not None:
+            faulthandler.cancel_dump_traceback_later()
+    trial = _trial_summary(parameter_id, outcome.result, execution)
     if trial["status"] != "completed":
         emit(
             f"stage: {parameter_id} engine failed: "
-            f"{_failure_label(trial['failure'])}",
+            f"{_failure_label(trial['failure'])} "
+            f"{json.dumps(trial['failure'], sort_keys=True, separators=(',', ':'))}",
             file=sys.stderr,
         )
     return trial
@@ -341,9 +360,16 @@ def _build_results(
     *,
     retained_metadata: dict[str, Any],
     emit: Any = print,
+    engine_stack_sample_seconds: int | None = None,
 ) -> dict[str, Any]:
     trials = [
-        _run_trial(context, parameter_id, emit=emit) for parameter_id in parameter_ids
+        _run_trial(
+            context,
+            parameter_id,
+            emit=emit,
+            engine_stack_sample_seconds=engine_stack_sample_seconds,
+        )
+        for parameter_id in parameter_ids
     ]
     failures = [
         f"{value['parameter_id']}:{_failure_label(value.get('failure'))}"
@@ -389,6 +415,8 @@ def _build_results(
 
 def build_results(
     parameter_ids: tuple[str, ...] = tuple(f"p{index:02d}" for index in range(1, 9)),
+    *,
+    engine_stack_sample_seconds: int | None = None,
 ) -> dict[str, Any]:
     print("stage: reconstructing retained public context", file=sys.stderr)
     retained_manifest, retained_context = cast(
@@ -418,6 +446,7 @@ def build_results(
             ].to_canonical_dict(),
             "profile_result_digest": retained_context["profile"].result_digest,
         },
+        engine_stack_sample_seconds=engine_stack_sample_seconds,
     )
 
 
@@ -433,21 +462,45 @@ def main(argv: list[str] | None = None) -> int:
         help="run only the bounded p01 smoke trial (the only supported direct parameter)",
     )
     parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument(
+        "--engine-stack-sample-seconds",
+        type=int,
+        help="diagnostic only: dump Engine stacks at this interval during a p01 run",
+    )
     args = parser.parse_args(argv)
+    if args.validate_only:
+        if args.parameter_id is not None or args.engine_stack_sample_seconds is not None:
+            _die("--validate-only cannot execute a parameter or sample Engine stacks")
+        if not OUTPUT.exists():
+            _die("checked discovery Backtest output is absent")
+        checked = OUTPUT.read_bytes()
+        try:
+            value = json.loads(checked)
+            retained.validate_self_hash(value, OUTPUT)
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+            _die(f"checked discovery Backtest output is invalid: {error}")
+        if retained.manifest_bytes(value) != checked:
+            _die("checked discovery Backtest output is not canonical")
+        print(
+            f"validated {OUTPUT}: sha256:{hashlib.sha256(checked).hexdigest()}",
+            file=sys.stderr,
+        )
+        return 0
+    if args.engine_stack_sample_seconds is not None and (
+        args.engine_stack_sample_seconds <= 0 or args.parameter_id != "p01"
+    ):
+        _die("engine stack sampling requires --parameter-id p01 and a positive interval")
     parameter_ids = (
         (args.parameter_id,)
         if args.parameter_id
         else tuple(f"p{index:02d}" for index in range(1, 9))
     )
-    rebuilt = retained.manifest_bytes(build_results(parameter_ids))
-    if args.validate_only:
-        if not OUTPUT.exists() or OUTPUT.read_bytes() != rebuilt:
-            _die("checked discovery Backtest output is stale")
-        print(
-            f"validated {OUTPUT}: sha256:{hashlib.sha256(rebuilt).hexdigest()}",
-            file=sys.stderr,
+    rebuilt = retained.manifest_bytes(
+        build_results(
+            parameter_ids,
+            engine_stack_sample_seconds=args.engine_stack_sample_seconds,
         )
-        return 0
+    )
     OUTPUT.write_bytes(rebuilt)
     print(
         f"wrote {OUTPUT}: sha256:{hashlib.sha256(rebuilt).hexdigest()}",
