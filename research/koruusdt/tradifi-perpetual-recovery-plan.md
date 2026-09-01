@@ -1,6 +1,6 @@
 # KORU TradFi Backtest Recovery Plan
 
-Status: **P1–P7 ACCEPTED — public formal discovery seam ready; P8 remains**
+Status: **P1–P8 ACCEPTED — formal discovery completed with NO_ELIGIBLE_TRIAL**
 
 ## Goal
 
@@ -242,4 +242,8 @@ P7 is accepted through the public deferred execution seam:
 3. Backtest `ed32bb5` and Research `37c5f59` are remotely reachable feature candidates; root pins/lock resolve Backtest `ed32bb5` without source overrides.
 4. Public KORU integration, replay, failure mapping, and Integration v2–v5 architecture checks pass in the locked environment.
 
-Next: P8 may execute the frozen eight-arm Experiment through `execute_experiment`; the prior eight-arm report remains diagnostic-only. Holdout remains blocked until `2026-10-05T00:00:00Z`.
+P8 formal discovery is complete through `execute_experiment`: Experiment `rp-core:experiment_spec@1:sha256:121bed61e4b17c3fbd50b14eb3eff5ac73542b6f68710cdfdd7c1f9aef27572d`, execution manifest `sha256:0ba345e469eeee66b10ddc7b8cb3237c64f985a1fdf90a1fed080c96b5b43919`, and candidate family `sha256:d59c94602bd943d7f05e5c3176aa1bd5f70ad8ed66c9fd16cd48b983ebf7d518`. All eight trial tasks and eight analyses completed; deterministic selection returned `NO_ELIGIBLE_TRIAL`, so no `StrategyCandidate` exists.
+
+The canonical formal summary is `research/koruusdt/data/discovery_experiment_v1.json` with manifest `sha256:f9edac999e69a061c64b0e57b5edeefdfd48ecb04aadfb0ce3cdfb04664e7977`. The 682 MB evidence tree remains locally retained at the gitignored `research/koruusdt/data/formal_discovery_v1/` and is required for validation.
+
+P9 holdout is not runnable without a selected candidate and remains untouched/time-blocked until `2026-10-05T00:00:00Z`.
