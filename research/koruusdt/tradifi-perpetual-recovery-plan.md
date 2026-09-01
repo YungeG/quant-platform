@@ -1,6 +1,6 @@
 # KORU TradFi Backtest Recovery Plan
 
-Status: **P1–P5 ACCEPTED — p01 completed; P6/P7 remain**
+Status: **P1–P6 ACCEPTED — eight-arm local diagnostic completed; P7 remains**
 
 ## Goal
 
@@ -232,6 +232,6 @@ prepare_binance_usdm_tradifi_bar_backtest
 
 ## Current next gate
 
-**P1–P5 are accepted.** Final evidence is pinned by Research `394e39d`, Backtest `3ec4a2f`, retained manifest `sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df`, and p01 report file `sha256:542554da05afbfdf822e9c3677be2e9c55718cdb40ec1577da29bfdfc6b13442`.
+**P1–P6 are accepted.** Final evidence is pinned by Backtest `3ec4a2f`, retained manifest `sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df`, and eight-arm local report file `sha256:ebf720bb2b1df7fef3080e573cc072f74f611518272da4a0efa93dfbd5982322` / manifest `sha256:60d1d9173803957feb23deace6debd62798d43795e03195adb7dac44a4779ce8`.
 
-Next: P6 may run p01–p08 only in one reused verified context. Formal discovery remains blocked on P7 public Research execution/publication integration. Holdout remains blocked until `2026-10-05T00:00:00Z`.
+All p01–p08 arms completed with negative returns, so the predeclared policy correctly selected no candidate. Formal discovery remains blocked on P7 public Research execution/publication integration. Holdout remains blocked until `2026-10-05T00:00:00Z`.
