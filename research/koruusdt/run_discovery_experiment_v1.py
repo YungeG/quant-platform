@@ -738,7 +738,7 @@ def _validate_selection_evidence(
     elif (
         selection.get("type") != "discovery_no_selection"
         or selection.get("no_selection_ref") != selection.get("candidate_family_ref")
-        or selection.get("reason_code") != "discovery_no_selection"
+        or selection.get("reason_code") != "NO_ELIGIBLE_TRIAL"
         or refs.get("strategy_candidate")
     ):
         raise ValueError("no-selection result does not match evidence")
