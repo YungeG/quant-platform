@@ -37,6 +37,7 @@ FIELDS = {
     "fut_wsr": "trade_date,symbol,fut_name,warehouse,pre_vol,vol,vol_chg,unit",
     "fut_mapping": "ts_code,trade_date,mapping_ts_code",
 }
+EXPECTED_OUTPUTS = {"fut_daily", "fut_wsr", "fut_mapping", "fut_native_daily"}
 QUERY_COLUMNS = [
     "api",
     "product",
@@ -134,7 +135,7 @@ def _sha256(path: Path) -> str:
 
 
 def _raw_receipt_digest(out: Path) -> tuple[int, str | None]:
-    files = sorted((out / "raw").rglob("*.json")) if (out / "raw").exists() else []
+    files = sorted(path for path in (out / "raw").rglob("*") if path.is_file()) if (out / "raw").exists() else []
     digest = hashlib.sha256()
     for path in files:
         digest.update(str(path.relative_to(out)).encode())
@@ -154,9 +155,14 @@ def _validate_existing_capture(out: Path, manifest: dict) -> None:
         raise ValueError("existing query ledger failed integrity validation")
 
     outputs = manifest["outputs"]
-    actual_output_names = {path.stem for path in out.glob("*.parquet")}
-    if actual_output_names - outputs.keys():
-        raise ValueError("existing capture contains unmanifested Parquet outputs")
+    if set(outputs) != EXPECTED_OUTPUTS:
+        raise ValueError("existing manifest does not contain the exact expected output entries")
+    actual_output_paths = {path for path in out.rglob("*.parquet")}
+    expected_output_paths = {out / f"{name}.parquet" for name in EXPECTED_OUTPUTS if outputs[name].get("sha256")}
+    if actual_output_paths != expected_output_paths:
+        raise ValueError("existing capture Parquet inventory does not match the manifest")
+    if LINEAGE_PRODUCTS.intersection(manifest.get("products", {})) and any(not outputs[name].get("sha256") for name in EXPECTED_OUTPUTS):
+        raise ValueError("lineage capture requires all expected output digests")
     for name, record in outputs.items():
         path = out / f"{name}.parquet"
         if Path(record["path"]) != path:
@@ -175,12 +181,35 @@ def _validate_existing_capture(out: Path, manifest: dict) -> None:
         raise ValueError("existing raw responses failed integrity validation")
 
 
+def _validate_attestation(manifest: dict, attestation_path: Path) -> None:
+    try:
+        attestation = json.loads(attestation_path.read_text())
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"invalid capture attestation: {attestation_path}") from error
+    expected_scope = (
+        attestation["data_slice"]["start_inclusive"],
+        attestation["data_slice"]["provider_end_inclusive"],
+        attestation["products"],
+    )
+    actual_scope = (manifest["start"], manifest["end"], manifest["products"])
+    if actual_scope != expected_scope:
+        raise ValueError("capture attestation scope mismatch")
+    if manifest["outputs"] != attestation["outputs"]:
+        raise ValueError("capture outputs do not match the tracked attestation")
+    capture = attestation["capture"]
+    if manifest["query_ledger"] != capture["query_ledger"]:
+        raise ValueError("capture query ledger does not match the tracked attestation")
+    if manifest["raw_responses"] != capture["raw_responses"]:
+        raise ValueError("capture raw responses do not match the tracked attestation")
+
+
 def run(
     start: str,
     end: str,
     token_file: str,
     out_dir: str,
     products: list[str] | tuple[str, ...] | None = None,
+    attestation_file: str | None = None,
 ) -> dict:
     selected = _selected_products(products)
     out = Path(out_dir)
@@ -198,6 +227,9 @@ def run(
         if existing_scope != requested_scope:
             raise ValueError(f"output directory scope mismatch: existing={existing_scope}, requested={requested_scope}")
         _validate_existing_capture(out, existing_manifest)
+        if not attestation_file:
+            raise ValueError("existing capture replay requires a tracked attestation")
+        _validate_attestation(existing_manifest, Path(attestation_file))
     token = Path(token_file).read_text().strip()
     query_path = out / "queries.csv"
     queries = pd.read_csv(query_path, dtype=str) if query_path.exists() else pd.DataFrame(columns=QUERY_COLUMNS)
@@ -374,6 +406,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--token-file", default="/home/ygguo/.config/ai-crypt/xiaodefa-token")
     parser.add_argument("--out-dir", default="overall/a-share-resource-cycle-raw")
     parser.add_argument("--products", help="comma-separated product roots; default: all")
+    parser.add_argument("--attestation-file", help="tracked source-capture JSON required for replay")
     args = parser.parse_args(argv)
     result = run(
         args.start,
@@ -381,6 +414,7 @@ def main(argv: list[str] | None = None) -> int:
         args.token_file,
         args.out_dir,
         args.products.split(",") if args.products else None,
+        args.attestation_file,
     )
     print(json.dumps({key: result[key] for key in ["successful_queries", "failed_queries", "outputs"]}, ensure_ascii=False, indent=2))
     return 0

@@ -8,6 +8,21 @@ import pytest
 from experiments import fetch_resource_cycle_history as fetcher
 
 
+def write_attestation(path: Path, manifest: dict) -> None:
+    path.write_text(json.dumps({
+        "data_slice": {
+            "start_inclusive": manifest["start"],
+            "provider_end_inclusive": manifest["end"],
+        },
+        "products": manifest["products"],
+        "outputs": manifest["outputs"],
+        "capture": {
+            "query_ledger": manifest["query_ledger"],
+            "raw_responses": manifest["raw_responses"],
+        },
+    }))
+
+
 def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_path: Path):
     token_file = tmp_path / "token"
     token_file.write_text("secret")
@@ -82,7 +97,11 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     assert first["raw_responses"]["files"] == 4
     assert first["query_ledger"]["sha256"] == hashlib.sha256((output / "queries.csv").read_bytes()).hexdigest()
     call_count = len(calls)
-    second = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    attestation = tmp_path / "attestation.json"
+    write_attestation(attestation, first)
+    with pytest.raises(ValueError, match="requires a tracked attestation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    second = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
     assert len(calls) == call_count
     assert second["outputs"] == first["outputs"]
     assert second["raw_responses"] == first["raw_responses"]
@@ -91,21 +110,21 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     raw_bytes = raw_path.read_bytes()
     raw_path.write_text("tampered")
     with pytest.raises(ValueError, match="raw responses failed integrity validation"):
-        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
     raw_path.write_bytes(raw_bytes)
 
     ledger_path = output / "queries.csv"
     ledger_bytes = ledger_path.read_bytes()
     ledger_path.write_bytes(ledger_bytes + b"\n")
     with pytest.raises(ValueError, match="query ledger failed integrity validation"):
-        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
     ledger_path.write_bytes(ledger_bytes)
 
     parquet_path = output / "fut_daily.parquet"
     parquet_bytes = parquet_path.read_bytes()
     parquet_path.write_bytes(parquet_bytes + b"tampered")
     with pytest.raises(ValueError, match="output failed integrity validation"):
-        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
     parquet_path.write_bytes(parquet_bytes)
 
     manifest_path = output / "manifest.json"
@@ -119,12 +138,47 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     incomplete_manifest.pop("raw_responses")
     manifest_path.write_text(json.dumps(incomplete_manifest))
     with pytest.raises(ValueError, match="manifest lacks required integrity sections"):
-        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
+    manifest_path.write_bytes(manifest_bytes)
+
+    missing_output = json.loads(manifest_bytes)
+    missing_output["outputs"].pop("fut_wsr")
+    manifest_path.write_text(json.dumps(missing_output))
+    with pytest.raises(ValueError, match="exact expected output entries"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
+    manifest_path.write_bytes(manifest_bytes)
+
+    orphan_raw = output / "raw" / "orphan.bin"
+    orphan_raw.write_bytes(b"orphan")
+    with pytest.raises(ValueError, match="raw responses failed integrity validation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
+    orphan_raw.unlink()
+
+    orphan_parquet = output / "nested" / "orphan.parquet"
+    orphan_parquet.parent.mkdir()
+    pd.DataFrame([{"value": 1}]).to_parquet(orphan_parquet)
+    with pytest.raises(ValueError, match="Parquet inventory does not match"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
+    orphan_parquet.unlink()
+
+    raw_path.write_text("coordinated tamper")
+    coordinated_queries = pd.read_csv(ledger_path, dtype=str)
+    coordinated_queries.loc[coordinated_queries.raw_path.eq(str(raw_path.relative_to(output))), "response_sha256"] = hashlib.sha256(raw_path.read_bytes()).hexdigest()
+    coordinated_queries.to_csv(ledger_path, index=False)
+    coordinated_manifest = json.loads(manifest_bytes)
+    coordinated_manifest["query_ledger"]["sha256"] = hashlib.sha256(ledger_path.read_bytes()).hexdigest()
+    count, digest = fetcher._raw_receipt_digest(output)
+    coordinated_manifest["raw_responses"].update({"files": count, "sha256": digest})
+    manifest_path.write_text(json.dumps(coordinated_manifest))
+    with pytest.raises(ValueError, match="tracked attestation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"], str(attestation))
+    raw_path.write_bytes(raw_bytes)
+    ledger_path.write_bytes(ledger_bytes)
     manifest_path.write_bytes(manifest_bytes)
     assert len(calls) == call_count
 
     with pytest.raises(ValueError, match="output directory scope mismatch"):
-        fetcher.run("2024-01-02", "2024-01-04", str(token_file), str(output), ["SC"])
+        fetcher.run("2024-01-02", "2024-01-04", str(token_file), str(output), ["SC"], str(attestation))
 
 
 def test_rejects_missing_native_mapping_coverage(monkeypatch, tmp_path: Path):
