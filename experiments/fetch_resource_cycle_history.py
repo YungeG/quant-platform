@@ -143,21 +143,36 @@ def _raw_receipt_digest(out: Path) -> tuple[int, str | None]:
 
 
 def _validate_existing_capture(out: Path, manifest: dict) -> None:
-    query = manifest.get("query_ledger")
-    if query:
-        path = Path(query["path"])
-        if not path.exists() or _sha256(path) != query["sha256"] or len(pd.read_csv(path)) != query["rows"]:
-            raise ValueError("existing query ledger failed integrity validation")
-    for record in manifest.get("outputs", {}).values():
+    if not {"query_ledger", "outputs", "raw_responses"}.issubset(manifest):
+        raise ValueError("existing manifest lacks required integrity sections")
+
+    query = manifest["query_ledger"]
+    query_path = out / "queries.csv"
+    if Path(query["path"]) != query_path:
+        raise ValueError("existing query ledger path does not match output directory")
+    if not query_path.exists() or _sha256(query_path) != query["sha256"] or len(pd.read_csv(query_path)) != query["rows"]:
+        raise ValueError("existing query ledger failed integrity validation")
+
+    outputs = manifest["outputs"]
+    actual_output_names = {path.stem for path in out.glob("*.parquet")}
+    if actual_output_names - outputs.keys():
+        raise ValueError("existing capture contains unmanifested Parquet outputs")
+    for name, record in outputs.items():
+        path = out / f"{name}.parquet"
+        if Path(record["path"]) != path:
+            raise ValueError(f"existing output path does not match output directory: {name}")
         if record.get("sha256"):
-            path = Path(record["path"])
             if not path.exists() or _sha256(path) != record["sha256"] or len(pd.read_parquet(path)) != record["rows"]:
                 raise ValueError(f"existing output failed integrity validation: {path}")
-    raw = manifest.get("raw_responses")
-    if raw:
-        count, digest = _raw_receipt_digest(out)
-        if count != raw["files"] or digest != raw["sha256"]:
-            raise ValueError("existing raw responses failed integrity validation")
+        elif path.exists():
+            raise ValueError(f"existing output is present without a manifest digest: {path}")
+
+    raw = manifest["raw_responses"]
+    if Path(raw["path"]) != out / "raw":
+        raise ValueError("existing raw-response path does not match output directory")
+    count, digest = _raw_receipt_digest(out)
+    if count != raw["files"] or digest != raw["sha256"]:
+        raise ValueError("existing raw responses failed integrity validation")
 
 
 def run(
@@ -171,6 +186,8 @@ def run(
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     manifest_path = out / "manifest.json"
+    if not manifest_path.exists() and any(out.iterdir()):
+        raise ValueError("existing capture artifacts require a manifest")
     if manifest_path.exists():
         try:
             existing_manifest = json.loads(manifest_path.read_text())

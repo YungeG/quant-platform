@@ -12,18 +12,6 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     token_file = tmp_path / "token"
     token_file.write_text("secret")
     output = tmp_path / "raw"
-    output.mkdir()
-    pd.DataFrame([
-        {
-            "api": "fut_daily",
-            "product": "SC",
-            "start": "20240102",
-            "end": "20240103",
-            "status": "success",
-            "rows": 1,
-            "error": "",
-        }
-    ]).to_csv(output / "queries.csv", index=False)
     calls = []
 
     def fake_call(token, api, params):
@@ -119,6 +107,20 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     with pytest.raises(ValueError, match="output failed integrity validation"):
         fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
     parquet_path.write_bytes(parquet_bytes)
+
+    manifest_path = output / "manifest.json"
+    manifest_bytes = manifest_path.read_bytes()
+    manifest_path.unlink()
+    with pytest.raises(ValueError, match="capture artifacts require a manifest"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    manifest_path.write_bytes(manifest_bytes)
+
+    incomplete_manifest = json.loads(manifest_bytes)
+    incomplete_manifest.pop("raw_responses")
+    manifest_path.write_text(json.dumps(incomplete_manifest))
+    with pytest.raises(ValueError, match="manifest lacks required integrity sections"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    manifest_path.write_bytes(manifest_bytes)
     assert len(calls) == call_count
 
     with pytest.raises(ValueError, match="output directory scope mismatch"):
