@@ -1,0 +1,136 @@
+{
+  "study": "a-share-propane-pdh-source-capture-v1",
+  "status": "source_capture_completed",
+  "trade_authorized": false,
+  "backtest_authorized": false,
+  "data_slice": {
+    "start_inclusive": "2020-03-30",
+    "end_exclusive": "2026-08-29",
+    "provider_end_inclusive": "2026-08-28"
+  },
+  "capture": {
+    "endpoint": "https://fast.xiaodefa.cn",
+    "retrieved_at_utc": "2026-09-01T08:30:57.552979+00:00",
+    "path": "overall/a-share-propane-pdh-v1-raw",
+    "successful_queries": 321,
+    "failed_queries": [],
+    "query_counts": {
+      "fut_daily": 8,
+      "fut_daily_native": 149,
+      "fut_mapping": 8,
+      "fut_wsr": 156
+    },
+    "raw_responses": {
+      "path": "overall/a-share-propane-pdh-v1-raw/raw",
+      "files": 321,
+      "sha256": "92a5e7fcfdcde8f83fa17b7781571245f13226bce03d658bd3040adc995756e7"
+    },
+    "query_ledger": {
+      "path": "overall/a-share-propane-pdh-v1-raw/queries.csv",
+      "rows": 321,
+      "sha256": "5f2eb28083ae4961dc6809f25eafc9b1c34d52ea5172db68bc9ab30230d58484"
+    }
+  },
+  "products": {
+    "PG": "PGL.DCE",
+    "PP": "PPL.DCE"
+  },
+  "outputs": {
+    "fut_daily": {
+      "path": "overall/a-share-propane-pdh-v1-raw/fut_daily.parquet",
+      "rows": 3115,
+      "sha256": "ac9807483bbf96254d5d4ab8ebce758098aedc09d29c286b15a29eaaf6a9f675"
+    },
+    "fut_wsr": {
+      "path": "overall/a-share-propane-pdh-v1-raw/fut_wsr.parquet",
+      "rows": 22524,
+      "sha256": "d1c6bdffb14d96644f2b09c339ffd2e5704cfec72327618167a834c33c4633c9"
+    },
+    "fut_mapping": {
+      "path": "overall/a-share-propane-pdh-v1-raw/fut_mapping.parquet",
+      "rows": 3116,
+      "sha256": "2df29daf04a1efabb3563238993f75ffddc86f1fcf7e9e8996d2fdadc73ec209"
+    },
+    "fut_native_daily": {
+      "path": "overall/a-share-propane-pdh-v1-raw/fut_native_daily.parquet",
+      "rows": 3116,
+      "sha256": "ed47f9099c2713cf941321ba1c097e83ff0d91430544f3eb6e1967a07179fe77"
+    }
+  },
+  "lineage": {
+    "mapping_rows": 3116,
+    "native_daily_rows": 3116,
+    "mapping_native_exact_cover": true,
+    "native_contract_counts": {
+      "PG": 71,
+      "PP": 78
+    },
+    "continuous_dates_missing_but_native_present": {
+      "PPL.DCE": [
+        "20220221"
+      ]
+    }
+  },
+  "warehouse": {
+    "rows": {
+      "PG": 9713,
+      "PP": 12811
+    },
+    "dates": {
+      "PG": 1381,
+      "PP": 1500
+    },
+    "first_date": {
+      "PG": "20200729",
+      "PP": "20200330"
+    },
+    "last_date": {
+      "PG": "20260828",
+      "PP": "20260828"
+    },
+    "units": {
+      "PG": [
+        "手"
+      ],
+      "PP": [
+        "手"
+      ]
+    }
+  },
+  "issuer_scope": {
+    "issuer_code": "002221.SZ",
+    "issuer_name": "东华能源",
+    "propane_pdh_asset_rows": 5,
+    "evidence_status_counts": {
+      "partial": 5
+    },
+    "source_map": "overall/a-share-oil-polyolefin-issuer-assets-v1.csv"
+  },
+  "causal_authority": {
+    "pg_role": "domestic_fuel_lpg_proxy",
+    "donghua_contract_price_basis": "CP per 2021 and 2024 annual-report disclosures",
+    "physical_margin_authorized": false,
+    "reason": "DCE PG deliverable LPG is not an exact first-party series for Donghua imported propane procurement; conversion, freight, FX, taxes, energy, by-products, and hedging are unfrozen."
+  },
+  "bounded_smoke": {
+    "slice": "[2024-01-02, 2024-01-06)",
+    "elapsed_seconds": 2,
+    "successful_queries": 8,
+    "outputs": {
+      "fut_daily": 8,
+      "fut_wsr": 40,
+      "fut_mapping": 8,
+      "fut_native_daily": 8
+    },
+    "mapping_native_exact_cover": true
+  },
+  "limitations": [
+    "PG is a domestic fuel-LPG proxy, not an exact imported propane CP/CFR cost authority.",
+    "PP and PG exchange warrants are not national commercial inventory.",
+    "No physical PG-to-PP conversion margin is authorized.",
+    "All five retained Donghua propane_PDH asset rows are partial evidence.",
+    "The issuer scope is a single company and cannot support a PDH industry basket.",
+    "No public A-share sector-chain Backtest preparation operation exists."
+  ],
+  "next_safe_action": "Acquire and freeze a point-in-time first-party imported propane CP/CFR price series before defining any causal PG/propane-to-PP rule."
+}

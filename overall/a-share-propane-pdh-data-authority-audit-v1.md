@@ -1,5 +1,7 @@
 # A股丙烷—PDH—聚丙烯数据权威审计 V1
 
+> 后续状态：PG、PP连续、映射月合约、仓单与原始响应已完成冻结，见 [`a-share-propane-pdh-source-capture-v1.md`](a-share-propane-pdh-source-capture-v1.md)。物理进口丙烷成本权威仍缺失。
+
 ## 裁决
 
 - **对象：** 大连商品交易所液化石油气 `PG` → 聚丙烯 `PP` → 东华能源 `002221.SZ` 的已披露 PDH/PP 资产。
