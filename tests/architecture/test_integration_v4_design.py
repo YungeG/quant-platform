@@ -14,7 +14,7 @@ FIXTURE = ROOT / "tests/contracts/integration-v4-shadow-spec-v1.json"
 APPROVAL = ROOT / "implementation/v4-contract-shadow-spec-v1.md"
 FIXTURE_SHA = "0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7"
 INTEGRATION_V3_RELEASE_SHA = "3ea0be372d14501decbbfd0343b06488eb2dee28"
-CURRENT_BACKTEST_GITLINK_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
+CURRENT_BACKTEST_GITLINK_SHA = "ed32bb578ffa792f6429aaad94ce8fc05c3eec2f"
 
 
 def test_v4_shadow_spec_contract_is_frozen_and_approved() -> None:

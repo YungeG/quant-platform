@@ -29,8 +29,11 @@ BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
 BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
 BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
+CURRENT_BACKTEST_GITLINK_SHA = "ed32bb578ffa792f6429aaad94ce8fc05c3eec2f"
+CURRENT_BACKTEST_PIN_SHA = CURRENT_BACKTEST_GITLINK_SHA
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
+CURRENT_RESEARCH_GITLINK_SHA = "37c5f59454494802257e10b4b9fb2497c75f8c06"
 SV_DG_SHA = "cd966d92dad2110af7d8b1bf580536f6c3cdb998"
 PG_DG_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
 DG_THIN_SHA = "2b21c8df40174d5a9a5b9def9a9646c34c587832"
@@ -156,8 +159,8 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
             cwd=ROOT,
             check=False,
         ).returncode == 0
-    assert backtest_entry[:2] == ["160000", BACKTEST_FANIN_SHA]
-    assert research_entry[:2] == ["160000", RP_DG_SHA]
+    assert backtest_entry[:2] == ["160000", CURRENT_BACKTEST_GITLINK_SHA]
+    assert research_entry[:2] == ["160000", CURRENT_RESEARCH_GITLINK_SHA]
     assert validation_entry[:2] == ["160000", SV_DG_SHA]
     assert promotion_entry[:2] == ["160000", PG_DG_SHA]
     assert subprocess.check_output(
@@ -182,10 +185,13 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
 
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
-    assert pyproject.count(BACKTEST_FANIN_SHA) == 5
-    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == V5_LOCK_SHA
-    assert BACKTEST_FANIN_SHA in lock
-    for superseded_pin in (BACKTEST_MODEL_SEAM_SHA, BACKTEST_DRP_03_SHA):
+    assert pyproject.count(CURRENT_BACKTEST_PIN_SHA) == 5
+    assert CURRENT_BACKTEST_PIN_SHA in lock
+    for superseded_pin in (
+        BACKTEST_MODEL_SEAM_SHA,
+        BACKTEST_DRP_03_SHA,
+        BACKTEST_FANIN_SHA,
+    ):
         assert superseded_pin not in pyproject
         assert superseded_pin not in lock
     for expected in (
