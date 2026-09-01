@@ -214,6 +214,11 @@ def test_rejects_conflicting_source_rows(tmp_path: Path):
         fetcher.append(path, [{"ts_code": "SC2402.INE", "trade_date": "20240102", "settle": 552.0}], ["ts_code", "trade_date"])
 
 
+def test_pg_uses_dce_continuous_lineage():
+    assert fetcher._selected_products(["pg", "PP"]) == {"PG": "PGL.DCE", "PP": "PPL.DCE"}
+    assert {"PG", "PP"}.issubset(fetcher.LINEAGE_PRODUCTS)
+
+
 def test_chunk_boundaries_are_exact_and_inverted_ranges_fail():
     assert fetcher.year_chunks("2022-12-31", "2025-01-01") == [
         ("20221231", "20231231"),

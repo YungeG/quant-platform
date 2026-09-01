@@ -24,6 +24,7 @@ PRODUCTS = {
     "HC": "HCL.SHF",
     "J": "JL.DCE",
     "MA": "MAL.ZCE",
+    "PG": "PGL.DCE",
     "PP": "PPL.DCE",
     "L": "LL.DCE",
     "V": "VL.DCE",
@@ -31,7 +32,7 @@ PRODUCTS = {
     "FG": "FGL.ZCE",
     "SC": "SCL.INE",
 }
-LINEAGE_PRODUCTS = {"SC", "PP", "L"}
+LINEAGE_PRODUCTS = {"SC", "PG", "PP", "L"}
 FIELDS = {
     "fut_daily": "ts_code,trade_date,open,high,low,close,settle,vol,amount,oi,oi_chg",
     "fut_wsr": "trade_date,symbol,fut_name,warehouse,pre_vol,vol,vol_chg,unit",
