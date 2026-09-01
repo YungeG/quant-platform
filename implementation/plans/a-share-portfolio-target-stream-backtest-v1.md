@@ -110,4 +110,7 @@ The decision is supported by the frozen V18 execution requirements, the first or
 - Independent re-review: **ACCEPT Phase 1**, recorded in `a-share-portfolio-phase1-independent-rereview.md`.
 - Controlling-agent confirmation: focused 5 passed; clean-tree preservation gate 127 passed; LSP clean.
 - Remote branch: `quant-backtest/feature/cn-a-share-portfolio-provider-v1`.
-- Next authorized phase: Phase 2 decision-time snapshot refresh only.
+- Phase 2 implementation: `c52b5d1`, repaired by `be813af`.
+- Phase 2 independent re-review: **ACCEPT**, recorded in `a-share-portfolio-phase2-independent-rereview.md`.
+- Controlling-agent confirmation: Phase 2 focused 10 passed; clean-tree preservation gate 137 passed; LSP clean.
+- Next authorized phase: Phase 3 availability/fee-aware capping and side-specific order policy only.
