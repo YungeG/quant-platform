@@ -99,11 +99,27 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
     assert second["outputs"] == first["outputs"]
     assert second["raw_responses"] == first["raw_responses"]
 
-    tampered = output / query_rows.iloc[0].raw_path
-    tampered.write_text("tampered")
-    third = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
-    assert len(calls) == call_count + 1
-    assert third["raw_responses"] == first["raw_responses"]
+    raw_path = output / query_rows.iloc[0].raw_path
+    raw_bytes = raw_path.read_bytes()
+    raw_path.write_text("tampered")
+    with pytest.raises(ValueError, match="raw responses failed integrity validation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    raw_path.write_bytes(raw_bytes)
+
+    ledger_path = output / "queries.csv"
+    ledger_bytes = ledger_path.read_bytes()
+    ledger_path.write_bytes(ledger_bytes + b"\n")
+    with pytest.raises(ValueError, match="query ledger failed integrity validation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    ledger_path.write_bytes(ledger_bytes)
+
+    parquet_path = output / "fut_daily.parquet"
+    parquet_bytes = parquet_path.read_bytes()
+    parquet_path.write_bytes(parquet_bytes + b"tampered")
+    with pytest.raises(ValueError, match="output failed integrity validation"):
+        fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
+    parquet_path.write_bytes(parquet_bytes)
+    assert len(calls) == call_count
 
     with pytest.raises(ValueError, match="output directory scope mismatch"):
         fetcher.run("2024-01-02", "2024-01-04", str(token_file), str(output), ["SC"])
@@ -133,3 +149,25 @@ def test_rejects_missing_native_mapping_coverage(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(fetcher, "call", fake_call)
     with pytest.raises(RuntimeError, match="mapping/native exact-cover failure"):
         fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(tmp_path / "raw"), ["SC"])
+
+
+def test_rejects_conflicting_source_rows(tmp_path: Path):
+    path = tmp_path / "daily.parquet"
+    fetcher.append(path, [{"ts_code": "SC2402.INE", "trade_date": "20240102", "settle": 551.0}], ["ts_code", "trade_date"])
+    with pytest.raises(ValueError, match="conflicting duplicate source rows"):
+        fetcher.append(path, [{"ts_code": "SC2402.INE", "trade_date": "20240102", "settle": 552.0}], ["ts_code", "trade_date"])
+
+
+def test_chunk_boundaries_are_exact_and_inverted_ranges_fail():
+    assert fetcher.year_chunks("2022-12-31", "2025-01-01") == [
+        ("20221231", "20231231"),
+        ("20240101", "20250101"),
+    ]
+    assert fetcher.month_chunks("2024-02-28", "2024-03-01") == [
+        ("20240228", "20240229"),
+        ("20240301", "20240301"),
+    ]
+    with pytest.raises(ValueError, match="start must not exceed end"):
+        fetcher.year_chunks("2024-01-02", "2024-01-01")
+    with pytest.raises(ValueError, match="start must not exceed end"):
+        fetcher.month_chunks("2024-01-02", "2024-01-01")

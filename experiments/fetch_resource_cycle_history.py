@@ -84,6 +84,8 @@ def call(token: str, api: str, params: dict) -> tuple[list[dict], str, bytes]:
 
 def year_chunks(start: str, end: str) -> list[tuple[str, str]]:
     first, last = pd.Timestamp(start), pd.Timestamp(end)
+    if first > last:
+        raise ValueError(f"start must not exceed end: {start} > {end}")
     return [
         (
             max(first, pd.Timestamp(f"{year}-01-01")).strftime("%Y%m%d"),
@@ -95,6 +97,8 @@ def year_chunks(start: str, end: str) -> list[tuple[str, str]]:
 
 def month_chunks(start: str, end: str) -> list[tuple[str, str]]:
     first, last = pd.Timestamp(start), pd.Timestamp(end)
+    if first > last:
+        raise ValueError(f"start must not exceed end: {start} > {end}")
     return [
         (max(first, period.start_time).strftime("%Y%m%d"), min(last, period.end_time).strftime("%Y%m%d"))
         for period in pd.period_range(first, last, freq="M")
@@ -125,6 +129,37 @@ def _existing(path: Path) -> pd.DataFrame:
     return pd.read_parquet(path) if path.exists() else pd.DataFrame()
 
 
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _raw_receipt_digest(out: Path) -> tuple[int, str | None]:
+    files = sorted((out / "raw").rglob("*.json")) if (out / "raw").exists() else []
+    digest = hashlib.sha256()
+    for path in files:
+        digest.update(str(path.relative_to(out)).encode())
+        digest.update(path.read_bytes())
+    return len(files), digest.hexdigest() if files else None
+
+
+def _validate_existing_capture(out: Path, manifest: dict) -> None:
+    query = manifest.get("query_ledger")
+    if query:
+        path = Path(query["path"])
+        if not path.exists() or _sha256(path) != query["sha256"] or len(pd.read_csv(path)) != query["rows"]:
+            raise ValueError("existing query ledger failed integrity validation")
+    for record in manifest.get("outputs", {}).values():
+        if record.get("sha256"):
+            path = Path(record["path"])
+            if not path.exists() or _sha256(path) != record["sha256"] or len(pd.read_parquet(path)) != record["rows"]:
+                raise ValueError(f"existing output failed integrity validation: {path}")
+    raw = manifest.get("raw_responses")
+    if raw:
+        count, digest = _raw_receipt_digest(out)
+        if count != raw["files"] or digest != raw["sha256"]:
+            raise ValueError("existing raw responses failed integrity validation")
+
+
 def run(
     start: str,
     end: str,
@@ -133,7 +168,6 @@ def run(
     products: list[str] | tuple[str, ...] | None = None,
 ) -> dict:
     selected = _selected_products(products)
-    token = Path(token_file).read_text().strip()
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     manifest_path = out / "manifest.json"
@@ -146,6 +180,8 @@ def run(
         requested_scope = (start, end, selected)
         if existing_scope != requested_scope:
             raise ValueError(f"output directory scope mismatch: existing={existing_scope}, requested={requested_scope}")
+        _validate_existing_capture(out, existing_manifest)
+    token = Path(token_file).read_text().strip()
     query_path = out / "queries.csv"
     queries = pd.read_csv(query_path, dtype=str) if query_path.exists() else pd.DataFrame(columns=QUERY_COLUMNS)
     for column in QUERY_COLUMNS:
@@ -297,22 +333,18 @@ def run(
         manifest["outputs"][name] = {
             "path": str(path),
             "rows": len(data),
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None,
+            "sha256": _sha256(path) if path.exists() else None,
         }
     manifest["query_ledger"] = {
         "path": str(query_path),
         "rows": len(queries),
-        "sha256": hashlib.sha256(query_path.read_bytes()).hexdigest() if query_path.exists() else None,
+        "sha256": _sha256(query_path) if query_path.exists() else None,
     }
-    raw_files = sorted((out / "raw").rglob("*.json")) if (out / "raw").exists() else []
-    raw_digest = hashlib.sha256()
-    for path in raw_files:
-        raw_digest.update(str(path.relative_to(out)).encode())
-        raw_digest.update(path.read_bytes())
+    raw_files, raw_digest = _raw_receipt_digest(out)
     manifest["raw_responses"] = {
         "path": str(out / "raw"),
-        "files": len(raw_files),
-        "sha256": raw_digest.hexdigest() if raw_files else None,
+        "files": raw_files,
+        "sha256": raw_digest,
     }
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     return manifest
