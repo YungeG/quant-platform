@@ -1,6 +1,6 @@
 # KORU TradFi Backtest Recovery Plan
 
-Status: **P1–P6 ACCEPTED — eight-arm local diagnostic completed; P7 remains**
+Status: **P1–P6 ACCEPTED — P7 BLOCKED on public composition contract**
 
 ## Goal
 
@@ -234,4 +234,11 @@ prepare_binance_usdm_tradifi_bar_backtest
 
 **P1–P6 are accepted.** Final evidence is pinned by Backtest `3ec4a2f`, retained manifest `sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df`, and eight-arm local report file `sha256:ebf720bb2b1df7fef3080e573cc072f74f611518272da4a0efa93dfbd5982322` / manifest `sha256:60d1d9173803957feb23deace6debd62798d43795e03195adb7dac44a4779ce8`.
 
-All p01–p08 arms completed with negative returns, so the predeclared policy correctly selected no candidate. Formal discovery remains blocked on P7 public Research execution/publication integration. Holdout remains blocked until `2026-10-05T00:00:00Z`.
+All p01–p08 arms completed with negative returns, so the predeclared policy correctly selected no candidate.
+
+P7 is accept-blocked by three exact public-contract gaps:
+1. Research's mapping-based `run/derive/load_*` port has no approved production adapter to `BacktestRuntime.run(BacktestExecutionRequest)`.
+2. `prepare_binance_usdm_tradifi_bar_backtest` returns an outcome with an unpublished input ref rather than the required durable `PreparedBacktestExecution` publication seam.
+3. Root `pyproject.toml` / `uv.lock` still pin a Backtest revision that predates the TradFi preparation operation.
+
+Smallest unblock: Platform ownership must approve the adapter owner/signature, reconcile the provider-wrapper prohibition, define the durable prepared-execution return, and update the accepted Backtest pin. The local report remains diagnostic-only. Holdout remains blocked until `2026-10-05T00:00:00Z`.
