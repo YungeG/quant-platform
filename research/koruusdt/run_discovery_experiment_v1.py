@@ -719,27 +719,57 @@ def _validate_selection_evidence(
     selection = summary.get("selection")
     if type(selection) is not dict:
         raise ValueError("summary selection result is invalid")
+    artifact_envelopes = _published_payloads(foundation, ARTIFACT_LOG)
+    execution_envelopes = _published_payloads(foundation, EXECUTION_LOG)
+    envelopes = (*artifact_envelopes, *execution_envelopes)
     refs: dict[str, list[dict[str, object]]] = {}
-    for envelope in (
-        *_published_payloads(foundation, ARTIFACT_LOG),
-        *_published_payloads(foundation, EXECUTION_LOG),
-    ):
+    by_ref: dict[str, dict[str, Any]] = {}
+    for envelope in envelopes:
         artifact_type = envelope.get("artifact_type")
         if type(artifact_type) is str:
-            refs.setdefault(artifact_type, []).append(
-                _artifact_ref_from_envelope(envelope)
-            )
-    if selection.get("candidate_family_ref") not in refs.get("candidate_family", []):
+            ref = _artifact_ref_from_envelope(envelope)
+            refs.setdefault(artifact_type, []).append(ref)
+            by_ref[json.dumps(ref, sort_keys=True, separators=(",", ":"))] = envelope
+    family_ref = selection.get("candidate_family_ref")
+    manifest_ref = selection.get("execution_manifest_ref")
+    if family_ref not in refs.get("candidate_family", []):
         raise ValueError("selection candidate family ref does not match evidence")
-    if selection.get("execution_manifest_ref") not in refs.get(
-        "experiment_execution_manifest", []
-    ):
+    if manifest_ref not in refs.get("experiment_execution_manifest", []):
         raise ValueError("selection execution manifest ref does not match evidence")
+    family_envelope = by_ref[json.dumps(family_ref, sort_keys=True, separators=(",", ":"))]
+    if family_envelope["payload"].get("execution_manifest_ref") != manifest_ref:
+        raise ValueError("candidate family does not bind execution manifest")
+    cutoff = selection.get("manifest_cutoff")
+    if type(cutoff) is not dict or set(cutoff) != {
+        "log_name",
+        "log_sequence",
+        "receipt_hash",
+    } or cutoff.get("log_name") != EXECUTION_LOG:
+        raise ValueError("selection manifest cutoff is invalid")
+    cutoff_matches = [
+        (entry, envelope)
+        for entry, envelope in zip(
+            foundation.entries(EXECUTION_LOG), execution_envelopes, strict=True
+        )
+        if entry.log_sequence == cutoff.get("log_sequence")
+    ]
+    if len(cutoff_matches) != 1:
+        raise ValueError("selection manifest cutoff is absent")
+    cutoff_entry, cutoff_envelope = cutoff_matches[0]
+    if (
+        cutoff_entry.receipt_hash != cutoff.get("receipt_hash")
+        or _artifact_ref_from_envelope(cutoff_envelope) != manifest_ref
+    ):
+        raise ValueError("selection manifest cutoff does not bind evidence")
     if selection.get("type") == "selected":
-        if selection.get("selection_result_ref") not in refs.get(
-            "strategy_candidate", []
-        ):
+        selected_ref = selection.get("selection_result_ref")
+        if selected_ref not in refs.get("strategy_candidate", []):
             raise ValueError("selected result ref does not match evidence")
+        selected_envelope = by_ref[
+            json.dumps(selected_ref, sort_keys=True, separators=(",", ":"))
+        ]
+        if selected_envelope["payload"].get("candidate_family_ref") != family_ref:
+            raise ValueError("selected result does not bind candidate family")
     elif (
         selection.get("type") != "discovery_no_selection"
         or selection.get("no_selection_ref") != selection.get("candidate_family_ref")
@@ -794,6 +824,14 @@ def _sample_records(foundation: LocalFoundation) -> list[dict[str, str]]:
                 producer_wire["schema_version"],
                 producer_wire["content_hash"],
             )
+            expected_purpose = {
+                "feature_build_task": "feature_build",
+                "model_training_task": "model_training",
+                "trial_declaration": "discovery",
+                "selection_declaration": "selection",
+                "validation_case": "validation",
+            }.get(producer.artifact_type)
+            expected_consumer = canonical_sha256(("sample-consumer-v1", producer))
             expected_event_id = canonical_sha256(
                 (
                     "sample-consumption-append-v1",
@@ -804,7 +842,13 @@ def _sample_records(foundation: LocalFoundation) -> list[dict[str, str]]:
                     record.purpose,
                 )
             )
-            if entry.event_id != expected_event_id or record.consumed_at > entry.accepted_at:
+            if (
+                producer.schema_version != 1
+                or record.purpose != expected_purpose
+                or record.consumer_id != expected_consumer
+                or entry.event_id != expected_event_id
+                or record.consumed_at > entry.accepted_at
+            ):
                 raise ValueError("sample append event identity is invalid")
         except (
             KeyError,

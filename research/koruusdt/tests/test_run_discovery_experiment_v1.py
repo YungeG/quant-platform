@@ -158,7 +158,7 @@ def test_evidence_tree_ignores_mutable_foundation_clock(
     assert runner._evidence_tree() == first
 
 
-def test_sample_log_reader_rejects_wrong_reservation_event_id(tmp_path: Path) -> None:
+def test_sample_log_reader_rejects_wrong_producer_record_pair(tmp_path: Path) -> None:
     foundation = LocalFoundation(tmp_path / "foundation")
     producer = ArtifactRef("trial_declaration", 1, "sha256:" + "1" * 64)
     envelope = ArtifactEnvelope.create(
@@ -178,7 +178,16 @@ def test_sample_log_reader_rejects_wrong_reservation_event_id(tmp_path: Path) ->
     )
     foundation.append(
         runner.SAMPLE_LOG,
-        "sha256:" + "0" * 64,
+        canonical_sha256(
+            (
+                "sample-consumption-append-v1",
+                producer,
+                "dataset-v1",
+                "2026-07-15T10:00:00.000000Z",
+                "2026-08-24T11:00:00.000000Z",
+                "discovery",
+            )
+        ),
         canonical_bytes(envelope),
     )
 
@@ -444,3 +453,28 @@ def test_one_trial_tiny_public_execute_and_replay_sentinel(
     )
     with pytest.raises(ValueError, match="selected result ref"):
         runner._validate_selection_evidence(tampered, foundation)
+
+    fake_family = ArtifactEnvelope.create(
+        "candidate_family",
+        1,
+        {
+            "experiment_ref": _artifact_ref("experiment_spec", "d"),
+            "execution_manifest_ref": _artifact_ref(
+                "experiment_execution_manifest", "e"
+            ),
+        },
+    )
+    fake_family_ref = foundation.put(envelope=fake_family)
+    foundation.append(
+        runner.ARTIFACT_LOG,
+        canonical_sha256(
+            ("artifact-publication-v1", runner.ARTIFACT_LOG, fake_family_ref)
+        ),
+        canonical_bytes(fake_family),
+    )
+    wrong_family = json.loads(json.dumps(summary))
+    wrong_family["selection"]["candidate_family_ref"] = json.loads(  # type: ignore[index]
+        canonical_bytes(fake_family_ref)
+    )
+    with pytest.raises(ValueError, match="candidate family does not bind"):
+        runner._validate_selection_evidence(wrong_family, foundation)
