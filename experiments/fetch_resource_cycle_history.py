@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import argparse
+from datetime import UTC, datetime
 import hashlib
 import json
 from pathlib import Path
+import re
 from threading import Event
 
 import pandas as pd
@@ -35,10 +37,21 @@ FIELDS = {
     "fut_wsr": "trade_date,symbol,fut_name,warehouse,pre_vol,vol,vol_chg,unit",
     "fut_mapping": "ts_code,trade_date,mapping_ts_code",
 }
-QUERY_COLUMNS = ["api", "product", "start", "end", "status", "rows", "error"]
+QUERY_COLUMNS = [
+    "api",
+    "product",
+    "start",
+    "end",
+    "status",
+    "rows",
+    "error",
+    "retrieved_at_utc",
+    "raw_path",
+    "response_sha256",
+]
 
 
-def call(token: str, api: str, params: dict) -> tuple[list[dict], str]:
+def call(token: str, api: str, params: dict) -> tuple[list[dict], str, bytes]:
     last = ""
     for attempt in range(15):
         try:
@@ -56,12 +69,12 @@ def call(token: str, api: str, params: dict) -> tuple[list[dict], str]:
                     dict(zip(data.get("fields") or [], row, strict=True))
                     for row in (data.get("items") or [])
                 ]
-                return rows, ""
+                return rows, "", response.content
             raise RuntimeError(str(payload.get("msg", "proxy error")))
         except Exception as error:
             last = f"{type(error).__name__}: {error}"
             Event().wait(30 if "超速" in last or "429" in last else min(8, 0.5 * 2**attempt))
-    return [], last
+    return [], last, b""
 
 
 def year_chunks(start: str, end: str) -> list[tuple[str, str]]:
@@ -116,12 +129,18 @@ def run(
     out.mkdir(parents=True, exist_ok=True)
     query_path = out / "queries.csv"
     queries = pd.read_csv(query_path, dtype=str) if query_path.exists() else pd.DataFrame(columns=QUERY_COLUMNS)
+    for column in QUERY_COLUMNS:
+        if column not in queries:
+            queries[column] = pd.NA
+    queries = queries[QUERY_COLUMNS]
 
     for product, continuous in selected.items():
         done = {
             (row.api, row.product, row.start, row.end)
             for row in queries.itertuples(index=False)
             if row.status == "success"
+            and isinstance(row.raw_path, str)
+            and (out / row.raw_path).exists()
         }
         updates: list[dict] = []
         continuous_rows: list[dict] = []
@@ -132,7 +151,12 @@ def run(
         def fetch(log_api: str, api: str, key: str, chunk_start: str, chunk_end: str, params: dict) -> list[dict]:
             if (log_api, key, chunk_start, chunk_end) in done:
                 return []
-            rows, error = call(token, api, params)
+            rows, error, raw = call(token, api, params)
+            relative_raw = Path("raw") / log_api / re.sub(r"[^A-Za-z0-9_.-]+", "_", key) / f"{chunk_start}-{chunk_end}.json"
+            if raw:
+                raw_path = out / relative_raw
+                raw_path.parent.mkdir(parents=True, exist_ok=True)
+                raw_path.write_bytes(raw)
             updates.append(
                 {
                     "api": log_api,
@@ -142,6 +166,9 @@ def run(
                     "status": "success" if not error else "failed",
                     "rows": len(rows),
                     "error": error,
+                    "retrieved_at_utc": datetime.now(UTC).isoformat(),
+                    "raw_path": str(relative_raw) if raw else "",
+                    "response_sha256": hashlib.sha256(raw).hexdigest() if raw else "",
                 }
             )
             Event().wait(0.1)
@@ -216,12 +243,14 @@ def run(
             queries = queries.sort_values(["api", "product", "start"])
             queries.to_csv(query_path, index=False)
 
+    successful = queries[queries.status.eq("success")]
     manifest = {
         "endpoint": PROXY_ENDPOINT,
         "start": start,
         "end": end,
         "products": selected,
-        "successful_queries": int(queries.status.eq("success").sum()),
+        "retrieved_at_utc": successful.retrieved_at_utc.dropna().max() if len(successful) else None,
+        "successful_queries": len(successful),
         "failed_queries": queries[queries.status.ne("success")].to_dict("records"),
         "outputs": {},
     }
@@ -233,6 +262,16 @@ def run(
             "rows": len(data),
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None,
         }
+    raw_files = sorted((out / "raw").rglob("*.json")) if (out / "raw").exists() else []
+    raw_digest = hashlib.sha256()
+    for path in raw_files:
+        raw_digest.update(str(path.relative_to(out)).encode())
+        raw_digest.update(path.read_bytes())
+    manifest["raw_responses"] = {
+        "path": str(out / "raw"),
+        "files": len(raw_files),
+        "sha256": raw_digest.hexdigest() if raw_files else None,
+    }
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     return manifest
 

@@ -1,4 +1,5 @@
 import hashlib
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -16,17 +17,20 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
         assert token == "secret"
         calls.append((api, params.copy()))
         code = params.get("ts_code")
+        def result(rows):
+            return rows, "", json.dumps({"data": rows}, ensure_ascii=False).encode()
+
         if api == "fut_mapping":
-            return [
+            return result([
                 {"ts_code": "SCL.INE", "trade_date": "20240102", "mapping_ts_code": "SC2402.INE"},
                 {"ts_code": "SCL.INE", "trade_date": "20240103", "mapping_ts_code": "SC2402.INE"},
-            ], ""
+            ])
         if api == "fut_daily" and code == "SCL.INE":
-            return [{"ts_code": code, "trade_date": "20240102", "settle": 550.0}], ""
+            return result([{"ts_code": code, "trade_date": "20240102", "settle": 550.0}])
         if api == "fut_daily" and code == "SC2402.INE":
-            return [{"ts_code": code, "trade_date": "20240102", "settle": 551.0}], ""
+            return result([{"ts_code": code, "trade_date": "20240102", "settle": 551.0}])
         if api == "fut_wsr":
-            return [
+            return result([
                 {
                     "trade_date": "20240102",
                     "symbol": "SC",
@@ -37,7 +41,7 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
                     "vol_chg": 1,
                     "unit": "桶",
                 }
-            ], ""
+            ])
         raise AssertionError((api, params))
 
     monkeypatch.setattr(fetcher, "call", fake_call)
@@ -65,7 +69,14 @@ def test_retains_sc_roll_lineage_and_replays_without_network(monkeypatch, tmp_pa
 
     query_rows = pd.read_csv(output / "queries.csv")
     assert set(query_rows.api) == {"fut_daily", "fut_daily_native", "fut_mapping", "fut_wsr"}
+    assert query_rows.raw_path.map(lambda value: (output / value).exists()).all()
+    assert query_rows.apply(
+        lambda row: hashlib.sha256((output / row.raw_path).read_bytes()).hexdigest() == row.response_sha256,
+        axis=1,
+    ).all()
+    assert first["raw_responses"]["files"] == 4
     call_count = len(calls)
     second = fetcher.run("2024-01-02", "2024-01-03", str(token_file), str(output), ["SC"])
     assert len(calls) == call_count
     assert second["outputs"] == first["outputs"]
+    assert second["raw_responses"] == first["raw_responses"]
