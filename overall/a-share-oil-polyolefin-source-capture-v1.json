@@ -1,0 +1,111 @@
+{
+  "study": "a-share-oil-polyolefin-source-capture-v1",
+  "status": "source_capture_completed",
+  "trade_authorized": false,
+  "backtest_authorized": false,
+  "data_slice": {
+    "start_inclusive": "2018-03-26",
+    "end_exclusive": "2026-08-29",
+    "provider_end_inclusive": "2026-08-28"
+  },
+  "capture": {
+    "endpoint": "https://fast.xiaodefa.cn",
+    "retrieved_at_utc": "2026-09-01T06:05:22.065973+00:00",
+    "path": "overall/a-share-oil-polyolefin-v1-raw",
+    "successful_queries": 637,
+    "failed_queries": [],
+    "query_counts": {
+      "fut_daily": 15,
+      "fut_daily_native": 301,
+      "fut_mapping": 15,
+      "fut_wsr": 306
+    },
+    "raw_responses": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/raw",
+      "files": 637,
+      "sha256": "7e51b81a05cca3522b8d879485f9dd113e38c863a8debd718e8aaa64ea908554"
+    }
+  },
+  "products": {
+    "SC": "SCL.INE",
+    "PP": "PPL.DCE",
+    "L": "LL.DCE"
+  },
+  "outputs": {
+    "fut_daily": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/fut_daily.parquet",
+      "rows": 6138,
+      "sha256": "63fc793038a9c3b980732ec55ea4c92656c1eb40a38efb7ab08753f958d847f0"
+    },
+    "fut_wsr": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/fut_wsr.parquet",
+      "rows": 61555,
+      "sha256": "f2ea5e558b1dca973ae547966e0068a8036a18abaa962aa02ab410bcea7829ba"
+    },
+    "fut_mapping": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/fut_mapping.parquet",
+      "rows": 6141,
+      "sha256": "ea277fb3644ed4b776a868dd83624e4a29987084187473b7e77af90341df909e"
+    },
+    "fut_native_daily": {
+      "path": "overall/a-share-oil-polyolefin-v1-raw/fut_native_daily.parquet",
+      "rows": 6141,
+      "sha256": "e984552f3fe3c390770fc0b0e2335a9d6d71c8d9aa1c7695ca392712013f6e54"
+    }
+  },
+  "lineage": {
+    "mapping_rows": 6141,
+    "native_daily_rows": 6141,
+    "mapping_native_exact_cover": true,
+    "native_contract_counts": {
+      "SC": 97,
+      "PP": 102,
+      "L": 102
+    },
+    "continuous_dates_missing_but_native_present": {
+      "LL.DCE": [
+        "20220221"
+      ],
+      "PPL.DCE": [
+        "20220221"
+      ],
+      "SCL.INE": [
+        "20211224"
+      ]
+    }
+  },
+  "warehouse": {
+    "rows": {
+      "L": 16791,
+      "PP": 14303,
+      "SC": 30461
+    },
+    "dates": {
+      "L": 1889,
+      "PP": 1883,
+      "SC": 1900
+    },
+    "units": {
+      "L": [
+        "手"
+      ],
+      "PP": [
+        "手"
+      ],
+      "SC": [
+        "吨",
+        "桶"
+      ]
+    }
+  },
+  "limitations": [
+    "Provider continuous series remain secondary observations; research should reconstruct from retained mapping and native contracts.",
+    "SC warehouse rows contain both barrel and tonne units and must never be summed across units.",
+    "Exchange warehouse receipts are not national commercial inventory.",
+    "No authoritative physical crude-to-PP/LLDPE conversion margin is available.",
+    "National PP/LLDPE operating-rate and commercial-inventory series remain source-blocked.",
+    "A dated asset-level A-share production-route map is not yet built.",
+    "No public A-share sector-chain Backtest preparation operation exists."
+  ],
+  "next_safe_action": "Build the dated issuer asset/route/capacity map before freezing any strategy rule."
+}

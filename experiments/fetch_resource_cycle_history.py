@@ -73,7 +73,12 @@ def call(token: str, api: str, params: dict) -> tuple[list[dict], str, bytes]:
             raise RuntimeError(str(payload.get("msg", "proxy error")))
         except Exception as error:
             last = f"{type(error).__name__}: {error}"
-            Event().wait(30 if "超速" in last or "429" in last else min(8, 0.5 * 2**attempt))
+            delay = min(8, 0.5 * 2**attempt)
+            if "超速" in last:
+                delay = 30
+            if "429" in last:
+                delay = 30
+            Event().wait(delay)
     return [], last, b""
 
 

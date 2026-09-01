@@ -1,5 +1,7 @@
 # A股原油—聚烯烃产业链数据权威审计 V1
 
+> 后续状态：SC、PP、L映射、月合约、仓单及原始响应已完成冻结，见 [`a-share-oil-polyolefin-source-capture-v1.md`](a-share-oil-polyolefin-source-capture-v1.md)。本审计中“本地未保留”的描述记录的是捕获前状态。
+
 ## 裁决
 
 - **研究对象：** 上海原油期货 `SC` → 聚丙烯 `PP` / 线型低密度聚乙烯 `L` → A股相关生产资产。
