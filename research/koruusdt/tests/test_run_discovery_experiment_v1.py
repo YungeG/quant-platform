@@ -142,6 +142,34 @@ def test_production_script_imports_only_public_package_roots() -> None:
     assert "run_discovery_backtests_v1" not in modules
 
 
+def test_sample_log_reader_rejects_wrong_reservation_event_id(tmp_path: Path) -> None:
+    foundation = LocalFoundation(tmp_path / "foundation")
+    producer = ArtifactRef("trial_declaration", 1, "sha256:" + "1" * 64)
+    envelope = ArtifactEnvelope.create(
+        "sample_consumption_append",
+        1,
+        {
+            "record": {
+                "dataset_revision": "dataset-v1",
+                "interval_start": "2026-07-15T10:00:00.000000Z",
+                "interval_end": "2026-08-24T11:00:00.000000Z",
+                "purpose": "discovery",
+                "consumer_id": "trial-v1",
+                "consumed_at": "2026-08-18T00:00:00.000000Z",
+            },
+            "producer_ref": producer,
+        },
+    )
+    foundation.append(
+        runner.SAMPLE_LOG,
+        "sha256:" + "0" * 64,
+        canonical_bytes(envelope),
+    )
+
+    with pytest.raises(ValueError, match="invalid append evidence"):
+        runner._sample_records(foundation)
+
+
 def test_owner_log_reader_rejects_entry_without_cas_artifact(tmp_path: Path) -> None:
     foundation = LocalFoundation(tmp_path / "foundation")
     envelope = ArtifactEnvelope.create("task_outcome", 1, {"state": "COMPLETED"})

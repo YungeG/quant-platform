@@ -74,7 +74,10 @@ from crypto_quant_research import (  # noqa: E402
     build_integrated_trial_declarations,
     execute_experiment,
 )
-from crypto_quant_validation import SampleConsumptionLedger  # noqa: E402
+from crypto_quant_validation import (  # noqa: E402
+    SampleConsumptionLedger,
+    SampleConsumptionRecord,
+)
 
 SCHEMA_VERSION = 1
 PLATFORM_PIN_COMMIT = "5371e0d8707a0f1717bcd0df9c4722d0b8e4162b"
@@ -716,12 +719,86 @@ def _validate_selection_evidence(
         raise ValueError("no-selection result does not match evidence")
 
 
+def _sample_records(foundation: LocalFoundation) -> list[dict[str, str]]:
+    records: list[dict[str, str]] = []
+    for entry in foundation.entries(SAMPLE_LOG):
+        try:
+            decoded = json.loads(entry.payload.decode("utf-8"))
+            envelope = ArtifactEnvelope(
+                decoded["artifact_type"],
+                decoded["schema_version"],
+                decoded["payload"],
+                decoded["content_hash"],
+            )
+            if (
+                envelope.artifact_type != "sample_consumption_append"
+                or envelope.schema_version != 1
+                or canonical_bytes(envelope) != entry.payload
+            ):
+                raise ValueError("sample append envelope is invalid")
+            payload = _plain(envelope.payload)
+            if type(payload) is not dict or set(payload) != {"record", "producer_ref"}:
+                raise ValueError("sample append payload is invalid")
+            record_wire = payload["record"]
+            producer_wire = payload["producer_ref"]
+            if (
+                type(record_wire) is not dict
+                or set(record_wire)
+                != {
+                    "dataset_revision",
+                    "interval_start",
+                    "interval_end",
+                    "purpose",
+                    "consumer_id",
+                    "consumed_at",
+                }
+                or type(producer_wire) is not dict
+                or set(producer_wire)
+                != {"type", "artifact_type", "schema_version", "content_hash"}
+                or producer_wire.get("type") != "artifact_ref"
+            ):
+                raise ValueError("sample append values are invalid")
+            record = SampleConsumptionRecord(**record_wire)
+            producer = ArtifactRef(
+                producer_wire["artifact_type"],
+                producer_wire["schema_version"],
+                producer_wire["content_hash"],
+            )
+            expected_event_id = canonical_sha256(
+                (
+                    "sample-consumption-append-v1",
+                    producer,
+                    record.dataset_revision,
+                    record.interval_start,
+                    record.interval_end,
+                    record.purpose,
+                )
+            )
+            if entry.event_id != expected_event_id or record.consumed_at > entry.accepted_at:
+                raise ValueError("sample append event identity is invalid")
+        except (
+            KeyError,
+            TypeError,
+            UnicodeDecodeError,
+            ValueError,
+            json.JSONDecodeError,
+        ) as error:
+            raise ValueError("sample ledger contains invalid append evidence") from error
+        records.append(
+            {
+                "dataset_revision": record.dataset_revision,
+                "interval_start": record.interval_start,
+                "interval_end": record.interval_end,
+                "purpose": record.purpose,
+                "consumer_id": record.consumer_id,
+                "consumed_at": record.consumed_at,
+            }
+        )
+    return records
+
+
 def _sample_summary(foundation: LocalFoundation) -> dict[str, object]:
-    records = [
-        envelope["payload"]["record"]
-        for envelope in _published_payloads(foundation, SAMPLE_LOG)
-        if envelope.get("artifact_type") == "sample_consumption_append"
-    ]
+    records = _sample_records(foundation)
     if "holdout" in json.dumps(records, sort_keys=True).lower():
         raise ValueError("sample ledger contains holdout evidence")
     if any(record.get("interval_end") != DISCOVERY_END for record in records):
