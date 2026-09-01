@@ -141,7 +141,7 @@
       "binance_usdm_koru_tradifi_development_profile_v1",
       "binance_usdm_koru_tradifi_execution_bundle_v2"
     ],
-    "backtest_head": "be6a1bd13d704618dc768fed8542557e39588678",
+    "backtest_head": "3ec4a2fd2836e58dfd2398436a635933bcfebd81",
     "network_performed": false,
     "path": "research/koruusdt/build_discovery_source_targets_v2.py",
     "sha256": "sha256:01a4c8ea5f993908bb5aa6e3ff7696395a8938410d67535aed597c5f20215a39"
@@ -1681,7 +1681,7 @@
     "instrument_catalog_hash_is_local_retained_discovery_binding_not_deployment_catalog",
     "official_archive_acquisition_is_conservatively_bound_to_repository_retention_commits"
   ],
-  "manifest_sha256": "sha256:43b014430a22b478e4c2e30395b11e28859d0c04a1c8e0b2c401fa78a7ed3f63",
+  "manifest_sha256": "sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df",
   "repository_retention": {
     "aggregate_trades": {
       "commit": "a61ef741ce582cd61dbc6e3a623066de7c6b8bf4",

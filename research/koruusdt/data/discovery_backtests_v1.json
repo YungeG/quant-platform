@@ -1,0 +1,183 @@
+{
+  "backtest_head": "3ec4a2fd2836e58dfd2398436a635933bcfebd81",
+  "build_artifact_manifest": {
+    "identity": {
+      "artifacts": [
+        {
+          "artifact_key": "crypto-quant-backtest",
+          "artifact_version": "0.1.0",
+          "content_hash": "sha256:4169db0b337ee43600d933b48d04fbeeb562d7e7f166111ca4a1b97f816852f2",
+          "install_mode": "wheel",
+          "role": "backtest_runtime",
+          "source_snapshot_hash": null,
+          "source_tree_state": "clean",
+          "type": "build_artifact_ref"
+        },
+        {
+          "artifact_key": "precomputed-target-stream-adapter",
+          "artifact_version": "0.1.0",
+          "content_hash": "sha256:4169db0b337ee43600d933b48d04fbeeb562d7e7f166111ca4a1b97f816852f2",
+          "install_mode": "wheel",
+          "role": "decision_source",
+          "source_snapshot_hash": null,
+          "source_tree_state": "clean",
+          "type": "build_artifact_ref"
+        },
+        {
+          "artifact_key": "crypto-quant-market-data",
+          "artifact_version": "0.1.0",
+          "content_hash": "sha256:0031781fb3ec6fa60a0211a9c70ececc7e7a692ef81f4cad2863e9929fcf4a37",
+          "install_mode": "wheel",
+          "role": "market_data_contracts",
+          "source_snapshot_hash": null,
+          "source_tree_state": "clean",
+          "type": "build_artifact_ref"
+        },
+        {
+          "artifact_key": "crypto-quant-domain",
+          "artifact_version": "0.1.0",
+          "content_hash": "sha256:4ea5145f8ab0ae12c830777be3ba28d087891db51e733493191b124a80f6a781",
+          "install_mode": "wheel",
+          "role": "trading_domain",
+          "source_snapshot_hash": null,
+          "source_tree_state": "clean",
+          "type": "build_artifact_ref"
+        },
+        {
+          "artifact_key": "crypto-quant-trading",
+          "artifact_version": "0.1.0",
+          "content_hash": "sha256:86d06a3cf0defe0982a65f2360337d831e45d27f4a5c2b8c9753c4c5146d1e5a",
+          "install_mode": "wheel",
+          "role": "trading_kernel",
+          "source_snapshot_hash": null,
+          "source_tree_state": "clean",
+          "type": "build_artifact_ref"
+        }
+      ],
+      "build_key": "koruusdt.discovery.backtest.build.v1",
+      "container_image_digest": null,
+      "dependency_lock_hash": "sha256:a97b6708411bcec45f23504cc41b3a2b54c80d9272a6deb3f2800be891e9b41d",
+      "runtime_libraries": [
+        {
+          "content_hash": "sha256:aacc82a2184e360f9a4b3d390accd9fdfcfba44bb474925569ddb144bc8ac3c5",
+          "library_key": "python",
+          "type": "runtime_library_ref",
+          "version": "3.13.5"
+        }
+      ],
+      "schema_version": 1,
+      "type": "build_artifact_manifest_identity"
+    },
+    "manifest_hash": "sha256:b2ce0a9a4c4e53078985cd0d2e7f04cc1ba9c211efe342214018c6ff99efcd97",
+    "provenance": {
+      "built_at": {
+        "epoch_nanoseconds": 1788235955000000000,
+        "type": "utc_instant"
+      },
+      "git_commit": "3ec4a2fd2836e58dfd2398436a635933bcfebd81",
+      "hostname": "repository-retained-build",
+      "source_root": "backtest",
+      "type": "build_provenance"
+    },
+    "type": "build_artifact_manifest"
+  },
+  "bundle_ref": {
+    "bundle_key": "binance-usdm-koru-tradifi-execution-development-v2-376ed7ae23f6872c8649925d55ef7e7faa89cd3cf6b630fe3fcaca0f84b011f7",
+    "manifest_hash": "sha256:cf512bdee193cceb92034b5d2c6adbb5d2e37854c199fc44cdd3222c16e6aae2",
+    "type": "market_bundle_ref"
+  },
+  "bundle_result_digest": "sha256:d122adc40979100dfe707cb87a11cf08c13613abcfc97e47f88baf98a2cd8ebb",
+  "deployment_authorized": false,
+  "holdout_touched": false,
+  "manifest_sha256": "sha256:ac157039cd6c8b37d50297ec0994d135e95fadbcc33d67951d1cc8f4d043c3f0",
+  "network_performed": false,
+  "profile_result_digest": "sha256:3e8c794912c0339c1c8c36660e53c256d4cd8c6910de148224bf4bb7f039d402",
+  "public_research_execute_experiment_published": false,
+  "report_scope": "bounded_local_backtest_execution_report",
+  "retained_manifest_file_sha256": "sha256:eb38679a2ec9b2a31420ae58bdd50fcb1a1d362cd90bce0a3f30753c397ba47e",
+  "retained_manifest_sha256": "sha256:e5a29995a4326a50238ed3f945257b045d4b1a6e0b16a5f619837f56704f77df",
+  "schema_version": 1,
+  "seed": 0,
+  "selected_parameter_ids": [],
+  "selection_policy": {
+    "hard_filters": [
+      "fill_count >= 8",
+      "simple_period_return > 0"
+    ],
+    "max_selections": 1,
+    "ordering": [
+      "simple_period_return descending",
+      "fill_count descending",
+      "parameter_id ascending"
+    ]
+  },
+  "selection_status": "discovery_no_selection",
+  "source_profile_authority_ref": {
+    "artifact_type": "binance_usdm_koru_source_profile_authority",
+    "content_hash": "sha256:1c79ff9945bda06b752a63c7418fcf582707e4ef08287147f18214c3a0cdad03",
+    "schema_version": 2,
+    "type": "artifact_ref"
+  },
+  "trial_count": 1,
+  "trials": [
+    {
+      "case_hash": "sha256:6e3fca1a5583bf1ce449345227144a44374bdee30569481f8007d57724794ff5",
+      "engine_result_hash": "sha256:b270d6ca0a4e859906d5ef5c2aa2bc72adcb07daf3dd3658a0a64707b36885fa",
+      "execution_input_hash": "sha256:d9df77f6d062f7514ef28ca14860b97cd035663c75395f391d140917efadc6d9",
+      "execution_input_ref": {
+        "artifact_type": "backtest_execution_input_bundle",
+        "content_hash": "sha256:d9df77f6d062f7514ef28ca14860b97cd035663c75395f391d140917efadc6d9",
+        "schema_version": 8,
+        "type": "artifact_ref"
+      },
+      "fees_usdt": "3.99519564",
+      "fill_count": 8,
+      "fill_ids": [
+        "fil_a98432752380bc3819c097d6f942beb677ada0f036172b1b60fb295be3fdcfed",
+        "fil_a1bb129faff84b23abf934def34d82b04f5dd77c34f8956e17abbd309ca295f2",
+        "fil_0af6e44f13e66e1566fa85bc250c23d6f5dc802638dd85566c53ce3d0bec98a4",
+        "fil_829ae654a0c86ee6bf2809332f41422d34db53bf290e91f4758d2aa4ed1abd37",
+        "fil_3b3538a9c0c6862b98f6de3eac72487fc2ee2791138294ca80f9bf57422e867b",
+        "fil_da22d5deada9e1cee29efa8b57c0e0502df1af54776a6d30ffd421911433821c",
+        "fil_22db61c6cff8dac230789dbff92b5646dba4717dacd302a9ad47dc637b46293f",
+        "fil_c4d76697db4a20c16e51db3575c002b1a01dccf7da92053eef628d83ad1add7a"
+      ],
+      "fill_liquidity_roles": [
+        "taker",
+        "taker",
+        "taker",
+        "taker",
+        "taker",
+        "taker",
+        "taker",
+        "taker"
+      ],
+      "fill_times_epoch_nanoseconds": [
+        1784718000049000000,
+        1784725200063000000,
+        1786147200358000000,
+        1786161601765000000,
+        1786759200155000000,
+        1786770000628000000,
+        1787360401882000000,
+        1787374810424000000
+      ],
+      "final_equity_usdt": "9966.07233436",
+      "final_position_count": 0,
+      "financial_artifact_count": 284,
+      "funding_accounting_count": 120,
+      "funding_usdt": "0",
+      "initial_equity_usdt": "10000",
+      "liquidation_audit_count": 17,
+      "margin_projection_count": 17,
+      "parameter_id": "p01",
+      "realized_pnl_usdt": "-29.93247",
+      "run_end_status": "positions_preserved",
+      "simple_period_return": "-0.003392766564",
+      "status": "completed",
+      "trace_hash": "sha256:be67aebf4406207998d3b92aaed150b64c98219a479129c7dcc677cfaafe39bc",
+      "unrealized_pnl_usdt": "0"
+    }
+  ],
+  "type": "koruusdt_discovery_backtests_v1"
+}
