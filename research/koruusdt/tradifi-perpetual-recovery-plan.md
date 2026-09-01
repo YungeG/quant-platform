@@ -1,6 +1,6 @@
 # KORU TradFi Backtest Recovery Plan
 
-Status: **P1–P6 ACCEPTED — P7 BLOCKED on public composition contract**
+Status: **P1–P7 ACCEPTED — public formal discovery seam ready; P8 remains**
 
 ## Goal
 
@@ -236,9 +236,10 @@ prepare_binance_usdm_tradifi_bar_backtest
 
 All p01–p08 arms completed with negative returns, so the predeclared policy correctly selected no candidate.
 
-P7 is accept-blocked by three exact public-contract gaps:
-1. Research's mapping-based `run/derive/load_*` port has no approved production adapter to `BacktestRuntime.run(BacktestExecutionRequest)`.
-2. `prepare_binance_usdm_tradifi_bar_backtest` returns an outcome with an unpublished input ref rather than the required durable `PreparedBacktestExecution` publication seam.
-3. Root `pyproject.toml` / `uv.lock` still pin a Backtest revision that predates the TradFi preparation operation.
+P7 is accepted through the public deferred execution seam:
+1. Research reserves each discovery slice before preparation, then publishes the exact Backtest request ref before execution.
+2. Public TradFi preparation returns durable `PreparedBacktestExecution`; Backtest operations own runtime, repository, evidence-only completion, and analysis.
+3. Backtest `ed32bb5` and Research `37c5f59` are remotely reachable feature candidates; root pins/lock resolve Backtest `ed32bb5` without source overrides.
+4. Public KORU integration, replay, failure mapping, and Integration v2–v5 architecture checks pass in the locked environment.
 
-Smallest unblock: Platform ownership must approve the adapter owner/signature, reconcile the provider-wrapper prohibition, define the durable prepared-execution return, and update the accepted Backtest pin. The local report remains diagnostic-only. Holdout remains blocked until `2026-10-05T00:00:00Z`.
+Next: P8 may execute the frozen eight-arm Experiment through `execute_experiment`; the prior eight-arm report remains diagnostic-only. Holdout remains blocked until `2026-10-05T00:00:00Z`.
