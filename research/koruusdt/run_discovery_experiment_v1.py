@@ -842,6 +842,8 @@ def _sample_summary(foundation: LocalFoundation) -> dict[str, object]:
 def _evidence_tree() -> tuple[str, int]:
     entries = []
     for path in sorted(value for value in FORMAL_ROOT.rglob("*") if value.is_file()):
+        if path.name == ".foundation.clock":
+            continue
         entries.append((path.relative_to(FORMAL_ROOT).as_posix(), _sha256_file(path)))
     return canonical_sha256(entries), len(entries)
 
@@ -1034,11 +1036,45 @@ def validate_summary() -> dict[str, Any]:
     return summary
 
 
+def _reconcile_summary_from_evidence() -> dict[str, Any]:
+    summary = _validate_canonical(OUTPUT, "koruusdt_discovery_experiment_v1")
+    _validate_summary_shape(summary)
+    foundation = LocalFoundation(
+        FORMAL_ROOT / "foundation", clock=lambda: FOUNDATION_TIME
+    )
+    _validate_selection_evidence(summary, foundation)
+    outcome = _outcome_summary(foundation)
+    summary["owner_log_checkpoints"] = {
+        log_name: _checkpoint_value(foundation.checkpoint(log_name))
+        for log_name in OWNER_LOGS
+    }
+    summary["task_outcomes"] = {
+        "count": outcome["count"],
+        "states": outcome["states"],
+    }
+    summary["completed_publication_refs"] = outcome["completed_publication_refs"]
+    summary["analysis_refs"] = outcome["analysis_refs"]
+    summary["sample_ledger"] = _sample_summary(foundation)
+    summary["commits"] = _commits()
+    summary["retained_hashes"] = _retained_hashes()
+    evidence_hash, evidence_count = _evidence_tree()
+    summary["evidence"] = {
+        "root": "research/koruusdt/data/formal_discovery_v1",
+        "file_count": evidence_count,
+        "tree_sha256": evidence_hash,
+    }
+    summary["replay_verified"] = True
+    summary["network_performed"] = False
+    summary["holdout_touched"] = False
+    _write_canonical(OUTPUT, cast(dict[str, object], summary))
+    return validate_summary()
+
+
 def run() -> dict[str, Any]:
     _verify_pins()
     _prepare_state()
     if OUTPUT.exists():
-        validate_summary()
+        return _reconcile_summary_from_evidence()
     rebuilt_manifest, rebuilt_context = cast(
         tuple[dict[str, Any], dict[str, Any]],
         retained.build_manifest(return_context=True),

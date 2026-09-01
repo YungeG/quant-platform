@@ -142,6 +142,22 @@ def test_production_script_imports_only_public_package_roots() -> None:
     assert "run_discovery_backtests_v1" not in modules
 
 
+def test_evidence_tree_ignores_mutable_foundation_clock(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    formal_root = tmp_path / "formal"
+    formal_root.mkdir()
+    (formal_root / "evidence.json").write_text("evidence\n", encoding="utf-8")
+    clock = formal_root / ".foundation.clock"
+    clock.write_text("first\n", encoding="utf-8")
+    monkeypatch.setattr(runner, "FORMAL_ROOT", formal_root)
+
+    first = runner._evidence_tree()
+    clock.write_text("second\n", encoding="utf-8")
+
+    assert runner._evidence_tree() == first
+
+
 def test_sample_log_reader_rejects_wrong_reservation_event_id(tmp_path: Path) -> None:
     foundation = LocalFoundation(tmp_path / "foundation")
     producer = ArtifactRef("trial_declaration", 1, "sha256:" + "1" * 64)
