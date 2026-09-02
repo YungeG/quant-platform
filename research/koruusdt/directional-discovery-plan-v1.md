@@ -59,10 +59,18 @@
 4. Family eligibility gates apply first. At most one global candidate may be selected by normalized net PnL after all costs, then lower maximum drawdown, then slate order and canonical row order.
 5. The future Holdout remains unread until exactly one global candidate exists. It can be used once only.
 
-## Capability blocker
+## Current execution blocker
 
-None of the four strategies has a public KORU target-stream compiler/preparation operation. Existing public TradFi operations prepare already-published target streams; they do not authorize private composition, a callback, or a custom simulator for these new signals.
+The public premium-only compiler, V3 bundle/preparation route, and deferred Backtest operations now exist. Breakout/opening remain calendar-fail-closed; funding remains unsupported.
+
+The four premium trials are still **not executable** against retained KORU discovery evidence because:
+
+1. `crypto_quant_bundle_builder` does not publicly expose the V2 source-projection constructor needed to reconstruct the retained source authority;
+2. no four premium recipe/parameter artifacts or published premium target authorities have been pre-registered; and
+3. no complete, immutable V2 execution/economics authority has been published for the V3 hybrid bundle.
+
+The eight retained closed-market-range targets are not substitutes. No private composition, callback, custom simulator, Experiment, or Holdout read is authorized while these inputs are absent.
 
 ## Required next artifact
 
-Author `docs/experiments/koru_directional_discovery_capability_contract_v1.md`, defining the public target-stream preparation interface for calendar-gated breakout/opening and premium/funding strategies, accepted KORU identity/profile bindings, immutable input refs, and failure-closed behavior. Only after that contract and its implementation are accepted may the 12-trial slate execute.
+Publish a public Builder-owned retained-source/economics authority seam, then pre-register and publish the four fixed premium recipe authorities and their V3 bundle readers. Only after those exact inputs pass the public preflight may the four-trial premium Experiment execute.
