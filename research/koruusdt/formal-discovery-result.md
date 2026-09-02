@@ -20,4 +20,21 @@
 
 All eight trials and analyses completed. Every simple return was negative, so the predeclared positive-return filter produced no `StrategyCandidate`.
 
+## Diagnostic cost decomposition
+
+The prior local report provides the Backtest-owned realized PnL, fees, and funding decomposition for the same exact executions:
+
+| Arm | Realized PnL (USDT) | Fees (USDT) | Funding (USDT) |
+|---|---:|---:|---:|
+| p01 | -29.93247 | 3.99519564 | 0 |
+| p02 | -44.71112 | 3.98780632 | 0 |
+| p03 | -29.82957 | 6.00208601 | 0 |
+| p04 | -34.06388 | 5.98942452 | 0 |
+| p05 | -5.68018 | 2.99089615 | 0 |
+| p06 | -11.74376 | 2.98786436 | 0.28845939 |
+| p07 | -22.94112 | 5.95659606 | 0 |
+| p08 | -18.46036 | 5.94829210 | 0.28845939 |
+
+Every arm loses before fees; funding is negligible. Removing execution costs would not make any arm profitable. The rejected result therefore reflects a negative strategy edge in this discovery window, not merely fee or funding drag. Do not widen the parameter search or consume the holdout for this hypothesis.
+
 This document summarizes formal Research evidence. The underlying gitignored evidence tree must be retained for verification.
