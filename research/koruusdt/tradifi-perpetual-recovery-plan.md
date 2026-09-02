@@ -247,3 +247,7 @@ P8 formal discovery is complete through `execute_experiment`: Experiment `rp-cor
 The canonical formal summary is `research/koruusdt/data/discovery_experiment_v1.json` with manifest `sha256:f9edac999e69a061c64b0e57b5edeefdfd48ecb04aadfb0ce3cdfb04664e7977`. The 682 MB evidence tree remains locally retained at the gitignored `research/koruusdt/data/formal_discovery_v1/` and is required for validation.
 
 P9 holdout is not runnable without a selected candidate and remains untouched/time-blocked until `2026-10-05T00:00:00Z`.
+
+## Evidence retention
+
+The gitignored 682 MB formal evidence root is retained locally and backed up outside the repository at `/home/ygguo/agent-projs/ai-crypt/koru-formal-discovery-evidence-34dae55.tar.zst` (27,239,433 bytes; 603 archive members), with SHA-256 `43a2fa5890af00fcc30698355c714edfa2cdd0ebcb5f93c2210a8ebcc2acb410`. `zstd -t` and full archive listing both passed. The original evidence directory remains intact.
