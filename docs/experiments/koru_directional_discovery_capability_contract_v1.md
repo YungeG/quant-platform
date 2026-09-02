@@ -239,6 +239,10 @@ Return the first applicable typed failure in this order:
 Notably, absent contemporaneous funding authority is
 `FUNDING_AVAILABILITY_UNPROVEN`, not a neutral funding signal.
 
+## Current accepted-input disposition
+
+The current KORU calendar unit authority records XKRX/ARCX acquisition after the frozen discovery end and Holdout start. Therefore `breakout` and `cash_open_momentum` must return `CALENDAR_AVAILABILITY_UNPROVEN` for the current discovery source; no inferred historical calendar state is permitted. `funding_carry` remains `UNSUPPORTED_RECIPE_FAMILY` until `KoruFundingPublicationProjectionV1` exists. The only current candidate for a compiler smoke is `mark_index_premium`, because it depends on completed paired Mark/Index observations already contained in the discovery-scoped source projection.
+
 ## Fixed 12-trial v1 slate
 
 This slate exactly supersedes the conditional launch rows in `research/koruusdt/directional-discovery-plan-v1.md`. All trials use one-hour bars, 0.25 target exposure, seed 0, and the declared KORU instrument from their recipe artifact.
