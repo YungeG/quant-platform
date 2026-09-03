@@ -152,6 +152,25 @@ monotonic elapsed timings, which receipts bind. Full mode does not run an
 Experiment, Backtest, Holdout read, or network operation. The full command is
 documented here but has not been run.
 
+### SourceProjection timeout diagnostics
+
+The bounded diagnostic publication command persists `progress.json` in its
+attempt container at completed phase boundaries. A timeout receipt records the
+last completed/current phase, monotonic elapsed timings, input counts, and the
+immutable raw-snapshot authority identity; `final_authority` remains empty.
+It does not resume a partial publication or run an Experiment, Holdout, or
+network operation. Review-approved later execution (not run here):
+
+```bash
+uv run python research/koruusdt/run_public_koru_retained_preflight.py \
+  --diagnose-source-projection \
+  --raw-snapshot-foundation-root <raw-snapshot-foundation-root> \
+  --input-snapshot-authority '<canonical-raw-snapshot-authority-json>' \
+  --source-projection-publication-root <source-projection-publication-root> \
+  --source-projection-attempt-id <new-attempt-id> \
+  --source-projection-max-seconds 900
+```
+
 ## Scope notes
 
 - Binance data comes from public USD-M `klines`, `markPriceKlines`,

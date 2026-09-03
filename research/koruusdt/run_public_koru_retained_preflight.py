@@ -20,7 +20,7 @@ import stat
 import subprocess
 import sys
 import time
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -59,10 +59,24 @@ SOURCE_PROJECTION_PUBLICATION_SCHEMA = "koru_source_projection_publication_autho
 SOURCE_PROJECTION_PUBLICATION_RECEIPT_SCHEMA = "koru_source_projection_publication_receipt_v1"
 SOURCE_PROJECTION_PUBLICATION_IDENTITY_SCHEMA = "koru_source_projection_publication_attempt_v1"
 SOURCE_PROJECTION_PUBLICATION_FACT_SCHEMA = "koru_source_projection_publication_fact_v1"
+SOURCE_PROJECTION_PROGRESS_SCHEMA = "koru_source_projection_progress_v1"
+SOURCE_PROJECTION_PROGRESS = "progress.json"
+SOURCE_PROJECTION_PHASES = (
+    "raw_snapshot_open_verification",
+    "aggregate_retained_capture",
+    "mark_normalization",
+    "index_normalization",
+    "aggregate_boundary_index",
+    "funding_normalization",
+    "source_projection_assembly",
+    "authority_serialization",
+    "owner_log_publication",
+)
 DEFAULT_SOURCE_PROJECTION_MAX_SECONDS = 300
 MAX_SOURCE_PROJECTION_SECONDS = 900
 _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE = "source-publication-timeout-v1"
 _SOURCE_PUBLICATION_FAILURE_TEST_MODE = "source-publication-failure-v1"
+_SOURCE_PUBLICATION_TIMEOUT_AFTER_PHASE_TEST_PREFIX = "source-publication-timeout-after-phase:"
 _RAW_INPUT_VIEW: RawBlobSnapshotView | None = None
 _RAW_INPUT_MEMBER_KEYS: dict[str, str] | None = None
 TERMINATE_GRACE_SECONDS = 1.0
@@ -559,28 +573,68 @@ def _boundaries(gap: Mapping[str, Any]) -> tuple[Any, ...]:
     return values
 
 
-def build_source() -> Any:
+def _diagnostic_row_count(entries: object) -> int:
+    if type(entries) is not list:
+        return 0
+    return sum(entry["row_count"] for entry in entries if type(entry) is dict and type(entry.get("row_count")) is int)
+
+
+def build_source(*, phase_completed: Callable[[str, Mapping[str, int]], None] | None = None) -> Any:
     """Full retained replay using only exported Builder/Domain value APIs."""
+    def complete(phase: str, counts: Mapping[str, int]) -> None:
+        if phase_completed is not None:
+            phase_completed(phase, counts)
+
     authority_manifest = _authority_manifest()
     authority = _calendar_authority(authority_manifest)
     execution, base, gap = _retained_manifests()
     files = _files(execution)
+    aggregate_daily = execution["datasets"]["aggTrades"]["daily"]
     aggregates = (*_official_aggregates(execution, files), _retained_aggregate(execution, files))
+    complete("aggregate_retained_capture", {
+        "aggregate_capture_count": len(aggregates),
+        "aggregate_daily_input_row_count": _diagnostic_row_count(aggregate_daily),
+        "aggregate_retained_page_count": sum(
+            1 for path, entry in files.items()
+            if path.startswith("binance_usdm/aggTrades/rest-bounded/")
+            and entry.get("status") == "canonical_rest_response"
+        ),
+    })
+    mark_daily = execution["datasets"]["markPriceKlines_1h"]["daily"]
     mark = (*_official_prices(BinanceUsdmKoruPriceBarsSourceKindV1.MARK_PRICE, execution, files), _retained_price(BinanceUsdmKoruPriceBarsSourceKindV1.MARK_PRICE, execution, base, files))
+    complete("mark_normalization", {
+        "mark_normalization_count": len(mark),
+        "mark_daily_input_row_count": _diagnostic_row_count(mark_daily),
+    })
+    index_daily = execution["datasets"]["indexPriceKlines_1h"]["daily"]
     index = (*_official_prices(BinanceUsdmKoruPriceBarsSourceKindV1.INDEX_PRICE, execution, files), _retained_price(BinanceUsdmKoruPriceBarsSourceKindV1.INDEX_PRICE, execution, base, files))
+    complete("index_normalization", {
+        "index_normalization_count": len(index),
+        "index_daily_input_row_count": _diagnostic_row_count(index_daily),
+    })
     boundaries = _boundaries(gap)
     boundary_index = _unwrap(build_binance_usdm_koru_aggregate_trade_boundary_index_v1(
         BinanceUsdmKoruAggregateTradeBoundaryIndexRequestV1(
             aggregates, UtcInstant(START_MS * 1_000_000), UtcInstant(END_MS * 1_000_000), boundaries
         )
     ), "aggregate boundary index")
-    return _unwrap(build_binance_usdm_koru_tradifi_source_projection_v2(
+    complete("aggregate_boundary_index", {"aggregate_boundary_event_count": len(boundaries)})
+    funding = _funding(files)
+    complete("funding_normalization", {
+        "funding_input_event_count": _diagnostic_row_count([files.get("binance_usdm/fundingHistory/accepted-capture/funding-history.json", {})]),
+    })
+    source = _unwrap(build_binance_usdm_koru_tradifi_source_projection_v2(
         BinanceUsdmKoruTradifiSourceProjectionRequestV2(
             UtcInstant(START_MS * 1_000_000), UtcInstant(END_MS * 1_000_000),
             canonical_sha256({"type": "koruusdt_retained_discovery_instrument_binding_v1", "instrument_id": INSTRUMENT.to_canonical_dict(), "symbol": "KORUUSDT", "contract_type": base["contractType"], "base_manifest_identity": base["manifest_sha256"]}),
-            Scale(8), boundary_index, mark, index, _funding(files), authority,
+            Scale(8), boundary_index, mark, index, funding, authority,
         )
     ), "source projection")
+    complete("source_projection_assembly", {
+        "aggregate_capture_count": len(aggregates), "mark_normalization_count": len(mark),
+        "index_normalization_count": len(index), "aggregate_boundary_event_count": len(boundaries),
+    })
+    return source
 
 
 def _artifact_event_id(ref: ArtifactRef) -> str:
@@ -2045,6 +2099,101 @@ def read_success_receipt(root: Path, attempt_id: str) -> dict[str, object]:
     return receipt
 
 
+def _source_projection_initial_progress(identity: Mapping[str, object]) -> dict[str, object]:
+    return {
+        "type": SOURCE_PROJECTION_PROGRESS_SCHEMA,
+        "schema_version": 1,
+        "snapshot_authority_identity": _canonical_input_snapshot_authority(
+            cast(Mapping[str, object], identity["raw_snapshot_authority"])
+        ),
+        "current_phase": SOURCE_PROJECTION_PHASES[0],
+        "completed_phases": [],
+        "phase_elapsed_ns": {},
+        "completed_elapsed_ns": {},
+        "input_counts": {},
+    }
+
+
+def _canonical_source_projection_progress(
+    value: Mapping[str, object], identity: Mapping[str, object],
+) -> dict[str, object]:
+    required = {
+        "type", "schema_version", "snapshot_authority_identity", "current_phase", "completed_phases",
+        "phase_elapsed_ns", "completed_elapsed_ns", "input_counts",
+    }
+    if type(value) is not dict or set(value) != required or value.get("type") != SOURCE_PROJECTION_PROGRESS_SCHEMA or value.get("schema_version") != 1:
+        raise ValueError("source-projection progress schema mismatch")
+    snapshot_authority = _canonical_input_snapshot_authority(
+        cast(Mapping[str, object], value["snapshot_authority_identity"])
+    )
+    if snapshot_authority != identity["raw_snapshot_authority"]:
+        raise ValueError("source-projection progress snapshot authority mismatch")
+    completed = value["completed_phases"]
+    phase_elapsed = value["phase_elapsed_ns"]
+    completed_elapsed = value["completed_elapsed_ns"]
+    counts = value["input_counts"]
+    if type(completed) is not list or type(phase_elapsed) is not dict or type(completed_elapsed) is not dict or type(counts) is not dict:
+        raise ValueError("source-projection progress values mismatch")
+    if completed != list(SOURCE_PROJECTION_PHASES[:len(completed)]):
+        raise ValueError("source-projection progress phases are not monotonic")
+    expected_current = "complete" if len(completed) == len(SOURCE_PROJECTION_PHASES) else SOURCE_PROJECTION_PHASES[len(completed)]
+    if value["current_phase"] != expected_current or set(phase_elapsed) != set(completed) or set(completed_elapsed) != set(completed):
+        raise ValueError("source-projection progress phase state mismatch")
+    prior_elapsed = -1
+    for phase in completed:
+        phase_ns, total_ns = phase_elapsed[phase], completed_elapsed[phase]
+        if type(phase_ns) is not int or phase_ns < 0 or type(total_ns) is not int or total_ns < prior_elapsed:
+            raise ValueError("source-projection progress timings are not monotonic")
+        prior_elapsed = total_ns
+    if any(type(key) is not str or type(count) is not int or count < 0 for key, count in counts.items()):
+        raise ValueError("source-projection progress input counts mismatch")
+    return {
+        "type": SOURCE_PROJECTION_PROGRESS_SCHEMA,
+        "schema_version": 1,
+        "snapshot_authority_identity": snapshot_authority,
+        "current_phase": expected_current,
+        "completed_phases": list(completed),
+        "phase_elapsed_ns": dict(phase_elapsed),
+        "completed_elapsed_ns": dict(completed_elapsed),
+        "input_counts": dict(counts),
+    }
+
+
+def _source_projection_progress_recorder(
+    staging: Path, identity: Mapping[str, object],
+) -> Callable[[str, Mapping[str, int]], None]:
+    path = staging / SOURCE_PROJECTION_PROGRESS
+    progress = _source_projection_initial_progress(identity)
+    _atomic_write(path, progress)
+    started_at = time.monotonic_ns()
+    phase_started_at = started_at
+
+    def completed(phase: str, counts: Mapping[str, int]) -> None:
+        nonlocal phase_started_at
+        expected = cast(str, progress["current_phase"])
+        if phase != expected:
+            raise ValueError("source-projection diagnostic phase order mismatch")
+        now = time.monotonic_ns()
+        progress["completed_phases"] = [*cast(list[str], progress["completed_phases"]), phase]
+        cast(dict[str, int], progress["phase_elapsed_ns"])[phase] = now - phase_started_at
+        cast(dict[str, int], progress["completed_elapsed_ns"])[phase] = now - started_at
+        cast(dict[str, int], progress["input_counts"]).update(counts)
+        completed_count = len(cast(list[str], progress["completed_phases"]))
+        progress["current_phase"] = (
+            "complete" if completed_count == len(SOURCE_PROJECTION_PHASES) else SOURCE_PROJECTION_PHASES[completed_count]
+        )
+        _atomic_write(path, _canonical_source_projection_progress(progress, identity))
+        phase_started_at = now
+
+    return completed
+
+
+def _load_source_projection_progress(staging: Path, identity: Mapping[str, object]) -> dict[str, object]:
+    return _canonical_source_projection_progress(
+        _load_canonical(staging / SOURCE_PROJECTION_PROGRESS, "source-projection progress"), identity,
+    )
+
+
 def _source_projection_complete_marker(
     identity: Mapping[str, object], authority: Mapping[str, object], checkpoint: LogCheckpoint,
 ) -> dict[str, object]:
@@ -2060,17 +2209,23 @@ def _source_projection_complete_marker(
 def _publish_source_projection_in_staging(
     staging: Path, identity: Mapping[str, object], raw_snapshot_foundation_root: Path,
 ) -> None:
+    progress = _source_projection_progress_recorder(staging, identity)
     raw_authority = _canonical_input_snapshot_authority(
         cast(Mapping[str, object], identity["raw_snapshot_authority"])
     )
     catalog, view = _open_input_snapshot_authority(raw_snapshot_foundation_root, raw_authority)
     if _verify_koru_discovery_snapshot_scope(catalog, view) != identity["discovery_scope"]:
         raise ValueError("raw snapshot discovery scope does not match source publication identity")
+    progress("raw_snapshot_open_verification", {
+        "raw_snapshot_member_count": len(cast(list[object], catalog["files"])),
+        "raw_snapshot_input_byte_count": sum(cast(int, row["size_bytes"]) for row in cast(list[dict[str, object]], catalog["files"])),
+    })
     with _raw_input_snapshot_context(catalog, view):
-        source = build_source()
+        source = build_source(phase_completed=progress)
     _assert_exact_koru_source_projection_scope(source)
     serialized = serialize_binance_usdm_koru_tradifi_source_projection_authority_v1(source)
     envelope = _source_projection_envelope_from_bytes(serialized)
+    progress("authority_serialization", {"authority_serialized_byte_count": len(serialized)})
     foundation = LocalFoundation(staging / "foundation")
     projection_ref = foundation.put(envelope=envelope)
     if projection_ref != ArtifactRef.from_envelope(envelope):
@@ -2098,6 +2253,7 @@ def _publish_source_projection_in_staging(
     _verify_koru_source_projection_authority_in_foundation(
         foundation, authority, _checkpoint_canonical(checkpoint),
     )
+    progress("owner_log_publication", {"owner_log_event_count": 1})
     _atomic_write(staging / COMPLETE_MARKER, _source_projection_complete_marker(identity, authority, checkpoint))
 
 
@@ -2144,6 +2300,7 @@ def _source_projection_success_receipt(
 
 def _source_projection_non_success_receipt(
     identity: Mapping[str, object], outcome: str, child_status: int | None, archive_state: str,
+    progress: Mapping[str, object],
 ) -> dict[str, object]:
     if outcome not in {"timeout", "non_success"}:
         raise ValueError("source-projection non-success outcome is invalid")
@@ -2153,6 +2310,7 @@ def _source_projection_non_success_receipt(
         "outcome": outcome,
         "identity": dict(identity),
         "final_authority": [],
+        "diagnostic_progress": _canonical_source_projection_progress(progress, identity),
         "child_status": {"exit_code": child_status, "timed_out": outcome == "timeout"},
         "archive_state": archive_state,
     }
@@ -2193,8 +2351,9 @@ def _validate_source_projection_receipt(receipt: Mapping[str, object], identity:
     elif receipt["outcome"] in {"timeout", "non_success"}:
         child_status = receipt.get("child_status")
         if (
-            set(receipt) != common | {"child_status", "archive_state"}
+            set(receipt) != common | {"diagnostic_progress", "child_status", "archive_state"}
             or receipt["final_authority"] != []
+            or type(receipt.get("diagnostic_progress")) is not dict
             or type(child_status) is not dict
             or set(child_status) != {"exit_code", "timed_out"}
             or type(child_status["exit_code"]) not in {int, type(None)}
@@ -2202,6 +2361,7 @@ def _validate_source_projection_receipt(receipt: Mapping[str, object], identity:
             or receipt["archive_state"] != ("timed_out" if receipt["outcome"] == "timeout" else "failed")
         ):
             raise ValueError("source-projection non-success receipt mismatch")
+        _canonical_source_projection_progress(cast(Mapping[str, object], receipt["diagnostic_progress"]), identity)
     else:
         raise ValueError("source-projection receipt outcome mismatch")
 
@@ -2214,6 +2374,28 @@ def _load_source_projection_receipt(root: Path, attempt_id: str) -> dict[str, ob
     receipt = _load_canonical(path, "source-projection receipt")
     _validate_source_projection_receipt(receipt, identity)
     return receipt
+
+
+def _source_projection_timeout_after_phase(value: str | None) -> str | None:
+    if value is None or not value.startswith(_SOURCE_PUBLICATION_TIMEOUT_AFTER_PHASE_TEST_PREFIX):
+        return None
+    phase = value.removeprefix(_SOURCE_PUBLICATION_TIMEOUT_AFTER_PHASE_TEST_PREFIX)
+    if phase not in SOURCE_PROJECTION_PHASES:
+        raise ValueError("source-projection diagnostic timeout phase is invalid")
+    return phase
+
+
+def _child_source_projection_diagnostic_timeout_test(
+    staging: Path, identity: Mapping[str, object], phase: str,
+) -> NoReturn:
+    """Synthetic watchdog seam; it never opens retained inputs or publishes authority."""
+    progress = _source_projection_progress_recorder(staging, identity)
+    for candidate in SOURCE_PROJECTION_PHASES:
+        progress(candidate, {"synthetic_completed_phase_count": SOURCE_PROJECTION_PHASES.index(candidate) + 1})
+        if candidate == phase:
+            while True:
+                time.sleep(60)
+    raise AssertionError("diagnostic timeout phase was not reached")
 
 
 def _source_projection_child_command(
@@ -2233,7 +2415,10 @@ def publish_koru_source_projection_authority(
     max_seconds: int = DEFAULT_SOURCE_PROJECTION_MAX_SECONDS, _child_test_mode: str | None = None,
 ) -> dict[str, object]:
     """Publish only verified KORU SourceProjectionV2 authority from raw snapshot bytes."""
-    if _child_test_mode not in (None, _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE, _SOURCE_PUBLICATION_FAILURE_TEST_MODE):
+    if (
+        _child_test_mode not in (None, _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE, _SOURCE_PUBLICATION_FAILURE_TEST_MODE)
+        and _source_projection_timeout_after_phase(_child_test_mode) is None
+    ):
         raise ValueError("unsupported source-projection child test mode")
     max_seconds = _validate_source_projection_max_seconds(max_seconds)
     raw_authority = _canonical_input_snapshot_authority(input_snapshot_authority)
@@ -2255,21 +2440,24 @@ def publish_koru_source_projection_authority(
             return existing
         _create_new_json(paths["identity"], identity)
         paths["staging"].mkdir(parents=True)
+        _atomic_write(paths["staging"] / SOURCE_PROJECTION_PROGRESS, _source_projection_initial_progress(identity))
         command = _source_projection_child_command(paths["staging"], identity, raw_snapshot_foundation_root)
         if _child_test_mode is not None:
             command.extend(["--_test-mode", _child_test_mode])
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         timed_out, child_status = _wait_for_child(process, max_seconds, time.monotonic())
         if timed_out:
+            progress = _load_source_projection_progress(paths["staging"], identity)
             os.rename(paths["staging"], paths["timed_out"])
             _fsync_directory(paths["timed_out"].parent)
-            receipt = _source_projection_non_success_receipt(identity, "timeout", child_status, "timed_out")
+            receipt = _source_projection_non_success_receipt(identity, "timeout", child_status, "timed_out", progress)
             _create_new_json(paths["receipt"], receipt)
             return receipt
         if child_status != 0:
+            progress = _load_source_projection_progress(paths["staging"], identity)
             os.rename(paths["staging"], paths["failed"])
             _fsync_directory(paths["failed"].parent)
-            receipt = _source_projection_non_success_receipt(identity, "non_success", child_status, "failed")
+            receipt = _source_projection_non_success_receipt(identity, "non_success", child_status, "failed", progress)
             _create_new_json(paths["receipt"], receipt)
             return receipt
         authority, checkpoint = _validate_source_projection_complete(paths["staging"], identity)
@@ -2356,6 +2544,7 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--smoke", action="store_true", help="bounded source authority validation; default")
     mode.add_argument("--prepare-input-snapshot", action="store_true", help="publish retained raw bytes before full preflight")
     mode.add_argument("--publish-source-projection", action="store_true", help="publish KORU SourceProjectionV2 from a verified raw snapshot")
+    mode.add_argument("--diagnose-source-projection", action="store_true", help="bounded source-projection publication with timeout phase receipt")
     mode.add_argument("--full", action="store_true", help="isolated retained source/economics/reader attempt; no Experiment")
     mode.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
     mode.add_argument("--_source-projection-child", action="store_true", help=argparse.SUPPRESS)
@@ -2388,7 +2577,10 @@ def main(argv: list[str] | None = None) -> int:
         except (KeyError, ValueError, json.JSONDecodeError) as error:
             parser.error(str(error))
         with deny_network():
-            if args._test_mode == _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE:
+            diagnostic_timeout_phase = _source_projection_timeout_after_phase(args._test_mode)
+            if diagnostic_timeout_phase is not None:
+                _child_source_projection_diagnostic_timeout_test(args.staging, identity, diagnostic_timeout_phase)
+            elif args._test_mode == _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE:
                 _child_source_projection_timeout_test()
             elif args._test_mode == _SOURCE_PUBLICATION_FAILURE_TEST_MODE:
                 raise RuntimeError("source-projection publication test failure")
@@ -2424,7 +2616,7 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--prepare-input-snapshot requires only --raw-snapshot-foundation-root")
         with deny_network():
             result = prepare_input_snapshot_authority(args.raw_snapshot_foundation_root)
-    elif args.publish_source_projection:
+    elif args.publish_source_projection or args.diagnose_source_projection:
         try:
             _validate_source_projection_max_seconds(args.source_projection_max_seconds)
             if (
@@ -2466,7 +2658,7 @@ def main(argv: list[str] | None = None) -> int:
         with deny_network():
             result = smoke(args.foundation_root)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    return 1 if args.publish_source_projection and result.get("outcome") != "success" else 0
+    return 1 if (args.publish_source_projection or args.diagnose_source_projection) and result.get("outcome") != "success" else 0
 
 
 if __name__ == "__main__":

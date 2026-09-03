@@ -6,6 +6,7 @@ import json
 import os
 import shutil
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -214,8 +215,11 @@ def _publish_tiny_source_projection(
     ))
     built: list[object] = []
 
-    def build() -> _TinySourceProjection:
+    def build(*, phase_completed: Callable[[str, dict[str, int]], None] | None = None) -> _TinySourceProjection:
         assert runner._RAW_INPUT_VIEW is not None
+        if phase_completed is not None:
+            for phase in runner.SOURCE_PROJECTION_PHASES[1:7]:
+                phase_completed(phase, {"synthetic_input_count": 1})
         built.append(object())
         return source
 
@@ -417,6 +421,35 @@ def test_source_projection_timeout_and_non_success_receipts_have_no_authority(
     assert timeout["final_authority"] == failed["final_authority"] == []
     assert tuple((tmp_path / "timeout-publications" / "source-projections").iterdir()) == ()
     assert tuple((tmp_path / "failed-publications" / "source-projections").iterdir()) == ()
+
+
+@pytest.mark.parametrize("phase", runner.SOURCE_PROJECTION_PHASES)
+def test_source_projection_timeout_receipt_records_monotonic_phase_progress(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, phase: str,
+) -> None:
+    raw_root, authority, _catalog = _published_fixture(tmp_path)
+    monkeypatch.setattr(runner, "_verify_koru_discovery_snapshot_scope", lambda _catalog, _view: runner._fixed_koru_discovery_scope())
+
+    receipt = runner.publish_koru_source_projection_authority(
+        raw_root, authority, tmp_path / "publications", f"timeout-{phase}", max_seconds=1,
+        _child_test_mode=runner._SOURCE_PUBLICATION_TIMEOUT_AFTER_PHASE_TEST_PREFIX + phase,
+    )
+
+    progress = receipt["diagnostic_progress"]
+    completed = progress["completed_phases"]
+    assert receipt["outcome"] == "timeout"
+    assert receipt["final_authority"] == []
+    assert completed == list(runner.SOURCE_PROJECTION_PHASES[:len(completed)])
+    assert completed[-1] == phase
+    assert progress["current_phase"] == (
+        "complete" if phase == runner.SOURCE_PROJECTION_PHASES[-1]
+        else runner.SOURCE_PROJECTION_PHASES[runner.SOURCE_PROJECTION_PHASES.index(phase) + 1]
+    )
+    elapsed = [progress["completed_elapsed_ns"][completed_phase] for completed_phase in completed]
+    assert elapsed == sorted(elapsed)
+    assert progress["snapshot_authority_identity"] == authority
+    assert progress["input_counts"]["synthetic_completed_phase_count"] == len(completed)
+    runner._validate_source_projection_receipt(receipt, receipt["identity"])
 
 
 def test_source_projection_operation_is_offline_and_stops_before_economics() -> None:
