@@ -115,6 +115,39 @@ publishing path, and no such integration exists here. The runner emits a
 retained-context reconstruction stage before any retained work and fails without
 writing its output if preparation or engine execution fails.
 
+## Public retained premium preflight
+
+The immutable calendar/unit authority is
+`data/public_preflight_sources_v1/manifest.json`. Its eight exact members are
+repository copies; source-fixture paths are provenance only. The vendor HTML is
+intentionally byte-exact (including malformed markup). Its pinned source hash
+and the explicit scoped validator waiver are recorded in that manifest; the
+narrowly scoped `.pi-lens.json` ignore protects integrity rather than
+normalizing it.
+
+```bash
+uv run python research/koruusdt/run_public_koru_retained_preflight.py --smoke
+timeout 300 uv run python research/koruusdt/run_public_koru_retained_preflight.py --full --max-seconds 300
+```
+
+`--smoke` hash-checks the authority and retained manifest interval, then stops
+before economics without instantiating Foundation. With `--foundation-root`, it
+leaves an absent path absent or accepts only an existing empty directory; it
+rejects any Foundation state without mutation. `--full` alone initializes
+Foundation and is the explicit offline source/economics/four-reader preflight;
+it does not run an Experiment, Backtest, Holdout read, or network operation. It
+writes each authority/recipe envelope to Foundation CAS at
+`<foundation-root>/artifacts/sha256/<digest-prefix>/<digest>` and reads it back
+before appending its canonical publication record to the designated
+`research.artifacts.v1` owner log. CAS storage alone is not published evidence.
+The same owner log records SourceProjection identity/provenance and the final
+reader-set summary; the full JSON result reports artifact refs plus the log
+checkpoint and entry refs. Pass `--foundation-root <empty-directory>` to retain
+those artifacts and records after the process exits. Full mode has a fail-closed
+process-internal `--max-seconds` deadline (default and maximum `300`); retain the
+external `timeout 300` wrapper shown above. Smoke does not consume that deadline.
+The full command is documented here but has not been run.
+
 ## Scope notes
 
 - Binance data comes from public USD-M `klines`, `markPriceKlines`,

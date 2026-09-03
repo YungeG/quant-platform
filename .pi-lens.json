@@ -2,6 +2,7 @@
   "ignore": [
     "backtest",
     "backtest/**",
-    "**/backtest/**"
+    "**/backtest/**",
+    "research/koruusdt/data/public_preflight_sources_v1/krx/landing.html"
   ]
 }

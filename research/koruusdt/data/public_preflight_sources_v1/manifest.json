@@ -1,0 +1,73 @@
+{
+  "acquisition": {
+    "network_performed": false,
+    "source_fixture_paths_are_provenance_only": true,
+    "status": "no_network_repository_copy"
+  },
+  "authority_schema": "koru_tradifi_calendar_unit_authority_v1",
+  "authority_schema_version": 1,
+  "integrity_exception": {
+    "member": "krx/landing.html",
+    "reason": "malformed_vendor_html_preserved_byte_exact",
+    "sha256": "sha256:c181b15a7c08cc48a4fc390160cdf748c3680006155f1a0124465613f32b978e",
+    "validator_waiver": "scoped_pi_lens_ignore"
+  },
+  "intended_discovery_interval": {
+    "end_utc_exclusive": "2026-08-24T11:00:00Z",
+    "semantics": "half-open",
+    "start_utc_inclusive": "2026-07-15T10:00:00Z"
+  },
+  "manifest_sha256": "sha256:fd05cc04fdb4289f238d4901d185836d59c21858b34e42f3ef476dec95e9866d",
+  "members": [
+    {
+      "filename": "binance/acquisition-receipt.json",
+      "sha256": "sha256:e37c33eaf1b85c800f225b5d1f798069992772084b21ed91384af8f242173e59",
+      "size_bytes": 1610,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/binance/acquisition-receipt.json"
+    },
+    {
+      "filename": "binance/adjustment-announcement.json",
+      "sha256": "sha256:0f06a75fa2b8291ee8ec1c749657576467a84092fa096ece181958069acae97e",
+      "size_bytes": 111662,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/binance/adjustment-announcement.json"
+    },
+    {
+      "filename": "binance/completion-announcement.json",
+      "sha256": "sha256:c194651673fbd80c014c8e3931403f6a51d14cb8bf920fcf17c0c3e609c9a143",
+      "size_bytes": 68643,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/binance/completion-announcement.json"
+    },
+    {
+      "filename": "krx/acquisition-receipt.json",
+      "sha256": "sha256:414c889f216f01be161110d4116bd4cd26509d4ec1079a32c043d62f9cee4f58",
+      "size_bytes": 806,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/krx/acquisition-receipt.json"
+    },
+    {
+      "filename": "krx/landing.html",
+      "sha256": "sha256:c181b15a7c08cc48a4fc390160cdf748c3680006155f1a0124465613f32b978e",
+      "size_bytes": 143984,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/krx/landing.html"
+    },
+    {
+      "filename": "krx/market-closing-2026.json",
+      "sha256": "sha256:e60dc5a3d4f8a02afc842f34544f2edf162836bc124209b75dc7456030858dfe",
+      "size_bytes": 2221,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/krx/market-closing-2026.json"
+    },
+    {
+      "filename": "nyse/acquisition-receipt.json",
+      "sha256": "sha256:a393aaa8efe6e9747711695d0df2c49d98cd56ef9ad3ba83ed75d15f613a273c",
+      "size_bytes": 450,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/nyse/acquisition-receipt.json"
+    },
+    {
+      "filename": "nyse/hours-calendars.html",
+      "sha256": "sha256:49ee8a651ec01ef2866e347842c0fb11309541f247d17aeaaf7ad9d6a513b1ed",
+      "size_bytes": 109180,
+      "source_fixture_path": "backtest/tests/fixtures/market_data/providers/tradifi/koru-calendar-unit-v1/nyse/hours-calendars.html"
+    }
+  ],
+  "schema_version": 1,
+  "type": "koruusdt_public_preflight_sources_v1"
+}
