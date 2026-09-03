@@ -139,17 +139,18 @@ uv run python research/koruusdt/run_public_koru_retained_preflight.py \
 before economics without instantiating Foundation. With `--foundation-root`, it
 leaves an absent path absent or accepts only an existing empty directory; it
 rejects any Foundation state without mutation. `--full` requires an
-`--attempt-root`. The parent freezes a complete read-only retained-input catalog,
-starts the replay child in its own process group, and enforces the monotonic
-1–300 second cap (300 by default and maximum). Foundation and Market Bundle data
-live only in `.staging/<attempt-id>/{input,foundation,market}` until the parent
-independently validates the complete marker and owner-log exact cover. It then
-renames that one container to `attempts/<attempt-id>` and writes the success
-receipt in `receipts/`. A timeout kills and reaps the process group, moves the
-container to `timed-out/`, and writes a receipt with `final_authority: []`.
-Consumers must use a success receipt; staging and timed-out artifacts are never
-authority. Full mode does not run an Experiment, Backtest, Holdout read, or
-network operation. The full command is documented here but has not been run.
+`--attempt-root`. The parent catalogs then capability-probes Linux `FICLONE` in
+staging and reflink-snapshots each held regular source/destination FD on the
+same filesystem; there is no copy or hardlink fallback. It verifies catalog
+hashes before making inputs read-only, then starts the replay child in its own
+process group under the monotonic 1–300 second cap (300 by default and maximum).
+Foundation and Market Bundle paths are initialized only after that snapshot
+passes. Unsupported reflinks, cross-device inputs, and catalog mismatches write
+only the canonical non-success snapshot receipt with `final_authority: []`; no
+child starts. Complete and timeout state persist catalog/clone/verify/child
+monotonic elapsed timings, which receipts bind. Full mode does not run an
+Experiment, Backtest, Holdout read, or network operation. The full command is
+documented here but has not been run.
 
 ## Scope notes
 

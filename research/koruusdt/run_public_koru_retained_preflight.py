@@ -14,8 +14,10 @@ import fcntl
 import hashlib
 import json
 import os
+import shutil
 import signal
 import socket
+import stat
 import subprocess
 import sys
 import time
@@ -49,6 +51,9 @@ ATTEMPT_SCHEMA = "koru_retained_preflight_attempt_v1"
 INPUT_CATALOG_SCHEMA = "koru_retained_preflight_input_catalog_v1"
 RECEIPT_SCHEMA = "koru_retained_preflight_receipt_v1"
 COMPLETE_MARKER = "complete.json"
+TIMEOUT_MARKER = "timeout.json"
+FICLONE = 0x40049409
+TIMING_KEYS = ("catalog_elapsed_ns", "clone_elapsed_ns", "verify_elapsed_ns", "child_elapsed_ns")
 TERMINATE_GRACE_SECONDS = 1.0
 _TIMEOUT_TEST_MODE = "foundation-timeout-v1"
 
@@ -172,6 +177,32 @@ class FullPreflightDeadlineExceeded(TimeoutError):
             f"full preflight deadline exceeded after {max_seconds} seconds; "
             f"timeout receipt: {receipt_path}"
         )
+
+
+class SnapshotFailure(RuntimeError):
+    """A physical retained-input snapshot cannot be used as authority."""
+
+    outcome: str
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
+class SnapshotCapabilityUnavailable(SnapshotFailure):
+    outcome = "snapshot_capability_unavailable"
+
+
+class SnapshotCatalogMismatch(SnapshotFailure):
+    outcome = "snapshot_catalog_mismatch"
+
+
+class FullPreflightSnapshotFailed(RuntimeError):
+    """A non-success snapshot receipt was written before a child existed."""
+
+    def __init__(self, outcome: str, receipt_path: Path) -> None:
+        self.outcome = outcome
+        self.receipt_path = receipt_path
+        super().__init__(f"full preflight input snapshot failed: {outcome}; receipt: {receipt_path}")
 
 
 def _validate_full_max_seconds(max_seconds: int) -> int:
@@ -812,6 +843,7 @@ def _full_mode_config(max_seconds: int) -> dict[str, object]:
         "max_seconds": _validate_full_max_seconds(max_seconds),
         "hard_cap_seconds": MAX_FULL_SECONDS,
         "owner_log": OWNER_LOG,
+        "input_snapshot": "linux_ficlone_reflink_v1",
         "source_projection_resume": "forbidden_replay_retained_input",
     }
 
@@ -936,18 +968,107 @@ def _fsync_directory(path: Path) -> None:
         os.close(descriptor)
 
 
+def _ficlone_ioctl(destination_fd: int, source_fd: int) -> None:
+    """Use Linux's real reflink ioctl; tests may replace this narrow seam."""
+    fcntl.ioctl(destination_fd, FICLONE, source_fd)
+
+
+def _hash_fd(descriptor: int) -> tuple[str, int]:
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    digest = hashlib.sha256()
+    size = 0
+    while chunk := os.read(descriptor, 1024 * 1024):
+        digest.update(chunk)
+        size += len(chunk)
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    return "sha256:" + digest.hexdigest(), size
+
+
+def _require_regular(stat_result: os.stat_result, label: str) -> None:
+    if not stat.S_ISREG(stat_result.st_mode):
+        raise SnapshotCatalogMismatch(f"{label} is not a regular file")
+
+
+def _clone_held_file(source: Path, destination: Path, digest: str, size: int) -> None:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        source_fd = os.open(source, flags)
+    except OSError as error:
+        raise SnapshotCatalogMismatch(f"retained input is unavailable: {source}") from error
+    try:
+        source_stat = os.fstat(source_fd)
+        _require_regular(source_stat, f"retained input {source}")
+        try:
+            source_digest, source_size = _hash_fd(source_fd)
+        except OSError as error:
+            raise SnapshotCatalogMismatch(f"retained input cannot be read: {source}") from error
+        if source_digest != digest or source_size != size:
+            raise SnapshotCatalogMismatch(f"retained input changed while snapshotting: {source}")
+        destination_fd = os.open(
+            destination,
+            os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+            0o600,
+        )
+        try:
+            destination_stat = os.fstat(destination_fd)
+            _require_regular(destination_stat, f"snapshot destination {destination}")
+            if source_stat.st_dev != destination_stat.st_dev:
+                raise SnapshotCapabilityUnavailable("FICLONE source and destination are on different devices")
+            if source_stat.st_ino == destination_stat.st_ino:
+                raise SnapshotCapabilityUnavailable("FICLONE source and destination share an inode")
+            try:
+                _ficlone_ioctl(destination_fd, source_fd)
+            except OSError as error:
+                raise SnapshotCapabilityUnavailable("FICLONE is unavailable for retained input snapshot") from error
+            destination_stat = os.fstat(destination_fd)
+            _require_regular(destination_stat, f"snapshot destination {destination}")
+            if source_stat.st_dev != destination_stat.st_dev or source_stat.st_ino == destination_stat.st_ino:
+                raise SnapshotCapabilityUnavailable("FICLONE did not create a distinct same-device file")
+            try:
+                destination_digest, destination_size = _hash_fd(destination_fd)
+            except OSError as error:
+                raise SnapshotCapabilityUnavailable("cannot verify reflink snapshot") from error
+            if destination_digest != digest or destination_size != size:
+                raise SnapshotCatalogMismatch(f"reflink snapshot does not match catalog: {source}")
+            try:
+                os.fchmod(destination_fd, 0o444)
+            except OSError as error:
+                raise SnapshotCapabilityUnavailable("cannot make reflink snapshot read-only") from error
+        finally:
+            os.close(destination_fd)
+    finally:
+        os.close(source_fd)
+
+
+def _probe_ficlone(staging: Path) -> None:
+    probe = staging / ".ficlone-probe"
+    source = probe / "source"
+    destination = probe / "destination"
+    expected = b"koru-ficlone-probe-v1"
+    try:
+        probe.mkdir()
+        source.write_bytes(expected)
+        _clone_held_file(source, destination, _hash(expected), len(expected))
+        with source.open("r+b") as handle:
+            handle.write(b"X")
+            handle.flush()
+            os.fsync(handle.fileno())
+        if destination.read_bytes() != expected:
+            raise SnapshotCapabilityUnavailable("FICLONE destination changed after source mutation")
+    except OSError as error:
+        raise SnapshotCapabilityUnavailable("cannot capability-probe FICLONE in staging") from error
+    finally:
+        shutil.rmtree(probe, ignore_errors=True)
+
+
 def _freeze_input_snapshot(input_root: Path, catalog: Mapping[str, object]) -> None:
     _validate_input_catalog(catalog)
     input_root.mkdir(parents=True, exist_ok=True)
     for row in cast(list[dict[str, object]], catalog["files"]):
         relative, digest, size = cast(str, row["path"]), cast(str, row["sha256"]), cast(int, row["size_bytes"])
-        source = DATA.parent / relative
-        raw = source.read_bytes()
-        if _hash(raw) != digest or len(raw) != size:
-            raise ValueError(f"retained input changed while freezing: {relative}")
         destination = input_root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(raw)
+        _clone_held_file(DATA.parent / relative, destination, digest, size)
     _atomic_write(input_root / "catalog.json", catalog)
     for path in sorted(input_root.rglob("*"), reverse=True):
         path.chmod(0o555 if path.is_dir() else 0o444)
@@ -1058,7 +1179,38 @@ def _load_attempt_identity(root: Path, attempt_id: str) -> dict[str, Any]:
     return identity
 
 
-def _child_full_preflight(staging: Path, attempt_id: str, catalog_sha256: str) -> None:
+def _snapshot_failure_receipt(identity: Mapping[str, object], outcome: str) -> dict[str, object]:
+    if outcome not in {SnapshotCapabilityUnavailable.outcome, SnapshotCatalogMismatch.outcome}:
+        raise ValueError("unsupported snapshot failure outcome")
+    return {
+        "type": RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": outcome,
+        "attempt_id": identity["attempt_id"],
+        "attempt_identity": dict(identity),
+        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "final_authority": [],
+    }
+
+
+def _elapsed_timings(value: Mapping[str, object], *, complete: bool) -> dict[str, int]:
+    expected = TIMING_KEYS if complete else TIMING_KEYS[:-1]
+    if set(value) != set(expected):
+        raise ValueError("attempt timing schema mismatch")
+    timings: dict[str, int] = {}
+    for key in expected:
+        elapsed = value[key]
+        if type(elapsed) is not int or elapsed < 0:
+            raise ValueError("attempt timing schema mismatch")
+        timings[key] = elapsed
+    return timings
+
+
+def _child_full_preflight(
+    staging: Path, attempt_id: str, catalog_sha256: str, parent_timings: Mapping[str, object],
+) -> None:
+    timings = _elapsed_timings(parent_timings, complete=False)
+    child_started_at = time.monotonic_ns()
     catalog = _verify_input_snapshot(staging / "input")
     if catalog["catalog_sha256"] != catalog_sha256:
         raise ValueError("child input catalog identity mismatch")
@@ -1110,6 +1262,7 @@ def _child_full_preflight(staging: Path, attempt_id: str, catalog_sha256: str) -
             "reader_set_digest": reader_set["reader_set_digest"],
             "premium_reader_ids": result["premium_reader_ids"],
         },
+        "timings": {**timings, "child_elapsed_ns": time.monotonic_ns() - child_started_at},
         "result": result,
     }
     _atomic_write(staging / COMPLETE_MARKER, marker)
@@ -1127,12 +1280,14 @@ def _same_owner_log_cover(left: Mapping[str, object], right: Mapping[str, object
     )
 
 
-def _validate_completed_attempt(staging: Path, identity: Mapping[str, object]) -> dict[str, object]:
+def _validate_completed_attempt(
+    staging: Path, identity: Mapping[str, object], expected_parent_timings: Mapping[str, object] | None = None,
+) -> dict[str, object]:
     catalog = _verify_input_snapshot(staging / "input")
     marker = _load_canonical(staging / COMPLETE_MARKER, "child complete marker")
     required = {
         "type", "schema_version", "attempt_id", "input_catalog_sha256", "expected_owner_records",
-        "owner_log", "reader_set", "result",
+        "owner_log", "reader_set", "timings", "result",
     }
     if (
         set(marker) != required
@@ -1145,6 +1300,7 @@ def _validate_completed_attempt(staging: Path, identity: Mapping[str, object]) -
         or not all(type(record) is dict for record in marker["expected_owner_records"])
         or type(marker["result"]) is not dict
         or type(marker["reader_set"]) is not dict
+        or type(marker["timings"]) is not dict
     ):
         raise ValueError("child complete marker identity mismatch")
     expected = tuple(marker["expected_owner_records"])
@@ -1174,9 +1330,15 @@ def _validate_completed_attempt(staging: Path, identity: Mapping[str, object]) -
         or type(reader_set.get("reader_set_digest")) is not str
     ):
         raise ValueError("child complete result mismatch")
+    timings = _elapsed_timings(marker["timings"], complete=True)
+    if expected_parent_timings is not None and {
+        key: timings[key] for key in TIMING_KEYS[:-1]
+    } != _elapsed_timings(expected_parent_timings, complete=False):
+        raise ValueError("child complete timing mismatch")
     return {
         "owner_log_checkpoint": owner_log["checkpoint"],
         "reader_set": reader_set,
+        "timings": timings,
         "result": result,
     }
 
@@ -1237,25 +1399,73 @@ def _wait_for_child(
         time.sleep(0.01)
 
 
-def _archive_timeout(root: Path, attempt_id: str, child_status: int | None) -> Path:
-    paths = _attempt_paths(root, attempt_id)
-    if paths["timed_out"].exists():
-        raise ValueError("timed-out attempt archive already exists")
-    os.rename(paths["staging"], paths["timed_out"])
-    _fsync_directory(paths["timed_out"].parent)
-    receipt = {
-        "type": RECEIPT_SCHEMA,
+def _timeout_state(
+    identity: Mapping[str, object], child_status: int | None, timings: Mapping[str, object],
+) -> dict[str, object]:
+    return {
+        "type": "koru_retained_preflight_timeout_v1",
         "schema_version": 1,
-        "outcome": "timeout",
-        "attempt_id": attempt_id,
-        "attempt_identity": _load_attempt_identity(root, attempt_id),
-        "input_catalog_sha256": _load_attempt_identity(root, attempt_id)["frozen_input_catalog_sha256"],
-        "final_authority": [],
+        "attempt_id": identity["attempt_id"],
+        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
         "child_status": {"exit_code": child_status, "timed_out": True},
         "archive_state": "archived",
         "cleanup_state": "process_group_reaped",
+        "timings": _elapsed_timings(timings, complete=True),
     }
-    _create_new_json(paths["receipt"], receipt)
+
+
+def _validate_timeout_state(state: Mapping[str, object], identity: Mapping[str, object]) -> dict[str, int]:
+    required = {
+        "type", "schema_version", "attempt_id", "input_catalog_sha256", "child_status",
+        "archive_state", "cleanup_state", "timings",
+    }
+    child_status = state.get("child_status")
+    timings = state.get("timings")
+    if (
+        set(state) != required
+        or state.get("type") != "koru_retained_preflight_timeout_v1"
+        or state.get("schema_version") != 1
+        or state.get("attempt_id") != identity.get("attempt_id")
+        or state.get("input_catalog_sha256") != identity.get("frozen_input_catalog_sha256")
+        or type(child_status) is not dict
+        or child_status.get("timed_out") is not True
+        or state.get("archive_state") != "archived"
+        or state.get("cleanup_state") != "process_group_reaped"
+        or type(timings) is not dict
+    ):
+        raise ValueError("timeout state conflict")
+    return _elapsed_timings(timings, complete=True)
+
+
+def _timeout_receipt(identity: Mapping[str, object], state: Mapping[str, object]) -> dict[str, object]:
+    timings = _validate_timeout_state(state, identity)
+    return {
+        "type": RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": "timeout",
+        "attempt_id": identity["attempt_id"],
+        "attempt_identity": dict(identity),
+        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "final_authority": [],
+        "child_status": state["child_status"],
+        "archive_state": state["archive_state"],
+        "cleanup_state": state["cleanup_state"],
+        "timings": timings,
+    }
+
+
+def _archive_timeout(
+    root: Path, attempt_id: str, child_status: int | None, timings: Mapping[str, object],
+) -> Path:
+    paths = _attempt_paths(root, attempt_id)
+    if paths["timed_out"].exists():
+        raise ValueError("timed-out attempt archive already exists")
+    identity = _load_attempt_identity(root, attempt_id)
+    state = _timeout_state(identity, child_status, timings)
+    _atomic_write(paths["staging"] / TIMEOUT_MARKER, state)
+    os.rename(paths["staging"], paths["timed_out"])
+    _fsync_directory(paths["timed_out"].parent)
+    _create_new_json(paths["receipt"], _timeout_receipt(identity, state))
     return paths["receipt"]
 
 
@@ -1278,6 +1488,7 @@ def _success_receipt(root: Path, identity: Mapping[str, object], validated: Mapp
         "attempt_id": attempt_id,
         "attempt_identity": dict(identity),
         "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "timings": validated["timings"],
         "final_authority": [{
             "attempt_container": f"attempts/{attempt_id}",
             "owner_log_checkpoint": validated["owner_log_checkpoint"],
@@ -1301,18 +1512,33 @@ def _validate_receipt(receipt: Mapping[str, object], identity: Mapping[str, obje
         or type(receipt.get("final_authority")) is not list
     ):
         raise ValueError("receipt identity conflict")
+    timings = receipt.get("timings")
     if receipt["outcome"] == "timeout":
         if (
-            set(receipt) != common | {"child_status", "archive_state", "cleanup_state"}
+            set(receipt) != common | {"child_status", "archive_state", "cleanup_state", "timings"}
             or receipt["final_authority"] != []
             or receipt.get("archive_state") != "archived"
             or receipt.get("cleanup_state") != "process_group_reaped"
+            or type(timings) is not dict
         ):
             raise ValueError("timeout receipt conflict")
+        _elapsed_timings(timings, complete=True)
     elif receipt["outcome"] == "success":
         authority = receipt["final_authority"]
-        if set(receipt) != common or type(authority) is not list or len(authority) != 1:
+        if (
+            set(receipt) != common | {"timings"}
+            or type(authority) is not list
+            or len(authority) != 1
+            or type(timings) is not dict
+        ):
             raise ValueError("success receipt conflict")
+        _elapsed_timings(timings, complete=True)
+    elif receipt["outcome"] in {
+        SnapshotCapabilityUnavailable.outcome,
+        SnapshotCatalogMismatch.outcome,
+    }:
+        if set(receipt) != common or receipt["final_authority"] != []:
+            raise ValueError("snapshot failure receipt conflict")
     else:
         raise ValueError("receipt outcome conflict")
 
@@ -1324,6 +1550,10 @@ def _load_receipt(root: Path, attempt_id: str) -> dict[str, Any] | None:
     identity = _load_attempt_identity(root, attempt_id)
     receipt = _load_canonical(path, "attempt receipt")
     _validate_receipt(receipt, identity)
+    if receipt["outcome"] == "timeout":
+        state = _load_canonical(_attempt_paths(root, attempt_id)["timed_out"] / TIMEOUT_MARKER, "timeout state")
+        if receipt != _timeout_receipt(identity, state):
+            raise ValueError("timeout receipt does not bind archived state")
     return receipt
 
 
@@ -1335,8 +1565,12 @@ def recover_attempt(root: Path, attempt_id: str) -> dict[str, object]:
         identity = _load_attempt_identity(root, attempt_id)
         receipt = _load_receipt(root, attempt_id)
         if receipt is not None:
-            if paths["published"].exists() and receipt["outcome"] != "success":
-                raise ValueError("promoted attempt conflicts with non-success receipt")
+            if paths["published"].exists():
+                if receipt["outcome"] != "success":
+                    raise ValueError("promoted attempt conflicts with non-success receipt")
+                validated = _validate_completed_attempt(paths["published"], identity)
+                if not _success_receipt_binds_validated(receipt, root, identity, validated):
+                    raise ValueError("success receipt does not bind promoted authority")
             return receipt
         if not paths["published"].is_dir():
             raise ValueError("attempt has no receipt and no promoted container")
@@ -1399,7 +1633,9 @@ def full_preflight(
     config = _full_mode_config(max_seconds)
     root = _prepare_attempt_root(attempt_root)
     _recover_pending_attempts(root)
+    catalog_started_at = time.monotonic_ns()
     catalog = _build_input_catalog(config)
+    catalog_elapsed_ns = time.monotonic_ns() - catalog_started_at
     catalog_sha256 = cast(str, catalog["catalog_sha256"])
     identity = _attempt_identity(_attempt_preimage(
         config, catalog_sha256, retry_ordinal, parent_attempt_id,
@@ -1410,23 +1646,41 @@ def full_preflight(
     with _attempt_lock(paths["lock"]):
         _reserve_attempt(root, identity)
         paths["staging"].mkdir(parents=True)
-        for name in ("input", "foundation", "market"):
-            (paths["staging"] / name).mkdir()
-        _freeze_input_snapshot(paths["staging"] / "input", catalog)
-        started_at = time.monotonic()
+        clone_started_at = time.monotonic_ns()
+        try:
+            _probe_ficlone(paths["staging"])
+            _freeze_input_snapshot(paths["staging"] / "input", catalog)
+            clone_elapsed_ns = time.monotonic_ns() - clone_started_at
+            verify_started_at = time.monotonic_ns()
+            _verify_input_snapshot(paths["staging"] / "input")
+            verify_elapsed_ns = time.monotonic_ns() - verify_started_at
+        except (SnapshotFailure, ValueError) as error:
+            outcome = error.outcome if isinstance(error, SnapshotFailure) else SnapshotCatalogMismatch.outcome
+            shutil.rmtree(paths["staging"])
+            receipt = _snapshot_failure_receipt(identity, outcome)
+            _create_new_json(paths["receipt"], receipt)
+            raise FullPreflightSnapshotFailed(outcome, paths["receipt"]) from error
+        parent_timings = {
+            "catalog_elapsed_ns": catalog_elapsed_ns,
+            "clone_elapsed_ns": clone_elapsed_ns,
+            "verify_elapsed_ns": verify_elapsed_ns,
+        }
+        child_started_at = time.monotonic_ns()
         command = _child_command(paths["staging"], attempt_id, catalog_sha256)
+        command.extend(["--_parent-timings", json.dumps(parent_timings, sort_keys=True)])
         if _child_test_mode is not None:
             command.extend(["--_test-mode", _child_test_mode])
         process = subprocess.Popen(
             command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
         )
-        timed_out, child_status = _wait_for_child(process, max_seconds, started_at)
+        timed_out, child_status = _wait_for_child(process, max_seconds, time.monotonic())
         if timed_out:
-            receipt_path = _archive_timeout(root, attempt_id, child_status)
+            timings = {**parent_timings, "child_elapsed_ns": time.monotonic_ns() - child_started_at}
+            receipt_path = _archive_timeout(root, attempt_id, child_status, timings)
             raise FullPreflightDeadlineExceeded(max_seconds, receipt_path)
         if child_status != 0:
             raise RuntimeError(f"full preflight child failed with exit status {child_status}")
-        validated = _validate_completed_attempt(paths["staging"], identity)
+        validated = _validate_completed_attempt(paths["staging"], identity, parent_timings)
         _promote_attempt_container(root, attempt_id)
         receipt = _success_receipt(root, identity, validated)
         _create_new_json(paths["receipt"], receipt)
@@ -1447,16 +1701,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--staging", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--attempt-id", help=argparse.SUPPRESS)
     parser.add_argument("--input-catalog-sha256", help=argparse.SUPPRESS)
+    parser.add_argument("--_parent-timings", help=argparse.SUPPRESS)
     parser.add_argument("--_test-mode", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if args._child:
-        if not (args.staging and args.attempt_id and args.input_catalog_sha256):
-            parser.error("child requires staging, attempt identity, and input catalog identity")
+        if not (args.staging and args.attempt_id and args.input_catalog_sha256 and args._parent_timings):
+            parser.error("child requires staging, attempt identity, catalog identity, and timings")
+        try:
+            parent_timings = json.loads(args._parent_timings)
+            if type(parent_timings) is not dict:
+                raise ValueError("parent timings must be an object")
+            _elapsed_timings(parent_timings, complete=False)
+        except ValueError as error:
+            parser.error(str(error))
         with deny_network():
             if args._test_mode == _TIMEOUT_TEST_MODE:
                 _child_timeout_test(args.staging)
             elif args._test_mode is None:
-                _child_full_preflight(args.staging, args.attempt_id, args.input_catalog_sha256)
+                _child_full_preflight(args.staging, args.attempt_id, args.input_catalog_sha256, parent_timings)
             else:
                 parser.error("unsupported child test mode")
         return 0
@@ -1473,7 +1735,7 @@ def main(argv: list[str] | None = None) -> int:
                     attempt_root, args.max_seconds, retry_ordinal=args.retry_ordinal,
                     parent_attempt_id=args.parent_attempt_id,
                 )
-        except FullPreflightDeadlineExceeded as error:
+        except (FullPreflightDeadlineExceeded, FullPreflightSnapshotFailed) as error:
             print(f"{error}; no successful summary written", file=sys.stderr)
             return 1
         except ValueError as error:

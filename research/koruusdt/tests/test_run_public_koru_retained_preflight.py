@@ -73,9 +73,19 @@ def _fake_child(monkeypatch: pytest.MonkeyPatch, source: str) -> None:
     )
 
 
+def _copying_ioctl(destination_fd: int, source_fd: int) -> None:
+    os.lseek(source_fd, 0, os.SEEK_SET)
+    os.ftruncate(destination_fd, 0)
+    while chunk := os.read(source_fd, 1024 * 1024):
+        os.write(destination_fd, chunk)
+    os.lseek(source_fd, 0, os.SEEK_SET)
+    os.lseek(destination_fd, 0, os.SEEK_SET)
+
+
 def _small_full_inputs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, with_file: bool = False,
 ) -> dict[str, object]:
+    monkeypatch.setattr(runner, "_ficlone_ioctl", _copying_ioctl)
     config = runner._full_mode_config(1)
     if not with_file:
         catalog = _tiny_catalog(config)
@@ -359,6 +369,147 @@ def test_full_rejects_invalid_max_seconds(capsys: pytest.CaptureFixture[str]) ->
     assert "must be an integer from 1 to 300" in capsys.readouterr().err
 
 
+def test_ioctl_seam_snapshot_is_distinct_read_only_and_survives_source_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    catalog = _small_full_inputs(tmp_path, monkeypatch, with_file=True)
+    staging = tmp_path / "staging"
+    staging.mkdir()
+
+    runner._probe_ficlone(staging)
+    runner._freeze_input_snapshot(staging / "input", catalog)
+    source = tmp_path / "source-data" / "data" / "fixture.txt"
+    destination = staging / "input" / "data" / "fixture.txt"
+    source.write_text("changed", encoding="utf-8")
+
+    assert destination.read_text(encoding="utf-8") == "frozen"
+    assert source.stat().st_ino != destination.stat().st_ino
+    assert destination.stat().st_mode & 0o777 == 0o444
+
+
+def test_actual_ficlone_snapshot_survives_source_mutation_when_supported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    data = tmp_path / "source-data" / "data"
+    data.mkdir(parents=True)
+    source = data / "fixture.txt"
+    source.write_text("frozen", encoding="utf-8")
+    monkeypatch.setattr(runner, "DATA", data)
+    config = runner._full_mode_config(1)
+    catalog = _tiny_catalog(config, [{
+        "path": "data/fixture.txt", "sha256": runner._hash(source.read_bytes()), "size_bytes": 6,
+    }])
+    staging = tmp_path / "staging"
+    staging.mkdir()
+
+    try:
+        runner._probe_ficlone(staging)
+        runner._freeze_input_snapshot(staging / "input", catalog)
+    except runner.SnapshotCapabilityUnavailable:
+        pytest.skip("filesystem does not support FICLONE")
+    source.write_text("changed", encoding="utf-8")
+
+    assert (staging / "input" / "data" / "fixture.txt").read_text(encoding="utf-8") == "frozen"
+
+
+def test_ficlone_probe_fails_closed_when_ioctl_is_unsupported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unsupported(_destination_fd: int, _source_fd: int) -> None:
+        raise OSError(95, "Operation not supported")
+
+    monkeypatch.setattr(runner, "_ficlone_ioctl", unsupported)
+    staging = tmp_path / "staging"
+    staging.mkdir()
+
+    with pytest.raises(runner.SnapshotCapabilityUnavailable):
+        runner._probe_ficlone(staging)
+
+
+def test_ficlone_cross_device_fails_closed(tmp_path: Path) -> None:
+    destination_root = Path("/dev/shm")
+    if not destination_root.is_dir() or destination_root.stat().st_dev == tmp_path.stat().st_dev:
+        pytest.skip("no cross-device writable tmpfs")
+    source = tmp_path / "source"
+    source.write_text("frozen", encoding="utf-8")
+    destination = destination_root / f"koru-ficlone-{os.getpid()}-{time.monotonic_ns()}"
+
+    try:
+        with pytest.raises(runner.SnapshotCapabilityUnavailable, match="different devices"):
+            runner._clone_held_file(source, destination, runner._hash(source.read_bytes()), 6)
+    finally:
+        destination.unlink(missing_ok=True)
+
+
+def test_input_clone_mismatch_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    catalog = _small_full_inputs(tmp_path, monkeypatch, with_file=True)
+    calls = 0
+
+    def probe_only_copy(destination_fd: int, source_fd: int) -> None:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            _copying_ioctl(destination_fd, source_fd)
+
+    monkeypatch.setattr(runner, "_ficlone_ioctl", probe_only_copy)
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    runner._probe_ficlone(staging)
+
+    with pytest.raises(runner.SnapshotCatalogMismatch, match="does not match catalog"):
+        runner._freeze_input_snapshot(staging / "input", catalog)
+
+
+def test_snapshot_failure_receipt_is_exact_and_never_starts_child(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _small_full_inputs(tmp_path, monkeypatch)
+
+    def unsupported(_destination_fd: int, _source_fd: int) -> None:
+        raise OSError(95, "Operation not supported")
+
+    def child_forbidden(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("child must not start after snapshot failure")
+
+    monkeypatch.setattr(runner, "_ficlone_ioctl", unsupported)
+    monkeypatch.setattr(runner.subprocess, "Popen", child_forbidden)
+    root = tmp_path / "attempt-root"
+
+    with pytest.raises(runner.FullPreflightSnapshotFailed) as raised:
+        runner.full_preflight(root, 1)
+
+    attempt_id = raised.value.receipt_path.stem
+    identity = runner._load_attempt_identity(root, attempt_id)
+    receipt = runner._load_receipt(root, attempt_id)
+    assert receipt == runner._snapshot_failure_receipt(identity, "snapshot_capability_unavailable")
+    assert not (root / ".staging" / attempt_id).exists()
+    assert not any(path.name in {"foundation", "market"} for path in root.rglob("*"))
+
+
+def test_catalog_mismatch_receipt_is_exact_and_never_starts_child(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _small_full_inputs(tmp_path, monkeypatch, with_file=True)
+    (tmp_path / "source-data" / "data" / "fixture.txt").write_text("changed", encoding="utf-8")
+    monkeypatch.setattr(
+        runner.subprocess,
+        "Popen",
+        lambda *_args, **_kwargs: pytest.fail("child must not start after catalog mismatch"),
+    )
+    root = tmp_path / "attempt-root"
+
+    with pytest.raises(runner.FullPreflightSnapshotFailed) as raised:
+        runner.full_preflight(root, 1)
+
+    attempt_id = raised.value.receipt_path.stem
+    identity = runner._load_attempt_identity(root, attempt_id)
+    assert runner._load_receipt(root, attempt_id) == runner._snapshot_failure_receipt(
+        identity, "snapshot_catalog_mismatch",
+    )
+    assert not (root / ".staging" / attempt_id).exists()
+    assert not any(path.name in {"foundation", "market"} for path in root.rglob("*"))
+
+
 def test_actual_child_timeout_archives_only_forensic_foundation_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -381,6 +532,8 @@ def test_actual_child_timeout_archives_only_forensic_foundation_state(
     assert receipt["child_status"]["timed_out"] is True
     assert receipt["archive_state"] == "archived"
     assert receipt["cleanup_state"] == "process_group_reaped"
+    assert set(receipt["timings"]) == set(runner.TIMING_KEYS)
+    assert runner._load_canonical(archive / runner.TIMEOUT_MARKER, "timeout state")["timings"] == receipt["timings"]
     assert runner._verify_input_snapshot(archive / "input") == catalog
 
     envelope = runner.ArtifactEnvelope.create(
@@ -420,6 +573,7 @@ root, pids = Path(sys.argv[1]), Path(sys.argv[2])
 signal.signal(signal.SIGTERM, lambda *_: None)
 child = subprocess.Popen([sys.executable, '-c', 'import signal,time; signal.signal(signal.SIGTERM, lambda *_: None); time.sleep(30)'])
 pids.write_text(f'{os.getpid()} {child.pid}')
+(root / 'foundation').mkdir()
 (root / 'foundation' / 'created').write_text('state')
 time.sleep(30)
 """.replace("sys.argv[2]", repr(str(pids))))
@@ -508,6 +662,12 @@ def _promoted_unreceipted_fixture(tmp_path: Path) -> tuple[Path, dict[str, objec
             "reader_set_digest": reader_record["reader_set_digest"],
             "premium_reader_ids": [binding.premium_id for binding in readers.bindings],
         },
+        "timings": {
+            "catalog_elapsed_ns": 1,
+            "clone_elapsed_ns": 2,
+            "verify_elapsed_ns": 3,
+            "child_elapsed_ns": 4,
+        },
         "result": {
             "mode": "full",
             "network_performed": False,
@@ -533,6 +693,19 @@ def test_promoted_but_unreceipted_attempt_recovers_exactly_one_receipt(tmp_path:
     assert runner.read_success_receipt(root, attempt_id) == first
 
 
+def test_recovery_rejects_receipt_when_complete_timings_change(tmp_path: Path) -> None:
+    root, _identity, attempt_id = _promoted_unreceipted_fixture(tmp_path)
+    receipt = runner.recover_attempt(root, attempt_id)
+    marker_path = root / "attempts" / attempt_id / runner.COMPLETE_MARKER
+    marker = runner._load_canonical(marker_path, "complete marker")
+    marker["timings"]["child_elapsed_ns"] += 1
+    runner._atomic_write(marker_path, marker)
+
+    with pytest.raises(ValueError, match="does not bind promoted authority"):
+        runner.recover_attempt(root, attempt_id)
+    assert receipt["timings"]["child_elapsed_ns"] == 4
+
+
 def test_conflicting_receipt_for_promoted_attempt_fails_closed(tmp_path: Path) -> None:
     root, identity, attempt_id = _promoted_unreceipted_fixture(tmp_path)
     conflict = {
@@ -546,7 +719,18 @@ def test_conflicting_receipt_for_promoted_attempt_fails_closed(tmp_path: Path) -
         "child_status": {"exit_code": -9, "timed_out": True},
         "archive_state": "archived",
         "cleanup_state": "process_group_reaped",
+        "timings": {
+            "catalog_elapsed_ns": 1,
+            "clone_elapsed_ns": 2,
+            "verify_elapsed_ns": 3,
+            "child_elapsed_ns": 4,
+        },
     }
+    timed_out = runner._attempt_paths(root, attempt_id)["timed_out"]
+    timed_out.mkdir()
+    runner._atomic_write(timed_out / runner.TIMEOUT_MARKER, runner._timeout_state(
+        identity, -9, conflict["timings"],
+    ))
     runner._create_new_json(runner._attempt_paths(root, attempt_id)["receipt"], conflict)
 
     with pytest.raises(ValueError, match="promoted attempt conflicts"):
