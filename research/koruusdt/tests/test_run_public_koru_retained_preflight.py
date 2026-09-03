@@ -4,12 +4,14 @@ import ast
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import socket
 import sys
 import time
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 from crypto_quant_foundation import FoundationFailure
@@ -49,6 +51,46 @@ def _tree_snapshot(root: Path) -> tuple[bool, tuple[tuple[str, bytes | None], ..
         (path.relative_to(root).as_posix(), path.read_bytes() if path.is_file() else None)
         for path in sorted(root.rglob("*"))
     )
+
+
+def _tiny_catalog(config: dict[str, object], files: list[dict[str, object]] | None = None) -> dict[str, object]:
+    catalog: dict[str, object] = {
+        "type": runner.INPUT_CATALOG_SCHEMA,
+        "schema_version": 1,
+        "full_mode_config": config,
+        "files": files or [],
+        "catalog_sha256": "",
+    }
+    catalog["catalog_sha256"] = runner._catalog_digest(catalog)
+    return catalog
+
+
+def _fake_child(monkeypatch: pytest.MonkeyPatch, source: str) -> None:
+    monkeypatch.setattr(
+        runner,
+        "_child_command",
+        lambda staging, _attempt_id, _catalog_sha256: [sys.executable, "-c", source, str(staging)],
+    )
+
+
+def _small_full_inputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, with_file: bool = False,
+) -> dict[str, object]:
+    config = runner._full_mode_config(1)
+    if not with_file:
+        catalog = _tiny_catalog(config)
+        monkeypatch.setattr(runner, "_build_input_catalog", lambda _config: catalog)
+        return catalog
+    data = tmp_path / "source-data" / "data"
+    data.mkdir(parents=True)
+    fixture = data / "fixture.txt"
+    fixture.write_text("frozen", encoding="utf-8")
+    catalog = _tiny_catalog(config, [{
+        "path": "data/fixture.txt", "sha256": runner._hash(fixture.read_bytes()), "size_bytes": len(fixture.read_bytes()),
+    }])
+    monkeypatch.setattr(runner, "DATA", data)
+    monkeypatch.setattr(runner, "_build_input_catalog", lambda _config: catalog)
+    return catalog
 
 
 @pytest.mark.parametrize("member_key, _expected_hash", runner.APPROVED_MEMBER_HASHES)
@@ -223,7 +265,7 @@ def _owner_publication_inputs() -> tuple[object, object]:
     )
 
 
-def _full_owner_records() -> tuple[object, object, object, tuple[dict[str, object], ...]]:
+def _full_owner_records() -> tuple[Any, Any, Any, tuple[dict[str, object], ...]]:
     source, readers = _owner_publication_inputs()
     economics = SimpleNamespace(
         authority_digest=_digest(51),
@@ -317,22 +359,217 @@ def test_full_rejects_invalid_max_seconds(capsys: pytest.CaptureFixture[str]) ->
     assert "must be an integer from 1 to 300" in capsys.readouterr().err
 
 
-def test_full_deadline_fails_closed_without_a_success_summary(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path,
+def test_actual_child_timeout_archives_only_forensic_foundation_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(runner, "smoke", lambda _root=None: {})
+    catalog = _small_full_inputs(tmp_path, monkeypatch)
 
-    def block_before_full_data() -> object:
-        time.sleep(1.1)
-        raise AssertionError("deadline did not interrupt before full retained data")
+    with pytest.raises(runner.FullPreflightDeadlineExceeded) as raised:
+        runner.full_preflight(
+            tmp_path / "attempt-root", 1, _child_test_mode=runner._TIMEOUT_TEST_MODE,
+        )
 
-    monkeypatch.setattr(runner, "build_source", block_before_full_data)
+    root = tmp_path / "attempt-root"
+    attempt_id = next((root / "timed-out").iterdir()).name
+    archive = root / "timed-out" / attempt_id
+    receipt = runner._load_receipt(root, attempt_id)
+    assert receipt is not None
+    assert receipt["attempt_id"] == attempt_id
+    assert receipt["attempt_identity"]["attempt_id"] == attempt_id
+    assert receipt["input_catalog_sha256"] == catalog["catalog_sha256"]
+    assert receipt["final_authority"] == []
+    assert receipt["child_status"]["timed_out"] is True
+    assert receipt["archive_state"] == "archived"
+    assert receipt["cleanup_state"] == "process_group_reaped"
+    assert runner._verify_input_snapshot(archive / "input") == catalog
 
-    assert runner.main(["--full", "--max-seconds", "1", "--foundation-root", str(tmp_path / "foundation")]) == 1
-    captured = capsys.readouterr()
-    assert captured.out == ""
-    assert "full preflight deadline exceeded after 1 seconds" in captured.err
-    assert not (tmp_path / "foundation").exists()
+    envelope = runner.ArtifactEnvelope.create(
+        "strategy_definition", 1, {"strategy_id": "timeout-integration"},
+    )
+    ref = runner.ArtifactRef.from_envelope(envelope)
+    foundation = runner.LocalFoundation(archive / "foundation")
+    assert foundation.read(ref=ref).envelope == envelope
+    record = runner._artifact_publication_record(envelope, ref)
+    entries = foundation.entries(runner.OWNER_LOG)
+    assert len(entries) == 1
+    assert entries[0].event_id == runner._owner_record_event_id(record)
+    assert entries[0].payload == runner.canonical_bytes(record)
+    assert runner._load_canonical(archive / "timeout-test-ready.json", "timeout test") == {
+        "type": "koru_retained_preflight_timeout_test_v1",
+        "artifact_ref": json.loads(runner.canonical_bytes(ref)),
+        "envelope": json.loads(runner.canonical_bytes(envelope)),
+        "owner_record": json.loads(runner.canonical_bytes(record)),
+    }
+    assert not (archive / runner.COMPLETE_MARKER).exists()
+    assert not (root / ".staging" / attempt_id).exists()
+    assert not (root / "attempts" / attempt_id).exists()
+    with pytest.raises(ValueError, match="no consumable success receipt"):
+        runner.read_success_receipt(root, attempt_id)
+    assert raised.value.receipt_path == root / "receipts" / f"{attempt_id}.json"
+
+
+def test_timeout_kills_and_reaps_term_resistant_process_group(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _small_full_inputs(tmp_path, monkeypatch)
+    pids = tmp_path / "pids"
+    _fake_child(monkeypatch, """
+from pathlib import Path
+import signal, subprocess, sys, time, os
+root, pids = Path(sys.argv[1]), Path(sys.argv[2])
+signal.signal(signal.SIGTERM, lambda *_: None)
+child = subprocess.Popen([sys.executable, '-c', 'import signal,time; signal.signal(signal.SIGTERM, lambda *_: None); time.sleep(30)'])
+pids.write_text(f'{os.getpid()} {child.pid}')
+(root / 'foundation' / 'created').write_text('state')
+time.sleep(30)
+""".replace("sys.argv[2]", repr(str(pids))))
+
+    with pytest.raises(runner.FullPreflightDeadlineExceeded):
+        runner.full_preflight(tmp_path / "attempt-root", 1)
+
+    parent_pid, child_pid = (int(value) for value in pids.read_text().split())
+    for pid in (parent_pid, child_pid):
+        deadline = time.monotonic() + 1
+        while True:
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                break
+            if time.monotonic() >= deadline:
+                pytest.fail(f"process {pid} survived timeout cleanup")
+            time.sleep(0.02)
+
+
+def test_input_catalog_mutation_rejects_child_success_before_promotion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _small_full_inputs(tmp_path, monkeypatch, with_file=True)
+    _fake_child(monkeypatch, """
+from pathlib import Path
+import sys
+root = Path(sys.argv[1])
+path = root / 'input' / 'data' / 'fixture.txt'
+path.chmod(0o644)
+path.write_text('mutated')
+""")
+
+    with pytest.raises(ValueError, match="frozen input catalog mismatch"):
+        runner.full_preflight(tmp_path / "attempt-root", 1)
+
+    root = tmp_path / "attempt-root"
+    attempt_id = next((root / ".staging").iterdir()).name
+    assert not (root / "attempts" / attempt_id).exists()
+    assert not (root / "receipts" / f"{attempt_id}.json").exists()
+
+
+def test_duplicate_attempt_id_is_locked_and_retry_id_is_new(tmp_path: Path) -> None:
+    root = runner._prepare_attempt_root(tmp_path / "attempt-root")
+    config = runner._full_mode_config(1)
+    catalog = _tiny_catalog(config)
+    first = runner._attempt_identity(runner._attempt_preimage(config, catalog["catalog_sha256"], 0, None))
+    retry = runner._attempt_identity(runner._attempt_preimage(
+        config, catalog["catalog_sha256"], 1, first["attempt_id"],
+    ))
+    assert first["attempt_id"] != retry["attempt_id"]
+    paths = runner._attempt_paths(root, first["attempt_id"])
+    with runner._attempt_lock(paths["lock"]):
+        runner._reserve_attempt(root, first)
+        with pytest.raises(FileExistsError):
+            runner._reserve_attempt(root, first)
+
+
+def _promoted_unreceipted_fixture(tmp_path: Path) -> tuple[Path, dict[str, object], str]:
+    root = runner._prepare_attempt_root(tmp_path / "attempt-root")
+    config = runner._full_mode_config(1)
+    catalog = _tiny_catalog(config)
+    identity = runner._attempt_identity(runner._attempt_preimage(config, catalog["catalog_sha256"], 0, None))
+    attempt_id = identity["attempt_id"]
+    assert type(attempt_id) is str
+    runner._reserve_attempt(root, identity)
+    published = runner._attempt_paths(root, attempt_id)["published"]
+    (published / "input").mkdir(parents=True)
+    (published / "market").mkdir()
+    runner._atomic_write(published / "input" / "catalog.json", catalog)
+    _source, _economics, readers, expected_values = _full_owner_records()
+    expected = tuple(json.loads(runner.canonical_bytes(record)) for record in expected_values)
+    foundation = runner.LocalFoundation(published / "foundation", clock=lambda: "2020-01-02T03:04:05.000000Z")
+    for record in expected:
+        runner._append_owner_record(foundation, record)
+    owner_log = runner._checkpoint_summary(foundation, expected)
+    reader_record = expected[-1]
+    marker = {
+        "type": "koru_retained_preflight_complete_v1",
+        "schema_version": 1,
+        "attempt_id": attempt_id,
+        "input_catalog_sha256": catalog["catalog_sha256"],
+        "expected_owner_records": list(expected),
+        "owner_log": owner_log,
+        "reader_set": {
+            "reader_set_digest": reader_record["reader_set_digest"],
+            "premium_reader_ids": [binding.premium_id for binding in readers.bindings],
+        },
+        "result": {
+            "mode": "full",
+            "network_performed": False,
+            "holdout_touched": False,
+            "premium_reader_ids": [binding.premium_id for binding in readers.bindings],
+            "owner_log": owner_log,
+            "stopped_before": "Experiment_Holdout_and_Backtest",
+        },
+    }
+    runner._atomic_write(published / runner.COMPLETE_MARKER, marker)
+    return root, identity, attempt_id
+
+
+def test_promoted_but_unreceipted_attempt_recovers_exactly_one_receipt(tmp_path: Path) -> None:
+    root, _identity, attempt_id = _promoted_unreceipted_fixture(tmp_path)
+
+    first = runner.recover_attempt(root, attempt_id)
+    second = runner.recover_attempt(root, attempt_id)
+
+    assert first == second
+    assert first["outcome"] == "success"
+    assert len(list((root / "receipts").iterdir())) == 1
+    assert runner.read_success_receipt(root, attempt_id) == first
+
+
+def test_conflicting_receipt_for_promoted_attempt_fails_closed(tmp_path: Path) -> None:
+    root, identity, attempt_id = _promoted_unreceipted_fixture(tmp_path)
+    conflict = {
+        "type": runner.RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": "timeout",
+        "attempt_id": attempt_id,
+        "attempt_identity": identity,
+        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "final_authority": [],
+        "child_status": {"exit_code": -9, "timed_out": True},
+        "archive_state": "archived",
+        "cleanup_state": "process_group_reaped",
+    }
+    runner._create_new_json(runner._attempt_paths(root, attempt_id)["receipt"], conflict)
+
+    with pytest.raises(ValueError, match="promoted attempt conflicts"):
+        runner.recover_attempt(root, attempt_id)
+
+
+def test_promote_renames_one_container_and_fsyncs_parent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = runner._prepare_attempt_root(tmp_path / "attempt-root")
+    attempt_id = "attempt-fixture"
+    paths = runner._attempt_paths(root, attempt_id)
+    (paths["staging"] / "foundation").mkdir(parents=True)
+    (paths["staging"] / "foundation" / "state").write_text("state")
+    synced: list[Path] = []
+    monkeypatch.setattr(runner, "_fsync_directory", lambda path: synced.append(path))
+
+    promoted = runner._promote_attempt_container(root, attempt_id)
+
+    assert promoted == paths["published"]
+    assert (promoted / "foundation" / "state").read_text() == "state"
+    assert not paths["staging"].exists()
+    assert synced == [root / "attempts"]
 
 
 def test_pi_lens_ignores_only_the_byte_exact_vendor_html() -> None:

@@ -127,26 +127,29 @@ normalizing it.
 
 ```bash
 uv run python research/koruusdt/run_public_koru_retained_preflight.py --smoke
-timeout 300 uv run python research/koruusdt/run_public_koru_retained_preflight.py --full --max-seconds 300
+uv run python research/koruusdt/run_public_koru_retained_preflight.py \
+  --full --attempt-root .koru-retained-preflight-attempts --max-seconds 300
+# A retry is a new retained-input replay, never a SourceProjection resume:
+uv run python research/koruusdt/run_public_koru_retained_preflight.py \
+  --full --attempt-root .koru-retained-preflight-attempts --max-seconds 300 \
+  --retry-ordinal 1 --parent-attempt-id <timed-out-attempt-id>
 ```
 
 `--smoke` hash-checks the authority and retained manifest interval, then stops
 before economics without instantiating Foundation. With `--foundation-root`, it
 leaves an absent path absent or accepts only an existing empty directory; it
-rejects any Foundation state without mutation. `--full` alone initializes
-Foundation and is the explicit offline source/economics/four-reader preflight;
-it does not run an Experiment, Backtest, Holdout read, or network operation. It
-writes each authority/recipe envelope to Foundation CAS at
-`<foundation-root>/artifacts/sha256/<digest-prefix>/<digest>` and reads it back
-before appending its canonical publication record to the designated
-`research.artifacts.v1` owner log. CAS storage alone is not published evidence.
-The same owner log records SourceProjection identity/provenance and the final
-reader-set summary; the full JSON result reports artifact refs plus the log
-checkpoint and entry refs. Pass `--foundation-root <empty-directory>` to retain
-those artifacts and records after the process exits. Full mode has a fail-closed
-process-internal `--max-seconds` deadline (default and maximum `300`); retain the
-external `timeout 300` wrapper shown above. Smoke does not consume that deadline.
-The full command is documented here but has not been run.
+rejects any Foundation state without mutation. `--full` requires an
+`--attempt-root`. The parent freezes a complete read-only retained-input catalog,
+starts the replay child in its own process group, and enforces the monotonic
+1–300 second cap (300 by default and maximum). Foundation and Market Bundle data
+live only in `.staging/<attempt-id>/{input,foundation,market}` until the parent
+independently validates the complete marker and owner-log exact cover. It then
+renames that one container to `attempts/<attempt-id>` and writes the success
+receipt in `receipts/`. A timeout kills and reaps the process group, moves the
+container to `timed-out/`, and writes a receipt with `final_authority: []`.
+Consumers must use a success receipt; staging and timed-out artifacts are never
+authority. Full mode does not run an Experiment, Backtest, Holdout read, or
+network operation. The full command is documented here but has not been run.
 
 ## Scope notes
 

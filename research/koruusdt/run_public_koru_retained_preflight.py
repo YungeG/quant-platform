@@ -10,19 +10,21 @@ and four premium readers; it never starts an Experiment or Backtest.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
+import os
 import signal
 import socket
+import subprocess
 import sys
-import tempfile
-import threading
+import time
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any, NoReturn, cast
 from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
@@ -43,6 +45,12 @@ AGG_ACQUIRED_AT = "2026-08-26T06:50:03Z"
 PRICE_ACQUIRED_AT = "2026-08-26T09:46:54Z"
 DEFAULT_FULL_MAX_SECONDS = 300
 MAX_FULL_SECONDS = 300
+ATTEMPT_SCHEMA = "koru_retained_preflight_attempt_v1"
+INPUT_CATALOG_SCHEMA = "koru_retained_preflight_input_catalog_v1"
+RECEIPT_SCHEMA = "koru_retained_preflight_receipt_v1"
+COMPLETE_MARKER = "complete.json"
+TERMINATE_GRACE_SECONDS = 1.0
+_TIMEOUT_TEST_MODE = "foundation-timeout-v1"
 
 for package in (
     "trading-domain",
@@ -53,7 +61,7 @@ for package in (
 ):
     sys.path.insert(0, str(BACKTEST / "packages" / package / "src"))
 
-from crypto_quant_bundle_builder import (  # noqa: E402
+from crypto_quant_bundle_builder import (
     APPROVED_MEMBER_HASHES,
     BINANCE_USDM_KORU_AGGREGATE_TRADE_AVAILABILITY_AUTHORITY_V1,
     BinanceUsdmKoruAggregateTradeBoundaryIndexRequestV1,
@@ -66,20 +74,21 @@ from crypto_quant_bundle_builder import (  # noqa: E402
     BinanceUsdmKoruRetainedAggregateTradesAuthorityV1,
     BinanceUsdmKoruRetainedAggregateTradesPageV1,
     BinanceUsdmKoruRetainedPriceBarsAuthorityV1,
+    BinanceUsdmKoruTradifiSourceProjectionRequestV2,
+    KoruDirectionalTargetRecipeV1,
     KoruMarkIndexPremiumParametersV1,
     KoruPremiumReaderSetBuildRequestV1,
     KoruTradifiEconomicsBundleRequestV3,
     KoruTradifiEconomicsTermsV3,
     KoruTradifiSourceProjectionContentIdentityV2,
-    KoruDirectionalTargetRecipeV1,
     RawSourceMember,
     build_binance_usdm_koru_aggregate_trade_boundary_index_v1,
+    build_binance_usdm_koru_price_bars_retained_observations_evidence_v1,
     build_binance_usdm_koru_tradifi_source_projection_v2,
     build_koru_premium_reader_set_v1,
     build_koru_premium_recipe_authority_v1,
-    canonical_koru_premium_payload_v1,
     build_koru_tradifi_calendar_unit_authority_v1,
-    build_binance_usdm_koru_price_bars_retained_observations_evidence_v1,
+    canonical_koru_premium_payload_v1,
     capture_binance_usdm_koru_aggregate_trades_from_retained_rest_v1,
     capture_binance_usdm_koru_aggregate_trades_source_bounded_v1,
     capture_binance_usdm_koru_funding_rate_history_source_bounded_v1,
@@ -89,9 +98,8 @@ from crypto_quant_bundle_builder import (  # noqa: E402
     normalize_binance_usdm_koru_price_bars_source_bounded_v1,
     publish_koru_tradifi_economics_bundle_v3,
     verify_koru_tradifi_calendar_unit_authority_v1,
-    BinanceUsdmKoruTradifiSourceProjectionRequestV2,
 )
-from crypto_quant_domain import (  # noqa: E402
+from crypto_quant_domain import (
     ArtifactEnvelope,
     ArtifactReadResult,
     ArtifactRef,
@@ -102,7 +110,7 @@ from crypto_quant_domain import (  # noqa: E402
     canonical_bytes,
     canonical_sha256,
 )
-from crypto_quant_foundation import LocalFoundation  # noqa: E402
+from crypto_quant_foundation import LocalFoundation
 
 INSTRUMENT = InstrumentId(VenueId("binance_usdm"), "koru-usdt-tradifi-perpetual")
 
@@ -135,7 +143,7 @@ def _self_hash(value: dict[str, Any], path: Path) -> None:
 
 
 def _utc_ns(value: str) -> int:
-    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    parsed = datetime.fromisoformat(value)
     if parsed.tzinfo is None or parsed.utcoffset() != UTC.utcoffset(parsed):
         raise ValueError(f"not UTC: {value}")
     delta = parsed - datetime(1970, 1, 1, tzinfo=UTC)
@@ -155,39 +163,21 @@ def _network_denied(*_args: object, **_kwargs: object) -> NoReturn:
 
 
 class FullPreflightDeadlineExceeded(TimeoutError):
-    """The process-local full-preflight deadline elapsed."""
+    """The parent watchdog archived a child that exceeded its deadline."""
 
-    def __init__(self, max_seconds: int) -> None:
+    def __init__(self, max_seconds: int, receipt_path: Path) -> None:
         self.max_seconds = max_seconds
-        super().__init__(f"full preflight deadline exceeded after {max_seconds} seconds")
+        self.receipt_path = receipt_path
+        super().__init__(
+            f"full preflight deadline exceeded after {max_seconds} seconds; "
+            f"timeout receipt: {receipt_path}"
+        )
 
 
 def _validate_full_max_seconds(max_seconds: int) -> int:
     if type(max_seconds) is not int or not 1 <= max_seconds <= MAX_FULL_SECONDS:
         raise ValueError(f"full --max-seconds must be an integer from 1 to {MAX_FULL_SECONDS}")
     return max_seconds
-
-
-@contextmanager
-def full_deadline(max_seconds: int) -> Iterator[None]:
-    """Interrupt full preflight in-process; callers must still use `timeout 300`."""
-    max_seconds = _validate_full_max_seconds(max_seconds)
-    if threading.current_thread() is not threading.main_thread():
-        raise RuntimeError("full preflight deadline requires the process main thread")
-    if not hasattr(signal, "SIGALRM") or not hasattr(signal, "setitimer"):
-        raise RuntimeError("full preflight deadline is unavailable on this platform")
-
-    def expired(_signum: int, _frame: object) -> NoReturn:
-        raise FullPreflightDeadlineExceeded(max_seconds)
-
-    previous_handler = signal.getsignal(signal.SIGALRM)
-    signal.signal(signal.SIGALRM, expired)
-    previous_timer = signal.setitimer(signal.ITIMER_REAL, float(max_seconds))
-    try:
-        yield
-    finally:
-        signal.setitimer(signal.ITIMER_REAL, *previous_timer)
-        signal.signal(signal.SIGALRM, previous_handler)
 
 
 @contextmanager
@@ -815,68 +805,682 @@ def _expected_owner_records(
     )
 
 
-def full_preflight(
-    foundation_root: Path | None = None, max_seconds: int = DEFAULT_FULL_MAX_SECONDS,
+def _full_mode_config(max_seconds: int) -> dict[str, object]:
+    return {
+        "type": "koru_retained_preflight_full_mode_config_v1",
+        "schema_version": 1,
+        "max_seconds": _validate_full_max_seconds(max_seconds),
+        "hard_cap_seconds": MAX_FULL_SECONDS,
+        "owner_log": OWNER_LOG,
+        "source_projection_resume": "forbidden_replay_retained_input",
+    }
+
+
+def _input_relative(path: Path) -> str:
+    try:
+        return "data/" + path.resolve().relative_to(DATA.resolve()).as_posix()
+    except ValueError as error:
+        raise ValueError(f"retained input is outside data root: {path}") from error
+
+
+def _catalog_source_paths() -> tuple[Path, ...]:
+    execution = _load(EXECUTION_MANIFEST)
+    files = _files(execution)
+    paths = {
+        AUTHORITY_MANIFEST,
+        EXECUTION_MANIFEST,
+        BASE_MANIFEST,
+        GAP_AUDIT,
+        DATA / "binance_mark_raw.csv",
+        DATA / "binance_index_raw.csv",
+        *(AUTHORITY_ROOT.rglob("*")),
+        *(DATA / relative for relative in files),
+    }
+    selected = tuple(sorted((path for path in paths if path.is_file()), key=_input_relative))
+    if not selected or _input_relative(AUTHORITY_MANIFEST) not in {_input_relative(path) for path in selected}:
+        raise ValueError("retained input catalog is incomplete")
+    return selected
+
+
+def _catalog_digest(value: Mapping[str, object]) -> str:
+    body = dict(value)
+    body["catalog_sha256"] = ""
+    return _hash(_canonical_json(body))
+
+
+def _build_input_catalog(config: Mapping[str, object]) -> dict[str, object]:
+    rows = []
+    for path in _catalog_source_paths():
+        raw = path.read_bytes()
+        rows.append({"path": _input_relative(path), "sha256": _hash(raw), "size_bytes": len(raw)})
+    catalog: dict[str, object] = {
+        "type": INPUT_CATALOG_SCHEMA,
+        "schema_version": 1,
+        "full_mode_config": dict(config),
+        "files": rows,
+        "catalog_sha256": "",
+    }
+    catalog["catalog_sha256"] = _catalog_digest(catalog)
+    return catalog
+
+
+def _validate_input_catalog(catalog: Mapping[str, object]) -> None:
+    if set(catalog) != {"type", "schema_version", "full_mode_config", "files", "catalog_sha256"}:
+        raise ValueError("input catalog schema mismatch")
+    if catalog["type"] != INPUT_CATALOG_SCHEMA or catalog["schema_version"] != 1:
+        raise ValueError("input catalog identity mismatch")
+    if type(catalog["full_mode_config"]) is not dict or type(catalog["files"]) is not list:
+        raise ValueError("input catalog values mismatch")
+    if catalog["catalog_sha256"] != _catalog_digest(catalog):
+        raise ValueError("input catalog self-hash mismatch")
+    files = cast(list[dict[str, object]], catalog["files"])
+    paths: list[str] = []
+    for row in files:
+        path, digest, size = row.get("path"), row.get("sha256"), row.get("size_bytes")
+        if (
+            set(row) != {"path", "sha256", "size_bytes"}
+            or type(path) is not str
+            or not path.startswith("data/")
+            or Path(path).is_absolute()
+            or ".." in Path(path).parts
+            or type(digest) is not str
+            or type(size) is not int
+        ):
+            raise ValueError("input catalog file row mismatch")
+        paths.append(path)
+    if paths != sorted(paths) or len(set(paths)) != len(paths):
+        raise ValueError("input catalog file cover mismatch")
+
+
+def _atomic_write(path: Path, value: Mapping[str, object]) -> None:
+    raw = _canonical_pretty_json(dict(value))
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("xb") as handle:
+        handle.write(raw)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temporary, path)
+    _fsync_directory(path.parent)
+
+
+def _create_new_json(path: Path, value: Mapping[str, object]) -> None:
+    raw = _canonical_pretty_json(dict(value))
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o444)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(raw)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+        raise
+    _fsync_directory(path.parent)
+
+
+def _load_canonical(path: Path, label: str) -> dict[str, Any]:
+    raw = path.read_bytes()
+    value = _load(path)
+    if raw != _canonical_pretty_json(value):
+        raise ValueError(f"{label} is noncanonical")
+    return value
+
+
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _freeze_input_snapshot(input_root: Path, catalog: Mapping[str, object]) -> None:
+    _validate_input_catalog(catalog)
+    input_root.mkdir(parents=True, exist_ok=True)
+    for row in cast(list[dict[str, object]], catalog["files"]):
+        relative, digest, size = cast(str, row["path"]), cast(str, row["sha256"]), cast(int, row["size_bytes"])
+        source = DATA.parent / relative
+        raw = source.read_bytes()
+        if _hash(raw) != digest or len(raw) != size:
+            raise ValueError(f"retained input changed while freezing: {relative}")
+        destination = input_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(raw)
+    _atomic_write(input_root / "catalog.json", catalog)
+    for path in sorted(input_root.rglob("*"), reverse=True):
+        path.chmod(0o555 if path.is_dir() else 0o444)
+    input_root.chmod(0o555)
+
+
+def _verify_input_snapshot(input_root: Path) -> dict[str, Any]:
+    catalog = _load_canonical(input_root / "catalog.json", "input catalog")
+    _validate_input_catalog(catalog)
+    expected = {"catalog.json"}
+    for row in catalog["files"]:
+        assert type(row) is dict
+        relative = row["path"]
+        expected.add(relative)
+        path = input_root / relative
+        if not path.is_file() or _hash(path.read_bytes()) != row["sha256"] or path.stat().st_size != row["size_bytes"]:
+            raise ValueError(f"frozen input catalog mismatch: {relative}")
+    actual = {path.relative_to(input_root).as_posix() for path in input_root.rglob("*") if path.is_file()}
+    if actual != expected:
+        raise ValueError("frozen input catalog file cover mismatch")
+    return catalog
+
+
+def _configure_input_snapshot(input_root: Path) -> None:
+    global DATA, AUTHORITY_ROOT, AUTHORITY_MANIFEST, EXECUTION_MANIFEST, BASE_MANIFEST, GAP_AUDIT
+    DATA = input_root / "data"
+    AUTHORITY_ROOT = DATA / "public_preflight_sources_v1"
+    AUTHORITY_MANIFEST = AUTHORITY_ROOT / "manifest.json"
+    EXECUTION_MANIFEST = DATA / "execution_data_manifest.json"
+    BASE_MANIFEST = DATA / "manifest.json"
+    GAP_AUDIT = DATA / "execution_gap_impact.json"
+
+
+def _attempt_preimage(
+    config: Mapping[str, object], catalog_sha256: str, retry_ordinal: int, parent_attempt_id: str | None,
 ) -> dict[str, object]:
-    """Build source/economics/readers only; this is not an Experiment entrypoint."""
-    with full_deadline(max_seconds):
-        smoke(foundation_root)
-        source = build_source()
-        with tempfile.TemporaryDirectory(prefix="koru-public-preflight-") as directory:
-            root = Path(directory)
-            foundation = LocalFoundation(foundation_root) if foundation_root is not None else LocalFoundation(root / "foundation")
-            store = KoruEconomicsArtifactStoreV1(foundation)
-            _append_owner_record(foundation, _source_projection_record(source))
-            economics = _unwrap(publish_koru_tradifi_economics_bundle_v3(
-                KoruTradifiEconomicsBundleRequestV3(
-                    source, KoruTradifiSourceProjectionContentIdentityV2(source.fragment_digest, source.request.request_hash),
-                    KoruTradifiEconomicsTermsV3.from_source_projection(source, execution_account_id="account-1"), store, root / "economics",
-                )
-            ), "target-free economics bundle")
-            readers = _unwrap(build_koru_premium_reader_set_v1(
-                KoruPremiumReaderSetBuildRequestV1(economics, _premium_authorities(source, store), root / "premium-readers")
-            ), "premium reader set")
-            publication_records = _owner_publication_records(source, readers)
-            for record in publication_records:
-                _append_owner_record(foundation, record)
-            _append_owner_record(foundation, _reader_set_record(source, economics, readers))
-            expected_records = _expected_owner_records(source, economics, readers, store.publication_records)
-            return {
-                "mode": "full", "network_performed": False, "holdout_touched": False,
-                "source_fragment_digest": source.fragment_digest, "economics_authority_digest": economics.authority_digest,
-                "artifact_refs": [
-                    ref.to_canonical_dict()
-                    for ref in (
-                        *economics.authority_refs,
-                        *(binding.strategy_ref for binding in readers.bindings),
-                        *(binding.parameter_ref for binding in readers.bindings),
-                    )
-                ],
-                "premium_reader_ids": [binding.premium_id for binding in readers.bindings],
-                "owner_log": _checkpoint_summary(foundation, expected_records),
-                "stopped_before": "Experiment_Holdout_and_Backtest",
-            }
+    if type(retry_ordinal) is not int or retry_ordinal < 0:
+        raise ValueError("retry ordinal must be a non-negative integer")
+    if parent_attempt_id is not None and (type(parent_attempt_id) is not str or not parent_attempt_id):
+        raise ValueError("parent attempt ID must be a non-empty string when supplied")
+    return {
+        "type": ATTEMPT_SCHEMA,
+        "schema_version": 1,
+        "full_mode_config": dict(config),
+        "frozen_input_catalog_sha256": catalog_sha256,
+        "retry_ordinal": retry_ordinal,
+        "parent_attempt_id": parent_attempt_id,
+    }
+
+
+def _attempt_id(preimage: Mapping[str, object]) -> str:
+    body = dict(preimage)
+    body.pop("attempt_id", None)
+    return ATTEMPT_SCHEMA + ":" + hashlib.sha256(_canonical_json(body)).hexdigest()
+
+
+def _attempt_identity(preimage: Mapping[str, object]) -> dict[str, object]:
+    identity = dict(preimage)
+    identity["attempt_id"] = _attempt_id(preimage)
+    return identity
+
+
+def _attempt_paths(root: Path, attempt_id: str) -> dict[str, Path]:
+    return {
+        "staging": root / ".staging" / attempt_id,
+        "published": root / "attempts" / attempt_id,
+        "timed_out": root / "timed-out" / attempt_id,
+        "receipt": root / "receipts" / f"{attempt_id}.json",
+        "identity": root / "attempt-identities" / f"{attempt_id}.json",
+        "lock": root / ".attempt-locks" / f"{attempt_id}.lock",
+    }
+
+
+def _prepare_attempt_root(root: Path) -> Path:
+    root = root.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    for name in (".staging", "attempts", "timed-out", "receipts", "attempt-identities", ".attempt-locks"):
+        (root / name).mkdir(exist_ok=True)
+    device = root.stat().st_dev
+    if any((root / name).stat().st_dev != device for name in (".staging", "attempts", "timed-out")):
+        raise ValueError("attempt locations must share a filesystem")
+    return root
+
+
+@contextmanager
+def _attempt_lock(path: Path) -> Iterator[None]:
+    path.parent.mkdir(exist_ok=True)
+    with path.open("a+b") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def _reserve_attempt(root: Path, identity: Mapping[str, object]) -> None:
+    attempt_id = identity["attempt_id"]
+    if type(attempt_id) is not str or attempt_id != _attempt_id(identity):
+        raise ValueError("attempt identity is invalid")
+    paths = _attempt_paths(root, attempt_id)
+    _create_new_json(paths["identity"], identity)
+
+
+def _load_attempt_identity(root: Path, attempt_id: str) -> dict[str, Any]:
+    identity = _load_canonical(_attempt_paths(root, attempt_id)["identity"], "attempt identity")
+    if identity.get("attempt_id") != attempt_id or attempt_id != _attempt_id(identity):
+        raise ValueError("attempt identity conflict")
+    return identity
+
+
+def _child_full_preflight(staging: Path, attempt_id: str, catalog_sha256: str) -> None:
+    catalog = _verify_input_snapshot(staging / "input")
+    if catalog["catalog_sha256"] != catalog_sha256:
+        raise ValueError("child input catalog identity mismatch")
+    _configure_input_snapshot(staging / "input")
+    smoke(staging / "foundation")
+    source = build_source()
+    foundation = LocalFoundation(staging / "foundation")
+    store = KoruEconomicsArtifactStoreV1(foundation)
+    _append_owner_record(foundation, _source_projection_record(source))
+    market = staging / "market"
+    economics = _unwrap(publish_koru_tradifi_economics_bundle_v3(
+        KoruTradifiEconomicsBundleRequestV3(
+            source, KoruTradifiSourceProjectionContentIdentityV2(source.fragment_digest, source.request.request_hash),
+            KoruTradifiEconomicsTermsV3.from_source_projection(source, execution_account_id="account-1"), store, market / "economics",
+        )
+    ), "target-free economics bundle")
+    readers = _unwrap(build_koru_premium_reader_set_v1(
+        KoruPremiumReaderSetBuildRequestV1(economics, _premium_authorities(source, store), market / "premium-readers")
+    ), "premium reader set")
+    for record in _owner_publication_records(source, readers):
+        _append_owner_record(foundation, record)
+    _append_owner_record(foundation, _reader_set_record(source, economics, readers))
+    expected_records = _expected_owner_records(source, economics, readers, store.publication_records)
+    owner_log = _checkpoint_summary(foundation, expected_records)
+    result: dict[str, object] = {
+        "mode": "full", "network_performed": False, "holdout_touched": False,
+        "source_fragment_digest": source.fragment_digest, "economics_authority_digest": economics.authority_digest,
+        "artifact_refs": [
+            ref.to_canonical_dict()
+            for ref in (
+                *economics.authority_refs,
+                *(binding.strategy_ref for binding in readers.bindings),
+                *(binding.parameter_ref for binding in readers.bindings),
+            )
+        ],
+        "premium_reader_ids": [binding.premium_id for binding in readers.bindings],
+        "owner_log": owner_log,
+        "stopped_before": "Experiment_Holdout_and_Backtest",
+    }
+    reader_set = _reader_set_record(source, economics, readers)
+    marker = {
+        "type": "koru_retained_preflight_complete_v1",
+        "schema_version": 1,
+        "attempt_id": attempt_id,
+        "input_catalog_sha256": catalog_sha256,
+        "expected_owner_records": list(expected_records),
+        "owner_log": owner_log,
+        "reader_set": {
+            "reader_set_digest": reader_set["reader_set_digest"],
+            "premium_reader_ids": result["premium_reader_ids"],
+        },
+        "result": result,
+    }
+    _atomic_write(staging / COMPLETE_MARKER, marker)
+
+
+def _same_owner_log_cover(left: Mapping[str, object], right: Mapping[str, object]) -> bool:
+    left_checkpoint, right_checkpoint = left.get("checkpoint"), right.get("checkpoint")
+    if type(left_checkpoint) is not dict or type(right_checkpoint) is not dict:
+        return False
+    stable = ("log_name", "upper_log_sequence", "head_receipt_hash")
+    return (
+        all(left_checkpoint.get(key) == right_checkpoint.get(key) for key in stable)
+        and left.get("entries") == right.get("entries")
+        and left.get("publication_records") == right.get("publication_records")
+    )
+
+
+def _validate_completed_attempt(staging: Path, identity: Mapping[str, object]) -> dict[str, object]:
+    catalog = _verify_input_snapshot(staging / "input")
+    marker = _load_canonical(staging / COMPLETE_MARKER, "child complete marker")
+    required = {
+        "type", "schema_version", "attempt_id", "input_catalog_sha256", "expected_owner_records",
+        "owner_log", "reader_set", "result",
+    }
+    if (
+        set(marker) != required
+        or marker["type"] != "koru_retained_preflight_complete_v1"
+        or marker["schema_version"] != 1
+        or marker["attempt_id"] != identity["attempt_id"]
+        or marker["input_catalog_sha256"] != catalog["catalog_sha256"]
+        or marker["input_catalog_sha256"] != identity["frozen_input_catalog_sha256"]
+        or type(marker["expected_owner_records"]) is not list
+        or not all(type(record) is dict for record in marker["expected_owner_records"])
+        or type(marker["result"]) is not dict
+        or type(marker["reader_set"]) is not dict
+    ):
+        raise ValueError("child complete marker identity mismatch")
+    expected = tuple(marker["expected_owner_records"])
+    types = [record.get("type") for record in expected]
+    if (
+        types.count("koru_source_projection_publication_v1") != 1
+        or types.count("koru_compiler_result_publication_v1") != 1
+        or types.count("koru_prm_overlay_publication_v1") != 4
+        or types.count("koru_premium_reader_set_publication_v1") != 1
+        or types.count("koru_artifact_publication_v1") < 1
+    ):
+        raise ValueError("child owner-log record cover is incomplete")
+    owner_log = _checkpoint_summary(LocalFoundation(staging / "foundation"), expected)
+    if (
+        not _same_owner_log_cover(marker["owner_log"], owner_log)
+        or marker["result"].get("owner_log") != marker["owner_log"]
+    ):
+        raise ValueError("child owner-log checkpoint mismatch")
+    result = marker["result"]
+    reader_set = marker["reader_set"]
+    if (
+        result.get("mode") != "full"
+        or result.get("network_performed") is not False
+        or result.get("holdout_touched") is not False
+        or result.get("stopped_before") != "Experiment_Holdout_and_Backtest"
+        or reader_set.get("premium_reader_ids") != result.get("premium_reader_ids")
+        or type(reader_set.get("reader_set_digest")) is not str
+    ):
+        raise ValueError("child complete result mismatch")
+    return {
+        "owner_log_checkpoint": owner_log["checkpoint"],
+        "reader_set": reader_set,
+        "result": result,
+    }
+
+
+def _child_timeout_test(staging: Path) -> None:
+    """Build bounded forensic state for the parent timeout integration test."""
+    foundation = LocalFoundation(staging / "foundation")
+    envelope = ArtifactEnvelope.create("strategy_definition", 1, {"strategy_id": "timeout-integration"})
+    ref = foundation.put(envelope=envelope)
+    record = _artifact_publication_record(envelope, ref)
+    _append_owner_record(foundation, record)
+    _atomic_write(staging / "timeout-test-ready.json", {
+        "type": "koru_retained_preflight_timeout_test_v1",
+        "artifact_ref": json.loads(canonical_bytes(ref)),
+        "envelope": json.loads(canonical_bytes(envelope)),
+        "owner_record": json.loads(canonical_bytes(record)),
+    })
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    time.sleep(60)
+
+
+def _child_command(staging: Path, attempt_id: str, catalog_sha256: str) -> list[str]:
+    return [
+        sys.executable, str(Path(__file__).resolve()), "--_child", "--staging", str(staging),
+        "--attempt-id", attempt_id, "--input-catalog-sha256", catalog_sha256,
+    ]
+
+
+def _reap_process_group(process: subprocess.Popen[bytes]) -> int | None:
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    until = time.monotonic() + TERMINATE_GRACE_SECONDS
+    while time.monotonic() < until:
+        if process.poll() is not None:
+            break
+        time.sleep(0.01)
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    return process.wait()
+
+
+def _wait_for_child(
+    process: subprocess.Popen[bytes], max_seconds: int, started_at: float,
+) -> tuple[bool, int | None]:
+    deadline = started_at + max_seconds
+    while True:
+        status = process.poll()
+        if status is not None:
+            if time.monotonic() >= deadline:
+                return True, _reap_process_group(process)
+            return False, status
+        if time.monotonic() >= deadline:
+            return True, _reap_process_group(process)
+        time.sleep(0.01)
+
+
+def _archive_timeout(root: Path, attempt_id: str, child_status: int | None) -> Path:
+    paths = _attempt_paths(root, attempt_id)
+    if paths["timed_out"].exists():
+        raise ValueError("timed-out attempt archive already exists")
+    os.rename(paths["staging"], paths["timed_out"])
+    _fsync_directory(paths["timed_out"].parent)
+    receipt = {
+        "type": RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": "timeout",
+        "attempt_id": attempt_id,
+        "attempt_identity": _load_attempt_identity(root, attempt_id),
+        "input_catalog_sha256": _load_attempt_identity(root, attempt_id)["frozen_input_catalog_sha256"],
+        "final_authority": [],
+        "child_status": {"exit_code": child_status, "timed_out": True},
+        "archive_state": "archived",
+        "cleanup_state": "process_group_reaped",
+    }
+    _create_new_json(paths["receipt"], receipt)
+    return paths["receipt"]
+
+
+def _promote_attempt_container(root: Path, attempt_id: str) -> Path:
+    paths = _attempt_paths(root, attempt_id)
+    if paths["published"].exists():
+        raise ValueError("published attempt container already exists")
+    os.rename(paths["staging"], paths["published"])
+    _fsync_directory(paths["published"].parent)
+    return paths["published"]
+
+
+def _success_receipt(root: Path, identity: Mapping[str, object], validated: Mapping[str, object]) -> dict[str, object]:
+    attempt_id = identity["attempt_id"]
+    assert type(attempt_id) is str
+    return {
+        "type": RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": "success",
+        "attempt_id": attempt_id,
+        "attempt_identity": dict(identity),
+        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "final_authority": [{
+            "attempt_container": f"attempts/{attempt_id}",
+            "owner_log_checkpoint": validated["owner_log_checkpoint"],
+            "reader_set": validated["reader_set"],
+        }],
+    }
+
+
+def _validate_receipt(receipt: Mapping[str, object], identity: Mapping[str, object]) -> None:
+    common = {
+        "type", "schema_version", "outcome", "attempt_id", "attempt_identity",
+        "input_catalog_sha256", "final_authority",
+    }
+    if (
+        not common <= set(receipt)
+        or receipt.get("type") != RECEIPT_SCHEMA
+        or receipt.get("schema_version") != 1
+        or receipt.get("attempt_id") != identity.get("attempt_id")
+        or receipt.get("attempt_identity") != identity
+        or receipt.get("input_catalog_sha256") != identity.get("frozen_input_catalog_sha256")
+        or type(receipt.get("final_authority")) is not list
+    ):
+        raise ValueError("receipt identity conflict")
+    if receipt["outcome"] == "timeout":
+        if (
+            set(receipt) != common | {"child_status", "archive_state", "cleanup_state"}
+            or receipt["final_authority"] != []
+            or receipt.get("archive_state") != "archived"
+            or receipt.get("cleanup_state") != "process_group_reaped"
+        ):
+            raise ValueError("timeout receipt conflict")
+    elif receipt["outcome"] == "success":
+        authority = receipt["final_authority"]
+        if set(receipt) != common or type(authority) is not list or len(authority) != 1:
+            raise ValueError("success receipt conflict")
+    else:
+        raise ValueError("receipt outcome conflict")
+
+
+def _load_receipt(root: Path, attempt_id: str) -> dict[str, Any] | None:
+    path = _attempt_paths(root, attempt_id)["receipt"]
+    if not path.exists():
+        return None
+    identity = _load_attempt_identity(root, attempt_id)
+    receipt = _load_canonical(path, "attempt receipt")
+    _validate_receipt(receipt, identity)
+    return receipt
+
+
+def recover_attempt(root: Path, attempt_id: str) -> dict[str, object]:
+    """Emit the one missing success receipt only after full promoted-container validation."""
+    root = _prepare_attempt_root(root)
+    paths = _attempt_paths(root, attempt_id)
+    with _attempt_lock(paths["lock"]):
+        identity = _load_attempt_identity(root, attempt_id)
+        receipt = _load_receipt(root, attempt_id)
+        if receipt is not None:
+            if paths["published"].exists() and receipt["outcome"] != "success":
+                raise ValueError("promoted attempt conflicts with non-success receipt")
+            return receipt
+        if not paths["published"].is_dir():
+            raise ValueError("attempt has no receipt and no promoted container")
+        validated = _validate_completed_attempt(paths["published"], identity)
+        receipt = _success_receipt(root, identity, validated)
+        _create_new_json(paths["receipt"], receipt)
+        return receipt
+
+
+def _recover_pending_attempts(root: Path) -> None:
+    for container in sorted((root / "attempts").iterdir()):
+        if not container.is_dir():
+            raise ValueError("published attempt path is not a container")
+        if not _attempt_paths(root, container.name)["receipt"].exists():
+            recover_attempt(root, container.name)
+
+
+def _success_receipt_binds_validated(
+    receipt: Mapping[str, object], root: Path, identity: Mapping[str, object], validated: Mapping[str, object],
+) -> bool:
+    expected = _success_receipt(root, identity, validated)
+    if {key: value for key, value in receipt.items() if key != "final_authority"} != {
+        key: value for key, value in expected.items() if key != "final_authority"
+    }:
+        return False
+    actual_authority = receipt["final_authority"]
+    expected_authority = cast(list[dict[str, object]], expected["final_authority"])
+    if type(actual_authority) is not list or len(actual_authority) != 1 or type(actual_authority[0]) is not dict:
+        return False
+    actual, expected_value = actual_authority[0], expected_authority[0]
+    if actual.get("attempt_container") != expected_value["attempt_container"] or actual.get("reader_set") != expected_value["reader_set"]:
+        return False
+    actual_checkpoint, expected_checkpoint = actual.get("owner_log_checkpoint"), expected_value.get("owner_log_checkpoint")
+    return type(actual_checkpoint) is dict and type(expected_checkpoint) is dict and all(
+        actual_checkpoint.get(key) == expected_checkpoint.get(key)
+        for key in ("log_name", "upper_log_sequence", "head_receipt_hash")
+    )
+
+
+def read_success_receipt(root: Path, attempt_id: str) -> dict[str, object]:
+    """The only consumer entrypoint; staging and timeout attempts are never authority."""
+    root = _prepare_attempt_root(root)
+    receipt = _load_receipt(root, attempt_id)
+    if receipt is None or receipt["outcome"] != "success":
+        raise ValueError("attempt has no consumable success receipt")
+    identity = _load_attempt_identity(root, attempt_id)
+    validated = _validate_completed_attempt(_attempt_paths(root, attempt_id)["published"], identity)
+    if not _success_receipt_binds_validated(receipt, root, identity, validated):
+        raise ValueError("success receipt does not bind promoted authority")
+    return receipt
+
+
+def full_preflight(
+    attempt_root: Path, max_seconds: int = DEFAULT_FULL_MAX_SECONDS, *, retry_ordinal: int = 0,
+    parent_attempt_id: str | None = None, _child_test_mode: str | None = None,
+) -> dict[str, object]:
+    """Run one isolated full attempt; no result is returned before its receipt exists."""
+    if _child_test_mode not in (None, _TIMEOUT_TEST_MODE):
+        raise ValueError("unsupported child test mode")
+    config = _full_mode_config(max_seconds)
+    root = _prepare_attempt_root(attempt_root)
+    _recover_pending_attempts(root)
+    catalog = _build_input_catalog(config)
+    catalog_sha256 = cast(str, catalog["catalog_sha256"])
+    identity = _attempt_identity(_attempt_preimage(
+        config, catalog_sha256, retry_ordinal, parent_attempt_id,
+    ))
+    attempt_id = identity["attempt_id"]
+    assert type(attempt_id) is str
+    paths = _attempt_paths(root, attempt_id)
+    with _attempt_lock(paths["lock"]):
+        _reserve_attempt(root, identity)
+        paths["staging"].mkdir(parents=True)
+        for name in ("input", "foundation", "market"):
+            (paths["staging"] / name).mkdir()
+        _freeze_input_snapshot(paths["staging"] / "input", catalog)
+        started_at = time.monotonic()
+        command = _child_command(paths["staging"], attempt_id, catalog_sha256)
+        if _child_test_mode is not None:
+            command.extend(["--_test-mode", _child_test_mode])
+        process = subprocess.Popen(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+        )
+        timed_out, child_status = _wait_for_child(process, max_seconds, started_at)
+        if timed_out:
+            receipt_path = _archive_timeout(root, attempt_id, child_status)
+            raise FullPreflightDeadlineExceeded(max_seconds, receipt_path)
+        if child_status != 0:
+            raise RuntimeError(f"full preflight child failed with exit status {child_status}")
+        validated = _validate_completed_attempt(paths["staging"], identity)
+        _promote_attempt_container(root, attempt_id)
+        receipt = _success_receipt(root, identity, validated)
+        _create_new_json(paths["receipt"], receipt)
+        return read_success_receipt(root, attempt_id)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--smoke", action="store_true", help="bounded source authority validation; default")
-    mode.add_argument("--full", action="store_true", help="full retained source/economics/reader preflight; does not run an Experiment")
-    parser.add_argument("--max-seconds", type=int, default=DEFAULT_FULL_MAX_SECONDS, help="full-only process deadline (1-300; default: 300)")
-    parser.add_argument("--foundation-root", type=Path, help="Foundation root; smoke leaves it absent or requires an empty directory, while full initializes and publishes to it")
+    mode.add_argument("--full", action="store_true", help="isolated retained source/economics/reader attempt; no Experiment")
+    mode.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--max-seconds", type=int, default=DEFAULT_FULL_MAX_SECONDS, help="full-only parent deadline (1-300; default: 300)")
+    parser.add_argument("--foundation-root", type=Path, help="smoke-only Foundation root; full treats this as a legacy alias for --attempt-root")
+    parser.add_argument("--attempt-root", type=Path, help="full-attempt receipt, staging, archive, and published-container root")
+    parser.add_argument("--retry-ordinal", type=int, default=0, help="new full-attempt retry ordinal (default: 0)")
+    parser.add_argument("--parent-attempt-id", help="optional parent attempt ID for a retry")
+    parser.add_argument("--staging", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--attempt-id", help=argparse.SUPPRESS)
+    parser.add_argument("--input-catalog-sha256", help=argparse.SUPPRESS)
+    parser.add_argument("--_test-mode", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args._child:
+        if not (args.staging and args.attempt_id and args.input_catalog_sha256):
+            parser.error("child requires staging, attempt identity, and input catalog identity")
+        with deny_network():
+            if args._test_mode == _TIMEOUT_TEST_MODE:
+                _child_timeout_test(args.staging)
+            elif args._test_mode is None:
+                _child_full_preflight(args.staging, args.attempt_id, args.input_catalog_sha256)
+            else:
+                parser.error("unsupported child test mode")
+        return 0
     if args.full:
         try:
             _validate_full_max_seconds(args.max_seconds)
+            if args.attempt_root is not None and args.foundation_root is not None:
+                parser.error("use only one of --attempt-root and --foundation-root")
+            attempt_root = args.attempt_root or args.foundation_root
+            if attempt_root is None:
+                parser.error("--full requires --attempt-root")
+            with deny_network():
+                result = full_preflight(
+                    attempt_root, args.max_seconds, retry_ordinal=args.retry_ordinal,
+                    parent_attempt_id=args.parent_attempt_id,
+                )
+        except FullPreflightDeadlineExceeded as error:
+            print(f"{error}; no successful summary written", file=sys.stderr)
+            return 1
         except ValueError as error:
             parser.error(str(error))
-    try:
+    else:
         with deny_network():
-            result = full_preflight(args.foundation_root, args.max_seconds) if args.full else smoke(args.foundation_root)
-    except FullPreflightDeadlineExceeded as error:
-        print(f"{error}; no successful summary written", file=sys.stderr)
-        return 1
+            result = smoke(args.foundation_root)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 
