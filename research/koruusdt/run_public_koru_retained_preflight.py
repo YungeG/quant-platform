@@ -14,7 +14,6 @@ import fcntl
 import hashlib
 import json
 import os
-import shutil
 import signal
 import socket
 import stat
@@ -52,10 +51,15 @@ INPUT_CATALOG_SCHEMA = "koru_retained_preflight_input_catalog_v1"
 RECEIPT_SCHEMA = "koru_retained_preflight_receipt_v1"
 COMPLETE_MARKER = "complete.json"
 TIMEOUT_MARKER = "timeout.json"
-FICLONE = 0x40049409
-TIMING_KEYS = ("catalog_elapsed_ns", "clone_elapsed_ns", "verify_elapsed_ns", "child_elapsed_ns")
+TIMING_KEYS = ("snapshot_open_elapsed_ns", "child_elapsed_ns")
+INPUT_SNAPSHOT_AUTHORITY_SCHEMA = "koru_retained_preflight_input_snapshot_authority_v1"
+RAW_SNAPSHOT_PROVENANCE_SCHEMA = "koru_retained_preflight_raw_snapshot_provenance_v1"
+_RAW_INPUT_VIEW: RawBlobSnapshotView | None = None
+_RAW_INPUT_MEMBER_KEYS: dict[str, str] | None = None
 TERMINATE_GRACE_SECONDS = 1.0
 _TIMEOUT_TEST_MODE = "foundation-timeout-v1"
+
+sys.path.insert(0, str(ROOT / "research-platform" / "src"))
 
 for package in (
     "trading-domain",
@@ -86,6 +90,8 @@ from crypto_quant_bundle_builder import (
     KoruTradifiEconomicsBundleRequestV3,
     KoruTradifiEconomicsTermsV3,
     KoruTradifiSourceProjectionContentIdentityV2,
+    RawBlobSnapshotSourceMember,
+    RawBlobSnapshotView,
     RawSourceMember,
     build_binance_usdm_koru_aggregate_trade_boundary_index_v1,
     build_binance_usdm_koru_price_bars_retained_observations_evidence_v1,
@@ -115,7 +121,11 @@ from crypto_quant_domain import (
     canonical_bytes,
     canonical_sha256,
 )
-from crypto_quant_foundation import LocalFoundation
+from crypto_quant_foundation import LocalFoundation, LogEntryRef
+from crypto_quant_research import (
+    open_verified_raw_blob_snapshot,
+    publish_raw_blob_snapshot,
+)
 
 INSTRUMENT = InstrumentId(VenueId("binance_usdm"), "koru-usdt-tradifi-perpetual")
 
@@ -133,13 +143,42 @@ def _canonical_pretty_json(value: object) -> bytes:
 
 
 def _load(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_bytes())
+    return _load_bytes(path.read_bytes(), str(path))
+
+
+def _load_bytes(raw: bytes, label: str) -> dict[str, Any]:
+    value = json.loads(raw)
     if type(value) is not dict:
-        raise ValueError(f"{path}: expected JSON object")
+        raise ValueError(f"{label}: expected JSON object")
     return value
 
 
-def _self_hash(value: dict[str, Any], path: Path) -> None:
+def _input_member_key(relative: str) -> str:
+    if type(relative) is not str or not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
+        raise ValueError("retained input path is invalid")
+    return "data/" + relative
+
+
+def _input_bytes(relative: str) -> bytes:
+    """Read one retained input only through the verified raw view during full replay."""
+    key = _input_member_key(relative)
+    if _RAW_INPUT_VIEW is not None:
+        if _RAW_INPUT_MEMBER_KEYS is None or key not in _RAW_INPUT_MEMBER_KEYS:
+            raise ValueError("retained input is absent from verified raw snapshot")
+        return _RAW_INPUT_VIEW.member_bytes(_RAW_INPUT_MEMBER_KEYS[key])
+    return (DATA / relative).read_bytes()
+
+
+def _input_member_keys() -> set[str]:
+    if _RAW_INPUT_VIEW is not None:
+        if _RAW_INPUT_MEMBER_KEYS is None:
+            raise ValueError("verified raw snapshot member mapping is unavailable")
+        published = {member.member_key for member in _RAW_INPUT_VIEW.manifest.members}
+        return {path for path, member_key in _RAW_INPUT_MEMBER_KEYS.items() if member_key in published}
+    return {"data/" + path.relative_to(DATA).as_posix() for path in DATA.rglob("*") if path.is_file()}
+
+
+def _self_hash(value: dict[str, Any], path: Path | str) -> None:
     expected = value.get("manifest_sha256")
     body = dict(value)
     body["manifest_sha256"] = ""
@@ -179,32 +218,6 @@ class FullPreflightDeadlineExceeded(TimeoutError):
         )
 
 
-class SnapshotFailure(RuntimeError):
-    """A physical retained-input snapshot cannot be used as authority."""
-
-    outcome: str
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-
-
-class SnapshotCapabilityUnavailable(SnapshotFailure):
-    outcome = "snapshot_capability_unavailable"
-
-
-class SnapshotCatalogMismatch(SnapshotFailure):
-    outcome = "snapshot_catalog_mismatch"
-
-
-class FullPreflightSnapshotFailed(RuntimeError):
-    """A non-success snapshot receipt was written before a child existed."""
-
-    def __init__(self, outcome: str, receipt_path: Path) -> None:
-        self.outcome = outcome
-        self.receipt_path = receipt_path
-        super().__init__(f"full preflight input snapshot failed: {outcome}; receipt: {receipt_path}")
-
-
 def _validate_full_max_seconds(max_seconds: int) -> int:
     if type(max_seconds) is not int or not 1 <= max_seconds <= MAX_FULL_SECONDS:
         raise ValueError(f"full --max-seconds must be an integer from 1 to {MAX_FULL_SECONDS}")
@@ -223,11 +236,12 @@ def deny_network() -> Iterator[None]:
 
 
 def _authority_manifest() -> dict[str, Any]:
-    raw = AUTHORITY_MANIFEST.read_bytes()
-    value = _load(AUTHORITY_MANIFEST)
+    relative = "public_preflight_sources_v1/manifest.json"
+    raw = _input_bytes(relative)
+    value = _load_bytes(raw, relative)
     if raw != _canonical_pretty_json(value):
         raise ValueError("public preflight authority manifest bytes are noncanonical")
-    _self_hash(value, AUTHORITY_MANIFEST)
+    _self_hash(value, relative)
     expected_keys = {
         "type", "schema_version", "authority_schema", "authority_schema_version",
         "members", "intended_discovery_interval", "acquisition", "integrity_exception", "manifest_sha256",
@@ -265,15 +279,16 @@ def _authority_manifest() -> dict[str, Any]:
             by_name[filename] = row
     if len(by_name) != len(members) or tuple(sorted(by_name)) != tuple(sorted(expected)):
         raise ValueError("public preflight authority member cover mismatch")
+    prefix = "data/public_preflight_sources_v1/"
     actual_files = {
-        path.relative_to(AUTHORITY_ROOT).as_posix()
-        for path in AUTHORITY_ROOT.rglob("*") if path.is_file()
+        member.removeprefix(prefix)
+        for member in _input_member_keys() if member.startswith(prefix)
     }
     if actual_files != {"manifest.json", *expected}:
         raise ValueError("public preflight authority file cover mismatch")
     for filename, expected_hash in expected.items():
         row = by_name[filename]
-        raw = (AUTHORITY_ROOT / filename).read_bytes()
+        raw = _input_bytes("public_preflight_sources_v1/" + filename)
         if (
             set(row) != {"filename", "sha256", "size_bytes", "source_fixture_path"}
             or row["sha256"] != expected_hash
@@ -288,12 +303,15 @@ def _authority_manifest() -> dict[str, Any]:
 
 def _calendar_authority(manifest: Mapping[str, Any]) -> Any:
     receipt_times = {
-        source: _utc_ns(_load(AUTHORITY_ROOT / source / "acquisition-receipt.json")["captured_at_utc"])
+        source: _utc_ns(_load_bytes(
+            _input_bytes(f"public_preflight_sources_v1/{source}/acquisition-receipt.json"),
+            f"public_preflight_sources_v1/{source}/acquisition-receipt.json",
+        )["captured_at_utc"])
         for source in ("binance", "krx", "nyse")
     }
     members = tuple(
         RawSourceMember(
-            member_key, (AUTHORITY_ROOT / member_key).read_bytes(), "0644",
+            member_key, _input_bytes("public_preflight_sources_v1/" + member_key), "0644",
             receipt_times[member_key.partition("/")[0]], expected_hash,
         )
         for member_key, expected_hash in APPROVED_MEMBER_HASHES
@@ -316,9 +334,10 @@ def _calendar_authority(manifest: Mapping[str, Any]) -> Any:
 
 
 def _retained_manifests() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-    execution, base, gap = _load(EXECUTION_MANIFEST), _load(BASE_MANIFEST), _load(GAP_AUDIT)
-    for value, path in ((execution, EXECUTION_MANIFEST), (base, BASE_MANIFEST), (gap, GAP_AUDIT)):
-        _self_hash(value, path)
+    names = ("execution_data_manifest.json", "manifest.json", "execution_gap_impact.json")
+    execution, base, gap = tuple(_load_bytes(_input_bytes(name), name) for name in names)
+    for value, name in zip((execution, base, gap), names, strict=True):
+        _self_hash(value, name)
     interval = execution.get("backtest_authority_interval")
     if interval != {
         "start_ms": START_MS,
@@ -371,7 +390,7 @@ def _checked(relative_path: str, files: Mapping[str, Mapping[str, Any]]) -> byte
     entry = files.get(relative_path)
     if entry is None:
         raise ValueError(f"unmanifested retained file: {relative_path}")
-    raw = (DATA / relative_path).read_bytes()
+    raw = _input_bytes(relative_path)
     if _hash(raw) != entry.get("sha256") or len(raw) != entry.get("size_bytes"):
         raise ValueError(f"retained file hash mismatch: {relative_path}")
     return raw
@@ -430,7 +449,7 @@ def _retained_aggregate(execution: Mapping[str, Any], files: Mapping[str, Mappin
     archive = derived.removesuffix(".csv") + ".zip"
     checksum = archive + ".CHECKSUM"
     authority = BinanceUsdmKoruRetainedAggregateTradesAuthorityV1(
-        "research/koruusdt/data/execution_data_manifest.json", _hash(EXECUTION_MANIFEST.read_bytes()),
+        "research/koruusdt/data/execution_data_manifest.json", _hash(_input_bytes("execution_data_manifest.json")),
         execution["manifest_sha256"], _utc_ns(execution["generated_at_utc"]), tuple(pages),
         UtcInstant(1_787_553_260_640_000_000), UtcInstant(END_MS * 1_000_000),
         UtcInstant(1_787_529_600_000_000_000), UtcInstant(1_787_553_260_640_000_000),
@@ -442,7 +461,7 @@ def _retained_aggregate(execution: Mapping[str, Any], files: Mapping[str, Mappin
         INSTRUMENT, "2026-08-24", acquired, acquired, files[archive]["sha256"], files[checksum]["sha256"], authority
     )
     return _unwrap(capture_binance_usdm_koru_aggregate_trades_from_retained_rest_v1(
-        request, EXECUTION_MANIFEST.read_bytes(), tuple(page_bytes), _checked(derived, files),
+        request, _input_bytes("execution_data_manifest.json"), tuple(page_bytes), _checked(derived, files),
         _checked(archive, files), _checked(checksum, files),
     ), "retained aggregate capture")
 
@@ -482,7 +501,7 @@ def _retained_price(kind: Any, execution: Mapping[str, Any], base: Mapping[str, 
     authority = BinanceUsdmKoruRetainedPriceBarsAuthorityV1(
         "binance_fapi_price_bars_raw_csv_v1", f"research/koruusdt/data/{raw_name}", binding["input"]["sha256"],
         _utc_ns(binding["frozen_source_metadata"]["as_of_utc"]), "research/koruusdt/data/manifest.json",
-        _hash(BASE_MANIFEST.read_bytes()), base["manifest_sha256"], endpoint,
+        _hash(_input_bytes("manifest.json")), base["manifest_sha256"], endpoint,
         canonical_sha256({"endTime": END_MS - 1, "interval": "1h", "limit": 1000, "startTime": 1_782_136_500_000, parameter: "KORUUSDT"}),
         UtcInstant(1_782_136_500_000_000_000), UtcInstant(END_MS * 1_000_000),
         "binance.fapi.completed-kline-close-exclusive.v1", UtcInstant(1_787_529_600_000_000_000),
@@ -496,7 +515,7 @@ def _retained_price(kind: Any, execution: Mapping[str, Any], base: Mapping[str, 
         kind, INSTRUMENT, "1h", "2026-08-24", acquired, acquired, _hash(accepted_archive), _hash(accepted_checksum), authority
     )
     capture = _unwrap(capture_binance_usdm_koru_price_bars_from_retained_observations_v1(
-        request, (DATA / raw_name).read_bytes(), BASE_MANIFEST.read_bytes(), derived_bytes, accepted_archive, accepted_checksum
+        request, _input_bytes(raw_name), _input_bytes("manifest.json"), derived_bytes, accepted_archive, accepted_checksum
     ), f"retained {kind.value} capture")
     return _unwrap(normalize_binance_usdm_koru_price_bars_source_bounded_v1(capture), f"retained {kind.value} normalization")
 
@@ -836,14 +855,81 @@ def _expected_owner_records(
     )
 
 
-def _full_mode_config(max_seconds: int) -> dict[str, object]:
+def _log_entry_ref_from_canonical(value: object) -> LogEntryRef:
+    if type(value) is not dict or set(value) != {"log_name", "log_sequence", "receipt_hash"}:
+        raise ValueError("input snapshot publication entry ref is invalid")
+    try:
+        entry_ref = LogEntryRef(value["log_name"], value["log_sequence"], value["receipt_hash"])
+    except (TypeError, ValueError) as error:
+        raise ValueError("input snapshot publication entry ref is invalid") from error
+    if entry_ref.log_name != "research.raw_snapshots.v1":
+        raise ValueError("input snapshot publication log is invalid")
+    return entry_ref
+
+
+def _artifact_ref_from_canonical(value: object) -> ArtifactRef:
+    if type(value) is not dict or set(value) != {"type", "artifact_type", "schema_version", "content_hash"}:
+        raise ValueError("input snapshot manifest ref is invalid")
+    if value["type"] != "artifact_ref":
+        raise ValueError("input snapshot manifest ref is invalid")
+    try:
+        return ArtifactRef(value["artifact_type"], value["schema_version"], value["content_hash"])
+    except (TypeError, ValueError) as error:
+        raise ValueError("input snapshot manifest ref is invalid") from error
+
+
+def _canonical_input_snapshot_authority(value: Mapping[str, object]) -> dict[str, object]:
+    required = {
+        "type", "schema_version", "manifest_ref", "snapshot_id", "provenance_hash",
+        "publication_entry_ref", "input_catalog_sha256",
+    }
+    if type(value) is not dict or set(value) != required or value.get("type") != INPUT_SNAPSHOT_AUTHORITY_SCHEMA or value.get("schema_version") != 1:
+        raise ValueError("input snapshot authority schema mismatch")
+    manifest_ref = _artifact_ref_from_canonical(value["manifest_ref"])
+    entry_ref = _log_entry_ref_from_canonical(value["publication_entry_ref"])
+    if (
+        manifest_ref.artifact_type != "raw_blob_snapshot_manifest"
+        or manifest_ref.schema_version != 1
+        or any(type(value[key]) is not str for key in ("snapshot_id", "provenance_hash", "input_catalog_sha256"))
+    ):
+        raise ValueError("input snapshot authority identity mismatch")
+    canonical = {
+        "type": INPUT_SNAPSHOT_AUTHORITY_SCHEMA,
+        "schema_version": 1,
+        "manifest_ref": manifest_ref.to_canonical_dict(),
+        "snapshot_id": value["snapshot_id"],
+        "provenance_hash": value["provenance_hash"],
+        "publication_entry_ref": {
+            "log_name": entry_ref.log_name,
+            "log_sequence": entry_ref.log_sequence,
+            "receipt_hash": entry_ref.receipt_hash,
+        },
+        "input_catalog_sha256": value["input_catalog_sha256"],
+    }
+    if canonical != value:
+        raise ValueError("input snapshot authority is noncanonical")
+    return canonical
+
+
+def _full_mode_config(max_seconds: int, input_snapshot_authority: Mapping[str, object]) -> dict[str, object]:
     return {
         "type": "koru_retained_preflight_full_mode_config_v1",
         "schema_version": 1,
         "max_seconds": _validate_full_max_seconds(max_seconds),
         "hard_cap_seconds": MAX_FULL_SECONDS,
         "owner_log": OWNER_LOG,
-        "input_snapshot": "linux_ficlone_reflink_v1",
+        "input_snapshot": "raw_blob_snapshot_v1",
+        "input_snapshot_authority": _canonical_input_snapshot_authority(input_snapshot_authority),
+        "source_projection_resume": "forbidden_replay_retained_input",
+    }
+
+
+def _raw_snapshot_catalog_config() -> dict[str, object]:
+    return {
+        "type": "koru_retained_preflight_raw_snapshot_catalog_config_v1",
+        "schema_version": 1,
+        "input_snapshot": "raw_blob_snapshot_v1",
+        "owner_log": "research.raw_snapshots.v1",
         "source_projection_resume": "forbidden_replay_retained_input",
     }
 
@@ -868,10 +954,34 @@ def _catalog_source_paths() -> tuple[Path, ...]:
         *(AUTHORITY_ROOT.rglob("*")),
         *(DATA / relative for relative in files),
     }
-    selected = tuple(sorted((path for path in paths if path.is_file()), key=_input_relative))
+    selected = tuple(sorted((path for path in paths if path.is_file() or path.is_symlink()), key=_input_relative))
+    if any(path.is_symlink() for path in selected):
+        raise ValueError("retained input catalog contains a symlink")
     if not selected or _input_relative(AUTHORITY_MANIFEST) not in {_input_relative(path) for path in selected}:
         raise ValueError("retained input catalog is incomplete")
     return selected
+
+
+def _read_regular_source_bytes(path: Path) -> bytes:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise ValueError(f"retained input is unavailable: {path}") from error
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"retained input is not regular: {path}")
+        chunks: list[bytes] = []
+        while chunk := os.read(descriptor, 1024 * 1024):
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    raw = b"".join(chunks)
+    if before.st_dev != after.st_dev or before.st_ino != after.st_ino or before.st_size != after.st_size:
+        raise ValueError(f"retained input changed while reading: {path}")
+    return raw
 
 
 def _catalog_digest(value: Mapping[str, object]) -> str:
@@ -883,7 +993,7 @@ def _catalog_digest(value: Mapping[str, object]) -> str:
 def _build_input_catalog(config: Mapping[str, object]) -> dict[str, object]:
     rows = []
     for path in _catalog_source_paths():
-        raw = path.read_bytes()
+        raw = _read_regular_source_bytes(path)
         rows.append({"path": _input_relative(path), "sha256": _hash(raw), "size_bytes": len(raw)})
     catalog: dict[str, object] = {
         "type": INPUT_CATALOG_SCHEMA,
@@ -901,7 +1011,7 @@ def _validate_input_catalog(catalog: Mapping[str, object]) -> None:
         raise ValueError("input catalog schema mismatch")
     if catalog["type"] != INPUT_CATALOG_SCHEMA or catalog["schema_version"] != 1:
         raise ValueError("input catalog identity mismatch")
-    if type(catalog["full_mode_config"]) is not dict or type(catalog["files"]) is not list:
+    if catalog["full_mode_config"] != _raw_snapshot_catalog_config() or type(catalog["files"]) is not list:
         raise ValueError("input catalog values mismatch")
     if catalog["catalog_sha256"] != _catalog_digest(catalog):
         raise ValueError("input catalog self-hash mismatch")
@@ -917,11 +1027,108 @@ def _validate_input_catalog(catalog: Mapping[str, object]) -> None:
             or ".." in Path(path).parts
             or type(digest) is not str
             or type(size) is not int
+            or size < 0
         ):
             raise ValueError("input catalog file row mismatch")
         paths.append(path)
-    if paths != sorted(paths) or len(set(paths)) != len(paths):
+    if not paths or paths != sorted(paths) or len(set(paths)) != len(paths):
         raise ValueError("input catalog file cover mismatch")
+
+
+def _snapshot_member_key(path: str) -> str:
+    return "retained/" + hashlib.sha256(path.encode("ascii")).hexdigest()
+
+
+def _snapshot_member_mapping(catalog: Mapping[str, object]) -> dict[str, str]:
+    mapping = {
+        cast(str, row["path"]): _snapshot_member_key(cast(str, row["path"]))
+        for row in cast(list[dict[str, object]], catalog["files"])
+    }
+    if len(mapping) != len(catalog["files"]) or len(set(mapping.values())) != len(mapping):
+        raise ValueError("input snapshot member key mapping is invalid")
+    return mapping
+
+
+def _input_snapshot_authority(publication: object, catalog: Mapping[str, object]) -> dict[str, object]:
+    manifest = publication.manifest
+    return {
+        "type": INPUT_SNAPSHOT_AUTHORITY_SCHEMA,
+        "schema_version": 1,
+        "manifest_ref": publication.manifest_ref.to_canonical_dict(),
+        "snapshot_id": manifest.snapshot_id,
+        "provenance_hash": manifest.provenance_hash,
+        "publication_entry_ref": {
+            "log_name": publication.publication_entry_ref.log_name,
+            "log_sequence": publication.publication_entry_ref.log_sequence,
+            "receipt_hash": publication.publication_entry_ref.receipt_hash,
+        },
+        "input_catalog_sha256": catalog["catalog_sha256"],
+    }
+
+
+def _open_input_snapshot_authority(
+    foundation_root: Path, input_snapshot_authority: Mapping[str, object],
+) -> tuple[dict[str, Any], RawBlobSnapshotView]:
+    authority = _canonical_input_snapshot_authority(input_snapshot_authority)
+    manifest_ref = _artifact_ref_from_canonical(authority["manifest_ref"])
+    entry_ref = _log_entry_ref_from_canonical(authority["publication_entry_ref"])
+    view = open_verified_raw_blob_snapshot(LocalFoundation(foundation_root), manifest_ref, entry_ref)
+    manifest = view.manifest
+    provenance = manifest.provenance
+    if (
+        manifest.snapshot_id != authority["snapshot_id"]
+        or manifest.provenance_hash != authority["provenance_hash"]
+        or not isinstance(provenance, Mapping)
+        or set(provenance) != {"type", "schema_version", "input_catalog", "member_keys"}
+        or provenance["type"] != RAW_SNAPSHOT_PROVENANCE_SCHEMA
+        or provenance["schema_version"] != 1
+        or not isinstance(provenance["input_catalog"], Mapping)
+        or not isinstance(provenance["member_keys"], Mapping)
+    ):
+        raise ValueError("input snapshot authority does not bind manifest provenance")
+    catalog = cast(dict[str, Any], json.loads(canonical_bytes(provenance["input_catalog"])))
+    _validate_input_catalog(catalog)
+    if catalog["catalog_sha256"] != authority["input_catalog_sha256"]:
+        raise ValueError("input snapshot authority does not bind catalog")
+    member_keys = provenance["member_keys"]
+    expected_mapping = _snapshot_member_mapping(catalog)
+    if member_keys != expected_mapping:
+        raise ValueError("input snapshot manifest member mapping mismatch")
+    actual = {member.member_key for member in manifest.members}
+    if actual != set(expected_mapping.values()):
+        raise ValueError("input snapshot manifest member cover mismatch")
+    for row in cast(list[dict[str, object]], catalog["files"]):
+        raw = view.member_bytes(expected_mapping[cast(str, row["path"])])
+        if _hash(raw) != row["sha256"] or len(raw) != row["size_bytes"]:
+            raise ValueError("input snapshot manifest member mismatch")
+    return catalog, view
+
+
+def prepare_input_snapshot_authority(foundation_root: Path) -> dict[str, object]:
+    """Publish exact retained bytes before a timed full preflight begins."""
+    catalog = _build_input_catalog(_raw_snapshot_catalog_config())
+    _validate_input_catalog(catalog)
+    members = tuple(
+        RawBlobSnapshotSourceMember(
+            _snapshot_member_mapping(catalog)[cast(str, row["path"])],
+            _read_regular_source_bytes(DATA.parent / cast(str, row["path"])),
+            "0644",
+        )
+        for row in cast(list[dict[str, object]], catalog["files"])
+    )
+    publication = publish_raw_blob_snapshot(
+        LocalFoundation(foundation_root),
+        members=members,
+        provenance={
+            "type": RAW_SNAPSHOT_PROVENANCE_SCHEMA,
+            "schema_version": 1,
+            "input_catalog": catalog,
+            "member_keys": _snapshot_member_mapping(catalog),
+        },
+    )
+    authority = _input_snapshot_authority(publication, catalog)
+    _open_input_snapshot_authority(foundation_root, authority)
+    return authority
 
 
 def _atomic_write(path: Path, value: Mapping[str, object]) -> None:
@@ -968,140 +1175,6 @@ def _fsync_directory(path: Path) -> None:
         os.close(descriptor)
 
 
-def _ficlone_ioctl(destination_fd: int, source_fd: int) -> None:
-    """Use Linux's real reflink ioctl; tests may replace this narrow seam."""
-    fcntl.ioctl(destination_fd, FICLONE, source_fd)
-
-
-def _hash_fd(descriptor: int) -> tuple[str, int]:
-    os.lseek(descriptor, 0, os.SEEK_SET)
-    digest = hashlib.sha256()
-    size = 0
-    while chunk := os.read(descriptor, 1024 * 1024):
-        digest.update(chunk)
-        size += len(chunk)
-    os.lseek(descriptor, 0, os.SEEK_SET)
-    return "sha256:" + digest.hexdigest(), size
-
-
-def _require_regular(stat_result: os.stat_result, label: str) -> None:
-    if not stat.S_ISREG(stat_result.st_mode):
-        raise SnapshotCatalogMismatch(f"{label} is not a regular file")
-
-
-def _clone_held_file(source: Path, destination: Path, digest: str, size: int) -> None:
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    try:
-        source_fd = os.open(source, flags)
-    except OSError as error:
-        raise SnapshotCatalogMismatch(f"retained input is unavailable: {source}") from error
-    try:
-        source_stat = os.fstat(source_fd)
-        _require_regular(source_stat, f"retained input {source}")
-        try:
-            source_digest, source_size = _hash_fd(source_fd)
-        except OSError as error:
-            raise SnapshotCatalogMismatch(f"retained input cannot be read: {source}") from error
-        if source_digest != digest or source_size != size:
-            raise SnapshotCatalogMismatch(f"retained input changed while snapshotting: {source}")
-        destination_fd = os.open(
-            destination,
-            os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
-            0o600,
-        )
-        try:
-            destination_stat = os.fstat(destination_fd)
-            _require_regular(destination_stat, f"snapshot destination {destination}")
-            if source_stat.st_dev != destination_stat.st_dev:
-                raise SnapshotCapabilityUnavailable("FICLONE source and destination are on different devices")
-            if source_stat.st_ino == destination_stat.st_ino:
-                raise SnapshotCapabilityUnavailable("FICLONE source and destination share an inode")
-            try:
-                _ficlone_ioctl(destination_fd, source_fd)
-            except OSError as error:
-                raise SnapshotCapabilityUnavailable("FICLONE is unavailable for retained input snapshot") from error
-            destination_stat = os.fstat(destination_fd)
-            _require_regular(destination_stat, f"snapshot destination {destination}")
-            if source_stat.st_dev != destination_stat.st_dev or source_stat.st_ino == destination_stat.st_ino:
-                raise SnapshotCapabilityUnavailable("FICLONE did not create a distinct same-device file")
-            try:
-                destination_digest, destination_size = _hash_fd(destination_fd)
-            except OSError as error:
-                raise SnapshotCapabilityUnavailable("cannot verify reflink snapshot") from error
-            if destination_digest != digest or destination_size != size:
-                raise SnapshotCatalogMismatch(f"reflink snapshot does not match catalog: {source}")
-            try:
-                os.fchmod(destination_fd, 0o444)
-            except OSError as error:
-                raise SnapshotCapabilityUnavailable("cannot make reflink snapshot read-only") from error
-        finally:
-            os.close(destination_fd)
-    finally:
-        os.close(source_fd)
-
-
-def _probe_ficlone(staging: Path) -> None:
-    probe = staging / ".ficlone-probe"
-    source = probe / "source"
-    destination = probe / "destination"
-    expected = b"koru-ficlone-probe-v1"
-    try:
-        probe.mkdir()
-        source.write_bytes(expected)
-        _clone_held_file(source, destination, _hash(expected), len(expected))
-        with source.open("r+b") as handle:
-            handle.write(b"X")
-            handle.flush()
-            os.fsync(handle.fileno())
-        if destination.read_bytes() != expected:
-            raise SnapshotCapabilityUnavailable("FICLONE destination changed after source mutation")
-    except OSError as error:
-        raise SnapshotCapabilityUnavailable("cannot capability-probe FICLONE in staging") from error
-    finally:
-        shutil.rmtree(probe, ignore_errors=True)
-
-
-def _freeze_input_snapshot(input_root: Path, catalog: Mapping[str, object]) -> None:
-    _validate_input_catalog(catalog)
-    input_root.mkdir(parents=True, exist_ok=True)
-    for row in cast(list[dict[str, object]], catalog["files"]):
-        relative, digest, size = cast(str, row["path"]), cast(str, row["sha256"]), cast(int, row["size_bytes"])
-        destination = input_root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        _clone_held_file(DATA.parent / relative, destination, digest, size)
-    _atomic_write(input_root / "catalog.json", catalog)
-    for path in sorted(input_root.rglob("*"), reverse=True):
-        path.chmod(0o555 if path.is_dir() else 0o444)
-    input_root.chmod(0o555)
-
-
-def _verify_input_snapshot(input_root: Path) -> dict[str, Any]:
-    catalog = _load_canonical(input_root / "catalog.json", "input catalog")
-    _validate_input_catalog(catalog)
-    expected = {"catalog.json"}
-    for row in catalog["files"]:
-        assert type(row) is dict
-        relative = row["path"]
-        expected.add(relative)
-        path = input_root / relative
-        if not path.is_file() or _hash(path.read_bytes()) != row["sha256"] or path.stat().st_size != row["size_bytes"]:
-            raise ValueError(f"frozen input catalog mismatch: {relative}")
-    actual = {path.relative_to(input_root).as_posix() for path in input_root.rglob("*") if path.is_file()}
-    if actual != expected:
-        raise ValueError("frozen input catalog file cover mismatch")
-    return catalog
-
-
-def _configure_input_snapshot(input_root: Path) -> None:
-    global DATA, AUTHORITY_ROOT, AUTHORITY_MANIFEST, EXECUTION_MANIFEST, BASE_MANIFEST, GAP_AUDIT
-    DATA = input_root / "data"
-    AUTHORITY_ROOT = DATA / "public_preflight_sources_v1"
-    AUTHORITY_MANIFEST = AUTHORITY_ROOT / "manifest.json"
-    EXECUTION_MANIFEST = DATA / "execution_data_manifest.json"
-    BASE_MANIFEST = DATA / "manifest.json"
-    GAP_AUDIT = DATA / "execution_gap_impact.json"
-
-
 def _attempt_preimage(
     config: Mapping[str, object], catalog_sha256: str, retry_ordinal: int, parent_attempt_id: str | None,
 ) -> dict[str, object]:
@@ -1109,10 +1182,14 @@ def _attempt_preimage(
         raise ValueError("retry ordinal must be a non-negative integer")
     if parent_attempt_id is not None and (type(parent_attempt_id) is not str or not parent_attempt_id):
         raise ValueError("parent attempt ID must be a non-empty string when supplied")
+    authority = _canonical_input_snapshot_authority(cast(Mapping[str, object], config["input_snapshot_authority"]))
+    if authority["input_catalog_sha256"] != catalog_sha256:
+        raise ValueError("input snapshot authority catalog identity mismatch")
     return {
         "type": ATTEMPT_SCHEMA,
         "schema_version": 1,
         "full_mode_config": dict(config),
+        "input_snapshot_authority": authority,
         "frozen_input_catalog_sha256": catalog_sha256,
         "retry_ordinal": retry_ordinal,
         "parent_attempt_id": parent_attempt_id,
@@ -1168,29 +1245,19 @@ def _reserve_attempt(root: Path, identity: Mapping[str, object]) -> None:
     attempt_id = identity["attempt_id"]
     if type(attempt_id) is not str or attempt_id != _attempt_id(identity):
         raise ValueError("attempt identity is invalid")
-    paths = _attempt_paths(root, attempt_id)
-    _create_new_json(paths["identity"], identity)
+    _create_new_json(_attempt_paths(root, attempt_id)["identity"], identity)
 
 
 def _load_attempt_identity(root: Path, attempt_id: str) -> dict[str, Any]:
     identity = _load_canonical(_attempt_paths(root, attempt_id)["identity"], "attempt identity")
-    if identity.get("attempt_id") != attempt_id or attempt_id != _attempt_id(identity):
+    if (
+        identity.get("attempt_id") != attempt_id
+        or attempt_id != _attempt_id(identity)
+        or identity.get("input_snapshot_authority") != identity.get("full_mode_config", {}).get("input_snapshot_authority")
+    ):
         raise ValueError("attempt identity conflict")
+    _canonical_input_snapshot_authority(cast(Mapping[str, object], identity["input_snapshot_authority"]))
     return identity
-
-
-def _snapshot_failure_receipt(identity: Mapping[str, object], outcome: str) -> dict[str, object]:
-    if outcome not in {SnapshotCapabilityUnavailable.outcome, SnapshotCatalogMismatch.outcome}:
-        raise ValueError("unsupported snapshot failure outcome")
-    return {
-        "type": RECEIPT_SCHEMA,
-        "schema_version": 1,
-        "outcome": outcome,
-        "attempt_id": identity["attempt_id"],
-        "attempt_identity": dict(identity),
-        "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
-        "final_authority": [],
-    }
 
 
 def _elapsed_timings(value: Mapping[str, object], *, complete: bool) -> dict[str, int]:
@@ -1207,16 +1274,20 @@ def _elapsed_timings(value: Mapping[str, object], *, complete: bool) -> dict[str
 
 
 def _child_full_preflight(
-    staging: Path, attempt_id: str, catalog_sha256: str, parent_timings: Mapping[str, object],
+    staging: Path, attempt_id: str, input_snapshot_authority: Mapping[str, object],
+    raw_snapshot_foundation_root: Path, parent_timings: Mapping[str, object],
 ) -> None:
+    global _RAW_INPUT_VIEW, _RAW_INPUT_MEMBER_KEYS
     timings = _elapsed_timings(parent_timings, complete=False)
     child_started_at = time.monotonic_ns()
-    catalog = _verify_input_snapshot(staging / "input")
-    if catalog["catalog_sha256"] != catalog_sha256:
-        raise ValueError("child input catalog identity mismatch")
-    _configure_input_snapshot(staging / "input")
-    smoke(staging / "foundation")
-    source = build_source()
+    catalog, _RAW_INPUT_VIEW = _open_input_snapshot_authority(raw_snapshot_foundation_root, input_snapshot_authority)
+    _RAW_INPUT_MEMBER_KEYS = _snapshot_member_mapping(catalog)
+    try:
+        smoke(staging / "foundation")
+        source = build_source()
+    finally:
+        _RAW_INPUT_VIEW = None
+        _RAW_INPUT_MEMBER_KEYS = None
     foundation = LocalFoundation(staging / "foundation")
     store = KoruEconomicsArtifactStoreV1(foundation)
     _append_owner_record(foundation, _source_projection_record(source))
@@ -1251,11 +1322,12 @@ def _child_full_preflight(
         "stopped_before": "Experiment_Holdout_and_Backtest",
     }
     reader_set = _reader_set_record(source, economics, readers)
-    marker = {
+    _atomic_write(staging / COMPLETE_MARKER, {
         "type": "koru_retained_preflight_complete_v1",
         "schema_version": 1,
         "attempt_id": attempt_id,
-        "input_catalog_sha256": catalog_sha256,
+        "input_catalog_sha256": catalog["catalog_sha256"],
+        "input_snapshot_authority": _canonical_input_snapshot_authority(input_snapshot_authority),
         "expected_owner_records": list(expected_records),
         "owner_log": owner_log,
         "reader_set": {
@@ -1264,8 +1336,7 @@ def _child_full_preflight(
         },
         "timings": {**timings, "child_elapsed_ns": time.monotonic_ns() - child_started_at},
         "result": result,
-    }
-    _atomic_write(staging / COMPLETE_MARKER, marker)
+    })
 
 
 def _same_owner_log_cover(left: Mapping[str, object], right: Mapping[str, object]) -> bool:
@@ -1283,19 +1354,18 @@ def _same_owner_log_cover(left: Mapping[str, object], right: Mapping[str, object
 def _validate_completed_attempt(
     staging: Path, identity: Mapping[str, object], expected_parent_timings: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    catalog = _verify_input_snapshot(staging / "input")
     marker = _load_canonical(staging / COMPLETE_MARKER, "child complete marker")
     required = {
-        "type", "schema_version", "attempt_id", "input_catalog_sha256", "expected_owner_records",
-        "owner_log", "reader_set", "timings", "result",
+        "type", "schema_version", "attempt_id", "input_catalog_sha256", "input_snapshot_authority",
+        "expected_owner_records", "owner_log", "reader_set", "timings", "result",
     }
     if (
         set(marker) != required
         or marker["type"] != "koru_retained_preflight_complete_v1"
         or marker["schema_version"] != 1
         or marker["attempt_id"] != identity["attempt_id"]
-        or marker["input_catalog_sha256"] != catalog["catalog_sha256"]
         or marker["input_catalog_sha256"] != identity["frozen_input_catalog_sha256"]
+        or marker["input_snapshot_authority"] != identity["input_snapshot_authority"]
         or type(marker["expected_owner_records"]) is not list
         or not all(type(record) is dict for record in marker["expected_owner_records"])
         or type(marker["result"]) is not dict
@@ -1360,10 +1430,14 @@ def _child_timeout_test(staging: Path) -> None:
     time.sleep(60)
 
 
-def _child_command(staging: Path, attempt_id: str, catalog_sha256: str) -> list[str]:
+def _child_command(
+    staging: Path, attempt_id: str, input_snapshot_authority: Mapping[str, object], raw_snapshot_foundation_root: Path,
+) -> list[str]:
     return [
         sys.executable, str(Path(__file__).resolve()), "--_child", "--staging", str(staging),
-        "--attempt-id", attempt_id, "--input-catalog-sha256", catalog_sha256,
+        "--attempt-id", attempt_id,
+        "--input-snapshot-authority", _canonical_json(_canonical_input_snapshot_authority(input_snapshot_authority)).decode(),
+        "--raw-snapshot-foundation-root", str(raw_snapshot_foundation_root),
     ]
 
 
@@ -1407,6 +1481,7 @@ def _timeout_state(
         "schema_version": 1,
         "attempt_id": identity["attempt_id"],
         "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "input_snapshot_authority": identity["input_snapshot_authority"],
         "child_status": {"exit_code": child_status, "timed_out": True},
         "archive_state": "archived",
         "cleanup_state": "process_group_reaped",
@@ -1416,8 +1491,8 @@ def _timeout_state(
 
 def _validate_timeout_state(state: Mapping[str, object], identity: Mapping[str, object]) -> dict[str, int]:
     required = {
-        "type", "schema_version", "attempt_id", "input_catalog_sha256", "child_status",
-        "archive_state", "cleanup_state", "timings",
+        "type", "schema_version", "attempt_id", "input_catalog_sha256", "input_snapshot_authority",
+        "child_status", "archive_state", "cleanup_state", "timings",
     }
     child_status = state.get("child_status")
     timings = state.get("timings")
@@ -1427,6 +1502,7 @@ def _validate_timeout_state(state: Mapping[str, object], identity: Mapping[str, 
         or state.get("schema_version") != 1
         or state.get("attempt_id") != identity.get("attempt_id")
         or state.get("input_catalog_sha256") != identity.get("frozen_input_catalog_sha256")
+        or state.get("input_snapshot_authority") != identity.get("input_snapshot_authority")
         or type(child_status) is not dict
         or child_status.get("timed_out") is not True
         or state.get("archive_state") != "archived"
@@ -1446,6 +1522,7 @@ def _timeout_receipt(identity: Mapping[str, object], state: Mapping[str, object]
         "attempt_id": identity["attempt_id"],
         "attempt_identity": dict(identity),
         "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "input_snapshot_authority": identity["input_snapshot_authority"],
         "final_authority": [],
         "child_status": state["child_status"],
         "archive_state": state["archive_state"],
@@ -1488,6 +1565,7 @@ def _success_receipt(root: Path, identity: Mapping[str, object], validated: Mapp
         "attempt_id": attempt_id,
         "attempt_identity": dict(identity),
         "input_catalog_sha256": identity["frozen_input_catalog_sha256"],
+        "input_snapshot_authority": identity["input_snapshot_authority"],
         "timings": validated["timings"],
         "final_authority": [{
             "attempt_container": f"attempts/{attempt_id}",
@@ -1500,7 +1578,7 @@ def _success_receipt(root: Path, identity: Mapping[str, object], validated: Mapp
 def _validate_receipt(receipt: Mapping[str, object], identity: Mapping[str, object]) -> None:
     common = {
         "type", "schema_version", "outcome", "attempt_id", "attempt_identity",
-        "input_catalog_sha256", "final_authority",
+        "input_catalog_sha256", "input_snapshot_authority", "final_authority",
     }
     if (
         not common <= set(receipt)
@@ -1509,6 +1587,7 @@ def _validate_receipt(receipt: Mapping[str, object], identity: Mapping[str, obje
         or receipt.get("attempt_id") != identity.get("attempt_id")
         or receipt.get("attempt_identity") != identity
         or receipt.get("input_catalog_sha256") != identity.get("frozen_input_catalog_sha256")
+        or receipt.get("input_snapshot_authority") != identity.get("input_snapshot_authority")
         or type(receipt.get("final_authority")) is not list
     ):
         raise ValueError("receipt identity conflict")
@@ -1533,12 +1612,6 @@ def _validate_receipt(receipt: Mapping[str, object], identity: Mapping[str, obje
         ):
             raise ValueError("success receipt conflict")
         _elapsed_timings(timings, complete=True)
-    elif receipt["outcome"] in {
-        SnapshotCapabilityUnavailable.outcome,
-        SnapshotCatalogMismatch.outcome,
-    }:
-        if set(receipt) != common or receipt["final_authority"] != []:
-            raise ValueError("snapshot failure receipt conflict")
     else:
         raise ValueError("receipt outcome conflict")
 
@@ -1624,55 +1697,34 @@ def read_success_receipt(root: Path, attempt_id: str) -> dict[str, object]:
 
 
 def full_preflight(
-    attempt_root: Path, max_seconds: int = DEFAULT_FULL_MAX_SECONDS, *, retry_ordinal: int = 0,
-    parent_attempt_id: str | None = None, _child_test_mode: str | None = None,
+    attempt_root: Path, max_seconds: int = DEFAULT_FULL_MAX_SECONDS, *,
+    input_snapshot_authority: Mapping[str, object], raw_snapshot_foundation_root: Path,
+    retry_ordinal: int = 0, parent_attempt_id: str | None = None, _child_test_mode: str | None = None,
 ) -> dict[str, object]:
-    """Run one isolated full attempt; no result is returned before its receipt exists."""
+    """Run one isolated full attempt from a previously published raw snapshot."""
     if _child_test_mode not in (None, _TIMEOUT_TEST_MODE):
         raise ValueError("unsupported child test mode")
-    config = _full_mode_config(max_seconds)
+    authority = _canonical_input_snapshot_authority(input_snapshot_authority)
+    snapshot_opened_at = time.monotonic_ns()
+    catalog, _view = _open_input_snapshot_authority(raw_snapshot_foundation_root, authority)
+    snapshot_open_elapsed_ns = time.monotonic_ns() - snapshot_opened_at
+    config = _full_mode_config(max_seconds, authority)
     root = _prepare_attempt_root(attempt_root)
     _recover_pending_attempts(root)
-    catalog_started_at = time.monotonic_ns()
-    catalog = _build_input_catalog(config)
-    catalog_elapsed_ns = time.monotonic_ns() - catalog_started_at
     catalog_sha256 = cast(str, catalog["catalog_sha256"])
-    identity = _attempt_identity(_attempt_preimage(
-        config, catalog_sha256, retry_ordinal, parent_attempt_id,
-    ))
-    attempt_id = identity["attempt_id"]
-    assert type(attempt_id) is str
+    identity = _attempt_identity(_attempt_preimage(config, catalog_sha256, retry_ordinal, parent_attempt_id))
+    attempt_id = cast(str, identity["attempt_id"])
     paths = _attempt_paths(root, attempt_id)
     with _attempt_lock(paths["lock"]):
         _reserve_attempt(root, identity)
         paths["staging"].mkdir(parents=True)
-        clone_started_at = time.monotonic_ns()
-        try:
-            _probe_ficlone(paths["staging"])
-            _freeze_input_snapshot(paths["staging"] / "input", catalog)
-            clone_elapsed_ns = time.monotonic_ns() - clone_started_at
-            verify_started_at = time.monotonic_ns()
-            _verify_input_snapshot(paths["staging"] / "input")
-            verify_elapsed_ns = time.monotonic_ns() - verify_started_at
-        except (SnapshotFailure, ValueError) as error:
-            outcome = error.outcome if isinstance(error, SnapshotFailure) else SnapshotCatalogMismatch.outcome
-            shutil.rmtree(paths["staging"])
-            receipt = _snapshot_failure_receipt(identity, outcome)
-            _create_new_json(paths["receipt"], receipt)
-            raise FullPreflightSnapshotFailed(outcome, paths["receipt"]) from error
-        parent_timings = {
-            "catalog_elapsed_ns": catalog_elapsed_ns,
-            "clone_elapsed_ns": clone_elapsed_ns,
-            "verify_elapsed_ns": verify_elapsed_ns,
-        }
+        parent_timings = {"snapshot_open_elapsed_ns": snapshot_open_elapsed_ns}
         child_started_at = time.monotonic_ns()
-        command = _child_command(paths["staging"], attempt_id, catalog_sha256)
+        command = _child_command(paths["staging"], attempt_id, authority, raw_snapshot_foundation_root)
         command.extend(["--_parent-timings", json.dumps(parent_timings, sort_keys=True)])
         if _child_test_mode is not None:
             command.extend(["--_test-mode", _child_test_mode])
-        process = subprocess.Popen(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
-        )
+        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         timed_out, child_status = _wait_for_child(process, max_seconds, time.monotonic())
         if timed_out:
             timings = {**parent_timings, "child_elapsed_ns": time.monotonic_ns() - child_started_at}
@@ -1691,54 +1743,67 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--smoke", action="store_true", help="bounded source authority validation; default")
+    mode.add_argument("--prepare-input-snapshot", action="store_true", help="publish retained raw bytes before full preflight")
     mode.add_argument("--full", action="store_true", help="isolated retained source/economics/reader attempt; no Experiment")
     mode.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-seconds", type=int, default=DEFAULT_FULL_MAX_SECONDS, help="full-only parent deadline (1-300; default: 300)")
-    parser.add_argument("--foundation-root", type=Path, help="smoke-only Foundation root; full treats this as a legacy alias for --attempt-root")
+    parser.add_argument("--foundation-root", type=Path, help="smoke-only Foundation root")
     parser.add_argument("--attempt-root", type=Path, help="full-attempt receipt, staging, archive, and published-container root")
+    parser.add_argument("--raw-snapshot-foundation-root", type=Path, help="durable raw snapshot Foundation root")
+    parser.add_argument("--input-snapshot-authority", help="canonical raw snapshot authority JSON")
     parser.add_argument("--retry-ordinal", type=int, default=0, help="new full-attempt retry ordinal (default: 0)")
     parser.add_argument("--parent-attempt-id", help="optional parent attempt ID for a retry")
     parser.add_argument("--staging", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--attempt-id", help=argparse.SUPPRESS)
-    parser.add_argument("--input-catalog-sha256", help=argparse.SUPPRESS)
     parser.add_argument("--_parent-timings", help=argparse.SUPPRESS)
     parser.add_argument("--_test-mode", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if args._child:
-        if not (args.staging and args.attempt_id and args.input_catalog_sha256 and args._parent_timings):
-            parser.error("child requires staging, attempt identity, catalog identity, and timings")
+        if not (args.staging and args.attempt_id and args._parent_timings and args.raw_snapshot_foundation_root and args.input_snapshot_authority):
+            parser.error("child requires staging, attempt identity, snapshot authority, snapshot Foundation, and timings")
         try:
+            authority = json.loads(args.input_snapshot_authority)
+            if type(authority) is not dict:
+                raise ValueError("input snapshot authority must be an object")
+            authority = _canonical_input_snapshot_authority(authority)
             parent_timings = json.loads(args._parent_timings)
             if type(parent_timings) is not dict:
                 raise ValueError("parent timings must be an object")
             _elapsed_timings(parent_timings, complete=False)
-        except ValueError as error:
+        except (ValueError, json.JSONDecodeError) as error:
             parser.error(str(error))
         with deny_network():
             if args._test_mode == _TIMEOUT_TEST_MODE:
                 _child_timeout_test(args.staging)
             elif args._test_mode is None:
-                _child_full_preflight(args.staging, args.attempt_id, args.input_catalog_sha256, parent_timings)
+                _child_full_preflight(args.staging, args.attempt_id, authority, args.raw_snapshot_foundation_root, parent_timings)
             else:
                 parser.error("unsupported child test mode")
         return 0
-    if args.full:
+    if args.prepare_input_snapshot:
+        if args.foundation_root is not None or args.attempt_root is not None or args.input_snapshot_authority is not None or args.raw_snapshot_foundation_root is None:
+            parser.error("--prepare-input-snapshot requires only --raw-snapshot-foundation-root")
+        with deny_network():
+            result = prepare_input_snapshot_authority(args.raw_snapshot_foundation_root)
+    elif args.full:
         try:
             _validate_full_max_seconds(args.max_seconds)
-            if args.attempt_root is not None and args.foundation_root is not None:
-                parser.error("use only one of --attempt-root and --foundation-root")
-            attempt_root = args.attempt_root or args.foundation_root
-            if attempt_root is None:
-                parser.error("--full requires --attempt-root")
+            if args.foundation_root is not None or args.attempt_root is None or args.raw_snapshot_foundation_root is None or args.input_snapshot_authority is None:
+                parser.error("--full requires --attempt-root, --raw-snapshot-foundation-root, and --input-snapshot-authority")
+            parsed = json.loads(args.input_snapshot_authority)
+            if type(parsed) is not dict:
+                raise ValueError("input snapshot authority must be an object")
+            authority = _canonical_input_snapshot_authority(parsed)
             with deny_network():
                 result = full_preflight(
-                    attempt_root, args.max_seconds, retry_ordinal=args.retry_ordinal,
-                    parent_attempt_id=args.parent_attempt_id,
+                    args.attempt_root, args.max_seconds, input_snapshot_authority=authority,
+                    raw_snapshot_foundation_root=args.raw_snapshot_foundation_root,
+                    retry_ordinal=args.retry_ordinal, parent_attempt_id=args.parent_attempt_id,
                 )
-        except (FullPreflightDeadlineExceeded, FullPreflightSnapshotFailed) as error:
+        except FullPreflightDeadlineExceeded as error:
             print(f"{error}; no successful summary written", file=sys.stderr)
             return 1
-        except ValueError as error:
+        except (ValueError, json.JSONDecodeError) as error:
             parser.error(str(error))
     else:
         with deny_network():
