@@ -54,6 +54,15 @@ TIMEOUT_MARKER = "timeout.json"
 TIMING_KEYS = ("snapshot_open_elapsed_ns", "child_elapsed_ns")
 INPUT_SNAPSHOT_AUTHORITY_SCHEMA = "koru_retained_preflight_input_snapshot_authority_v1"
 RAW_SNAPSHOT_PROVENANCE_SCHEMA = "koru_retained_preflight_raw_snapshot_provenance_v1"
+SOURCE_PROJECTION_LOG = "research.source_projections.v1"
+SOURCE_PROJECTION_PUBLICATION_SCHEMA = "koru_source_projection_publication_authority_v1"
+SOURCE_PROJECTION_PUBLICATION_RECEIPT_SCHEMA = "koru_source_projection_publication_receipt_v1"
+SOURCE_PROJECTION_PUBLICATION_IDENTITY_SCHEMA = "koru_source_projection_publication_attempt_v1"
+SOURCE_PROJECTION_PUBLICATION_FACT_SCHEMA = "koru_source_projection_publication_fact_v1"
+DEFAULT_SOURCE_PROJECTION_MAX_SECONDS = 300
+MAX_SOURCE_PROJECTION_SECONDS = 900
+_SOURCE_PUBLICATION_TIMEOUT_TEST_MODE = "source-publication-timeout-v1"
+_SOURCE_PUBLICATION_FAILURE_TEST_MODE = "source-publication-failure-v1"
 _RAW_INPUT_VIEW: RawBlobSnapshotView | None = None
 _RAW_INPUT_MEMBER_KEYS: dict[str, str] | None = None
 TERMINATE_GRACE_SECONDS = 1.0
@@ -107,7 +116,9 @@ from crypto_quant_bundle_builder import (
     capture_binance_usdm_koru_price_bars_source_bounded_v1,
     normalize_binance_usdm_koru_funding_rate_history_source_bounded_v1,
     normalize_binance_usdm_koru_price_bars_source_bounded_v1,
+    open_binance_usdm_koru_tradifi_source_projection_authority_v1,
     publish_koru_tradifi_economics_bundle_v3,
+    serialize_binance_usdm_koru_tradifi_source_projection_authority_v1,
     verify_koru_tradifi_calendar_unit_authority_v1,
 )
 from crypto_quant_domain import (
@@ -121,7 +132,7 @@ from crypto_quant_domain import (
     canonical_bytes,
     canonical_sha256,
 )
-from crypto_quant_foundation import LocalFoundation, LogEntryRef
+from crypto_quant_foundation import LocalFoundation, LogCheckpoint, LogEntryRef
 from crypto_quant_research import (
     open_verified_raw_blob_snapshot,
     publish_raw_blob_snapshot,
@@ -942,7 +953,8 @@ def _input_relative(path: Path) -> str:
 
 
 def _catalog_source_paths() -> tuple[Path, ...]:
-    execution = _load(EXECUTION_MANIFEST)
+    authority = _authority_manifest()
+    execution, _base, _gap = _retained_manifests()
     files = _files(execution)
     paths = {
         AUTHORITY_MANIFEST,
@@ -951,13 +963,13 @@ def _catalog_source_paths() -> tuple[Path, ...]:
         GAP_AUDIT,
         DATA / "binance_mark_raw.csv",
         DATA / "binance_index_raw.csv",
-        *(AUTHORITY_ROOT.rglob("*")),
+        *(AUTHORITY_ROOT / row["filename"] for row in authority["members"]),
         *(DATA / relative for relative in files),
     }
-    selected = tuple(sorted((path for path in paths if path.is_file() or path.is_symlink()), key=_input_relative))
+    selected = tuple(sorted(paths, key=_input_relative))
     if any(path.is_symlink() for path in selected):
         raise ValueError("retained input catalog contains a symlink")
-    if not selected or _input_relative(AUTHORITY_MANIFEST) not in {_input_relative(path) for path in selected}:
+    if not selected or any(not path.is_file() for path in selected):
         raise ValueError("retained input catalog is incomplete")
     return selected
 
@@ -990,6 +1002,11 @@ def _catalog_digest(value: Mapping[str, object]) -> str:
     return _hash(_canonical_json(body))
 
 
+def _allowed_koru_discovery_input_member_cover() -> frozenset[str]:
+    """Canonical raw-member cover from retained manifests and authority sources."""
+    return frozenset(_snapshot_member_key(_input_relative(path)) for path in _catalog_source_paths())
+
+
 def _build_input_catalog(config: Mapping[str, object]) -> dict[str, object]:
     rows = []
     for path in _catalog_source_paths():
@@ -1002,6 +1019,8 @@ def _build_input_catalog(config: Mapping[str, object]) -> dict[str, object]:
         "files": rows,
         "catalog_sha256": "",
     }
+    if set(_snapshot_member_mapping(catalog).values()) != _allowed_koru_discovery_input_member_cover():
+        raise ValueError("input catalog does not have the exact KORU discovery member cover")
     catalog["catalog_sha256"] = _catalog_digest(catalog)
     return catalog
 
@@ -1129,6 +1148,331 @@ def prepare_input_snapshot_authority(foundation_root: Path) -> dict[str, object]
     authority = _input_snapshot_authority(publication, catalog)
     _open_input_snapshot_authority(foundation_root, authority)
     return authority
+
+
+@contextmanager
+def _raw_input_snapshot_context(catalog: Mapping[str, object], view: RawBlobSnapshotView) -> Iterator[None]:
+    """Temporarily route retained-source readers through a verified raw snapshot."""
+    global _RAW_INPUT_VIEW, _RAW_INPUT_MEMBER_KEYS
+    prior_view, prior_member_keys = _RAW_INPUT_VIEW, _RAW_INPUT_MEMBER_KEYS
+    _RAW_INPUT_VIEW, _RAW_INPUT_MEMBER_KEYS = view, _snapshot_member_mapping(catalog)
+    try:
+        yield
+    finally:
+        _RAW_INPUT_VIEW, _RAW_INPUT_MEMBER_KEYS = prior_view, prior_member_keys
+
+
+def _fixed_koru_discovery_scope() -> dict[str, object]:
+    return {
+        "timeline_window_start": UtcInstant(START_MS * 1_000_000).to_canonical_dict(),
+        "timeline_window_end_exclusive": UtcInstant(END_MS * 1_000_000).to_canonical_dict(),
+    }
+
+
+def _verify_koru_discovery_snapshot_scope(catalog: Mapping[str, object], view: RawBlobSnapshotView) -> dict[str, object]:
+    """Reject any partial or holdout raw snapshot before retained-source replay."""
+    allowed = _allowed_koru_discovery_input_member_cover()
+    if {member.member_key for member in view.manifest.members} != allowed:
+        raise ValueError("raw snapshot does not have the exact KORU discovery member cover")
+    with _raw_input_snapshot_context(catalog, view):
+        _authority_manifest()
+        _retained_manifests()
+    return _fixed_koru_discovery_scope()
+
+
+def _validate_source_projection_max_seconds(max_seconds: int) -> int:
+    if type(max_seconds) is not int or not 1 <= max_seconds <= MAX_SOURCE_PROJECTION_SECONDS:
+        raise ValueError(
+            "source-projection --max-seconds must be an integer from 1 to "
+            f"{MAX_SOURCE_PROJECTION_SECONDS}"
+        )
+    return max_seconds
+
+
+def _source_projection_attempt_id(value: object) -> str:
+    if (
+        type(value) is not str
+        or not 1 <= len(value) <= 128
+        or value[0] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        or any(character not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-" for character in value)
+    ):
+        raise ValueError("source-projection publication attempt ID is invalid")
+    return value
+
+
+def _source_projection_paths(root: Path, attempt_id: str) -> dict[str, Path]:
+    return {
+        "staging": root / ".source-projection-staging" / attempt_id,
+        "published": root / "source-projections" / attempt_id,
+        "timed_out": root / "source-projection-timed-out" / attempt_id,
+        "failed": root / "source-projection-failed" / attempt_id,
+        "receipt": root / "source-projection-receipts" / f"{attempt_id}.json",
+        "identity": root / "source-projection-identities" / f"{attempt_id}.json",
+        "lock": root / ".source-projection-locks" / f"{attempt_id}.lock",
+    }
+
+
+def _prepare_source_projection_publication_root(root: Path) -> Path:
+    root = root.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    names = (
+        ".source-projection-staging", "source-projections", "source-projection-timed-out",
+        "source-projection-failed", "source-projection-receipts", "source-projection-identities",
+        ".source-projection-locks",
+    )
+    for name in names:
+        (root / name).mkdir(exist_ok=True)
+    device = root.stat().st_dev
+    if any((root / name).stat().st_dev != device for name in names[:4]):
+        raise ValueError("source-projection publication locations must share a filesystem")
+    return root
+
+
+def _source_projection_identity(
+    raw_snapshot_authority: Mapping[str, object], publication_attempt_id: str,
+) -> dict[str, object]:
+    return {
+        "type": SOURCE_PROJECTION_PUBLICATION_IDENTITY_SCHEMA,
+        "schema_version": 1,
+        "publication_attempt_id": _source_projection_attempt_id(publication_attempt_id),
+        "raw_snapshot_authority": _canonical_input_snapshot_authority(raw_snapshot_authority),
+        "discovery_scope": _fixed_koru_discovery_scope(),
+    }
+
+
+def _source_projection_log_entry_ref_from_canonical(value: object) -> LogEntryRef:
+    if type(value) is not dict or set(value) != {"log_name", "log_sequence", "receipt_hash"}:
+        raise ValueError("source-projection publication entry ref is invalid")
+    try:
+        entry_ref = LogEntryRef(value["log_name"], value["log_sequence"], value["receipt_hash"])
+    except (TypeError, ValueError) as error:
+        raise ValueError("source-projection publication entry ref is invalid") from error
+    if entry_ref.log_name != SOURCE_PROJECTION_LOG:
+        raise ValueError("source-projection publication log is invalid")
+    return entry_ref
+
+
+def _source_projection_content_identity(source: Any) -> dict[str, object]:
+    return KoruTradifiSourceProjectionContentIdentityV2(
+        source.fragment_digest, source.request.request_hash,
+    ).to_canonical_dict()
+
+
+def _assert_exact_koru_source_projection_scope(source: Any) -> None:
+    if {
+        "timeline_window_start": source.request.timeline_window_start.to_canonical_dict(),
+        "timeline_window_end_exclusive": source.request.timeline_window_end_exclusive.to_canonical_dict(),
+    } != _fixed_koru_discovery_scope():
+        raise ValueError("source projection discovery scope is not the exact KORU discovery interval")
+
+
+def _source_projection_builder_input_identity(source: Any, raw_snapshot_authority: Mapping[str, object]) -> dict[str, object]:
+    authority = _canonical_input_snapshot_authority(raw_snapshot_authority)
+    return {
+        "type": "koru_source_projection_builder_input_identity_v1",
+        "builder_id": "binance_usdm_koru_tradifi_source_projection_v2",
+        "input_snapshot_id": authority["snapshot_id"],
+        "input_catalog_sha256": authority["input_catalog_sha256"],
+        "source_projection_request_hash": source.request.request_hash,
+    }
+
+
+def _source_projection_publication_authority(
+    identity: Mapping[str, object], source: Any, source_projection_authority_ref: ArtifactRef,
+    publication_entry_ref: LogEntryRef,
+) -> dict[str, object]:
+    authority = {
+        "type": SOURCE_PROJECTION_PUBLICATION_SCHEMA,
+        "schema_version": 1,
+        "publication_attempt_id": identity["publication_attempt_id"],
+        "raw_snapshot_authority": identity["raw_snapshot_authority"],
+        "discovery_scope": identity["discovery_scope"],
+        "source_projection_authority_ref": source_projection_authority_ref.to_canonical_dict(),
+        "source_projection_content_identity": _source_projection_content_identity(source),
+        "builder_input_identity": _source_projection_builder_input_identity(
+            source, cast(Mapping[str, object], identity["raw_snapshot_authority"]),
+        ),
+        "publication_entry_ref": {
+            "log_name": publication_entry_ref.log_name,
+            "log_sequence": publication_entry_ref.log_sequence,
+            "receipt_hash": publication_entry_ref.receipt_hash,
+        },
+    }
+    return _canonical_source_projection_publication_authority(authority)
+
+
+def _canonical_source_projection_publication_authority(value: Mapping[str, object]) -> dict[str, object]:
+    required = {
+        "type", "schema_version", "publication_attempt_id", "raw_snapshot_authority", "discovery_scope",
+        "source_projection_authority_ref", "source_projection_content_identity", "builder_input_identity",
+        "publication_entry_ref",
+    }
+    if (
+        type(value) is not dict or set(value) != required
+        or value.get("type") != SOURCE_PROJECTION_PUBLICATION_SCHEMA or value.get("schema_version") != 1
+    ):
+        raise ValueError("source-projection publication authority schema mismatch")
+    attempt_id = _source_projection_attempt_id(value["publication_attempt_id"])
+    raw_authority = _canonical_input_snapshot_authority(cast(Mapping[str, object], value["raw_snapshot_authority"]))
+    projection_ref = _artifact_ref_from_canonical(value["source_projection_authority_ref"])
+    entry_ref = _source_projection_log_entry_ref_from_canonical(value["publication_entry_ref"])
+    content_identity = value["source_projection_content_identity"]
+    builder_input_identity = value["builder_input_identity"]
+    if (
+        projection_ref.artifact_type != "binance_usdm_koru_tradifi_source_projection_authority_v1"
+        or projection_ref.schema_version != 1
+        or value["discovery_scope"] != _fixed_koru_discovery_scope()
+        or type(content_identity) is not dict
+        or set(content_identity) != {"type", "schema_version", "source_fragment_digest", "source_projection_request_hash"}
+        or content_identity.get("type") != "koru_tradifi_source_projection_content_identity_v2"
+        or content_identity.get("schema_version") != 2
+        or any(type(content_identity[key]) is not str for key in ("source_fragment_digest", "source_projection_request_hash"))
+        or type(builder_input_identity) is not dict
+        or builder_input_identity != {
+            "type": "koru_source_projection_builder_input_identity_v1",
+            "builder_id": "binance_usdm_koru_tradifi_source_projection_v2",
+            "input_snapshot_id": raw_authority["snapshot_id"],
+            "input_catalog_sha256": raw_authority["input_catalog_sha256"],
+            "source_projection_request_hash": content_identity["source_projection_request_hash"],
+        }
+    ):
+        raise ValueError("source-projection publication authority identity mismatch")
+    canonical = {
+        "type": SOURCE_PROJECTION_PUBLICATION_SCHEMA,
+        "schema_version": 1,
+        "publication_attempt_id": attempt_id,
+        "raw_snapshot_authority": raw_authority,
+        "discovery_scope": _fixed_koru_discovery_scope(),
+        "source_projection_authority_ref": projection_ref.to_canonical_dict(),
+        "source_projection_content_identity": content_identity,
+        "builder_input_identity": builder_input_identity,
+        "publication_entry_ref": {
+            "log_name": entry_ref.log_name,
+            "log_sequence": entry_ref.log_sequence,
+            "receipt_hash": entry_ref.receipt_hash,
+        },
+    }
+    if canonical != value:
+        raise ValueError("source-projection publication authority is noncanonical")
+    return canonical
+
+
+def _source_projection_publication_fact_values(
+    raw_snapshot_authority: Mapping[str, object], discovery_scope: Mapping[str, object],
+    source_projection_authority_ref: ArtifactRef, source_projection_content_identity: Mapping[str, object],
+    builder_input_identity: Mapping[str, object],
+) -> dict[str, object]:
+    return {
+        "type": SOURCE_PROJECTION_PUBLICATION_FACT_SCHEMA,
+        "schema_version": 1,
+        "raw_snapshot_authority": _canonical_input_snapshot_authority(raw_snapshot_authority),
+        "discovery_scope": dict(discovery_scope),
+        "source_projection_authority_ref": source_projection_authority_ref.to_canonical_dict(),
+        "source_projection_content_identity": dict(source_projection_content_identity),
+        "builder_input_identity": dict(builder_input_identity),
+    }
+
+
+def _source_projection_publication_fact(authority: Mapping[str, object]) -> dict[str, object]:
+    authority = _canonical_source_projection_publication_authority(authority)
+    return _source_projection_publication_fact_values(
+        cast(Mapping[str, object], authority["raw_snapshot_authority"]),
+        cast(Mapping[str, object], authority["discovery_scope"]),
+        _artifact_ref_from_canonical(authority["source_projection_authority_ref"]),
+        cast(Mapping[str, object], authority["source_projection_content_identity"]),
+        cast(Mapping[str, object], authority["builder_input_identity"]),
+    )
+
+
+def _source_projection_publication_event_id(fact: Mapping[str, object]) -> str:
+    return canonical_sha256(("koru-source-projection-publication-v1", SOURCE_PROJECTION_LOG, fact))
+
+
+def _source_projection_entry_for_exact_fact(
+    foundation: LocalFoundation, authority: Mapping[str, object], entry_ref: LogEntryRef,
+) -> None:
+    fact = _source_projection_publication_fact(authority)
+    try:
+        entries = foundation.entries(SOURCE_PROJECTION_LOG, through=entry_ref)
+    except Exception as error:
+        raise ValueError("source-projection publication entry is unavailable") from error
+    if (
+        not entries or entries[-1].entry_ref != entry_ref
+        or entries[-1].event_id != _source_projection_publication_event_id(fact)
+        or entries[-1].payload != canonical_bytes(fact)
+    ):
+        raise ValueError("source-projection publication entry does not bind authority")
+
+
+def _checkpoint_from_canonical(value: object) -> LogCheckpoint:
+    if type(value) is not dict or set(value) != {"log_name", "as_of", "upper_log_sequence", "head_receipt_hash"}:
+        raise ValueError("source-projection owner-log checkpoint is invalid")
+    try:
+        checkpoint = LogCheckpoint(
+            value["log_name"], value["as_of"], value["upper_log_sequence"], value["head_receipt_hash"],
+        )
+    except (TypeError, ValueError) as error:
+        raise ValueError("source-projection owner-log checkpoint is invalid") from error
+    if checkpoint.log_name != SOURCE_PROJECTION_LOG:
+        raise ValueError("source-projection owner-log checkpoint is invalid")
+    return checkpoint
+
+
+def _checkpoint_canonical(checkpoint: LogCheckpoint) -> dict[str, object]:
+    return {
+        "log_name": checkpoint.log_name,
+        "as_of": checkpoint.as_of,
+        "upper_log_sequence": checkpoint.upper_log_sequence,
+        "head_receipt_hash": checkpoint.head_receipt_hash,
+    }
+
+
+def _source_projection_envelope_from_bytes(source: bytes) -> ArtifactEnvelope:
+    try:
+        body = json.loads(source.decode("utf-8"))
+        envelope = ArtifactEnvelope(
+            body["artifact_type"], body["schema_version"], body["payload"], body["content_hash"],
+        )
+    except (KeyError, TypeError, UnicodeDecodeError, ValueError, json.JSONDecodeError) as error:
+        raise ValueError("source-projection authority envelope is invalid") from error
+    if (
+        type(body) is not dict
+        or set(body) != {"artifact_type", "schema_version", "payload", "content_hash"}
+        or canonical_bytes(envelope) != source
+    ):
+        raise ValueError("source-projection authority envelope is noncanonical")
+    return envelope
+
+
+def _verify_koru_source_projection_authority_in_foundation(
+    foundation: LocalFoundation, authority: Mapping[str, object], checkpoint: Mapping[str, object] | None = None,
+) -> Any:
+    authority = _canonical_source_projection_publication_authority(authority)
+    ref = _artifact_ref_from_canonical(authority["source_projection_authority_ref"])
+    try:
+        readback = foundation.read(ref=ref)
+    except Exception as error:
+        raise ValueError("source-projection authority artifact is unavailable") from error
+    envelope = _source_projection_envelope_from_bytes(readback.source_bytes)
+    if envelope != readback.envelope or ArtifactRef.from_envelope(envelope) != ref:
+        raise ValueError("source-projection authority artifact readback mismatch")
+    source = open_binance_usdm_koru_tradifi_source_projection_authority_v1(readback.source_bytes)
+    _assert_exact_koru_source_projection_scope(source)
+    if _source_projection_content_identity(source) != authority["source_projection_content_identity"]:
+        raise ValueError("source-projection authority content identity mismatch")
+    if _source_projection_builder_input_identity(
+        source, cast(Mapping[str, object], authority["raw_snapshot_authority"]),
+    ) != authority["builder_input_identity"]:
+        raise ValueError("source-projection authority builder input identity mismatch")
+    _source_projection_entry_for_exact_fact(
+        foundation, authority, _source_projection_log_entry_ref_from_canonical(authority["publication_entry_ref"]),
+    )
+    if checkpoint is not None:
+        parsed = _checkpoint_from_canonical(checkpoint)
+        entries = foundation.entries(SOURCE_PROJECTION_LOG, through=parsed)
+        if not entries or entries[-1].entry_ref != _source_projection_log_entry_ref_from_canonical(authority["publication_entry_ref"]):
+            raise ValueError("source-projection owner-log checkpoint does not bind authority")
+    return source
 
 
 def _atomic_write(path: Path, value: Mapping[str, object]) -> None:
@@ -1411,6 +1755,11 @@ def _validate_completed_attempt(
         "timings": timings,
         "result": result,
     }
+
+
+def _child_source_projection_timeout_test() -> None:
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    time.sleep(60)
 
 
 def _child_timeout_test(staging: Path) -> None:
@@ -1696,6 +2045,267 @@ def read_success_receipt(root: Path, attempt_id: str) -> dict[str, object]:
     return receipt
 
 
+def _source_projection_complete_marker(
+    identity: Mapping[str, object], authority: Mapping[str, object], checkpoint: LogCheckpoint,
+) -> dict[str, object]:
+    return {
+        "type": "koru_source_projection_publication_complete_v1",
+        "schema_version": 1,
+        "identity": dict(identity),
+        "source_projection_authority": _canonical_source_projection_publication_authority(authority),
+        "owner_log_checkpoint": _checkpoint_canonical(checkpoint),
+    }
+
+
+def _publish_source_projection_in_staging(
+    staging: Path, identity: Mapping[str, object], raw_snapshot_foundation_root: Path,
+) -> None:
+    raw_authority = _canonical_input_snapshot_authority(
+        cast(Mapping[str, object], identity["raw_snapshot_authority"])
+    )
+    catalog, view = _open_input_snapshot_authority(raw_snapshot_foundation_root, raw_authority)
+    if _verify_koru_discovery_snapshot_scope(catalog, view) != identity["discovery_scope"]:
+        raise ValueError("raw snapshot discovery scope does not match source publication identity")
+    with _raw_input_snapshot_context(catalog, view):
+        source = build_source()
+    _assert_exact_koru_source_projection_scope(source)
+    serialized = serialize_binance_usdm_koru_tradifi_source_projection_authority_v1(source)
+    envelope = _source_projection_envelope_from_bytes(serialized)
+    foundation = LocalFoundation(staging / "foundation")
+    projection_ref = foundation.put(envelope=envelope)
+    if projection_ref != ArtifactRef.from_envelope(envelope):
+        raise ValueError("Foundation returned an unexpected source-projection authority ref")
+    readback = foundation.read(ref=projection_ref)
+    if readback.envelope != envelope or readback.source_bytes != serialized:
+        raise ValueError("Foundation source-projection authority readback mismatch")
+    rebuilt = open_binance_usdm_koru_tradifi_source_projection_authority_v1(readback.source_bytes)
+    _assert_exact_koru_source_projection_scope(rebuilt)
+    if _source_projection_content_identity(rebuilt) != _source_projection_content_identity(source):
+        raise ValueError("source-projection authority serialization identity mismatch")
+    content_identity = _source_projection_content_identity(rebuilt)
+    builder_input_identity = _source_projection_builder_input_identity(rebuilt, raw_authority)
+    fact = _source_projection_publication_fact_values(
+        raw_authority, cast(Mapping[str, object], identity["discovery_scope"]), projection_ref,
+        content_identity, builder_input_identity,
+    )
+    receipt = foundation.append(
+        SOURCE_PROJECTION_LOG, _source_projection_publication_event_id(fact), canonical_bytes(fact),
+    )
+    entry_ref = receipt.entry_ref
+    authority = _source_projection_publication_authority(identity, rebuilt, projection_ref, entry_ref)
+    _source_projection_entry_for_exact_fact(foundation, authority, entry_ref)
+    checkpoint = foundation.checkpoint(SOURCE_PROJECTION_LOG)
+    _verify_koru_source_projection_authority_in_foundation(
+        foundation, authority, _checkpoint_canonical(checkpoint),
+    )
+    _atomic_write(staging / COMPLETE_MARKER, _source_projection_complete_marker(identity, authority, checkpoint))
+
+
+def _validate_source_projection_complete(
+    staging: Path, identity: Mapping[str, object],
+) -> tuple[dict[str, object], dict[str, object]]:
+    marker = _load_canonical(staging / COMPLETE_MARKER, "source-projection complete marker")
+    required = {"type", "schema_version", "identity", "source_projection_authority", "owner_log_checkpoint"}
+    if (
+        set(marker) != required
+        or marker["type"] != "koru_source_projection_publication_complete_v1"
+        or marker["schema_version"] != 1
+        or marker["identity"] != identity
+        or type(marker["source_projection_authority"]) is not dict
+        or type(marker["owner_log_checkpoint"]) is not dict
+    ):
+        raise ValueError("source-projection complete marker identity mismatch")
+    authority = _canonical_source_projection_publication_authority(marker["source_projection_authority"])
+    if authority["publication_attempt_id"] != identity["publication_attempt_id"]:
+        raise ValueError("source-projection complete marker attempt mismatch")
+    _verify_koru_source_projection_authority_in_foundation(
+        LocalFoundation(staging / "foundation"), authority, marker["owner_log_checkpoint"],
+    )
+    return authority, cast(dict[str, object], marker["owner_log_checkpoint"])
+
+
+def _source_projection_success_receipt(
+    identity: Mapping[str, object], authority: Mapping[str, object], checkpoint: Mapping[str, object],
+) -> dict[str, object]:
+    return {
+        "type": SOURCE_PROJECTION_PUBLICATION_RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": "success",
+        "identity": dict(identity),
+        "source_projection_authority": _canonical_source_projection_publication_authority(authority),
+        "owner_log_checkpoint": dict(checkpoint),
+        "final_authority": [{
+            "publication_container": f"source-projections/{identity['publication_attempt_id']}",
+            "source_projection_authority": _canonical_source_projection_publication_authority(authority),
+            "owner_log_checkpoint": dict(checkpoint),
+        }],
+    }
+
+
+def _source_projection_non_success_receipt(
+    identity: Mapping[str, object], outcome: str, child_status: int | None, archive_state: str,
+) -> dict[str, object]:
+    if outcome not in {"timeout", "non_success"}:
+        raise ValueError("source-projection non-success outcome is invalid")
+    return {
+        "type": SOURCE_PROJECTION_PUBLICATION_RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": outcome,
+        "identity": dict(identity),
+        "final_authority": [],
+        "child_status": {"exit_code": child_status, "timed_out": outcome == "timeout"},
+        "archive_state": archive_state,
+    }
+
+
+def _validate_source_projection_receipt(receipt: Mapping[str, object], identity: Mapping[str, object]) -> None:
+    common = {"type", "schema_version", "outcome", "identity", "final_authority"}
+    if (
+        not common <= set(receipt)
+        or receipt.get("type") != SOURCE_PROJECTION_PUBLICATION_RECEIPT_SCHEMA
+        or receipt.get("schema_version") != 1
+        or receipt.get("identity") != identity
+        or type(receipt.get("final_authority")) is not list
+    ):
+        raise ValueError("source-projection receipt identity mismatch")
+    if receipt["outcome"] == "success":
+        if (
+            set(receipt) != common | {"source_projection_authority", "owner_log_checkpoint"}
+            or len(cast(list[object], receipt["final_authority"])) != 1
+            or type(receipt.get("source_projection_authority")) is not dict
+            or type(receipt.get("owner_log_checkpoint")) is not dict
+        ):
+            raise ValueError("source-projection success receipt mismatch")
+        authority = _canonical_source_projection_publication_authority(
+            cast(Mapping[str, object], receipt["source_projection_authority"])
+        )
+        final = cast(list[dict[str, object]], receipt["final_authority"])[0]
+        if (
+            type(final) is not dict
+            or final != {
+                "publication_container": f"source-projections/{identity['publication_attempt_id']}",
+                "source_projection_authority": authority,
+                "owner_log_checkpoint": receipt["owner_log_checkpoint"],
+            }
+        ):
+            raise ValueError("source-projection success authority mismatch")
+        _checkpoint_from_canonical(receipt["owner_log_checkpoint"])
+    elif receipt["outcome"] in {"timeout", "non_success"}:
+        child_status = receipt.get("child_status")
+        if (
+            set(receipt) != common | {"child_status", "archive_state"}
+            or receipt["final_authority"] != []
+            or type(child_status) is not dict
+            or set(child_status) != {"exit_code", "timed_out"}
+            or type(child_status["exit_code"]) not in {int, type(None)}
+            or child_status["timed_out"] is not (receipt["outcome"] == "timeout")
+            or receipt["archive_state"] != ("timed_out" if receipt["outcome"] == "timeout" else "failed")
+        ):
+            raise ValueError("source-projection non-success receipt mismatch")
+    else:
+        raise ValueError("source-projection receipt outcome mismatch")
+
+
+def _load_source_projection_receipt(root: Path, attempt_id: str) -> dict[str, object] | None:
+    path = _source_projection_paths(root, attempt_id)["receipt"]
+    if not path.exists():
+        return None
+    identity = _load_canonical(_source_projection_paths(root, attempt_id)["identity"], "source-projection identity")
+    receipt = _load_canonical(path, "source-projection receipt")
+    _validate_source_projection_receipt(receipt, identity)
+    return receipt
+
+
+def _source_projection_child_command(
+    staging: Path, identity: Mapping[str, object], raw_snapshot_foundation_root: Path,
+) -> list[str]:
+    return [
+        sys.executable, str(Path(__file__).resolve()), "--_source-projection-child",
+        "--staging", str(staging),
+        "--source-projection-identity", _canonical_json(identity).decode(),
+        "--raw-snapshot-foundation-root", str(raw_snapshot_foundation_root),
+    ]
+
+
+def publish_koru_source_projection_authority(
+    raw_snapshot_foundation_root: Path, input_snapshot_authority: Mapping[str, object],
+    source_projection_publication_root: Path, source_projection_attempt_id: str, *,
+    max_seconds: int = DEFAULT_SOURCE_PROJECTION_MAX_SECONDS, _child_test_mode: str | None = None,
+) -> dict[str, object]:
+    """Publish only verified KORU SourceProjectionV2 authority from raw snapshot bytes."""
+    if _child_test_mode not in (None, _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE, _SOURCE_PUBLICATION_FAILURE_TEST_MODE):
+        raise ValueError("unsupported source-projection child test mode")
+    max_seconds = _validate_source_projection_max_seconds(max_seconds)
+    raw_authority = _canonical_input_snapshot_authority(input_snapshot_authority)
+    catalog, view = _open_input_snapshot_authority(raw_snapshot_foundation_root, raw_authority)
+    _verify_koru_discovery_snapshot_scope(catalog, view)
+    identity = _source_projection_identity(raw_authority, source_projection_attempt_id)
+    root = _prepare_source_projection_publication_root(source_projection_publication_root)
+    paths = _source_projection_paths(root, source_projection_attempt_id)
+    with _attempt_lock(paths["lock"]):
+        existing = _load_source_projection_receipt(root, source_projection_attempt_id)
+        if existing is not None:
+            if existing["identity"] != identity:
+                raise ValueError("source-projection publication attempt identity conflicts with requested raw snapshot")
+            if existing["outcome"] != "success":
+                raise ValueError("source-projection publication attempt already has a non-success receipt")
+            open_koru_source_projection_authority(
+                root, cast(Mapping[str, object], existing["source_projection_authority"])
+            )
+            return existing
+        _create_new_json(paths["identity"], identity)
+        paths["staging"].mkdir(parents=True)
+        command = _source_projection_child_command(paths["staging"], identity, raw_snapshot_foundation_root)
+        if _child_test_mode is not None:
+            command.extend(["--_test-mode", _child_test_mode])
+        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        timed_out, child_status = _wait_for_child(process, max_seconds, time.monotonic())
+        if timed_out:
+            os.rename(paths["staging"], paths["timed_out"])
+            _fsync_directory(paths["timed_out"].parent)
+            receipt = _source_projection_non_success_receipt(identity, "timeout", child_status, "timed_out")
+            _create_new_json(paths["receipt"], receipt)
+            return receipt
+        if child_status != 0:
+            os.rename(paths["staging"], paths["failed"])
+            _fsync_directory(paths["failed"].parent)
+            receipt = _source_projection_non_success_receipt(identity, "non_success", child_status, "failed")
+            _create_new_json(paths["receipt"], receipt)
+            return receipt
+        authority, checkpoint = _validate_source_projection_complete(paths["staging"], identity)
+        os.rename(paths["staging"], paths["published"])
+        _fsync_directory(paths["published"].parent)
+        receipt = _source_projection_success_receipt(identity, authority, checkpoint)
+        _create_new_json(paths["receipt"], receipt)
+        open_koru_source_projection_authority(root, authority)
+        return receipt
+
+
+def open_koru_source_projection_authority(
+    source_projection_publication_root: Path, source_projection_authority: Mapping[str, object],
+) -> Any:
+    """Open KORU source authority only from its exact published owner-log fact."""
+    authority = _canonical_source_projection_publication_authority(source_projection_authority)
+    root = _prepare_source_projection_publication_root(source_projection_publication_root)
+    attempt_id = cast(str, authority["publication_attempt_id"])
+    receipt = _load_source_projection_receipt(root, attempt_id)
+    if receipt is None or receipt["outcome"] != "success" or receipt.get("source_projection_authority") != authority:
+        raise ValueError("source-projection authority has no consumable success receipt")
+    paths = _source_projection_paths(root, attempt_id)
+    if not paths["published"].is_dir():
+        raise ValueError("source-projection authority publication container is unavailable")
+    return _verify_koru_source_projection_authority_in_foundation(
+        LocalFoundation(paths["published"] / "foundation"), authority,
+        cast(Mapping[str, object], receipt["owner_log_checkpoint"]),
+    )
+
+
+def _child_source_projection_publication(
+    staging: Path, identity: Mapping[str, object], raw_snapshot_foundation_root: Path,
+) -> None:
+    _publish_source_projection_in_staging(staging, identity, raw_snapshot_foundation_root)
+
+
 def full_preflight(
     attempt_root: Path, max_seconds: int = DEFAULT_FULL_MAX_SECONDS, *,
     input_snapshot_authority: Mapping[str, object], raw_snapshot_foundation_root: Path,
@@ -1707,6 +2317,7 @@ def full_preflight(
     authority = _canonical_input_snapshot_authority(input_snapshot_authority)
     snapshot_opened_at = time.monotonic_ns()
     catalog, _view = _open_input_snapshot_authority(raw_snapshot_foundation_root, authority)
+    _verify_koru_discovery_snapshot_scope(catalog, _view)
     snapshot_open_elapsed_ns = time.monotonic_ns() - snapshot_opened_at
     config = _full_mode_config(max_seconds, authority)
     root = _prepare_attempt_root(attempt_root)
@@ -1744,13 +2355,19 @@ def main(argv: list[str] | None = None) -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--smoke", action="store_true", help="bounded source authority validation; default")
     mode.add_argument("--prepare-input-snapshot", action="store_true", help="publish retained raw bytes before full preflight")
+    mode.add_argument("--publish-source-projection", action="store_true", help="publish KORU SourceProjectionV2 from a verified raw snapshot")
     mode.add_argument("--full", action="store_true", help="isolated retained source/economics/reader attempt; no Experiment")
     mode.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
+    mode.add_argument("--_source-projection-child", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-seconds", type=int, default=DEFAULT_FULL_MAX_SECONDS, help="full-only parent deadline (1-300; default: 300)")
     parser.add_argument("--foundation-root", type=Path, help="smoke-only Foundation root")
     parser.add_argument("--attempt-root", type=Path, help="full-attempt receipt, staging, archive, and published-container root")
     parser.add_argument("--raw-snapshot-foundation-root", type=Path, help="durable raw snapshot Foundation root")
     parser.add_argument("--input-snapshot-authority", help="canonical raw snapshot authority JSON")
+    parser.add_argument("--source-projection-publication-root", type=Path, help="source-projection publication root")
+    parser.add_argument("--source-projection-attempt-id", help="explicit source-projection publication attempt identity")
+    parser.add_argument("--source-projection-max-seconds", type=int, default=DEFAULT_SOURCE_PROJECTION_MAX_SECONDS, help="source-projection-only watchdog (1-900; default: 300)")
+    parser.add_argument("--source-projection-identity", help=argparse.SUPPRESS)
     parser.add_argument("--retry-ordinal", type=int, default=0, help="new full-attempt retry ordinal (default: 0)")
     parser.add_argument("--parent-attempt-id", help="optional parent attempt ID for a retry")
     parser.add_argument("--staging", type=Path, help=argparse.SUPPRESS)
@@ -1758,6 +2375,28 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--_parent-timings", help=argparse.SUPPRESS)
     parser.add_argument("--_test-mode", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args._source_projection_child:
+        if not (args.staging and args.source_projection_identity and args.raw_snapshot_foundation_root):
+            parser.error("source-projection child requires staging, identity, and raw snapshot Foundation")
+        try:
+            identity = json.loads(args.source_projection_identity)
+            if type(identity) is not dict:
+                raise ValueError("source-projection identity must be an object")
+            raw_authority = _canonical_input_snapshot_authority(identity["raw_snapshot_authority"])
+            if identity != _source_projection_identity(raw_authority, identity["publication_attempt_id"]):
+                raise ValueError("source-projection identity is invalid")
+        except (KeyError, ValueError, json.JSONDecodeError) as error:
+            parser.error(str(error))
+        with deny_network():
+            if args._test_mode == _SOURCE_PUBLICATION_TIMEOUT_TEST_MODE:
+                _child_source_projection_timeout_test()
+            elif args._test_mode == _SOURCE_PUBLICATION_FAILURE_TEST_MODE:
+                raise RuntimeError("source-projection publication test failure")
+            elif args._test_mode is None:
+                _child_source_projection_publication(args.staging, identity, args.raw_snapshot_foundation_root)
+            else:
+                parser.error("unsupported source-projection child test mode")
+        return 0
     if args._child:
         if not (args.staging and args.attempt_id and args._parent_timings and args.raw_snapshot_foundation_root and args.input_snapshot_authority):
             parser.error("child requires staging, attempt identity, snapshot authority, snapshot Foundation, and timings")
@@ -1785,6 +2424,24 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--prepare-input-snapshot requires only --raw-snapshot-foundation-root")
         with deny_network():
             result = prepare_input_snapshot_authority(args.raw_snapshot_foundation_root)
+    elif args.publish_source_projection:
+        try:
+            _validate_source_projection_max_seconds(args.source_projection_max_seconds)
+            if (
+                args.foundation_root is not None or args.attempt_root is not None
+                or args.raw_snapshot_foundation_root is None or args.input_snapshot_authority is None
+                or args.source_projection_publication_root is None or args.source_projection_attempt_id is None
+            ):
+                parser.error("--publish-source-projection requires --raw-snapshot-foundation-root, --input-snapshot-authority, --source-projection-publication-root, and --source-projection-attempt-id")
+            parsed = json.loads(args.input_snapshot_authority)
+            if type(parsed) is not dict:
+                raise ValueError("input snapshot authority must be an object")
+            result = publish_koru_source_projection_authority(
+                args.raw_snapshot_foundation_root, parsed, args.source_projection_publication_root,
+                args.source_projection_attempt_id, max_seconds=args.source_projection_max_seconds,
+            )
+        except (ValueError, json.JSONDecodeError) as error:
+            parser.error(str(error))
     elif args.full:
         try:
             _validate_full_max_seconds(args.max_seconds)
@@ -1809,7 +2466,7 @@ def main(argv: list[str] | None = None) -> int:
         with deny_network():
             result = smoke(args.foundation_root)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    return 0
+    return 1 if args.publish_source_projection and result.get("outcome") != "success" else 0
 
 
 if __name__ == "__main__":

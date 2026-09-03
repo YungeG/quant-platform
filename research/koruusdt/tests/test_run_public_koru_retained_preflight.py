@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import json
+import os
+import shutil
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -118,9 +122,12 @@ def test_owner_log_unpublication_rejects_snapshot_authority(tmp_path: Path) -> N
         runner._open_input_snapshot_authority(snapshot_root, authority)
 
 
-def test_timeout_attempt_has_no_input_tree_and_binds_snapshot_authority(tmp_path: Path) -> None:
+def test_timeout_attempt_has_no_input_tree_and_binds_snapshot_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     snapshot_root, authority, catalog = _published_fixture(tmp_path)
     attempt_root = tmp_path / "attempts"
+    monkeypatch.setattr(runner, "_verify_koru_discovery_snapshot_scope", lambda _catalog, _view: runner._fixed_koru_discovery_scope())
 
     with pytest.raises(runner.FullPreflightDeadlineExceeded):
         runner.full_preflight(
@@ -171,3 +178,251 @@ def test_full_reader_uses_verified_member_bytes_not_working_tree_paths() -> None
     assert "open_input_snapshot_authority" in full_body
     assert "staging / \"input\"" not in full_body
     assert "member_bytes" in source
+
+
+@dataclass(frozen=True)
+class _TinySourceRequest:
+    timeline_window_start: object
+    timeline_window_end_exclusive: object
+    request_hash: str
+
+
+@dataclass(frozen=True)
+class _TinySourceProjection:
+    fragment_digest: str
+    request: _TinySourceRequest
+
+
+def _tiny_source_projection() -> _TinySourceProjection:
+    return _TinySourceProjection(
+        "sha256:" + "3" * 64,
+        _TinySourceRequest(
+            runner.UtcInstant(runner.START_MS * 1_000_000),
+            runner.UtcInstant(runner.END_MS * 1_000_000),
+            "sha256:" + "4" * 64,
+        ),
+    )
+
+
+def _publish_tiny_source_projection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> tuple[Path, dict[str, object], dict[str, object]]:
+    raw_root, raw_authority, _catalog = _published_fixture(tmp_path)
+    source = _tiny_source_projection()
+    source_bytes = runner.canonical_bytes(runner.ArtifactEnvelope.create(
+        "binance_usdm_koru_tradifi_source_projection_authority_v1", 1, {"fixture": "tiny"},
+    ))
+    built: list[object] = []
+
+    def build() -> _TinySourceProjection:
+        assert runner._RAW_INPUT_VIEW is not None
+        built.append(object())
+        return source
+
+    monkeypatch.setattr(runner, "build_source", build)
+    monkeypatch.setattr(runner, "serialize_binance_usdm_koru_tradifi_source_projection_authority_v1", lambda value: source_bytes)
+    monkeypatch.setattr(runner, "open_binance_usdm_koru_tradifi_source_projection_authority_v1", lambda value: source if value == source_bytes else pytest.fail("unexpected source bytes"))
+    monkeypatch.setattr(runner, "_verify_koru_discovery_snapshot_scope", lambda _catalog, _view: runner._fixed_koru_discovery_scope())
+
+    root = runner._prepare_source_projection_publication_root(tmp_path / "source-publications")
+    identity = runner._source_projection_identity(raw_authority, "fixture-source-v1")
+    paths = runner._source_projection_paths(root, "fixture-source-v1")
+    runner._create_new_json(paths["identity"], identity)
+    paths["staging"].mkdir(parents=True)
+    runner._publish_source_projection_in_staging(paths["staging"], identity, raw_root)
+    authority, checkpoint = runner._validate_source_projection_complete(paths["staging"], identity)
+    os.rename(paths["staging"], paths["published"])
+    runner._create_new_json(paths["receipt"], runner._source_projection_success_receipt(identity, authority, checkpoint))
+
+    assert len(built) == 1
+    return root, authority, raw_authority
+
+
+def test_source_projection_publication_binds_fixed_scope_raw_snapshot_and_owner_log(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, authority, raw_authority = _publish_tiny_source_projection(tmp_path, monkeypatch)
+
+    opened = runner.open_koru_source_projection_authority(root, authority)
+    foundation = runner.LocalFoundation(
+        runner._source_projection_paths(root, authority["publication_attempt_id"])["published"] / "foundation"
+    )
+    entries = foundation.entries(runner.SOURCE_PROJECTION_LOG)
+
+    assert opened == _tiny_source_projection()
+    assert authority["raw_snapshot_authority"] == raw_authority
+    assert authority["discovery_scope"] == runner._fixed_koru_discovery_scope()
+    assert len(entries) == 1
+    assert runner._source_projection_publication_fact(authority) == json.loads(entries[0].payload)
+
+
+@pytest.mark.parametrize("tamper", ["source_ref", "source_envelope", "owner_log_missing", "owner_log_substitute"])
+def test_source_projection_open_rejects_tampered_artifact_or_exact_owner_log(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, tamper: str,
+) -> None:
+    root, authority, _raw_authority = _publish_tiny_source_projection(tmp_path, monkeypatch)
+    paths = runner._source_projection_paths(root, authority["publication_attempt_id"])
+    foundation_root = paths["published"] / "foundation"
+    foundation = runner.LocalFoundation(foundation_root)
+    if tamper == "source_ref":
+        authority = copy.deepcopy(authority)
+        authority["source_projection_authority_ref"]["content_hash"] = "sha256:" + "0" * 64
+    elif tamper == "source_envelope":
+        ref = authority["source_projection_authority_ref"]
+        artifact = foundation_root / "artifacts" / "sha256" / ref["content_hash"][7:9] / ref["content_hash"][7:]
+        artifact.write_bytes(b"{}")
+    elif tamper == "owner_log_missing":
+        (foundation_root / "registries" / f"{runner.SOURCE_PROJECTION_LOG}.jsonl").unlink()
+    else:
+        registry = foundation_root / "registries" / f"{runner.SOURCE_PROJECTION_LOG}.jsonl"
+        registry.unlink()
+        foundation.append(runner.SOURCE_PROJECTION_LOG, "substitute", b"{}")
+
+    with pytest.raises(ValueError):
+        runner.open_koru_source_projection_authority(root, authority)
+
+
+def test_source_projection_rejects_raw_mismatch_and_partial_holdout_before_build(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_root, authority, _catalog = _published_fixture(tmp_path)
+    changed = copy.deepcopy(authority)
+    changed["manifest_ref"]["content_hash"] = "sha256:" + "0" * 64
+    built: list[object] = []
+    monkeypatch.setattr(runner, "build_source", lambda: built.append(object()))
+
+    with pytest.raises(ValueError):
+        runner.publish_koru_source_projection_authority(raw_root, changed, tmp_path / "publications", "mismatch")
+    assert built == []
+
+    manifest_ref = authority["manifest_ref"]
+    manifest_path = raw_root / "artifacts" / "sha256" / manifest_ref["content_hash"][7:9] / manifest_ref["content_hash"][7:]
+    manifest_path.write_bytes(b"{}")
+    with pytest.raises(ValueError):
+        runner.publish_koru_source_projection_authority(raw_root, authority, tmp_path / "publications", "manifest-tamper")
+    assert built == []
+
+
+def _write_self_hashed_manifest(path: Path, value: dict[str, object]) -> None:
+    value = {**value, "manifest_sha256": ""}
+    value["manifest_sha256"] = runner._hash(runner._canonical_json(value))
+    path.write_bytes(runner._canonical_json(value))
+
+
+def _published_snapshot_with_unreferenced_holdout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> tuple[Path, dict[str, object]]:
+    source_data = runner.DATA
+    data = tmp_path / "reduced" / "data"
+    authority_root = data / "public_preflight_sources_v1"
+    shutil.copytree(source_data / "public_preflight_sources_v1", authority_root)
+    interval = {
+        "start_ms": runner.START_MS,
+        "end_ms_exclusive": runner.END_MS,
+        "start_utc_inclusive": "2026-07-15T10:00:00.000Z",
+        "end_utc_exclusive": "2026-08-24T11:00:00.000Z",
+        "semantics": "half-open",
+    }
+    _write_self_hashed_manifest(data / "execution_data_manifest.json", {
+        "backtest_authority_interval": interval, "files": [],
+    })
+    _write_self_hashed_manifest(data / "manifest.json", {})
+    _write_self_hashed_manifest(data / "execution_gap_impact.json", {})
+    (data / "binance_mark_raw.csv").write_bytes((source_data / "binance_mark_raw.csv").read_bytes())
+    (data / "binance_index_raw.csv").write_bytes((source_data / "binance_index_raw.csv").read_bytes())
+    holdout_path = "data/holdout/KORUUSDT-2026-08-25.csv"
+    holdout = data.parent / holdout_path
+    holdout.parent.mkdir(parents=True)
+    holdout.write_bytes((source_data / "binance_mark_raw.csv").read_bytes())
+    monkeypatch.setattr(runner, "DATA", data)
+    monkeypatch.setattr(runner, "AUTHORITY_ROOT", authority_root)
+    monkeypatch.setattr(runner, "AUTHORITY_MANIFEST", authority_root / "manifest.json")
+    monkeypatch.setattr(runner, "EXECUTION_MANIFEST", data / "execution_data_manifest.json")
+    monkeypatch.setattr(runner, "BASE_MANIFEST", data / "manifest.json")
+    monkeypatch.setattr(runner, "GAP_AUDIT", data / "execution_gap_impact.json")
+
+    catalog = runner._build_input_catalog(runner._raw_snapshot_catalog_config())
+    assert set(runner._snapshot_member_mapping(catalog).values()) == runner._allowed_koru_discovery_input_member_cover()
+    catalog["files"] = sorted([
+        *catalog["files"],
+        {"path": holdout_path, "sha256": runner._hash(holdout.read_bytes()), "size_bytes": holdout.stat().st_size},
+    ], key=lambda row: row["path"])
+    catalog["catalog_sha256"] = runner._catalog_digest(catalog)
+    member_keys = runner._snapshot_member_mapping(catalog)
+    raw_snapshot_root = tmp_path / "raw-snapshot-foundation"
+    publication = runner.publish_raw_blob_snapshot(
+        runner.LocalFoundation(raw_snapshot_root),
+        members=tuple(
+            runner.RawBlobSnapshotSourceMember(
+                member_keys[row["path"]], (data.parent / row["path"]).read_bytes(), "0644",
+            )
+            for row in catalog["files"]
+        ),
+        provenance={
+            "type": runner.RAW_SNAPSHOT_PROVENANCE_SCHEMA,
+            "schema_version": 1,
+            "input_catalog": catalog,
+            "member_keys": member_keys,
+        },
+    )
+    return raw_snapshot_root, runner._input_snapshot_authority(publication, catalog)
+
+
+def test_full_preflight_rejects_unreferenced_holdout_before_child_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_snapshot_root, authority = _published_snapshot_with_unreferenced_holdout(tmp_path, monkeypatch)
+    attempt_root = tmp_path / "attempts"
+    monkeypatch.setattr(runner, "build_source", lambda: pytest.fail("source build must not start"))
+    monkeypatch.setattr(runner.subprocess, "Popen", lambda *_args, **_kwargs: pytest.fail("child must not start"))
+
+    with pytest.raises(ValueError, match="exact KORU discovery member cover"):
+        runner.full_preflight(
+            attempt_root, 1, input_snapshot_authority=authority, raw_snapshot_foundation_root=raw_snapshot_root,
+        )
+
+    assert not attempt_root.exists()
+
+
+def test_source_projection_rejects_unreferenced_holdout_raw_member_before_build(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_snapshot_root, authority = _published_snapshot_with_unreferenced_holdout(tmp_path, monkeypatch)
+    monkeypatch.setattr(runner, "build_source", lambda: pytest.fail("source build must not start"))
+    publication_root = tmp_path / "source-projections"
+
+    with pytest.raises(ValueError, match="exact KORU discovery member cover"):
+        runner.publish_koru_source_projection_authority(raw_snapshot_root, authority, publication_root, "holdout")
+
+    assert not publication_root.exists()
+
+
+def test_source_projection_timeout_and_non_success_receipts_have_no_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_root, authority, _catalog = _published_fixture(tmp_path)
+    monkeypatch.setattr(runner, "_verify_koru_discovery_snapshot_scope", lambda _catalog, _view: runner._fixed_koru_discovery_scope())
+
+    timeout = runner.publish_koru_source_projection_authority(
+        raw_root, authority, tmp_path / "timeout-publications", "timeout", max_seconds=1,
+        _child_test_mode=runner._SOURCE_PUBLICATION_TIMEOUT_TEST_MODE,
+    )
+    failed = runner.publish_koru_source_projection_authority(
+        raw_root, authority, tmp_path / "failed-publications", "failed", max_seconds=1,
+        _child_test_mode=runner._SOURCE_PUBLICATION_FAILURE_TEST_MODE,
+    )
+
+    assert timeout["outcome"] == "timeout"
+    assert failed["outcome"] == "non_success"
+    assert timeout["final_authority"] == failed["final_authority"] == []
+    assert tuple((tmp_path / "timeout-publications" / "source-projections").iterdir()) == ()
+    assert tuple((tmp_path / "failed-publications" / "source-projections").iterdir()) == ()
+
+
+def test_source_projection_operation_is_offline_and_stops_before_economics() -> None:
+    source = SCRIPT.read_text(encoding="utf-8")
+    body = source[source.index("def _publish_source_projection_in_staging("):source.index("def _validate_source_projection_complete(")]
+    assert "with _raw_input_snapshot_context" in body
+    assert "publish_koru_tradifi_economics_bundle_v3" not in body
+    assert "build_koru_premium_reader_set_v1" not in body
+    assert "Experiment" not in body
