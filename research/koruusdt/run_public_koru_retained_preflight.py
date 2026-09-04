@@ -148,11 +148,19 @@ from crypto_quant_domain import (
 )
 from crypto_quant_foundation import LocalFoundation, LogCheckpoint, LogEntryRef
 from crypto_quant_research import (
+    KORU_PREMIUM_PREFLIGHT_AUTHORITY_V2_LOG,
+    open_published_koru_premium_preflight_authority_v2,
     open_verified_raw_blob_snapshot,
     publish_raw_blob_snapshot,
 )
 
 INSTRUMENT = InstrumentId(VenueId("binance_usdm"), "koru-usdt-tradifi-perpetual")
+PREMIUM_PREFLIGHT_AUTHORITY_V2_LOCATOR_SCHEMA = "koru_premium_preflight_authority_v2_locator"
+PREMIUM_PREFLIGHT_AUTHORITY_V2_CONSUMER_RECEIPT_SCHEMA = "koru_premium_preflight_authority_v2_consumer_receipt"
+_PREMIUM_PREFLIGHT_AUTHORITY_V2_READER_IDS = (
+    "KORU-PRM-01", "KORU-PRM-02", "KORU-PRM-03", "KORU-PRM-04",
+)
+_PREMIUM_PREFLIGHT_AUTHORITY_V2_STOPPED_BEFORE = "Experiment_Holdout_and_Backtest"
 
 
 def _hash(raw: bytes) -> str:
@@ -2494,6 +2502,251 @@ def _child_source_projection_publication(
     _publish_source_projection_in_staging(staging, identity, raw_snapshot_foundation_root)
 
 
+def _premium_preflight_authority_v2_locator(locator: Mapping[str, object]) -> tuple[dict[str, object], ArtifactRef, LogEntryRef]:
+    required = {"type", "schema_version", "authority_ref", "publication_entry_ref"}
+    if (
+        type(locator) is not dict
+        or set(locator) != required
+        or locator.get("type") != PREMIUM_PREFLIGHT_AUTHORITY_V2_LOCATOR_SCHEMA
+        or locator.get("schema_version") != 1
+    ):
+        raise ValueError("premium-preflight V2 locator is invalid")
+    authority_wire = locator["authority_ref"]
+    entry_wire = locator["publication_entry_ref"]
+    if (
+        type(authority_wire) is not dict
+        or set(authority_wire) != {"type", "artifact_type", "schema_version", "content_hash"}
+        or authority_wire.get("type") != "artifact_ref"
+    ):
+        raise ValueError("premium-preflight V2 authority ref is invalid")
+    try:
+        authority_ref = ArtifactRef(
+            authority_wire["artifact_type"], authority_wire["schema_version"], authority_wire["content_hash"],
+        )
+    except (TypeError, ValueError) as error:
+        raise ValueError("premium-preflight V2 authority ref is invalid") from error
+    if (
+        authority_ref.artifact_type != "koru_premium_preflight_authority_v2"
+        or authority_ref.schema_version != 2
+        or authority_ref.to_canonical_dict() != authority_wire
+        or type(entry_wire) is not dict
+        or set(entry_wire) != {"log_name", "log_sequence", "receipt_hash"}
+    ):
+        raise ValueError("premium-preflight V2 locator is invalid")
+    if (
+        type(entry_wire["log_name"]) is not str
+        or type(entry_wire["log_sequence"]) is not int
+        or entry_wire["log_sequence"] < 1
+        or type(entry_wire["receipt_hash"]) is not str
+        or len(entry_wire["receipt_hash"]) != 71
+        or not entry_wire["receipt_hash"].startswith("sha256:")
+        or any(character not in "0123456789abcdef" for character in entry_wire["receipt_hash"][7:])
+    ):
+        raise ValueError("premium-preflight V2 publication entry ref is invalid")
+    entry_ref = LogEntryRef(entry_wire["log_name"], entry_wire["log_sequence"], entry_wire["receipt_hash"])
+    canonical = {
+        "type": PREMIUM_PREFLIGHT_AUTHORITY_V2_LOCATOR_SCHEMA,
+        "schema_version": 1,
+        "authority_ref": authority_ref.to_canonical_dict(),
+        "publication_entry_ref": {
+            "log_name": entry_ref.log_name,
+            "log_sequence": entry_ref.log_sequence,
+            "receipt_hash": entry_ref.receipt_hash,
+        },
+    }
+    if entry_ref.log_name != KORU_PREMIUM_PREFLIGHT_AUTHORITY_V2_LOG or canonical != locator:
+        raise ValueError("premium-preflight V2 locator is noncanonical")
+    return canonical, authority_ref, entry_ref
+
+
+def _premium_preflight_authority_v2_operational_root(root: Path, label: str) -> Path:
+    if not isinstance(root, Path) or not root.is_absolute():
+        raise ValueError(f"{label} must be an absolute local directory")
+    try:
+        resolved = root.resolve(strict=True)
+    except OSError as error:
+        raise ValueError(f"{label} must be an existing local directory") from error
+    if not resolved.is_dir():
+        raise ValueError(f"{label} must be an existing local directory")
+    return resolved
+
+
+def _premium_preflight_authority_v2_receipt_path(receipt_root: Path, locator: Mapping[str, object]) -> Path:
+    directory = receipt_root / "receipts"
+    try:
+        directory.mkdir(exist_ok=True)
+    except OSError as error:
+        raise ValueError("premium-preflight V2 receipt directory is unavailable") from error
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("premium-preflight V2 receipt directory is unsafe")
+    return directory / f"{canonical_sha256(locator).removeprefix('sha256:')}.json"
+
+
+def _premium_preflight_authority_v2_common_receipt(
+    locator: Mapping[str, object], outcome: str, verification_replay_performed: bool,
+) -> dict[str, object]:
+    return {
+        "type": PREMIUM_PREFLIGHT_AUTHORITY_V2_CONSUMER_RECEIPT_SCHEMA,
+        "schema_version": 1,
+        "outcome": outcome,
+        "authority_locator": dict(locator),
+        "network_performed": False,
+        "holdout_touched": False,
+        "upstream_producer_work_performed": False,
+        "verification_replay_performed": verification_replay_performed,
+        "stopped_before": _PREMIUM_PREFLIGHT_AUTHORITY_V2_STOPPED_BEFORE,
+    }
+
+
+def _premium_preflight_authority_v2_success_receipt(locator: Mapping[str, object], authority: Any) -> dict[str, object]:
+    full_spine = json.loads(canonical_bytes(authority.to_canonical_dict()))
+    if type(full_spine) is not dict:
+        raise ValueError("premium-preflight V2 authority spine is invalid")
+    premium_reader_ids = tuple(binding.premium_id for binding in authority.reader_set.reader_set.bindings)
+    reader_set_digest = authority.reader_set.reader_set.reader_set_digest
+    spine_reader_set = full_spine.get("reader_set")
+    if (
+        premium_reader_ids != _PREMIUM_PREFLIGHT_AUTHORITY_V2_READER_IDS
+        or type(spine_reader_set) is not dict
+        or spine_reader_set.get("reader_set_digest") != reader_set_digest
+    ):
+        raise ValueError("premium-preflight V2 authority reader set is invalid")
+    return {
+        **_premium_preflight_authority_v2_common_receipt(locator, "success", True),
+        "launch_gate": "GO_FOR_SEPARATE_EXPERIMENT_LAUNCH_REVIEW",
+        "final_authority": [{
+            "authority_ref": locator["authority_ref"],
+            "publication_entry_ref": locator["publication_entry_ref"],
+            "full_spine": full_spine,
+            "full_spine_sha256": canonical_sha256(full_spine),
+            "premium_reader_ids": list(premium_reader_ids),
+            "reader_set_digest": reader_set_digest,
+        }],
+    }
+
+
+def _premium_preflight_authority_v2_failure_receipt(locator: Mapping[str, object]) -> dict[str, object]:
+    return {
+        **_premium_preflight_authority_v2_common_receipt(locator, "non_success", True),
+        "failure_stage": "authority_spine_verification",
+        "launch_gate": "NO_GO",
+        "final_authority": [],
+    }
+
+
+def _validate_premium_preflight_authority_v2_consumer_receipt(
+    receipt: Mapping[str, object], locator: Mapping[str, object],
+) -> dict[str, object]:
+    common = {
+        "type", "schema_version", "outcome", "authority_locator", "network_performed",
+        "holdout_touched", "upstream_producer_work_performed", "verification_replay_performed",
+        "stopped_before", "launch_gate", "final_authority",
+    }
+    if (
+        type(receipt) is not dict
+        or not common <= set(receipt)
+        or receipt.get("type") != PREMIUM_PREFLIGHT_AUTHORITY_V2_CONSUMER_RECEIPT_SCHEMA
+        or receipt.get("schema_version") != 1
+        or receipt.get("authority_locator") != locator
+        or receipt.get("network_performed") is not False
+        or receipt.get("holdout_touched") is not False
+        or receipt.get("upstream_producer_work_performed") is not False
+        or receipt.get("verification_replay_performed") is not True
+        or receipt.get("stopped_before") != _PREMIUM_PREFLIGHT_AUTHORITY_V2_STOPPED_BEFORE
+        or type(receipt.get("final_authority")) is not list
+    ):
+        raise ValueError("premium-preflight V2 consumer receipt is invalid")
+    if receipt["outcome"] == "success":
+        final_authority = receipt["final_authority"]
+        if (
+            set(receipt) != common
+            or receipt.get("launch_gate") != "GO_FOR_SEPARATE_EXPERIMENT_LAUNCH_REVIEW"
+            or len(final_authority) != 1
+            or type(final_authority[0]) is not dict
+        ):
+            raise ValueError("premium-preflight V2 success receipt is invalid")
+        final = final_authority[0]
+        full_spine = final.get("full_spine")
+        reader_set = full_spine.get("reader_set") if type(full_spine) is dict else None
+        if (
+            set(final) != {
+                "authority_ref", "publication_entry_ref", "full_spine", "full_spine_sha256",
+                "premium_reader_ids", "reader_set_digest",
+            }
+            or final["authority_ref"] != locator["authority_ref"]
+            or final["publication_entry_ref"] != locator["publication_entry_ref"]
+            or type(full_spine) is not dict
+            or final["full_spine_sha256"] != canonical_sha256(full_spine)
+            or final["premium_reader_ids"] != list(_PREMIUM_PREFLIGHT_AUTHORITY_V2_READER_IDS)
+            or type(final["reader_set_digest"]) is not str
+            or type(reader_set) is not dict
+            or reader_set.get("reader_set_digest") != final["reader_set_digest"]
+        ):
+            raise ValueError("premium-preflight V2 success authority is invalid")
+    elif receipt["outcome"] == "non_success":
+        if (
+            set(receipt) != common | {"failure_stage"}
+            or receipt.get("failure_stage") != "authority_spine_verification"
+            or receipt.get("launch_gate") != "NO_GO"
+            or receipt["final_authority"] != []
+        ):
+            raise ValueError("premium-preflight V2 failure receipt is invalid")
+    else:
+        raise ValueError("premium-preflight V2 receipt outcome is invalid")
+    return dict(receipt)
+
+
+def _read_premium_preflight_authority_v2_consumer_receipt(
+    path: Path, locator: Mapping[str, object],
+) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("premium-preflight V2 receipt path is unsafe")
+    return _validate_premium_preflight_authority_v2_consumer_receipt(
+        _load_canonical(path, "premium-preflight V2 consumer receipt"), locator,
+    )
+
+
+def _write_premium_preflight_authority_v2_consumer_receipt(
+    path: Path, receipt: Mapping[str, object], locator: Mapping[str, object],
+) -> dict[str, object]:
+    try:
+        _create_new_json(path, receipt)
+    except FileExistsError:
+        existing = _read_premium_preflight_authority_v2_consumer_receipt(path, locator)
+        if existing != receipt:
+            raise ValueError("premium-preflight V2 consumer receipt conflicts with locator")
+        return cast(dict[str, object], existing)
+    readback = _read_premium_preflight_authority_v2_consumer_receipt(path, locator)
+    if readback != receipt:
+        raise ValueError("premium-preflight V2 consumer receipt readback mismatch")
+    return cast(dict[str, object], readback)
+
+
+def consume_published_koru_premium_preflight_authority_v2(
+    *, locator: Mapping[str, object], foundation_root: Path, repository_root: Path, receipt_root: Path,
+) -> dict[str, object]:
+    canonical_locator, authority_ref, publication_entry_ref = _premium_preflight_authority_v2_locator(locator)
+    foundation_path = _premium_preflight_authority_v2_operational_root(foundation_root, "Foundation root")
+    repository_path = _premium_preflight_authority_v2_operational_root(repository_root, "repository root")
+    output_root = _premium_preflight_authority_v2_operational_root(receipt_root, "receipt root")
+    receipt_path = _premium_preflight_authority_v2_receipt_path(output_root, canonical_locator)
+    existing = _read_premium_preflight_authority_v2_consumer_receipt(receipt_path, canonical_locator)
+    if existing is not None:
+        return existing
+    try:
+        with deny_network():
+            authority = open_published_koru_premium_preflight_authority_v2(
+                LocalFoundation(foundation_path), authority_ref=authority_ref,
+                publication_entry_ref=publication_entry_ref, repository_root=repository_path,
+            )
+        receipt = _premium_preflight_authority_v2_success_receipt(canonical_locator, authority)
+    except Exception:  # noqa: BLE001 - authority consumer must fail closed
+        receipt = _premium_preflight_authority_v2_failure_receipt(canonical_locator)
+    return _write_premium_preflight_authority_v2_consumer_receipt(receipt_path, receipt, canonical_locator)
+
+
 def full_preflight(
     attempt_root: Path, max_seconds: int = DEFAULT_FULL_MAX_SECONDS, *,
     input_snapshot_authority: Mapping[str, object], raw_snapshot_foundation_root: Path,
@@ -2545,11 +2798,16 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--prepare-input-snapshot", action="store_true", help="publish retained raw bytes before full preflight")
     mode.add_argument("--publish-source-projection", action="store_true", help="publish KORU SourceProjectionV2 from a verified raw snapshot")
     mode.add_argument("--diagnose-source-projection", action="store_true", help="bounded source-projection publication with timeout phase receipt")
+    mode.add_argument("--consume-published-preflight-authority-v2", action="store_true", help="offline V2 authority-spine verification receipt; no Experiment")
     mode.add_argument("--full", action="store_true", help="isolated retained source/economics/reader attempt; no Experiment")
     mode.add_argument("--_child", action="store_true", help=argparse.SUPPRESS)
     mode.add_argument("--_source-projection-child", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--max-seconds", type=int, default=DEFAULT_FULL_MAX_SECONDS, help="full-only parent deadline (1-300; default: 300)")
     parser.add_argument("--foundation-root", type=Path, help="smoke-only Foundation root")
+    parser.add_argument("--preflight-authority-v2-locator", help="canonical published V2 authority locator JSON")
+    parser.add_argument("--preflight-authority-v2-foundation-root", type=Path, help="existing local Foundation root for V2 authority verification")
+    parser.add_argument("--preflight-authority-v2-repository-root", type=Path, help="existing local repository root for V2 authority verification")
+    parser.add_argument("--preflight-authority-v2-receipt-root", type=Path, help="existing local receipt root for V2 authority verification")
     parser.add_argument("--attempt-root", type=Path, help="full-attempt receipt, staging, archive, and published-container root")
     parser.add_argument("--raw-snapshot-foundation-root", type=Path, help="durable raw snapshot Foundation root")
     parser.add_argument("--input-snapshot-authority", help="canonical raw snapshot authority JSON")
@@ -2634,6 +2892,29 @@ def main(argv: list[str] | None = None) -> int:
             )
         except (ValueError, json.JSONDecodeError) as error:
             parser.error(str(error))
+    elif args.consume_published_preflight_authority_v2:
+        try:
+            if (
+                args.foundation_root is not None or args.attempt_root is not None
+                or args.raw_snapshot_foundation_root is not None or args.input_snapshot_authority is not None
+                or args.source_projection_publication_root is not None or args.source_projection_attempt_id is not None
+                or args.preflight_authority_v2_locator is None
+                or args.preflight_authority_v2_foundation_root is None
+                or args.preflight_authority_v2_repository_root is None
+                or args.preflight_authority_v2_receipt_root is None
+            ):
+                parser.error("--consume-published-preflight-authority-v2 requires its locator, Foundation root, repository root, and receipt root only")
+            parsed = json.loads(args.preflight_authority_v2_locator)
+            if type(parsed) is not dict:
+                raise ValueError("premium-preflight V2 locator must be an object")
+            result = consume_published_koru_premium_preflight_authority_v2(
+                locator=parsed,
+                foundation_root=args.preflight_authority_v2_foundation_root,
+                repository_root=args.preflight_authority_v2_repository_root,
+                receipt_root=args.preflight_authority_v2_receipt_root,
+            )
+        except (ValueError, json.JSONDecodeError) as error:
+            parser.error(str(error))
     elif args.full:
         try:
             _validate_full_max_seconds(args.max_seconds)
@@ -2658,7 +2939,10 @@ def main(argv: list[str] | None = None) -> int:
         with deny_network():
             result = smoke(args.foundation_root)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    return 1 if (args.publish_source_projection or args.diagnose_source_projection) and result.get("outcome") != "success" else 0
+    return 1 if (
+        args.publish_source_projection or args.diagnose_source_projection
+        or args.consume_published_preflight_authority_v2
+    ) and result.get("outcome") != "success" else 0
 
 
 if __name__ == "__main__":
