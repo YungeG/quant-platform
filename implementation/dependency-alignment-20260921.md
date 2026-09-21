@@ -1,6 +1,6 @@
 # Dependency alignment — 2026-09-21
 
-Status: **candidate validated; original-worktree cutover blocked pending quiescence**.
+Status: **activated in the original Platform worktree; post-cutover checks passed**.
 
 ## Scope and exact identities
 
@@ -34,7 +34,7 @@ D004 compatibility used only four existing `tests/research/test_a_share_*` / cap
 
 ## Protected local state and data discovery
 
-Original Platform and all pre-existing worktrees/environments remain in place. Preservation refs were created before work. A private recovery directory is retained at `/home/ygguo/agent-projs/ai-crypt/.dependency-alignment-safety-20260921`.
+All pre-existing source/data worktrees remain in place. Preservation refs were created before work. A private recovery directory is retained at `/home/ygguo/agent-projs/ai-crypt/.dependency-alignment-safety-20260921`. At cutover, the old Platform environment was moved intact to `cutover-20260921/venv-before-switch` beneath that directory; it was not deleted or overwritten.
 
 - Original tracked Platform diff and path list retained.
 - Original Platform 84 untracked files archived and compared byte-for-byte with `tar --compare`.
@@ -65,12 +65,21 @@ Before rebasing or merging that branch:
 
 This candidate neither changes that protocol nor enables unfinished portfolio/KORU code.
 
-## Cutover condition and rollback
+## Original-worktree cutover and rollback
 
-At 2026-09-21 14:13 +0800, D002 and D004 metadata showed idle, but original-worktree Pi processes still existed; PID 2357835 was not accounted for by those task bindings. No process was stopped/reloaded, no real task was edited or redispatched, and no original environment was synchronized.
+The initial 14:13 +0800 inspection blocked cutover because Pi PID 2357835 was not accounted for by task bindings. After the user stopped Pi, the 14:29–14:30 recheck confirmed PID 2357835 and D004 PID 4037263 had exited. D002 PID 2814253 remained, but fresh matching metadata reported idle, no pending input and no active run; OS inspection found no descendants or Python jobs. This idle session was preserved, not stopped or reloaded.
 
-Proceed only after **all** original-tree writers and Python jobs are quiescent and before/after refs/dirty files are rechecked. Then integrate the validated candidate without discarding the original tracked or untracked work, synchronize the same lock into the original environment, and rerun the two alignment checks plus the smallest behavioral smoke. Do not recreate the existing directory by copying a clean worktree over it. Do not hot-reload an active Pi or research process.
+Cutover was verified at 2026-09-21 14:41 +0800:
 
-Until then, the original `.venv` intentionally remains at `f73d068d`; commands requiring the new public CN preparation must use the isolated candidate explicitly. The candidate does not automatically contain D004's untracked scripts/data. A future cutover must preserve these files, not mistake their absence from Git for permission to drop them.
+1. Original `main` fast-forwarded from `e802d89` to the validated merge `611b573b946706c40a2f71296919ef1a0c191c9c`; neither parent history was discarded.
+2. `backtest` moved from `93d8a391` to its same-tree published merge `8cc5b874`. Its tracked source tree and complete pre-existing untracked-file set remained unchanged.
+3. The original untracked data inventory was moved intact to `cutover-20260921/untracked-inventory-before-merge.md` before Git installed the versioned updated inventory. It still matches `original-research-data-inventory.md` byte-for-byte.
+4. The old `.venv` was preserved at `cutover-20260921/venv-before-switch`; a fresh environment was built at the original final path with `uv sync --locked --offline --group dev`. This avoided copying an environment with another worktree's editable paths or shebangs.
+5. Actual `direct_url.json` provenance for all five installed Git packages now equals `8cc5b874c31c38a6ec7526d1dbf345b93998a39f`; `prepare_cn_a_share_development_backtest` is callable from `platform/.venv`.
+6. In the original environment, the two alignment checks, public binding fixture and V6 independent-OOS fixture all passed (**4 passed**, 5.53s); D004's same four unit-test files passed again (**211 passed**, 1.29s). These are tests, not a new strategy study or live run.
 
-Rollback must preserve all user changes: retain the old environment and start refs, and reverse only this upgrade's configuration/commit on a quiescent tree. No `reset --hard`, `clean`, worktree deletion, or data movement is authorized by this receipt.
+Preservation was checked after cutover: original README SHA-256 remains `8cae2e8703ff7a6b23f681138e05c4118534432e6835b742b510360dcd68b03b`; the other 83 originally untracked files still compare equal to the recovery archive; the old inventory is retained; the four workspace module sources are clean. A remaining submodule dirty indication can reflect its already-existing untracked files; none were cleaned.
+
+No Waggle task was accepted, edited or redispatched. No Agent or research process was force-stopped, hot-reloaded or restarted. For subsequent commands use `uv run --locked` from the original `platform` directory; do not invoke the preserved old environment as though it matched the new lock.
+
+Rollback must preserve all user changes: retain the old environment and start refs, and reverse only this upgrade's configuration/commit on a quiescent tree before restoring its matching environment. Do not overlay a clean worktree over D004's untracked scripts/data. No `reset --hard`, `clean`, worktree deletion, or research-data movement is authorized by this receipt.
