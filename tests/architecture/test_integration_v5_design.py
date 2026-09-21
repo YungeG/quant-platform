@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from tests.support.dependency_revision import backtest_revision
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v5.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
@@ -29,7 +31,7 @@ BACKTEST_DRP_03_SHA = "cebb9b033b7eeffbbff712715fc017708ac5a247"
 BACKTEST_MODEL_SEAM_SHA = "033344172b24847e73941bb97a06da0490527edf"
 BACKTEST_DIVERGENCE_SHA = "cd1d7588ae451a3fa22a2b230b2cd5c3aa65973f"
 BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
-CURRENT_BACKTEST_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+CURRENT_BACKTEST_SHA = backtest_revision()
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
 CURRENT_RP_SHA = "c06662449a8a13aed5824398b96bd21e889a9fee"

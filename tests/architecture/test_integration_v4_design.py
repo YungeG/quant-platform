@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from tests.support.dependency_revision import backtest_revision
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v4.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
@@ -14,7 +16,7 @@ FIXTURE = ROOT / "tests/contracts/integration-v4-shadow-spec-v1.json"
 APPROVAL = ROOT / "implementation/v4-contract-shadow-spec-v1.md"
 FIXTURE_SHA = "0f030a47ffb5ac3b64d40330ab72686e04e4e85feddec7d489c9ae34f5c7ece7"
 INTEGRATION_V3_RELEASE_SHA = "3ea0be372d14501decbbfd0343b06488eb2dee28"
-CURRENT_BACKTEST_GITLINK_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+CURRENT_BACKTEST_GITLINK_SHA = backtest_revision()
 
 
 def test_v4_shadow_spec_contract_is_frozen_and_approved() -> None:

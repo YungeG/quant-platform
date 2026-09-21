@@ -80,7 +80,9 @@ def test_support_adapter_uses_public_package_roots_and_exact_backtest_authority(
     }
 
     assert imported == allowed_roots
-    assert _BINDING.BACKTEST_SHA == "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+    from tests.support.dependency_revision import backtest_revision
+
+    assert _BINDING.BACKTEST_SHA == backtest_revision()
     assert "BacktestTargetStreamRepository" in backtest.__all__
     assert "prepare_cash_target_stream_backtest" in backtest.__all__
 

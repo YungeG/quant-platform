@@ -50,9 +50,11 @@ from crypto_quant_trading import (
 )
 from crypto_quant_validation import Holdout, OosRule, ValidationPolicy
 
+from tests.support.dependency_revision import backtest_revision
+
 RESERVED_AT = "2026-08-26T00:00:00.000000Z"
 RECEIVED_AT = "2026-08-26T00:00:01.000000Z"
-BACKTEST_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+BACKTEST_SHA = backtest_revision()
 
 _VENUE = VenueId("synthetic")
 _USD = CurrencyId("USD")

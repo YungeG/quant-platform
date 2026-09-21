@@ -4,6 +4,9 @@ import hashlib
 import json
 import subprocess
 from pathlib import Path
+from typing import Any
+
+from tests.support.dependency_revision import backtest_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v6.md"
@@ -36,7 +39,7 @@ FANIN_PYPROJECT_SHA = "450328a2eea02f9fb14e36c096b9d27c25df4c8194553ff4903983d97
 FANIN_UV_LOCK_SHA = "e72bad448708f7075ee8205ba90452db469306a099c010810496b422f75dceb9"
 
 
-def _fixture() -> dict[str, object]:
+def _fixture() -> dict[str, Any]:
     assert hashlib.sha256(FIXTURE.read_bytes()).hexdigest() == FIXTURE_SHA
     return json.loads(FIXTURE.read_text(encoding="utf-8"))
 
@@ -345,11 +348,15 @@ def test_integration_v6_status_and_root_fan_in_are_accepted() -> None:
         "backtest_vcs_revision_occurrences": 5,
         "contract_approval_changes_gitlinks_or_pins": False,
     }
-    assert hashlib.sha256((ROOT / "pyproject.toml").read_bytes()).hexdigest() == FANIN_PYPROJECT_SHA
-    assert hashlib.sha256((ROOT / "uv.lock").read_bytes()).hexdigest() == FANIN_UV_LOCK_SHA
+    # Keep the accepted fan-in bytes immutable; the current workspace may upgrade.
+    for name, expected in (("pyproject.toml", FANIN_PYPROJECT_SHA), ("uv.lock", FANIN_UV_LOCK_SHA)):
+        historical = subprocess.check_output(
+            ["git", "show", f"2a9103dd9e4b8503658db88a17fbbf201c62d16e:{name}"], cwd=ROOT, timeout=10
+        )
+        assert hashlib.sha256(historical).hexdigest() == expected
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
-    assert pyproject.count(FANIN["backtest"]) == 5
+    assert pyproject.count(backtest_revision()) == 5
     assert BASELINES["backtest"] not in pyproject
     assert BASELINES["backtest"] not in lock
 
@@ -361,7 +368,11 @@ def test_integration_v6_status_and_root_fan_in_are_accepted() -> None:
         current = subprocess.check_output(
             ["git", "-C", path, "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip()
-        assert current == FANIN[key]
+        assert current == (backtest_revision() if key == "backtest" else FANIN[key])
+        assert subprocess.run(
+            ["git", "-C", path, "merge-base", "--is-ancestor", FANIN[key], current],
+            cwd=ROOT, check=False, timeout=10,
+        ).returncode == 0
         assert subprocess.run(
             ["git", "-C", path, "merge-base", "--is-ancestor", BASELINES[key], current],
             cwd=ROOT,

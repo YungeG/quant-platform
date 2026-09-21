@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from tests.support.dependency_revision import backtest_revision
+
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v3.md"
 ROADMAP = ROOT / "implementation/roadmap.md"
@@ -18,7 +20,7 @@ PG_POS_THIN_RECEIPT = ROOT / "implementation/pg-pos-thin-01-receipt.md"
 FI_03_RECEIPT = ROOT / "implementation/fi-03-receipt.md"
 FIXTURE_SHA = "2f826867f54f8c083f9d3574702a8ccaac8c7ebea5e64f57fff791a6b0e500d9"
 HISTORICAL_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
-CURRENT_BACKTEST_GITLINK_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+CURRENT_BACKTEST_GITLINK_SHA = backtest_revision()
 PG_POS_SHA = "de10a535b8c6a4da79a3b0f29e1dddd925d23586"
 PG_POS_RUNTIME_SHA = "7210621bc56e3d6cc51bb38c0acea6ca6d5ecc03"
 CURRENT_PROMOTION_GITLINK_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"

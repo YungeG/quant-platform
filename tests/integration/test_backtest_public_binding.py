@@ -55,9 +55,11 @@ from crypto_quant_trading import (
     QuantityLattice,
 )
 
+from tests.support.dependency_revision import backtest_revision
+
 _ROOT = Path(__file__).resolve().parents[2]
 _ACCEPTED_BACKTEST_SHA = "033344172b24847e73941bb97a06da0490527edf"
-_CURRENT_BACKTEST_SHA = "f73d068d24ffb7ecc0b7d78194fcbc96908d3c04"
+_CURRENT_BACKTEST_SHA = backtest_revision()
 _VENUE = VenueId("synthetic")
 _USD = CurrencyId("USD")
 _INSTRUMENT = InstrumentId(_VENUE, "cash:btc-usd")
