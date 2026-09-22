@@ -83,3 +83,38 @@ Preservation was checked after cutover: original README SHA-256 remains `8cae2e8
 No Waggle task was accepted, edited or redispatched. No Agent or research process was force-stopped, hot-reloaded or restarted. For subsequent commands use `uv run --locked` from the original `platform` directory; do not invoke the preserved old environment as though it matched the new lock.
 
 Rollback must preserve all user changes: retain the old environment and start refs, and reverse only this upgrade's configuration/commit on a quiescent tree before restoring its matching environment. Do not overlay a clean worktree over D004's untracked scripts/data. No `reset --hard`, `clean`, worktree deletion, or research-data movement is authorized by this receipt.
+
+## Worktree retirement follow-up
+
+The user separately authorized directory organization after the cutover. It completed on **2026-09-22**. The preceding sections remain the original 2026-09-21 cutover record: statements there about worktrees remaining and independent backup coverage being unknown describe that earlier inspection, not the final directory state. The original test results were not rerun or upgraded by this cleanup.
+
+### Retired worktrees
+
+All paths below are relative to `/home/ygguo/agent-projs/ai-crypt`. Only the worktree directories and their registrations were removed; their branches and committed histories were retained.
+
+| Retirement date | Directory | Retained branch |
+| --- | --- | --- |
+| 2026-09-21 | `platform-a-share-integration` | `integration/a-share-research` |
+| 2026-09-21 | `platform-early-report-retry` | `worker/early-report-diffusion-retry` |
+| 2026-09-21 | `backtest-koru-vnext-contract-01` | `design/koru-vnext-contract-01` |
+| 2026-09-21 | `backtest-koru-vnext-contract-02` | `design/koru-vnext-contract-02` |
+| 2026-09-21 | `platform-dependency-alignment` | `integration/dependency-alignment-20260921` |
+| 2026-09-22 | `platform-strategy-ideas` | `research/strategy-ideas` |
+| 2026-09-22 | `platform-oil-polyolefin` | `research/propane-pdh-authority-v1` |
+| 2026-09-22 | `platform-a-share-strategy` | `research/qb-nonfiling-effective-boundary-v1` |
+
+The first five recovery archives and their verified `SHA256SUMS` remain at `/home/ygguo/agent-projs/ai-crypt/.dependency-alignment-safety-20260921/retirement-20260921-NQBHMF/`. The last three complete non-cache working trees, Git administrative metadata, and patches are retained at `/srv/bcache-8t/ygguo/ai-crypt-backups/organization-20260921-hW0Sw8/`. That second directory also contains `DIRECTORY-INDEX.md`, `ARCHIVE-CATALOG.tsv`, per-directory checksums and verification records. Its name retains the task's start date; completion and backup verification occurred on 2026-09-22.
+
+Before removal, process/installation references and shared Git ownership were checked, recovery archives were compared with their sources, and removal was exercised in a temporary repository with a populated submodule. The three A-share strategy gitlink changes referred to commits already contained in the stable module histories; their exact patch was archived rather than applied to the current Platform.
+
+### Preserved state and verification boundaries
+
+- Foundation `cf6f687` was copied into the stable `platform/foundation` repository under `preservation/retired-dependency-alignment-20260921-cf6f687`, without changing its checked-out source. Backtest `8cc5b874` also has `preservation/retired-dependency-alignment-20260921-8cc5b874` in `platform/backtest`.
+- The previously unanchored Backtest prototype `281e722b5500e32ed20cf0d323616ddd16dd074f` now has `preservation/orphan-platform-v5-prototype-20260922` and is included in the Backtest history backup. The ten stale Backtest worktree registrations were retained; **no `git worktree prune` ran**.
+- Independent-disk snapshots of `platform-a-share-research` and `platform-sector-trend` passed source/archive comparison, before/after file-metadata and Git-status checks, and archive checksum verification. A representative CSV/Parquet sample was restored before the larger backups. Both original data directories remain in place; `platform-sector-trend` still owns the portfolio worktree's Git metadata. See the [updated data inventory](../overall/research-data-inventory.md#verified-independent-backups) for exact snapshot identities and exclusions.
+- The three legacy independent repositories, Platform/Backtest uncommitted content, and root KORU audit/publication evidence were backed up without deleting their source directories. A real legacy history bundle was independently restored and connectivity-checked. These are recovery copies, not owner-log publication or research qualification; the separate local disk is **not an offsite backup**.
+- KORU native/card4/research and the portfolio worktree remain. No process was stopped, code merged, strategy run, or full test suite executed by cleanup. The actively changing KORU formal-discovery tree did **not** receive a new consistency-verified full snapshot; copying its existing evidence package does not establish such coverage.
+- Three historical documents were recovered into `research/`: [strategy ideas](../research/strategy-ideas.md), [BTCUSDT validation plan](../research/btcusdt-daily-tsm-validation-plan.md), and [prior-project data inventory](../research/prior-project-market-data-inventory.md). Original bytes remain in the backup. The archival note and A-share navigation path do not revalidate old capability, data or approval statements or authorize an experiment.
+- The empty root files `=1.24`, `=2.0`, `=6.0` and the unoccupied root `.pytest_cache/` were archived before removal. The `backtest -> platform/backtest` link, root `.pi/`, and previous safety backups remain intact.
+
+Recovery should begin in an empty staging directory: recreate worktrees from retained branches, then selectively restore files and patches. Do not overlay archived Git metadata on a live repository; its original worktree relationships and object-alternate paths must be checked. No further directory deletion or data movement is authorized by this follow-up record.

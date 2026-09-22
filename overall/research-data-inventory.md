@@ -30,9 +30,22 @@ The source `/srv/bcache-8t/ygguo/duckdb/quant-a50/quant_a50.duckdb` exists (1,72
 
 The size-ETF CSV, sector-ETF daily Parquet and PIT-quality CSV above were also verified to exist (1,043,401; 6,214,947; and 7,104,412 bytes respectively). Coverage and hashes in the table are the original inventory's recorded values, not newly revalidated sample evidence. The old relative path `platform/overall/a-share-multi-asset-etf-daily.csv` is absent; this is a path mismatch, not proof that all reusable data is missing.
 
-`platform-a-share-research` contains 25,520 untracked files at inspection, 25,391 under `overall/`. They remain in place. Independent backup coverage for that data tree is **not verified**; do not clean/remove the worktree or infer that merging its branch copies its data. The dependency-alignment operation did not open those market samples.
+`platform-a-share-research` contained 25,520 untracked files at the 2026-09-21 inspection, 25,391 under `overall/`. They remain in place. The dependency-alignment operation did not open those market samples or verify an independent full backup. The separate directory-organization operation verified an independent-disk snapshot on **2026-09-22**, as recorded below. This does not authorize removing the original worktree or imply that merging its branch copies its data.
 
 D004's frozen diagnostic CSVs remain at `/home/ygguo/agent-projs/ai-crypt/platform/research/evidence/a-share-market-regime-20260921/public-full-v2/` (`prices.csv` and `calendar.csv`). They are untracked original-worktree artifacts, not automatically present in another checkout. A verified recovery archive of the original Platform worktree's 84 untracked files is retained in `/home/ygguo/agent-projs/ai-crypt/.dependency-alignment-safety-20260921/platform-untracked.tar.gz`; this is a recovery copy, not Backtest publication or historical availability evidence.
+
+### Verified independent backups
+
+On **2026-09-22**, the two retained A-share workspaces were archived under `/srv/bcache-8t/ygguo/ai-crypt-backups/organization-20260921-hW0Sw8/`, on a different local filesystem/device from their source directories. Each workspace has its own `working-tree.tar`, Git administrative archive, patches, `SHA256SUMS`, and verification record.
+
+| Workspace | Working-tree archive bytes | Recorded archive SHA-256 | Verification time (+08:00) |
+| --- | ---: | --- | --- |
+| `platform-a-share-research` | 2,275,307,520 | `159af334127619e0882583b0e5272e2800327b2d6f361153dfc3ee006416bc46` | 2026-09-22 09:03:59 |
+| `platform-sector-trend` | 5,488,814,080 | `5c9e69e91b524f4c605928870147777ef53034c46428d9c99745c0cbfd68cc15` | 2026-09-22 09:04:25 |
+
+Both archives were compared against their source files, with matching before/after file metadata and Git status, then checksum-verified. The representative CSV/Parquet smoke also passed extraction and byte comparison, and rejected a missing input. Snapshot bytes include ignored research data; they exclude Git metadata from the working-tree tar (archived separately), virtual environments, reproducible caches/egg-info, and live `.pi/`/`.omx/` state. Both source directories are retained; `platform-sector-trend` also owns the portfolio worktree's Git metadata.
+
+This closes the previously unknown independent backup status **for these snapshots only**. It is not offsite coverage, a guarantee about subsequent writes, or a new consistency-verified snapshot of the active KORU formal-discovery tree. Backup checks did not qualify market-data coverage, historical availability, a provider, or a strategy result. See the [retirement follow-up](../implementation/dependency-alignment-20260921.md#worktree-retirement-follow-up) and the backup's `DIRECTORY-INDEX.md` for recovery boundaries.
 
 ## A-share retained dividend authority
 
@@ -78,7 +91,7 @@ Root: `/home/ygguo/agent-projs/ai-crypt/platform/backtest`
 - Backtest `8cc5b874c31c38a6ec7526d1dbf345b93998a39f` exports `prepare_cn_a_share_development_backtest` in addition to the three generic cash preparation functions. The earlier claim that only cash preparation existed described the old installed `f73d068d` environment, not the newer source tree.
 - This public A-share route is the bounded `000703.SZ` development path, with closed-bar fills, fees and T+1 behavior; it is **not** a general multi-instrument portfolio or decision-grade seam. Its existing two-session public fixture was executed successfully in the isolated aligned environment; no user strategy or live market study was run.
 - The separate `quant-backtest-a-share-portfolio` branch has accepted Phases 1–4 and a Phase 5 repair at `75d8f8a`; a subsequent Phase 5 acceptance was not found. Its profile/public-provider phases remain separate work. Both it and the published line use `backtest_execution_input_bundle@7` for different payloads: preserve the published format and resolve protocol ownership before integration. Code presence is not acceptance.
-- The alignment candidate remains at `/home/ygguo/agent-projs/ai-crypt/platform-dependency-alignment`. On 2026-09-21, the validated commit `611b573` was fast-forwarded into the original `platform` worktree, whose environment was rebuilt offline at its final path. All five installed Backtest-family packages now match `8cc5b874`; post-cutover alignment/integration and D004 unit checks passed. The old environment and original untracked inventory are preserved. See [the cutover receipt](../implementation/dependency-alignment-20260921.md) for exact checks, scope and rollback boundaries.
+- On 2026-09-21, the validated commit `611b573` was fast-forwarded into the original `platform` worktree, whose environment was rebuilt offline at its final path. At that cutover, all five installed Backtest-family packages matched `8cc5b874`; post-cutover alignment/integration and D004 unit checks passed. The `platform-dependency-alignment` candidate worktree was subsequently retired on 2026-09-21 after recovery archives and its module histories were preserved; its branch remains. The old original-worktree environment and original untracked inventory are also retained. See [the cutover receipt and retirement follow-up](../implementation/dependency-alignment-20260921.md#worktree-retirement-follow-up) for the historical checks, later directory state and recovery boundaries.
 
 - `implementation/roadmap.md` retains broad A-share qualification as `TSR-ASH-Q-01 / SEPARATE_H2` and Binance causal qualification as `TSR-BIN-Q-01 / SEPARATE_H3`.
 
