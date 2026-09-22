@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="0 0 2000 2000" role="img" aria-labelledby="title description">
+<title id="title">A股牛熊判断：当前程序结构</title>
+<desc id="description">官网数据经过独立获取与冻结，仅CSV进入离线CLI。historical与snapshot共用纯算法；归档无运行时出边，不连接回测或交易。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#60758c"/></marker></defs>
+<rect width="2000" height="2000" fill="#f7f9fc"/>
+<g font-family="Noto Sans CJK SC" fill="#172c44">
+<text x="64" y="75" font-size="47" font-weight="700">A股牛熊判断｜当前程序结构</text>
+<text x="67" y="118" font-size="24" fill="#52677f">数据来源 → 获取与冻结 → 离线判断 → 解释性输出</text>
+<text x="48" y="210" font-size="27" font-weight="700" fill="#157c80">01  数据来源</text>
+<text x="48" y="415" font-size="27" font-weight="700" fill="#157c80">02  获取与冻结</text>
+<text x="48" y="780" font-size="27" font-weight="700" fill="#157c80">03  离线判断</text>
+<text x="48" y="1570" font-size="27" font-weight="700" fill="#157c80">04  解释性输出</text>
+<path data-from="CSI" data-to="GET" d="M625 295 V323 H1030 V355" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="SSE" data-to="GET" d="M1365 295 V323 H1030 V355" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="GET" data-to="CSV" d="M1030 475 V506 H795 V535" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="GET" data-to="RAW" d="M1030 475 V506 H1645 V535" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="CSV" data-to="CLI" d="M795 675 V720" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="CLI" data-to="VALID" d="M795 835 V875" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="CLI" data-to="STOCKS" d="M1250 775 H1370" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="9 7"/>
+<text x="1282" y="756" font-size="20" fill="#60758c">可选</text>
+<path data-from="VALID" data-to="HIST" d="M795 990 V1016 H560 V1040" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="VALID" data-to="SNAP" d="M795 990 V1016 H1030 V1040" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="VALID" data-to="ERROR" d="M1250 932 H1308 V1018 H1370" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="9 7"/>
+<path data-from="HIST" data-to="SIGNAL" d="M560 1185 V1210 H795 V1235" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="SNAP" data-to="SIGNAL" d="M1030 1185 V1210 H795 V1235" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path data-from="SIGNAL" data-to="OUT" d="M795 1465 V1510" fill="none" stroke="#60758c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<g id="CSI" data-node="CSI"><rect x="300" y="150" width="650" height="145" rx="18" fill="#e8f6f4" stroke="#85bcb6" stroke-width="2"/>
+<text x="625" y="193" text-anchor="middle" font-size="30" font-weight="700">中证指数官网</text>
+<text x="625" y="234" text-anchor="middle" font-size="25" font-weight="400">沪深300 · 中证500 · 中证1000</text>
+<text x="625" y="269" text-anchor="middle" font-size="23" font-weight="400">指数日线 JSON</text>
+</g>
+<g id="SSE" data-node="SSE"><rect x="1040" y="150" width="650" height="145" rx="18" fill="#e8f6f4" stroke="#85bcb6" stroke-width="2"/>
+<text x="1365" y="193" text-anchor="middle" font-size="30" font-weight="700">上交所年度休市安排</text>
+<text x="1365" y="234" text-anchor="middle" font-size="25" font-weight="400">固定 2025 / 2026 年官方来源</text>
+<text x="1365" y="269" text-anchor="middle" font-size="23" font-weight="400">日历 HTML：包含周末与节假日</text>
+</g>
+<g id="GET" data-node="GET"><rect x="370" y="355" width="1320" height="120" rx="18" fill="#eaf2fc" stroke="#8caed5" stroke-width="2"/>
+<text x="1030" y="394" text-anchor="middle" font-size="29" font-weight="700">capture_a_share_market_regime.py</text>
+<text x="1030" y="432" text-anchor="middle" font-size="25" font-weight="400">固定 HTTPS → 解析与源校验 → 已收盘交易日精确覆盖</text>
+<text x="1030" y="460" text-anchor="middle" font-size="19" font-weight="400" fill="#596e86">有限范围获取；异常停止，保留可写的失败回执</text>
+</g>
+<g id="CSV" data-node="CSV"><rect x="340" y="535" width="910" height="140" rx="18" fill="#eaf2fc" stroke="#8caed5" stroke-width="2"/>
+<text x="795" y="578" text-anchor="middle" font-size="30" font-weight="700">prices.csv + calendar.csv</text>
+<text x="795" y="618" text-anchor="middle" font-size="24" font-weight="400">冻结本地输入 · 不填补缺失 · 不覆盖旧快照</text>
+<text x="795" y="653" text-anchor="middle" font-size="21" font-weight="400" fill="#a06018">采集器 available_at = 实际获取时刻，不回填历史时间</text>
+</g>
+<g id="RAW" data-node="RAW"><rect x="1370" y="535" width="550" height="170" rx="18" fill="#f1f4f8" stroke="#b9c6d6" stroke-width="2"/>
+<text x="1645" y="574" text-anchor="middle" font-size="26" font-weight="700">仅归档，不供 CLI 读取</text>
+<text x="1645" y="612" text-anchor="middle" font-size="22" font-weight="400">原始 JSON / HTML + receipt.json</text>
+<text x="1645" y="647" text-anchor="middle" font-size="21" font-weight="400">URL · SHA-256 · 实际 acquired_at</text>
+<text x="1645" y="681" text-anchor="middle" font-size="20" font-weight="400" fill="#a06018">历史 provider availability 未证实</text>
+</g>
+<g id="CLI" data-node="CLI"><rect x="340" y="720" width="910" height="115" rx="18" fill="#eaf2fc" stroke="#8caed5" stroke-width="2"/>
+<text x="795" y="759" text-anchor="middle" font-size="29" font-weight="700">run_a_share_market_regime.py</text>
+<text x="795" y="795" text-anchor="middle" font-size="24" font-weight="400">只读 --prices / --calendar；不联网</text>
+<text x="795" y="822" text-anchor="middle" font-size="21" font-weight="400">--as-of 或 --now（只读取一次系统时钟）</text>
+</g>
+<g id="STOCKS" data-node="STOCKS"><rect x="1370" y="745" width="550" height="190" rx="18" fill="#f1f4f8" stroke="#b9c6d6" stroke-width="2"/>
+<text x="1645" y="782" text-anchor="middle" font-size="27" font-weight="700">可选：股票观察名单</text>
+<text x="1645" y="817" text-anchor="middle" font-size="23" font-weight="400">外部 stocks.csv + --sectors</text>
+<text x="1645" y="850" text-anchor="middle" font-size="21" font-weight="400">a_share_sector_opportunities.py</text>
+<text x="1645" y="884" text-anchor="middle" font-size="22" font-weight="400">板块 / 波动 / 流动性 / 趋势筛选</text>
+<text x="1645" y="918" text-anchor="middle" font-size="21" font-weight="400" fill="#a06018">仅 historical；snapshot 禁止接入</text>
+</g>
+<g id="VALID" data-node="VALID"><rect x="340" y="875" width="910" height="115" rx="18" fill="#eaf2fc" stroke="#8caed5" stroke-width="2"/>
+<text x="795" y="912" text-anchor="middle" font-size="28" font-weight="700">输入结构与评估时点检查</text>
+<text x="795" y="949" text-anchor="middle" font-size="24" font-weight="400">完整日历 · 最近已收盘日 · 每指数至少202个交易日</text>
+<text x="795" y="977" text-anchor="middle" font-size="21" font-weight="400">不前向填充；不缩小三指数集合</text>
+</g>
+<g id="ERROR" data-node="ERROR"><rect x="1370" y="980" width="550" height="120" rx="18" fill="#fff5e6" stroke="#dfba81" stroke-width="2"/>
+<text x="1645" y="1016" text-anchor="middle" font-size="26" font-weight="700">失败关闭，不输出伪成功</text>
+<text x="1645" y="1051" text-anchor="middle" font-size="20" font-weight="400">日历 / 历史 / 价格 / 可见性不足 → unknown</text>
+<text x="1645" y="1081" text-anchor="middle" font-size="21" font-weight="400">输入非法 → stderr 报错，退出2</text>
+</g>
+<g id="HIST" data-node="HIST"><rect x="340" y="1040" width="440" height="145" rx="18" fill="#f0ecfa" stroke="#b1a0d6" stroke-width="2"/>
+<text x="560" y="1077" text-anchor="middle" font-size="28" font-weight="700">historical（默认）</text>
+<text x="560" y="1116" text-anchor="middle" font-size="22" font-weight="400">每个历史窗口日截止前已知</text>
+<text x="560" y="1151" text-anchor="middle" font-size="22" font-weight="400">同时不晚于评估 as-of</text>
+</g>
+<g id="SNAP" data-node="SNAP"><rect x="810" y="1040" width="440" height="145" rx="18" fill="#f0ecfa" stroke="#b1a0d6" stroke-width="2"/>
+<text x="1030" y="1076" text-anchor="middle" font-size="28" font-weight="700">snapshot（显式）</text>
+<text x="1030" y="1115" text-anchor="middle" font-size="22" font-weight="400">统一用评估 as-of 前已知版本</text>
+<text x="1030" y="1151" text-anchor="middle" font-size="22" font-weight="400" fill="#95551e">不证明历史当时已确认</text>
+</g>
+<g id="SIGNAL" data-node="SIGNAL"><rect x="340" y="1235" width="910" height="230" rx="18" fill="#eaf2fc" stroke="#8caed5" stroke-width="2"/>
+<text x="795" y="1273" text-anchor="middle" font-size="28" font-weight="700">a_share_market_regime.py：共用纯算法</text>
+<text x="795" y="1304" text-anchor="middle" font-size="20" font-weight="400" fill="#596e86">不读文件 · 不联网 · 不读时钟</text>
+<text x="795" y="1338" text-anchor="middle" font-size="25" font-weight="400">每指数：MA200 + 60交易日动量</text>
+<text x="795" y="1372" text-anchor="middle" font-size="24" font-weight="400">收盘高于MA且动量为正 → bull</text>
+<text x="795" y="1406" text-anchor="middle" font-size="24" font-weight="400">收盘低于MA且动量为负 → bear；其余 transition</text>
+<text x="795" y="1443" text-anchor="middle" font-size="23" font-weight="400">至少2个指数同向投票 → 最近3个交易日连续同向形态</text>
+</g>
+<g id="TIME_NOTE" data-node="TIME_NOTE"><rect x="1370" y="1245" width="550" height="170" rx="18" fill="#fff5e6" stroke="#dfba81" stroke-width="2"/>
+<text x="1645" y="1284" text-anchor="middle" font-size="27" font-weight="700">时点与范围边界</text>
+<text x="1645" y="1323" text-anchor="middle" font-size="24" font-weight="400">获取时刻 ≠ 历史发布时间</text>
+<text x="1645" y="1358" text-anchor="middle" font-size="22" font-weight="400">两种模式都不修改 available_at</text>
+<text x="1645" y="1392" text-anchor="middle" font-size="23" font-weight="400">三指数代理 ≠ 全A个股广度</text>
+</g>
+<g id="OUT" data-node="OUT"><rect x="340" y="1510" width="910" height="205" rx="18" fill="#e8f6f4" stroke="#85bcb6" stroke-width="2"/>
+<text x="795" y="1550" text-anchor="middle" font-size="31" font-weight="700">JSON 诊断结果</text>
+<text x="795" y="1589" text-anchor="middle" font-size="28" font-weight="400">bull / bear / transition / unknown</text>
+<text x="795" y="1628" text-anchor="middle" font-size="22" font-weight="400">as_of · decision_date · 指标 · 三日序列 · 原因 · 输入哈希</text>
+<text x="795" y="1666" text-anchor="middle" font-size="23" font-weight="400">diagnostic_only · trade_authorized=false</text>
+<text x="795" y="1697" text-anchor="middle" font-size="20" font-weight="400">snapshot：historical_confirmation_claimed=false</text>
+</g>
+<g id="EXIT" data-node="EXIT"><rect x="1370" y="1510" width="550" height="205" rx="18" fill="#f1f4f8" stroke="#b9c6d6" stroke-width="2"/>
+<text x="1645" y="1550" text-anchor="middle" font-size="29" font-weight="700">退出码</text>
+<text x="1645" y="1593" text-anchor="middle" font-size="24" font-weight="400">0  有效 bull / bear / transition</text>
+<text x="1645" y="1636" text-anchor="middle" font-size="24" font-weight="400">1  unknown / 证据不足</text>
+<text x="1645" y="1679" text-anchor="middle" font-size="24" font-weight="400">2  非法输入 / 参数错误</text>
+</g>
+<g id="BOUNDARY" data-node="BOUNDARY"><rect x="340" y="1765" width="1580" height="120" rx="18" fill="#edf0f5" stroke="#bbc6d5" stroke-width="2"/>
+<text x="1130" y="1811" text-anchor="middle" font-size="29" font-weight="700">执行边界：未接入正式A股收益回测 / OOS / 实盘</text>
+<text x="1130" y="1856" text-anchor="middle" font-size="25" font-weight="400">不生成订单；这是收盘状态诊断，不是盘中 / 转折预测，也不是投资效果验证。</text>
+</g>
+<text x="64" y="1955" font-size="20" fill="#62758b">代码对应与可编辑图源：research/a-share-market-regime-structure.md</text>
+</g></svg>

@@ -16,6 +16,7 @@
 - [Strategy Validation](strategy-validation/design.md)
 - [Promotion Gate](promotion-gate/design.md)
 - [Platform glossary](CONTEXT.md#platform-glossary)
+- [A 股牛熊阶段与板块高波动股票观察筛选（非交易入口）](research/a-share-market-regime.md)
 - [Implementation roadmap](implementation/roadmap.md)
 - [Module implementation plans](implementation/plans/README.md#plan-map)
 - [Backtest Platform integration extension register](implementation/backtest-integration-gap-register.md)
