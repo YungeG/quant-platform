@@ -21,6 +21,7 @@ CALENDAR_URLS = {
     2026: "https://www.sse.com.cn/disclosure/dealinstruc/closed/c/c_20251222_10802510.shtml",
 }
 INDEX_URL = "https://www.csindex.com.cn/csindex-home/perf/index-perf"
+SSE_DAY_URL = "https://yunhq.sse.com.cn:32042/v1/sh1/dayk"
 MAX_BYTES = 2_000_000
 MAX_DAYS = 400
 _DATE = r"(\d{1,2})月(\d{1,2})日（星期([一二三四五六日])）"
@@ -38,10 +39,17 @@ def _now() -> datetime:
 
 def _fetch(url: str) -> bytes:
     index_pattern = re.escape(INDEX_URL) + r"\?indexCode=(000300|000905|000852)&startDate=[0-9]{8}&endDate=[0-9]{8}"
-    if url not in CALENDAR_URLS.values() and re.fullmatch(index_pattern, url) is None:
+    sse_match = re.fullmatch(
+        re.escape(SSE_DAY_URL) + r"/(000300|000905|000852)\?begin=-([1-9][0-9]{0,2})&end=-1&period=day", url,
+    )
+    try:
+        allowed_sse = sse_match is not None and 2 <= int(sse_match[2]) <= MAX_DAYS + 1
+    except ValueError as error:
+        raise ValueError("unsupported public source URL") from error
+    if url not in CALENDAR_URLS.values() and re.fullmatch(index_pattern, url) is None and not allowed_sse:
         raise ValueError("unsupported public source URL")
     request = Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept-Encoding": "identity"})  # noqa: S310 -- exact pinned HTTPS URLs checked above
-    # No credentials, automatic redirects, retry loop, or alternate provider.
+    # No credentials, automatic redirects, retry loop, or source fallback.
     with build_opener(_NoRedirect()).open(request, timeout=20) as response:  # noqa: S310 -- exact pinned HTTPS URLs checked above
         if response.status != 200:
             raise ValueError("source HTTP status must be 200")
@@ -182,6 +190,44 @@ def parse_index(content: bytes, instrument: str, sessions: tuple[date, ...]) -> 
         if day in prices:
             raise ValueError("duplicate index trading date")
         prices[day] = Decimal(close)
+    return _require_sessions(prices, sessions)
+
+
+def parse_sse_index(content: bytes, instrument: str, sessions: tuple[date, ...]) -> dict[date, Decimal]:
+    """Read SSE daily K-lines, not intraday quotes; retain the source's precision."""
+    if instrument not in INDEX_CODES or not sessions or any(type(day) is not date for day in sessions) or len(set(sessions)) != len(sessions):
+        raise ValueError("invalid index/session scope")
+    try:
+        payload = json.loads(content, parse_float=Decimal, object_pairs_hook=_unique_keys)
+    except (UnicodeError, ValueError, DecimalException) as error:
+        raise ValueError("invalid SSE index JSON (including duplicate keys)") from error
+    if type(payload) is not dict or payload.get("code") != instrument[:6]:
+        raise ValueError("SSE index identity mismatch")
+    rows = payload.get("kline")
+    total, begin, end = (payload.get(key) for key in ("total", "begin", "end"))
+    if type(rows) is not list or type(total) is not int or type(begin) is not int or type(end) is not int:
+        raise ValueError("invalid SSE daily K-line page")
+    if not 0 <= begin <= end == total or end - begin != len(rows):
+        raise ValueError("inconsistent SSE daily K-line page")
+    prices = {}
+    for row in rows:
+        if type(row) is not list or len(row) != 7:
+            raise ValueError("SSE daily row must contain date, OHLC, volume and amount")
+        if type(row[0]) is not int or re.fullmatch(r"[0-9]{8}", str(row[0])) is None:
+            raise ValueError("invalid SSE daily date")
+        day = date.fromisoformat(str(row[0]))
+        if any(type(value) not in (int, Decimal) or not Decimal(value).is_finite() for value in row[1:]):
+            raise ValueError("SSE daily values must be finite numbers")
+        open_, high, low, close, volume, amount = map(Decimal, row[1:])
+        if low <= 0 or not low <= open_ <= high or not low <= close <= high or volume < 0 or amount < 0:
+            raise ValueError("invalid SSE daily OHLC or turnover")
+        if day in prices:
+            raise ValueError("duplicate index trading date")
+        prices[day] = close
+    return _require_sessions(prices, sessions)
+
+
+def _require_sessions(prices: dict[date, Decimal], sessions: tuple[date, ...]) -> dict[date, Decimal]:
     if set(prices) != set(sessions):
         missing = sorted(set(sessions) - set(prices))
         extra = sorted(set(prices) - set(sessions))
@@ -203,7 +249,9 @@ def _write_csv(path: Path, headers, rows) -> None:
         writer.writerows(rows)
 
 
-def capture_snapshot(*, start: date, output: Path) -> dict:
+def capture_snapshot(*, start: date, output: Path, source: str = "csi") -> dict:
+    if type(source) is not str or source not in ("csi", "sse"):
+        raise ValueError("source must be csi or sse; no automatic fallback")
     started = _now()
     through = started.date()
     if type(start) is not date or start > through or (through - start).days >= MAX_DAYS:
@@ -213,7 +261,7 @@ def capture_snapshot(*, start: date, output: Path) -> dict:
         raise ValueError("requested calendar year is unsupported")
     output.mkdir(parents=True, exist_ok=False)  # Never overwrite any prior capture.
     receipt = {
-        "strategy_input": "a_share_market_regime_v1",
+        "strategy_input": "a_share_market_regime_v1", "price_source": source,
         "authority": "diagnostic_only", "trade_authorized": False,
         "status": "capturing", "started_at": started.isoformat(),
         "start": start.isoformat(), "through": through.isoformat(),
@@ -255,11 +303,17 @@ def capture_snapshot(*, start: date, output: Path) -> dict:
         price_rows = []
         acquired = started
         for instrument in INDEX_CODES:
-            # The chart endpoint may insert a synthetic boundary on a closed start day.
-            # Ask only for the exact first/last scheduled sessions; reject any extras.
-            url = f"{INDEX_URL}?indexCode={instrument[:6]}&startDate={sessions[0]:%Y%m%d}&endDate={sessions[-1]:%Y%m%d}"
+            if source == "csi":
+                # CSI can insert a synthetic boundary on a closed start day.
+                url = f"{INDEX_URL}?indexCode={instrument[:6]}&startDate={sessions[0]:%Y%m%d}&endDate={sessions[-1]:%Y%m%d}"
+                parse = parse_index
+            else:
+                # SSE's negative cursor -1 is the exclusive end; request exactly n rows.
+                # Any extra intraday bar or missing session is rejected, never trimmed.
+                url = f"{SSE_DAY_URL}/{instrument[:6]}?begin=-{len(sessions) + 1}&end=-1&period=day"
+                parse = parse_sse_index
             content, acquired = fetch(url, f"index-{instrument[:6]}.json")
-            values = parse_index(content, instrument, sessions)
+            values = parse(content, instrument, sessions)
             price_rows.extend((instrument, day.isoformat(), str(values[day]), acquired.isoformat(),
                                "local_acquisition_only") for day in sessions)
         _write_csv(output / "calendar.csv", ("cal_date", "is_open"),
@@ -289,9 +343,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="无凭据、有限范围的中证/上交所公开快照获取（仅诊断，不回填历史发布时间）")
     parser.add_argument("--start", required=True, type=date.fromisoformat)
     parser.add_argument("--output", required=True, type=Path, help="必须不存在的新目录")
+    parser.add_argument("--source", choices=("csi", "sse"), default="csi",
+                        help="价格来源：csi 中证日线（默认）；sse 上交所日K，显式选择且不自动切换")
     args = parser.parse_args(argv)
     try:
-        receipt = capture_snapshot(start=args.start, output=args.output)
+        receipt = capture_snapshot(start=args.start, output=args.output, source=args.source)
     except (OSError, ValueError, UnicodeError) as error:
         parser.error(str(error))
     print(json.dumps({"output": str(args.output), **receipt}, ensure_ascii=False, sort_keys=True, indent=2))

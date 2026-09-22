@@ -2,15 +2,117 @@
 
 > 归档说明（2026-09-22）：下文的 2026-09-21 行情、访问记录、测试数字及当时安装能力均为历史记录，不是本次重跑或最新市场判断。后续[依赖对齐](../implementation/dependency-alignment-20260921.md)已将根环境切换至 Backtest `8cc5b874`，公开 `prepare_cn_a_share_development_backtest` 已可导入；原先只有三个 cash preparation 的枚举不再代表当前环境，但这不等于本多股票研究已经获准或验收。
 >
-> 数据退役（2026-09-22）：按用户要求，`research/evidence/a-share-market-regime-20260921/` 下 31 份原文、CSV、回执和结果已从工作目录直接删除，未为本次另建数据归档，既有备份未动。下文保留历史结果和原路径记录；本工作目录已不含复核输入，历史命令不能直接执行。只有另行恢复并核验原冻结版本后才可精确回放，不能通过重新下载冒充原版本。本次未采集数据、重算旧结果、运行收益回测或交易。
+> 数据退役（2026-09-22）：按用户要求，`research/evidence/a-share-market-regime-20260921/` 下 31 份原文、CSV、回执和结果已从工作目录直接删除，未为本次另建数据归档，既有备份未动。下文保留历史结果和原路径记录；本工作目录已不含该原版本的复核输入，历史命令不能直接执行。只有另行恢复并核验原冻结版本后才可精确回放，不能通过重新下载冒充原版本。该次退役操作未采集数据、重算旧结果、运行收益回测或交易；下方另列后续新来源、新版本的诊断记录。
+>
+> Git交付范围：本次提交只包含代码、合成测试与本文；`research/evidence/` 下的真实行情、诊断JSON和运行核验脚本保留在本地，**不随Git提交**。因此文中的本地证据链接及引用这些文件的回放命令需要原冻结文件；全新克隆可先省略 `--previous`，使用新窗口、新目录采集生成自己的 `regime.json`，后续再显式比较。重新采集不能冒充原版本精确回放。
 
 ## 用途与边界
 
-入口：`experiments/run_a_share_market_regime.py`；纯算法：`experiments/a_share_market_regime.py`。
+离线诊断入口：`experiments/run_a_share_market_regime.py`；纯算法：`experiments/a_share_market_regime.py`。手动一次性更新入口：`experiments/update_a_share_market_regime.py`。
 
 这是一个**可解释的收盘市场状态诊断策略**，判断指定时点最近一个已收盘交易日的阶段，不预测拐点、不生成交易订单。可选的[板块高波动筛选](#指定板块的高波动股票观察名单)在此基础上输出股票观察名单，不是买入指令。判断入口只读本地冻结数据，不联网，不隐式读取系统当前时间；仅显式传入 `--now` 时读取一次系统时钟。下方独立获取入口负责准备冻结输入，不在策略评估中联网。
 
 它不修改原有 `run_bull_bear_selector.py` 的单 ETF 月末实验，也不沿用那份实验的历史牛熊结论。输出为 `diagnostic_only`，不是正式 Research / Backtest / Validation 证据，更不授予交易或部署权限。
+
+## 单次更新入口与最新验收（2026-09-22 17:29）
+
+新增 `experiments/update_a_share_market_regime.py`，公开函数 `update_market_regime()`：**手动执行一次采集、快照判断、留档及可选上次报告比较**。它不是定时器或后台循环，未安装任何调度任务。
+
+```bash
+.venv/bin/python -m experiments.update_a_share_market_regime \
+  --start 2025-11-01 --source sse \
+  --output research/evidence/regime-update-next \
+  --previous research/evidence/a-share-market-regime-20260922/run-5be584ef/update-v1/regime.json
+```
+
+`--start`、`--source {csi,sse}`、`--output` 必填；`--previous` 可省略，必须是此前 `snapshot` 诊断JSON，不能传 `update.json` 或历史口径报告。输出目录必须不存在；日期示例属于当前有限窗口，未来运行需相应调整。没有隐式latest扫描、自动换源或旧结果回退。
+
+### 文件与失败行为
+
+- `inputs/`：由既有采集器生成原文、CSV和采集回执。仅在成功采集后调用原离线诊断CLI，判断时点固定为实际 `completed_at`，不另写一套指标逻辑。
+- `regime.json`：保留原诊断CLI的精确JSON字节；其两份CSV指纹必须等于采集回执。`update.json` 保存操作状态、退出码、来源、诊断摘要/哈希、可执行的 `replay_argv` 及比较结果。
+- `previous.json`：如显式提供前次报告，在采集前校验并复制其原字节和SHA-256。校验版本、固定参数、snapshot口径、时区/日期及无交易授权声明；拒绝未来时点、重复键、非有限JSON数字或超1MB输入。**不跟随旧报告中的数据路径、不恢复旧CSV，也不声称旧报告内容已由源数据重新验证。**
+- 退出 `0`：本次诊断及请求的报告比较完成；退出 `1`：诊断unknown或请求的比较证据不足，仍保留结果；退出 `2`：输入/采集/诊断失败。已创建的新目录内普通失败留下 `update.json` 的阶段与错误，诊断子进程错误留在 `diagnostic.stderr.txt`；无法写入的存储错误仍是失败，不伪造已留档结果。
+- 已有目录直接拒绝，不再次采集或覆盖。输入问题在网络前拒绝；采集中断或未生成有效 `update.json` 不能视为完成。缺数不延长窗口重试，不拿前次牛/熊标签替代unknown。
+
+### 比较的是报告，不是市场转换证明
+
+| `comparison.kind` | 含义 |
+| --- | --- |
+| `no_previous` | 未指定前次报告，`phase_changed=null` |
+| `same_session_reassessment` | 同一收盘日的新版本/新时点评估，不是新增市场阶段 |
+| `later_session_comparison` | 较后收盘日的报告标签比较，不声称中间交易日连续覆盖 |
+| `not_comparable` | 任一阶段unknown或时间/日期顺序不支持比较，`phase_changed=null`，整体退出1 |
+
+`phase_changed` 仅表示两个**所提供报告**的标签是否不同，`market_transition_claimed` 始终为false。同日数据修订不能当成真实牛熊切换；标签相同也不等于输入字节或指标完全相同。
+
+### 本次真实更新结果与验证
+
+**截至 `2026-09-22T17:29:34.002248+08:00`，最近收盘日9月22日仍为 `bear` / 偏熊形态。** 新入口实际取得三指数各219个交易日、共657条价格及326个自然日日历，退出0。与16:00报告比较为 `same_session_reassessment`、`phase_changed=false`，没有宣称新增市场转换。
+
+本次SSE快照收盘为沪深300 **4544.5870**、中证500 **7828.9440**、中证1000 **7759.0310**；对应MA200为 **4694.82368 / 8039.62527 / 7987.945025**，60日动量约 **-8.73% / -13.31% / -11.93%**。收盘末位与16:00版本略有差异，两份版本分别留存，未覆盖旧值。独立Decimal复算三指数和三日形态与程序一致。
+
+- 中断前已执行5项代表性测试（`5 passed, 26 deselected in 0.29s`），随后3个针对性测试文件 **210 passed in 1.50s**，含新增入口31项；重试未重复执行这些已通过且代码未变的检查。
+- 新入口真实烟测于17:20取得各2日共6条价格，采集成功；因暖机不足返回unknown/退出1，与旧bear报告标为不可比较。重试直接核验该已保存样本及两次回放，未重复采集它。
+- 完整更新后，两次固定时点回放均退出0，逐字节等于 `regime.json`；原文/CSV逐值与哈希一致，前次报告副本和所有更新文件未变。默认历史口径实际仍是unknown/退出1，未冒充历史可用性确认。
+- 实际再次使用同一输出目录被拒绝（退出2）；此前文件保留。主动LSP：新入口、测试及本轮探针3文件无诊断，2个确认clean、1个inconclusive；不把不确定计作通过。3个未修改的其它实验有10条未解析依赖告警，列为范围外基线，未安装依赖或修改其源码，不算全仓静态通过。
+- 全仓测试、收益回测、OOS、实盘和退役原版本精确回放未运行；金融有效性、历史供应方可用性及临时休市完整性未验证。此处仍为诊断，不授权交易。
+
+证据：[更新操作报告](evidence/a-share-market-regime-20260922/run-5be584ef/update-v1/update.json) · [当前诊断](evidence/a-share-market-regime-20260922/run-5be584ef/update-v1/regime.json) · [完整独立核验](evidence/a-share-market-regime-20260922/run-5be584ef/full-checks-v1/verification.json) · [烟测核验](evidence/a-share-market-regime-20260922/run-5be584ef/smoke-checks-v1/verification.json) · [本次执行记录](evidence/a-share-market-regime-20260922/run-5be584ef/validation.txt)。核验工作由 `RUN_ID=5be584ef-70d5-4039-9c67-f5cc9795aea8` 接续完成，旧run目录仅作为明确证据输入，不重放旧dispatch。
+
+## 此前结果：已补齐真实收盘窗口（2026-09-22 16:00）
+
+**截至 `2026-09-22T16:00:19.989145+08:00`，最近收盘日 `2026-09-22` 的当前快照判断为 `bear` / 偏熊形态。** 本轮 `RUN_ID=39e9de25-75fc-4af5-9c07-4d2bb4b00f7c` 使用新获取的上交所日K，未恢复退役输入，也没有把旧结论搬到今天。
+
+| 指数 | 9月22日收盘 | MA200 | 60交易日动量 | 当前快照形态 |
+| --- | ---: | ---: | ---: | --- |
+| 沪深300 | 4544.5875 | 4694.8236825 | -8.73% | bear |
+| 中证500 | 7828.9445 | 8039.6252725 | -13.31% | bear |
+| 中证1000 | 7759.0312 | 7987.945026 | -11.93% | bear |
+
+三指数均低于MA200且60日动量为负；9月18、21、22日三个回看窗口的多数标签均为 bear。这里只描述**评估时点已知版本重算的形态**，不证明过去三个日期当时已发出这些信号，不代表全A个股广度或未来收益。默认历史点时口径实际仍为 `unknown` / 退出 `1`（`close_not_available`），没有被快照结果覆盖。
+
+### 数据如何补齐
+
+- 原中证入口在本轮15:28仍缺9月22日，保留 `public-smoke-v1/` 失败原文与回执，不改成成功。中证[每日板块信息接口](https://www.csindex.com.cn/csindex-home/data-service/indexPerformance)当时也仅到9月21日；详情页 one-day 接口为盘中序列，未拿它当日收盘。[Tushare指数日线](https://tushare.pro/document/2?doc_id=95)是另一候选，但本项目环境无模块、进程凭据或 `.env`，未调用认证接口。
+- 从[上交所行情页](https://www.sse.com.cn/market/price/trends/)及其[官方日K图表脚本](https://www.sse.com.cn/xhtml/home/2021public/querySearch/search_HQ_2021.js)核实 HTTPS 行情域名与 `dayk` 调用。官方脚本按日期、开、高、低、**收盘**读取 `kline[0:5]`；不是分时 `current` 值。新增显式 `--source sse`，固定请求 `https://yunhq.sse.com.cn:32042/v1/sh1/dayk/{指数代码}`。默认 `csi` 未改，失败不会自动换源。
+- 先用同一正式入口取得三指数各2日、共6条真实价格，核验原文/CSV和暖机不足退出、确定性回放；通过后才扩大。完整采集发生于 `15:59:37.947389–15:59:40.539611+08:00`：日历 `2025-11-01–2026-09-22` 共 **326个自然日**，指数 `2025-11-03–2026-09-22` 各 **219个交易日**、共 **657条**。
+- 整段价格统一使用SSE日K及其原始小数精度，不拼接中证两位小数历史。分页和日历日期必须精确覆盖；少行、多行、盘中条目、非正/非有限价格或OHLC异常均拒绝。实际获取时刻仅作为保守可见性边界，不反推历史供应方可用时间。日K快照可能随后修订；同期沪深300日K与官网快照的当天值一致，但快照 `tradephase` 为空，未将它当作终态证明。
+
+### 本轮验证与回放
+
+- 新入口代表性测试：**6 passed, 83 deselected**；采集与市场规则两个测试文件：**179 passed in 0.93s**。覆盖默认CSI兼容、显式来源/无回退、URL范围、游标/日期/数值拒绝及诊断回放。两者有重叠，不合计成不同用例数。
+- 5份完整原文与2份CSV的SHA-256核验通过；直接读取日K第5列与CSV逐条一致。独立用Decimal重算三指数MA200、60日动量、三日投票，与程序一致。
+- `--basis snapshot --now` 实际退出 `0`；固定同一 `--as-of` 两次回放逐字节相同；now与explicit结果只差 `as_of_source`。历史口径实际退出 `1` / unknown。原文、CSV、采集回执未被诊断修改。
+- 主动LSP检查3个文件无诊断，但只有1个确认clean、2个inconclusive，**不算全部通过**。全仓测试、收益回测、OOS、实盘及原退役版本精确回放未运行；金融有效性、供应方历史可用性及临时休市完整性仍未验证。
+
+固定本轮时点的离线回放（不是以后日期的当前结论）：
+
+```bash
+.venv/bin/python -m experiments.run_a_share_market_regime \
+  --prices research/evidence/a-share-market-regime-20260922/run-39e9de25/sse-full-v1/prices.csv \
+  --calendar research/evidence/a-share-market-regime-20260922/run-39e9de25/sse-full-v1/calendar.csv \
+  --basis snapshot --as-of '2026-09-22T16:00:19.989145+08:00'
+```
+
+后续新时点应先用 `capture_a_share_market_regime --source sse --start <窗口起日> --output <不存在的新目录>` 做小样本，再取至少202个完整交易日、运行 `--basis snapshot --now`；不能直接拿本轮CSV判断以后日期。没有启动后台轮询、订单或部署。
+
+证据为本地诊断工作文件，未发布为正式Platform证据：[完整采集回执](evidence/a-share-market-regime-20260922/run-39e9de25/sse-full-v1/receipt.json) · [当前输出](evidence/a-share-market-regime-20260922/run-39e9de25/sse-full-checks-v1/snapshot-initial.json) · [独立复核与命令](evidence/a-share-market-regime-20260922/run-39e9de25/sse-full-checks-v1/verification.json) · [小样本核验](evidence/a-share-market-regime-20260922/run-39e9de25/sse-smoke-checks-v1/verification.json) · [本轮验证记录](evidence/a-share-market-regime-20260922/run-39e9de25/validation.txt)。
+
+## 此前核查：中证路径输入不足（2026-09-22 15:13）
+
+以下保留此前失败记录；当前快照输入缺口已由上方显式SSE路径解决，不表示原中证请求已经成功。
+
+本轮 `RUN_ID=58382f6a-500f-488d-b52d-9406d47a4799` 使用既有规则和原采集入口核验当前行情，**尚未取得可用于当前阶段判断的完整输入**，不沿用下文 9 月 21 日的历史 bear 结果。
+
+- **实际来源失败**：北京时间 `2026-09-22T15:13:29.858699+08:00`，中证沪深300接口对 `20260921–20260922` 的请求仅返回 9 月 21 日一条记录。上交所年度日历将 9 月 22 日列为交易日，采集已过 15:00，因此缺少应有的 9 月 22 日收盘记录。采集退出 `2`、回执 `status=failed`，未生成 `prices.csv` / `calendar.csv`；后续两个指数因首个指数失败未请求。
+- **安全边界**：不退回昨日称作当前，不补价格或可用时间，不在小样本失败后扩大到完整历史窗口。此次响应缺失不证明其他来源也没有数据，或该接口之后仍不会更新。
+- **已运行验证**：先跑 9 项代表性测试，再跑采集与牛熊规则两个测试文件，**132 passed in 1.32s**（包含前述 9 项，不是 141 项不同测试）。独立检查两份原文的 SHA-256、字节数和日历；离线重放同一指数原文两次，均准确拒绝缺少 9 月 22 日的数据。
+- **未运行/未验证**：完整窗口采集、真实当前诊断及成功诊断回放未运行；这里的两次回放是**失败重放**。没有生成当前阶段 JSON，不将采集失败冒充算法已输出 unknown。全仓测试、收益回测、OOS和交易未运行；历史可用性、临时休市完整性及金融有效性仍未验证。
+
+本轮仅补充此记录与失败核验证据，未修改策略/测试代码，未恢复已退役输入，未启动后台轮询。待来源补齐所需收盘记录后，先用**新目录**重做小样本，通过后再采集至少 202 个交易日并执行 `--basis snapshot --now` 及固定时点回放。
+
+证据（本地工作文件，未作为正式 Platform 证据发布）：[采集回执](evidence/a-share-market-regime-20260922/run-58382f6a/public-smoke-v1/receipt.json) · [核验记录](evidence/a-share-market-regime-20260922/run-58382f6a/verification.json) · [命令及未运行检查](evidence/a-share-market-regime-20260922/run-58382f6a/validation.txt)。
 
 ## 当前快照诊断与既有工作复用（2026-09-21）
 
@@ -108,11 +210,12 @@ Python API 为 `evaluate_market_regime(..., basis=EvaluationBasis.SNAPSHOT)`；�
 
 ### 来源与获取边界
 
-独立入口：`experiments/capture_a_share_market_regime.py`，仅依赖 Python 标准库。公开解析函数为 `parse_calendar()`、`parse_index()`，获取函数为 `capture_snapshot()`。
+独立入口：`experiments/capture_a_share_market_regime.py`，仅依赖 Python 标准库。公开解析函数为 `parse_calendar()`、`parse_index()`（CSI）、`parse_sse_index()`（SSE日K），获取函数为 `capture_snapshot(..., source="csi")`；CLI新增 `--source {csi,sse}`，默认仍为csi。下方2026-09-21运行记录属于原CSI路径，不代表新增来源也在当时执行过。
 
 | 来源 | 使用方式 | 限制 |
 | --- | --- | --- |
 | [中证指数官网](https://www.csindex.com.cn/en/indices/index-detail/000300) 的 `/csindex-home/perf/index-perf` | 固定三指数，日期范围显式；原始 JSON 留存 | 收盘价格与交易日不证明该版本历史发布时间；官网响应未来仍可修订 |
+| [上交所日K](https://www.sse.com.cn/market/price/trends/)（新增，显式 `--source sse`） | 固定三指数、最新 N 条日K；原始 JSON/精度留存 | 严格核对分页、OHLC/成交非负及交易日集合；不裁掉盘中或多余记录，不提供历史版本可用性证明 |
 | [上交所 2025 年休市安排](https://www.sse.com.cn/disclosure/dealinstruc/closed/c/c_20241223_10767110.shtml) | 留存 HTML，严格解析完整年度休市表 | 仅年度安排，不证明没有临时停市；三指数实际日期必须与计算出的交易日精确覆盖 |
 | [上交所 2026 年休市安排](https://www.sse.com.cn/disclosure/dealinstruc/closed/c/c_20251222_10802510.shtml) | 同上；周末与法定节假日均保留为关闭日 | 不采用“所有工作日都是交易日”，也不把调休周日当交易日 |
 
@@ -120,11 +223,11 @@ Python API 为 `evaluate_market_regime(..., basis=EvaluationBasis.SNAPSHOT)`；�
 
 获取器限制与失败行为：
 
-- 仅允许明确列出的 HTTPS 日历地址及固定格式的中证三指数 URL；无认证头、不读取 token、不跟随重定向、不自动换源。每次响应最多 2 MB、超时 20 秒，请求间隔 0.5 秒，无无限重试。
-- 查询自然日范围最多 400 天，只支持已固定来源的 2025/2026 年。截止自然日是获取开始的中国日期，指数只请求当时最近已收盘日及以前；日历仍覆盖当天。新年度必须先核验并明确加入来源，不能自动猜日历。
+- 仅允许固定HTTPS日历及三指数CSI/SSE URL；SSE限定 `yunhq.sse.com.cn:32042/v1/sh1/dayk`、`period=day`、`end=-1`、有界负游标（请求N条用 `begin=-(N+1)`）。无认证头、不读取token、不跟随重定向、不自动换源；每次最多2MB、超时20秒、请求间隔0.5秒，无自动重试。
+- 查询自然日范围最多 400 天，只支持已固定来源的 2025/2026 年。截止自然日是获取开始的中国日期，所需窗口仅包含当时已收盘交易日；日历仍覆盖当天。SSE接口按最新 N 条日K取数，若盘中已含当天未收盘条目，会因日期集合不符而拒绝，不裁剪后冒充完整窗口。新年度必须先核验并明确加入来源，不能自动猜日历。
 - `--output` 必须是不存在的新目录，已有目录一律拒绝。原文与逐次回执保留；失败写 `status=failed`，不输出成功获取 JSON。不得删除失败数据再把同一目录当成功运行。
 - 源字段、代码、日期、正有限价格、唯一 JSON 键及每指数完整交易日集合均校验；缺失/额外日期、格式变更、业务失败或网络失败均停止。不删除坏行、不前向填充。
-- `receipt.json` 中保留 URL、原文件名、实际 `acquired_at`、SHA-256 和 `provider_available_at=null`。CSV `available_at` 仅使用实际获取时刻作为**保守可见性边界**，另列 `available_at_basis=local_acquisition_only`；绝不回填历史交易日 15:00/17:00。这与 [ADR 0009](../backtest/docs/adr/0009-historical-provider-availability-is-distinct-from-local-acquisition.md) 的时间区分一致。
+- `receipt.json` 新增明确的 `price_source=csi|sse`，并保留 URL、原文件名、实际 `acquired_at`、SHA-256 和 `provider_available_at=null`。CSV `available_at` 仅使用实际获取时刻作为**保守可见性边界**，另列 `available_at_basis=local_acquisition_only`；绝不回填历史交易日 15:00/17:00。这与 [ADR 0009](../backtest/docs/adr/0009-historical-provider-availability-is-distinct-from-local-acquisition.md) 的时间区分一致。
 - 获取退出 `0` / `status=captured` 只表示输入结构/范围检查通过；`history_sufficient=true` 只说明交易日数量足够，**不表示历史可用性合格或牛熊判断成功**。非法输入或获取失败退出 `2`。
 
 先跑小样本，确认后才扩大；以下输出目录需选用新的名称：
