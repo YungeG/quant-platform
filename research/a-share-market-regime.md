@@ -2,7 +2,7 @@
 
 > 归档说明（2026-09-22）：下文的 2026-09-21 行情、访问记录、测试数字及当时安装能力均为历史记录，不是本次重跑或最新市场判断。后续[依赖对齐](../implementation/dependency-alignment-20260921.md)已将根环境切换至 Backtest `8cc5b874`，公开 `prepare_cn_a_share_development_backtest` 已可导入；原先只有三个 cash preparation 的枚举不再代表当前环境，但这不等于本多股票研究已经获准或验收。
 >
-> 下文 `research/evidence/a-share-market-regime-20260921/` 中的原文、CSV、回执和结果为**本地保留、未随 Git 发布**的历史文件。新检出不含这些输入；相关回放命令只适用于另行取得原冻结文件的环境，不能通过重新下载来冒充原版本。本次归档不启动采集、回测或交易，也不重新认证旧结果。
+> 数据退役（2026-09-22）：按用户要求，`research/evidence/a-share-market-regime-20260921/` 下 31 份原文、CSV、回执和结果已从工作目录直接删除，未为本次另建数据归档，既有备份未动。下文保留历史结果和原路径记录；本工作目录已不含复核输入，历史命令不能直接执行。只有另行恢复并核验原冻结版本后才可精确回放，不能通过重新下载冒充原版本。本次未采集数据、重算旧结果、运行收益回测或交易。
 
 ## 用途与边界
 
@@ -46,9 +46,9 @@ Python API 为 `evaluate_market_regime(..., basis=EvaluationBasis.SNAPSHOT)`；�
 
 9月16、17、18三个回看窗口按当前快照重算的多数标签均为 bear，因此本口径输出 bear。此结论不补足三个日期**当时**的观测证据，历史模式仍因 `close_not_available` 返回 unknown，退出 `1`；输出已与修改前保存的 `regime-as-of.json` **逐字节比较一致**。
 
-结果保存在本地未入库的 `research/evidence/a-share-market-regime-20260921/current-snapshot-run-2b939da7/`：`snapshot-now.json`、`snapshot-replay.json`、`verification.json`。原文与 CSV SHA-256 已重验；固定 as-of 的两次快照回放字节相同；`--now` 与对应 `--as-of` 回放仅时刻来源字段不同。源快照、旧回执、旧历史结果和旧代码哈希记录均未覆盖；新验证文件绑定本轮代码身份。
+结果当时保存在未入库的 `research/evidence/a-share-market-regime-20260921/current-snapshot-run-2b939da7/`（工作副本已于 2026-09-22 删除）：`snapshot-now.json`、`snapshot-replay.json`、`verification.json`。原文与 CSV SHA-256 已重验；固定 as-of 的两次快照回放字节相同；`--now` 与对应 `--as-of` 回放仅时刻来源字段不同。源快照、旧回执、旧历史结果和旧代码哈希记录均未覆盖；新验证文件绑定本轮代码身份。
 
-原时点复核命令（预期退出 `0`；不要将该旧 as-of 永远称作“当前”）：
+历史复核命令（输入已退役，当前不可直接执行；仅在原冻结版本齐备时预期退出 `0`，不要将旧 as-of 称作“当前”）：
 
 ```bash
 .venv/bin/python -m experiments.run_a_share_market_regime \
@@ -141,20 +141,20 @@ Python API 为 `evaluate_market_regime(..., basis=EvaluationBasis.SNAPSHOT)`；�
 
 ### 已执行的真实来源检查
 
-本地保留目录（未入 Git）：`research/evidence/a-share-market-regime-20260921/`。
+原本地目录（未入 Git，31 份工作文件已于 2026-09-22 删除）：`research/evidence/a-share-market-regime-20260921/`。以下为原获取阶段记录。
 
 - `public-smoke-v1/`：三指数各 2 个交易日；哈希验证通过，原策略正确返回历史不足 `unknown`，两次回放字节一致。
 - `public-full-v1/`：**失败证据，未当作成功数据使用**。当 `startDate=20251101`（周六）时，官网多返回一条周六记录，内容与 11 月 3 日相同。严格覆盖检查拒绝它，未生成 CSV。修复为请求日历中的首个/最后一个实际交易日，仍拒绝任何额外日期，而不是删除该行。
 - `public-smoke-v2/`：从周日 9 月 13 日开始，实际指数请求 9 月 14–18 日；三指数各 5 日，日历含周末。修复后小样本通过才重新扩大。
 - `public-full-v2/`：获取时间 **2026-09-21 10:26:48–10:26:51 +08:00**。日历覆盖 **2025-11-01 至 2026-09-21，共 325 个自然日**；指数覆盖 **2025-11-03 至 2026-09-18，各 217 个交易日，共 651 条收盘记录**。所有原文及 CSV 哈希核验通过；从原文重新解析得到的日期/数值/实际获取时刻与 CSV 一致，两次小样本共 21 条重叠价格与完整窗口一致。
 
-完整快照的 `public-full-v2/receipt.json`、`public-full-v2/regime-as-of.json` 与 `public-full-v2/verification.json` 均保存在上述本地目录，未随 Git 发布。原策略真实执行结果：
+完整快照的 `public-full-v2/receipt.json`、`public-full-v2/regime-as-of.json` 与 `public-full-v2/verification.json` 当时保存在上述目录，未随 Git 发布，现已删除工作副本。原策略真实执行结果：
 
 - `as_of=2026-09-21T10:26:51.126256+08:00`，`decision_date=2026-09-18`。
 - **phase=unknown / 无法判断，退出码 1**；原因是 `close_not_available`，不是价格历史长度不足。
 - 三个确认日为 9 月 16、17、18 日，均早于本次首次获取。不能把今天取得的历史数据说成当时已经观测到；两次原时点回放的输出字节完全一致。
 
-可不联网复核该次诊断（退出 `1` 是已知的证据不足结果）：
+历史离线复核命令（原冻结输入已退役，当前不可直接执行；原时点的退出 `1` 是已知的证据不足结果）：
 
 ```bash
 .venv/bin/python -m experiments.run_a_share_market_regime \
