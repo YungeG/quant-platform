@@ -3,7 +3,7 @@ revision = 3
 requires-python = "==3.13.*"
 
 [options]
-exclude-newer = "2026-09-14T05:52:23.647419665Z"
+exclude-newer = "2026-09-30T13:57:15.161571147Z"
 exclude-newer-span = "P7D"
 
 [manifest]
@@ -13,6 +13,10 @@ members = [
     "crypto-quant-promotion",
     "crypto-quant-research",
     "crypto-quant-validation",
+]
+overrides = [
+    { name = "crypto-quant-domain", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Ftrading-domain&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
+    { name = "crypto-quant-market-data", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Fmarket-data-contracts&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
 ]
 
 [[package]]
@@ -27,11 +31,18 @@ wheels = [
 [[package]]
 name = "crypto-quant-backtest"
 version = "0.1.0"
-source = { git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Fbacktest-runtime&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f#8cc5b874c31c38a6ec7526d1dbf345b93998a39f" }
+source = { editable = "backtest/packages/backtest-runtime" }
 dependencies = [
     { name = "crypto-quant-domain" },
     { name = "crypto-quant-market-data" },
     { name = "crypto-quant-trading" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "crypto-quant-domain", editable = "backtest/packages/trading-domain" },
+    { name = "crypto-quant-market-data", editable = "backtest/packages/market-data-contracts" },
+    { name = "crypto-quant-trading", editable = "backtest/packages/trading-kernel" },
 ]
 
 [[package]]
@@ -90,14 +101,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "crypto-quant-backtest", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Fbacktest-runtime&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
+    { name = "crypto-quant-backtest", editable = "backtest/packages/backtest-runtime" },
     { name = "crypto-quant-bundle-builder", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Fmarket-bundle-builder&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
     { name = "crypto-quant-domain", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Ftrading-domain&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
     { name = "crypto-quant-foundation", editable = "foundation" },
     { name = "crypto-quant-market-data", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Fmarket-data-contracts&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
     { name = "crypto-quant-promotion", editable = "promotion-gate" },
     { name = "crypto-quant-research", editable = "research-platform" },
-    { name = "crypto-quant-trading", git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Ftrading-kernel&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f" },
+    { name = "crypto-quant-trading", editable = "backtest/packages/trading-kernel" },
     { name = "crypto-quant-validation", editable = "strategy-validation" },
 ]
 
@@ -139,10 +150,13 @@ requires-dist = [
 [[package]]
 name = "crypto-quant-trading"
 version = "0.1.0"
-source = { git = "https://github.com/YungeG/quant-backtest.git?subdirectory=packages%2Ftrading-kernel&rev=8cc5b874c31c38a6ec7526d1dbf345b93998a39f#8cc5b874c31c38a6ec7526d1dbf345b93998a39f" }
+source = { editable = "backtest/packages/trading-kernel" }
 dependencies = [
     { name = "crypto-quant-domain" },
 ]
+
+[package.metadata]
+requires-dist = [{ name = "crypto-quant-domain", editable = "backtest/packages/trading-domain" }]
 
 [[package]]
 name = "crypto-quant-validation"

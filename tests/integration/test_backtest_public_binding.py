@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import subprocess
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -768,7 +769,16 @@ def test_binding_imports_only_public_package_roots() -> None:
     assert {name for name in imported if name.startswith("crypto_quant")} == (
         allowed_crypto_roots
     )
-    assert _CURRENT_BACKTEST_SHA in (_ROOT / "uv.lock").read_text(encoding="utf-8")
+    project = tomllib.loads((_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    source = project["tool"]["uv"]["sources"]["crypto-quant-backtest"]
+    if source.get("editable") is True:
+        assert source == {"path": "backtest/packages/backtest-runtime", "editable": True}
+        lock = tomllib.loads((_ROOT / "uv.lock").read_text(encoding="utf-8"))
+        package = next(p for p in lock["package"] if p["name"] == "crypto-quant-backtest")
+        assert package["source"] == {"editable": source["path"]}
+        assert backtest_revision() == _CURRENT_BACKTEST_SHA
+    else:
+        assert _CURRENT_BACKTEST_SHA in (_ROOT / "uv.lock").read_text(encoding="utf-8")
     assert subprocess.run(
         [
             "git",

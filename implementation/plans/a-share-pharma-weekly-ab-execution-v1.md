@@ -1,6 +1,18 @@
 # 医药开发分析：本会话完成记录
 
-这里只保留本轮简单收益/NAV段落；完整历史方案和其它增量不属于此提交。当前分支仅保存分析增量，标准组合执行前置尚未提交，不能据此声称干净克隆可执行完整NAV或正式Validation通过。
+这里只保留本轮简单收益/NAV段落与整体集成交付记录；完整历史方案、其它研究及后续成对比较不属于此提交。2026-10-07整体接线已验证，以下原分析完成段是其发生时的历史事实，不因此升级策略、真实费用或OOS资格。
+
+## 2026-10-07：Platform整体开发链集成完成
+
+- **子仓身份**：Backtest `c33f2c16aaca3363d7c99c573e8a5002469a85fe`，分支`integration/pharma-native-nav`；基于已推NAV增量`e085a1f3`。最小64个前置source/test均由本会话pi.write/pi.edit成功事实证实且源指纹与整理起点一致；仅再补4个标准prepare public exports。未纳入新comparison、真实Oct测试/市场原文、其它研究或旧Engine import-only更改。
+- **Platform冻结**：`backtest` gitlink固定上述commit；Root Backtest/Trading使用其clean子模块内editable路径。Domain、MarketData、BundleBuilder仍原Git8cc5b874，Foundation/Research/Validation/Promotion原4个gitlink不变。uv.lock16节点仅BT/Trading/Root3节点来源metadata变化、其它13节点逐对象完全相同、0版本升级。先offline lock/sync dry-run，再仅在隔离Root创建14包全新venv；原工作区与原venv不修改。
+- **实际验证**：隔离候选公开2attempt/canonical/Engine-forbidden冷缓存合成smoke1 passed/8.97s；18模块初run160 passed、1 stale catalog断言failed、2 fixture条件不适用skip。断言合法加法schema1—8修正后仅该项1 passed/1.46s，共161不同检查已通过；2skip不冒称通过。3文件多余EOF空行仅格式归一，AST完全相同。
+- **全新Root无PYTHONPATH环境**：child clean commit、实际prepare7kw-only/5NAV导出/读取路径核对；公开smoke1 passed/9.93s；owner32 passed/9.38s；Root15 passed/0.85s；新依赖helper6 passed；3旧Profile/收益舍入/stored Analysis金样3 passed/1.05s。既有Platformpublic completed/replay/Analysis、真实terminal、preflight6用例通过，唯一Git-only lock断言按exact editable source+gitlink checkout改后1 passed/1.10s（并复验helper6），不是忽略失败。
+- **依赖版本检查**：旧显式Git rev路径不改；新local lane只接受`backtest/packages/backtest-runtime`、git index唯一stage0 mode160000与实际child HEAD相同，未知目录/缺gitlink/conflict/checkout错位失败关闭。测试跨接线新增不是第二Runtime证据框架。
+- **类型边界**：42个candidate源码仅两条旧Facade诊断；在纯8cc HEAD镜像同配置逐message/rule证实完全相同、0新增。旧Rootpublic-binding文件有六条原type narrowing诊断，在原718 HEAD文件同解析配置完全复现、0新增；新helper与4消费者source/test单独fresh Pyright0。没有过滤规则、隐藏诊断或宣称全repo type clean。
+- **可复现操作**：取本Platform集成分支及其5个精确子模块，执行`uv sync --locked --no-python-downloads`，然后Root两个research分析test模块；在`backtest/`用`../.venv/bin/python -m pytest tests/runtime/providers/test_cn_a_share_portfolio_standard_public_v1.py tests/runtime/analysis/test_cn_a_share_portfolio_daily_nav_analysis_v1.py -q -p no:cacheprovider`。测试数据均合成，不需要原研究档案或未预留市场读取。真实分析CLI需要另行保留的旧原图；本提交不包含原始行情/Analysis CAS，不自动重跑交易。
+- **交付边界**：这是公开开发回测与分析的完整Platform接线，旧WIP缺前置/缺gitlink问题已关闭。既有费用模型/EOD假设、source/retention/PIT/账户/正式Validation/holdout局限保持；不授予实盘/部署，未发送新认证取数、未读OOS或新增预留。仅integration分支push，main与他人工作不动；未执行合并。
+
 
 ## 本轮开发路径与资格边界更正（2026-10-04；9/29既有假设持续有效）
 
