@@ -4,6 +4,7 @@
 .ruff_cache/
 __pycache__/
 *.py[cod]
+/.jev-fabric-native/
 # A-share research datasets and generated paths (commit manifests and summaries only)
 overall/*-raw/
 overall/*.parquet
