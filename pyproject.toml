@@ -42,6 +42,7 @@ testpaths = [
   "promotion-gate/tests",
   "tests/architecture",
   "tests/integration",
+  "tests/validation",
 ]
 
 [tool.uv.sources]

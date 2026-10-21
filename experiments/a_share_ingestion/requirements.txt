@@ -1,0 +1,4 @@
+# Install in this project's own environment; no external project or venv needed.
+duckdb==1.5.4
+pandas==3.0.6
+tushare==1.4.29

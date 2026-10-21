@@ -1,4 +1,4 @@
-"""Old Git pins and clean local submodule dependency identities."""
+"""Pinned Git coordinates, never installed-runtime or worktree-cleanliness proof."""
 from pathlib import Path
 
 import pytest
@@ -9,7 +9,9 @@ def _project(tmp_path, monkeypatch, source):
     root = tmp_path / "platform"
     path = root / "tests/support/dependency_revision.py"
     path.parent.mkdir(parents=True)
-    (root / "backtest").mkdir()
+    package = root / "backtest/packages/backtest-runtime/src/crypto_quant_backtest"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("# synthetic package, not a build proof\n")
     (root / "pyproject.toml").write_text("[tool.uv.sources]\ncrypto-quant-backtest = " + source + "\n")
     monkeypatch.setattr(probe, "__file__", str(path))
     return root
@@ -38,7 +40,8 @@ def test_local_source_is_bound_to_the_exact_gitlink_checkout(tmp_path, monkeypat
     assert len(calls) == 2
 
 
-@pytest.mark.parametrize("part", ("wrong_path", "checkout_mismatch", "conflicted_gitlink", "missing_gitlink"))
+@pytest.mark.parametrize("part", ("wrong_path", "checkout_mismatch", "conflicted_gitlink",
+                                  "missing_gitlink", "malformed_gitlink", "malformed_checkout"))
 def test_local_source_rejects_unsupported_or_unpinned_identity(tmp_path, monkeypatch, part):
     source = '{ path = "backtest/packages/backtest-runtime", editable = true }'
     if part == "wrong_path":
@@ -48,7 +51,11 @@ def test_local_source_rejects_unsupported_or_unpinned_identity(tmp_path, monkeyp
         if "ls-files" in command:
             if part == "missing_gitlink":
                 return ""
+            if part == "malformed_gitlink":
+                return "160000 not-a-canonical-hash 0\tbacktest\n"
             return "160000 " + "b" * 40 + (" 1" if part == "conflicted_gitlink" else " 0") + "\tbacktest\n"
+        if part == "malformed_checkout":
+            return "not-a-canonical-hash\n"
         return ("c" if part == "checkout_mismatch" else "b") * 40 + "\n"
     monkeypatch.setattr(probe.subprocess, "check_output", checked)
     with pytest.raises(ValueError):
