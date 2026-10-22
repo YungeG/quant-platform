@@ -90,6 +90,14 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `TSR-PG-01` | DEFERRED | target-aware Candidate/Report versions fail closed until a separate Promotion contract |
 | `TSR-BIN-Q-01` | SEPARATE_H3 | Binance causal market qualification remains independently blocked |
 | `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
+| `AR-00` | ACTIVE | [Audit remediation](plans/platform-audit-remediation-20261022.md): user authorized core/portability completion; baseline, shared interfaces and isolated source cohort being frozen; not an acceptance claim |
+| `AR-01`, `AR-02` | QUEUED_CONTRACT | same-storage sample binding and complete provenance/report verification; consume AR-00 D1/D2 before writers |
+| `AR-03`, `AR-04` | QUEUED_PACKET | T+1 quantity, model causality and Analysis semantics; isolated Backtest lane; D3 applies only to metric verifier |
+| `AR-05`, `AR-06` | QUEUED_PACKET | input completeness/checksum/acquisition time, then Promotion recovery; separate isolated write sets |
+| `AR-07` | BLOCKED_LEAF_EVIDENCE | final version/SDK pins require actual accepted leaf commits; inventory/design may proceed in AR-00 |
+| `AR-08` | QUEUED | approved portability and operation simplification; historical bytes remain immutable |
+| `AR-09` | BLOCKED_LEAF_EVIDENCE | one-writer root integration and required independent/full validation after AR-01–07 |
+| `AR-10` | NOT_AUTHORIZED | real strategy/data execution retains separate user authorization and actual provider/prepare evidence requirements |
 
 ## 3. Execution DAG
 
