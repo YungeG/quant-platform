@@ -1,0 +1,55 @@
+{
+  "schema": "l2_postclose_source_qualification_notes@1",
+  "research_provider_qualified": false,
+  "field_dictionary_qualified": false,
+  "order_scope_qualified": false,
+  "trade_codes_qualified": false,
+  "auction_semantics_qualified": false,
+  "close_authority_qualified": false,
+  "corporate_action_segments_qualified": false,
+  "provider_availability_qualified": false,
+  "prospective_sample_qualified": false,
+  "acquisition_host_only": "pan.baidu.com",
+  "calendar": {
+    "path": "calendar.csv",
+    "source_excerpt": "sse-holiday-notice-20260917.txt",
+    "source_url": "https://www.sse.com.cn/disclosure/announcement/general/c/c_20260915_10832273.shtml",
+    "published_date": "20260917",
+    "scope_start": "20260901",
+    "scope_end_inclusive": "20261016",
+    "status": "official_holiday_schedule_for_retrospective_contiguity_only",
+    "open_days": 28,
+    "limitations": [
+      "weekday schedule with exchange holiday closures; not a per-security trading-status authority",
+      "acquired 20261019; not proof of when historical L2 revisions were available"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://huggingface.co/datasets/alphat04/Tick-by-Tick-Orders-China",
+      "role": "unmatched_public_dataset_card_only",
+      "findings": "Similar CSV names; covers January-June not local September-October; field/code descriptions do not certify local source mapping. Gated files were not accessed."
+    },
+    {
+      "url": "http://hj1984930.github.io/wind-A-code-data/",
+      "role": "third_party_field_name_example_only",
+      "findings": "Same field names, no order scope/channel/full-vs-remaining quantity mapping."
+    },
+    {
+      "url": "https://t.meoz.cn/docs/query/history/level2/order-history",
+      "role": "other_vendor_public_documentation_only",
+      "findings": "Documents SH A/D/S and preserves two identifiers without global uniqueness; cannot establish local origin, complete order reconstruction or quantity semantics."
+    }
+  ],
+  "blockers": [
+    "local_supplier_identity_not_proven",
+    "local_vendor_dictionary_and_order_scope_missing",
+    "trade_and_auction_code_mapping_not_accepted",
+    "close_authority_not_independently_qualified",
+    "corporate_action_comparability_missing",
+    "historical_provider_availability_missing",
+    "all_28_dates_previously_observed",
+    "platform_preparation_and_provider_admission_not_accepted"
+  ],
+  "note": "These records are a source-gap ledger, not Platform evidence or a source-acceptance manifest. false denotes absent qualification, not adverse stock outlook."
+}
