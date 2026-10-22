@@ -1,0 +1,102 @@
+{
+  "schema": "same_share_sh_reference_group_profile@2",
+  "profile_id": "same-share-sh-reference-groups-v2",
+  "role": "source_bound_observational_proxy_not_provider_admission",
+  "symbols": [
+    "688122.SH",
+    "688137.SH",
+    "688655.SH"
+  ],
+  "source_scope": {
+    "start": "20260901",
+    "end_exclusive": "20261017",
+    "source_manifest_sha256": "0cfaf3dc204c8603d612549a3919cfeef374921d071aca971751de61c5d36f60",
+    "selected_data_sha256": "22d7e32d0676e75b7334c29d77daee7b4482d1248d2368faecc3196c214a2891"
+  },
+  "documents_root": "/srv/bcache-8t/ygguo/quant/l2-share-documentation/20261020-071956",
+  "receipt_sha256": "3d18b3ad5dbc196c9211ea932691bde28fa500854efd3959fe1dd791ebfd1121",
+  "inspection_receipt_sha256": "927a507dc93c32d0dec427dc73519d7e7eb8d28bffafc6267db1044b3b92cfab",
+  "share_without_query_sha256": "739292ebc74d9a829357f65d059002fac9d95d90df4ca87b4e935df6e6d6bae9",
+  "documents": [
+    {
+      "relative_path": "历史数据/明细使用说明/文件介绍.txt",
+      "bytes": 136,
+      "sha256": "e7c6661cd733e247962a43b013cd229dab0e533555dd6648e1523116d162edf3"
+    },
+    {
+      "relative_path": "历史数据/明细使用说明/各代码的意义.docx",
+      "bytes": 1416003,
+      "sha256": "79ce26b0f48f6d56f9d87ad55286b950fe8d5bdc41b4e693e17a7bb19cfcff54"
+    },
+    {
+      "relative_path": "历史数据/明细使用说明/l2_read.py",
+      "bytes": 15401,
+      "sha256": "5c74acccc53f6c7c9633ac236e8c4debd26ee8a69156be740870e4175af215b4"
+    },
+    {
+      "relative_path": "历史数据/明细使用说明/集合竞价.py",
+      "bytes": 21900,
+      "sha256": "8ba8274badf814639a13145eaebcbd08ba745d9e6c9014e3db4240f8cd03d4eb"
+    },
+    {
+      "relative_path": "附赠/parquet_格式_转换代码和说明/代码说明.txt",
+      "bytes": 567,
+      "sha256": "30608017fcc47c00a8aa8f1d4d8a8f9cbdcd0b5c4b2fea3ddb3f53007979cb12"
+    },
+    {
+      "relative_path": "附赠/parquet_格式_转换代码和说明/l2_parquet.py",
+      "bytes": 4889,
+      "sha256": "a25d5ef845eaca2d2df0ae38cbc0fe32d054418dba54f38ce77cac7c69ad5c01"
+    },
+    {
+      "relative_path": "附赠/资金使用说明/文档说明.txt",
+      "bytes": 384,
+      "sha256": "61f5b6159b795ec4c48b19525f32d1810e88456477316326437506fc933dab80"
+    },
+    {
+      "relative_path": "附赠/资金使用说明/day_read.py",
+      "bytes": 8457,
+      "sha256": "b92f2e02816213e1c8755a08f73ce0d04c2d8771bdff53ee2822eec2a5ee6df9"
+    }
+  ],
+  "calendar": {
+    "path": "research/evidence/l2-postclose-qualification-v1/calendar.csv",
+    "sha256": "186c693656a16ea9a326c8050d790e1a0ae60487d13bbd69ba21bb3760148fd1",
+    "source_excerpt": "research/evidence/l2-postclose-qualification-v1/sse-holiday-notice-20260917.txt",
+    "source_excerpt_sha256": "9fc69bcb7ea0765ffaacc57d01e8c1634e4d46eb9d0dcde6cd89330998554639",
+    "role": "official_schedule_for_retrospective_contiguity_not_security_tradability"
+  },
+  "definition": {
+    "price_divisor": 10000,
+    "execution_codes": [
+      "",
+      "0"
+    ],
+    "code_padding": "strip outer whitespace/NUL only; preserve raw fields",
+    "record_identity": "source SHA256 plus CSV data-record ordinal; not exchange-trade uniqueness",
+    "reference_identity": "positive digit strings per stock/day/side; preserve lexical reference after outer whitespace only; zero/empty/malformed remain unknown",
+    "scope_role": "delivered_stock_day_side_reference_proxy_not_exchange_channel",
+    "grouping_uses_full_day": true,
+    "stage_is_not_a_group_key": true,
+    "large_comparison": ">=",
+    "denominator": "all selected positive-price positive-quantity executions including missing references",
+    "full_day_checks": [
+      "supported record roles",
+      "no unresolved exact duplicate source execution rows",
+      "source cumulative volume and count match exactly"
+    ],
+    "quote_amount_role": "diagnostic only; no unproved rounding tolerance used as acceptance",
+    "auxiliary_order_match_role": "diagnostic only; no minimum A-event match rate",
+    "unknown_zero_valued_S_phase_role": "does not enter cash; affects phase interpretation only"
+  },
+  "not_claimed": [
+    "unique_original_order_identity",
+    "institution_or_account_identity",
+    "retained_inventory_or_true_fund_inflow",
+    "independent_official_close",
+    "corporate_action_comparability",
+    "prospective_or_OOS_validation",
+    "formal_platform_provider_admission_or_result_grade"
+  ],
+  "rule_changes_require_new_profile_and_review": true
+}
