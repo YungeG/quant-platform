@@ -91,11 +91,11 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `TSR-BIN-Q-01` | SEPARATE_H3 | Binance causal market qualification remains independently blocked |
 | `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
 | `AR-00` | DONE | baseline, isolated source cohort and D1/D2/D3 frozen in [interface record](ar-00-interface-freeze-20261022.md); B/A/C representative source smokes passed 2/2/1; not implementation acceptance |
-| `AR-01` | ACTIVE | A writer implementing public same-Foundation guard and early no-I/O checks in isolated Research/Validation worktrees |
-| `AR-02` | QUEUED_WRITE | D2 interface frozen; follows A-line AR-01 handoff on shared files, then readonly provenance verifier and report replay/caller migration |
+| `AR-01` | DONE | Research `220744b5` / Validation `ccecf5bb`; parent191 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); root fan-in/default environment remain separate |
+| `AR-02` | ACTIVE | D2a writer implementing Research read-only verifier + Validation-owned in-memory result; D2b report/caller enforcement follows, no closure claim yet |
 | `AR-03`, `AR-04` | ACTIVE | B writer owns integer-share/T+1, model time and source-derived Analysis validation in isolated Backtest branch; parent acceptance outstanding |
-| `AR-05` | ACTIVE | C writer owns input terminal checks, declared checksum and acquisition timestamps in separate Backtest branch; no runtime/trading overlap |
-| `AR-06` | QUEUED_WRITE | Promotion recovery follows C-line handoff and receives a separate packet; no concurrent shared-file writer |
+| `AR-05` | DONE | Backtest `5f633cf4`; parent85 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); combined Backtest/root checks pending |
+| `AR-06` | ACTIVE | C writing slot moved to isolated Promotion branch; pending Evaluation recovery/shared-publication correctness under focused RED/GREEN |
 | `AR-07` | BLOCKED_LEAF_EVIDENCE | final version/SDK pins require actual accepted leaf commits; inventory/design may proceed in AR-00 |
 | `AR-08` | QUEUED | approved portability and operation simplification; historical bytes remain immutable |
 | `AR-09` | BLOCKED_LEAF_EVIDENCE | one-writer root integration and required independent/full validation after AR-01–07 |
