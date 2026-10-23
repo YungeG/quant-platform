@@ -98,7 +98,7 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `AR-06` | DONE | Promotion `4de95ace`, parent114 full tests + targeted review accepted after exact nested-ref repair; [leaf receipt](ar-03-04-06-08-receipt-20261022.md); root caller migration/fan-in separate |
 | `AR-07` | DONE | default and fresh clean installed5-package GitEA cohorts verified/no PYTHONPATH; both official self5+offline-pc98 PASS; all4leaf feature SHAsremoteverified, no blindpin refresh; [final evidence](ar-09-final-acceptance-20261023.md) |
 | `AR-08` | DONE | root portability candidate `322aadf` cherry-picked; parent10 tests + real1101-file code bundle check + targeted review; old path not restored, no market replay; [receipt](ar-03-04-06-08-receipt-20261022.md) |
-| `AR-09` | ACCEPTED_ROOT_PUBLICATION_PENDING | [Actual final gates](ar-09-final-acceptance-20261023.md):Backtest3299/2existing skip, default Root1303 and independent clean Root1303 PASS; both self5/PC98 PASS, fresh review clear, 4leaf feature refs published/verified; Root documentation/source-identity check and integration branch push remain |
+| `AR-09` | DONE | [Final acceptance/publication](ar-09-final-acceptance-20261023.md):Backtest3299/2existing skip, default Root1303/clean Root1303 PASS; both self5/PC98 PASS, fresh review clear; 4leaf feature refs and Root integration branch published/remoteverified, main unchanged; postdocclean83 PASS; AR10 excluded |
 | `AR-10` | NOT_AUTHORIZED | real strategy/data execution retains separate user authorization and actual provider/prepare evidence requirements |
 
 ## 3. Execution DAG

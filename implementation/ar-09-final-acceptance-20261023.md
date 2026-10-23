@@ -1,6 +1,6 @@
 # AR-09核心代码与干净组合验收
 
-**核心整改、新版模型合同与干净组合已通过实际验收。** 本记录提交时，四个leaf整改分支已发布并核实；Platform集成分支尚待该文档commit产生后推送，不能把本记录当作已经完成Root发布的证明。实时发布状态只在roadmap及执行目录的实际remote-ref凭据中维护。
+**核心整改、新版模型合同与干净组合已通过实际验收并发布到整改/集成分支。** 四个leaf refs及Platform `impl/platform-audit-remediation-20261022`均经实际remote SHA核实，main未改动。首个完整验收文档候选Root `9c7eda38fdfa16db1f0eb060071e5bdab1c75eec`已发布；本补记及roadmap完成状态是后续文档提交，其最终远端SHA另行核实，不伪造自引用commit。
 
 ## 被验收版本
 
@@ -12,7 +12,7 @@
 | Validation | `fcd158b7c728b0b309667e1d763cc123b572fe7a` | `impl/ar-validation-integration-20261022` |
 | Promotion | `c22fe938682d72dcd79d7bf59a2c28a8d5a5f4df` | `impl/ar-promotion-integration-20261022` |
 
-Root行为候选`34207443081f0d65ed71975f852131ae61ddfc2d`包含实现`d41b65f1`和确切leaf gitlinks。后续Root文档提交不改上述代码/pins，并单独执行文档及source-identity定测，不伪称对每个文档HEAD又跑过整套。
+Root行为候选`34207443081f0d65ed71975f852131ae61ddfc2d`包含实现`d41b65f1`和确切leaf gitlinks。Root `9c7eda3`仅添加/澄清Markdown，干净组合切到该候选后**83 passed，57.43秒**（architecture及source-identity闭环）。后续完成状态补记仍不改实现/pins，并再做必要定测；不伪称对每个文档HEAD又跑过整套。
 
 ## 已执行的验收
 
@@ -47,7 +47,7 @@ Root行为候选`34207443081f0d65ed71975f852131ae61ddfc2d`包含实现`d41b65f1`
 
 ## 交付与保留限制
 
-- 用户已允许四个leaf整改分支及Platform集成分支推送；不改子仓库远端main，不force/delete。本记录只关闭已经实际执行的技术验收；Root推送必须另行核实后才关闭发布状态。
+- 已在用户授权范围内完成四个leaf整改分支及Platform集成分支推送；不改子仓库远端main，不force/delete。Root `9c7eda3`的dry-run、实际push、ls-remote及main前后相等证明保留在`root-publication-receipt-v1.json`；后续文档状态commit继续核实最终remote SHA，验收不依赖代理记忆。
 - 历史L2源码archive已按AR08核实1101文件，但未恢复旧绝对路径、未重读行情/执行历史市场回放。
 - 合成协议、metadata和来源/时钟一致性不等于真实ML训练/PIT/未污染OOS/策略有效性，也不授予Shadow/Live。AR10继续未授权。
 
