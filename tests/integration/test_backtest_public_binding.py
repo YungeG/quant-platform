@@ -4,7 +4,7 @@ import ast
 import hashlib
 import subprocess
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import crypto_quant_backtest as backtest
@@ -630,10 +630,68 @@ def test_public_repository_fails_closed_for_missing_tamper_and_retention(
     assert foreign_link.value.code is backtest.BacktestEvidenceFailureCode.PORT_ANALYSIS_LINK_MISMATCH
 
 
+def _model_case(
+    experiment_id: str, *, scope: str = "evaluation", market: bool = True
+) -> tuple[
+    backtest.CashDevelopmentRequestIntent,
+    backtest.CashDevelopmentProviderInputs,
+    InMemoryMarketBundleReader,
+]:
+    if scope not in ("evaluation", "oos"):
+        raise ValueError("unknown model scope")
+    start = 2000 if scope == "evaluation" else 4000
+    key = f"model-evaluation-synthetic-{scope}-v1"
+    candidate = dict(_target_event().payload["candidate"])
+    candidate.update(decision_time=start + 100, observed_through=start + 99,
+                     effective_time=start + 100, expires_at=start + 250)
+    target = replace(_target_event(), event_id=f"{key}-target", event_time=UtcInstant(start + 100),
+                     available_time=UtcInstant(start + 100), source_key=key + ".targets",
+                     source_hash=canonical_sha256(candidate),
+                     payload={"schema_version": 1, "candidate": candidate})
+    bar = replace(_bar_event(), event_id=f"{key}-bar", event_time=UtcInstant(start + 200),
+                  available_time=UtcInstant(start + 200), source_key=key + ".bars",
+                  source_hash=canonical_sha256({"time": start + 200, "open_price_units": 10000}))
+    reader = InMemoryMarketBundleReader.build(
+        bundle_key=key, schema_version=1, coverage_start=UtcInstant(start),
+        coverage_end_exclusive=UtcInstant(start + 1000),
+        instrument_catalog_hash=canonical_sha256(_catalog()),
+        capabilities=(target.capability, bar.capability),
+        streams={"targets": (target,), "bars.open": (bar,)},
+    )
+    intent = backtest.CashDevelopmentRequestIntent(
+        schema_version=1, experiment_id=experiment_id,
+        timeline_window=backtest.TimelineWindow(UtcInstant(start), UtcInstant(start + 90), UtcInstant(start + 1000)),
+        execution_account_id="account:primary", reporting_currency=_USD, master_random_seed=7,
+    )
+    provider = replace(_provider_inputs(market=market),
+                       decision_mark=_mark(10000, start + 100, "decision"),
+                       final_mark=_mark(8000, start + 999, "final"))
+    return intent, provider, reader
+
+
+def _model_training_source() -> tuple[
+    InMemoryMarketBundleReader, tuple[dict[str, object], ...]
+]:
+    rows = tuple({"time": time, "open_price_units": 10000, "scale": 2, "quote_currency": "USD"}
+                 for time in (200, 900))
+    key = "model-evaluation-synthetic-training-v1"
+    bars = tuple(replace(_bar_event(), event_id=f"{key}-{row['time']}",
+                         event_time=UtcInstant(row["time"]), available_time=UtcInstant(row["time"]),
+                         source_sequence=SourceSequence(index + 1), source_key=key,
+                         source_hash=canonical_sha256(row)) for index, row in enumerate(rows))
+    reader = InMemoryMarketBundleReader.build(
+        bundle_key=key, schema_version=1, coverage_start=UtcInstant(0), coverage_end_exclusive=UtcInstant(1000),
+        instrument_catalog_hash=canonical_sha256(_catalog()), capabilities=(bars[0].capability,),
+        streams={"bars.open": bars},
+    )
+    return reader, rows
+
+
 def _model_build_evidence():
+    reader, rows = _model_training_source()
     training_slice = DataSlice(
-        _market_reader().bundle_ref.to_canonical_dict(),
-        "platform-model-training-v1",
+        reader.bundle_ref.to_canonical_dict(),
+        "model-evaluation-synthetic-training-v1",
         "1970-01-01T00:00:00.000000Z",
         "1970-01-01T00:00:00.000001Z",
     )
@@ -641,7 +699,7 @@ def _model_build_evidence():
         "returns-v1",
         _hash("platform feature code"),
         _hash("platform feature schema"),
-        ("close",),
+        ("open_price_units",),
     )
     trainer = TrainerRecipe(
         "linear-v1",
@@ -656,8 +714,8 @@ def _model_build_evidence():
         training_slice.interval_start,
         training_slice.interval_end,
         feature.feature_schema_hash,
-        _hash("platform training data"),
-        100,
+        canonical_sha256(rows),
+        len(rows),
     )
     artifact = backtest.ModelArtifactRef(
         model_key=trainer.model_key,
@@ -699,15 +757,16 @@ def test_v2_model_build_evidence_binds_real_backtest_request_and_run(
 ) -> None:
     evidence, artifact, timeline = _model_build_evidence()
     foundation = LocalFoundation(tmp_path / "foundation")
+    intent, provider, reader = _model_case("platform:trial:model-bound-1")
     prepared = backtest.prepare_model_bound_cash_development_backtest(
-        request_intent=_intent("platform:trial:model-bound-1"),
-        provider_inputs=_provider_inputs(),
+        request_intent=intent,
+        provider_inputs=provider,
         model_timeline=timeline,
         expected_model_key=artifact.model_key,
         expected_artifact_ref_hash=artifact.artifact_ref_hash,
         artifact_reader=foundation,
         artifact_publisher=foundation,
-        market_reader=_market_reader(),
+        market_reader=reader,
         publication_root=tmp_path / "publications",
     )
 
@@ -792,3 +851,59 @@ def test_binding_imports_only_public_package_roots() -> None:
         cwd=_ROOT,
         check=False,
     ).returncode == 0
+
+
+def test_model_unavailable_before_publish_fails_before_request_or_attempt(tmp_path, monkeypatch):
+    _, artifact, timeline = _model_build_evidence()
+    foundation = LocalFoundation(tmp_path / "foundation")
+    puts = []
+    original = foundation.put
+    def record(**kwargs):
+        puts.append(kwargs)
+        return original(**kwargs)
+    monkeypatch.setattr(foundation, "put", record)
+    publication_root = tmp_path / "publications"
+    with pytest.raises(backtest.ModelPreparationFailure) as caught:
+        backtest.prepare_model_bound_cash_development_backtest(
+            request_intent=_intent("old-target"), provider_inputs=_provider_inputs(),
+            model_timeline=timeline, expected_model_key=artifact.model_key,
+            expected_artifact_ref_hash=artifact.artifact_ref_hash,
+            artifact_reader=foundation, artifact_publisher=foundation,
+            market_reader=_market_reader(), publication_root=publication_root)
+    assert caught.value.code == "MODEL_ARTIFACT_UNAVAILABLE"
+    assert puts == []
+    assert not publication_root.exists()
+
+
+def test_model_case_sources_clocks_and_training_coverage_agree():
+    training, rows = _model_training_source()
+    assert len(rows) == 2 and [row['time'] for row in rows] == [200, 900]
+    assert training.manifest.coverage_start == UtcInstant(0)
+    assert training.manifest.coverage_end_exclusive == UtcInstant(1000)
+    evidence, artifact, _ = _model_build_evidence()
+    assert artifact.training_data_hash == canonical_sha256(rows)
+    assert artifact.training_start == UtcInstant(0) and artifact.training_end == UtcInstant(1000)
+    assert artifact.available_at.instant == UtcInstant(1000)
+    for scope, start in (('evaluation', 2000), ('oos', 4000)):
+        intent, provider, reader = _model_case('source-check', scope=scope)
+        assert reader.bundle_ref.manifest_hash == canonical_sha256(reader.manifest)
+        assert reader.bundle_ref.bundle_key == f'model-evaluation-synthetic-{scope}-v1'
+        assert reader.manifest.coverage_start == intent.timeline_window.data_start == UtcInstant(start)
+        assert reader.manifest.coverage_end_exclusive == intent.timeline_window.end_exclusive == UtcInstant(start + 1000)
+        target = reader.streams['targets'][0]
+        bar = reader.streams['bars.open'][0]
+        assert target.event_time == target.available_time == UtcInstant(start + 100)
+        assert bar.event_time == bar.available_time == UtcInstant(start + 200)
+        assert target.payload['candidate']['observed_through'] == start + 99
+        assert provider.decision_mark.observed_at == provider.decision_mark.available_at == target.event_time
+        assert provider.final_mark.observed_at == provider.final_mark.available_at == UtcInstant(start + 999)
+    with pytest.raises(ValueError):
+        _model_case('unknown', scope='training')
+
+
+def test_model_evaluation_frozen_contract_hash_and_public_wiring():
+    from crypto_quant_research import ExperimentSpec
+    contract = _ROOT / 'tests/contracts/model-evaluation-scope-v1.json'
+    assert hashlib.sha256(contract.read_bytes()).hexdigest() == '4cd02832911dc83cb49c28f25a63a45a5533f4f07eda201bce0ff3a030cac192'
+    assert ExperimentSpec.__dataclass_fields__['evaluation_slices'].default is None
+    assert isinstance(ExperimentSpec.trial_data_slices, property)

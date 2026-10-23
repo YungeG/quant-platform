@@ -51,18 +51,13 @@ def test_integration_v2_whole_platform_golden_replays_one_model_lineage(
     profile_ref = _VALIDATION._plain(
         inputs.experiment_spec.metric_profile_refs[0]
     )
-    validation_policy = _VALIDATION._policy(profile_ref)
-    prepared = backtest.prepare_model_bound_cash_development_backtest(
-        request_intent=_RESEARCH._BINDING_MODULE._intent("validation:oos:model"),
-        provider_inputs=_RESEARCH._BINDING_MODULE._provider_inputs(),
-        model_timeline=provider._timeline,
-        expected_model_key=artifact.model_key,
-        expected_artifact_ref_hash=artifact.artifact_ref_hash,
-        artifact_reader=foundation,
-        artifact_publisher=foundation,
-        market_reader=_RESEARCH._BINDING_MODULE._market_reader(),
-        publication_root=tmp_path / "research/publications",
-    )
+    validation_policy = _VALIDATION._model_policy(profile_ref)
+    # New Model evaluation scope v1 execution, not reissuance of historical FI02.
+    assert inputs.experiment_spec.schema_version == 3
+    assert len(inputs.experiment_spec.data_slices) == 2
+    assert len(inputs.experiment_spec.evaluation_slices) == 1
+    assert len(foundation.entries("validation.sample-consumption.v1")) == 8
+    prepared = _VALIDATION._prepare_model_oos(foundation, tmp_path / "research/publications", provider, artifact)
     provider._prepared["validation:oos:model"] = prepared
 
     validation = _VALIDATION.validate_candidate(
@@ -197,7 +192,7 @@ def test_integration_v2_whole_platform_golden_replays_one_model_lineage(
     assert artifact_hash == artifact.artifact_ref_hash
     assert trial_spec["resolved_model_refs"][0]["artifact_ref_hash"] == artifact_hash  # type: ignore[index]
     assert completed["model_binding"]["artifact_ref_hash"] == artifact_hash  # type: ignore[index]
-    assert prepared.model_binding.artifact_ref_hash == artifact_hash
+    assert provider._prepared["validation:oos:model"].model_binding.artifact_ref_hash == artifact_hash
 
     research_artifacts = [
         json.loads(entry.payload)
