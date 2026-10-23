@@ -1,8 +1,20 @@
 # Research data inventory
 
-Read-only inventory of the datasets most relevant to the proposed strategy directions. This file records existing local artifacts; it does not qualify a provider, authorize a Backtest, or promote exploratory results to Platform evidence.
+Read-only inventory of datasets historically observed for the proposed strategy directions. The dated locations, hashes, coverage and workspace status below are retained observations, not a fresh check of those files or current input qualification. This file does not authorize research, qualify a provider or promote exploratory results to Platform evidence. Follow the [research execution guide](../docs/agents/research-execution.md) before dispatching work; current completion state remains solely in [roadmap](../implementation/roadmap.md).
 
-## Existing research priorities (not executed by dependency alignment)
+## Main-line capability clarification — 2026-10-23
+
+This is a dated interface/accepted-version check, not a second task-status registry or a new data audit. For execution, recheck current public exports, gitlinks and [declared sources](../pyproject.toml)/[lock](../uv.lock).
+
+- All five installed Backtest-family packages and the Backtest gitlink resolve to `ea957d59527e93765681d85c7a2f3fd83e6356a0`. The accepted default and clean-checkout Root suites each passed1303 tests; Backtest passed3299 with2 existing skips. These are engineering results, not proof that a historical strategy dataset is ready. See the [acceptance record](../implementation/ar-09-final-acceptance-20261023.md).
+- Public A-share preparation includes both `prepare_cn_a_share_development_backtest` and `prepare_cn_a_share_portfolio_standard_development_backtest`. The latter is the constrained shared-CNY portfolio DEVELOPMENT route, with recorded historical-availability, fee/slippage and other limitations; it is not broad historical or decision-grade qualification. The older statement that the portfolio route existed only on an unaccepted separate branch must not be used as a current blocker.
+- The accepted public main-line roots still do not expose the KORU/TRADIFI operations or native analysis/completion-loading chain required by the [archived native proposal](../docs/plans/koruusdt-native-analysis-admission-plan.md). General package alignment and model Experiment@3 support did not implement that separate chain. Code or reports in an old workspace are not accepted main-line capability.
+- D009 remains recorded as [not executed / input qualification not established](../research/d009-retro-v1-not-executed-result-v1.md). The SDK-binding/environment repairs did not establish common quotation basis, daily status/completeness, corporate-action comparability or the original full data budget. No original market samples, databases or credentials were opened for this clarification.
+- Broad A-share historical qualification and Binance causal qualification remain the separate `TSR-ASH-Q-01` / `TSR-BIN-Q-01` branches. File presence, a public constructor or a passing synthetic test does not close them.
+
+## Historical proposed priorities (not an active research queue)
+
+The following was the earlier proposed ordering, not a present instruction or authorization to start a study.
 
 1. Preserve the untracked A-share artifacts before running new research.
 2. Use the five-ETF stock/bond/gold panel as the first bounded pilot.
@@ -88,7 +100,9 @@ Root: `/home/ygguo/agent-projs/ai-crypt/platform/backtest`
 - Option chains, implied volatility surfaces, settlements and margin rules.
 - Multi-coin spot/perpetual/futures/funding panels and venue/account histories.
 
-## Platform capability boundary
+## Historical capability snapshot — 2026-09-21
+
+The following records the dependency-alignment stage, including then-unaccepted branches and then-current interfaces. Keep it as history; do not use its present-tense wording as the current capability decision. The later main-line clarification above supersedes capability claims, not the old dataset/backup evidence.
 
 - Backtest `8cc5b874c31c38a6ec7526d1dbf345b93998a39f` exports `prepare_cn_a_share_development_backtest` in addition to the three generic cash preparation functions. The earlier claim that only cash preparation existed described the old installed `f73d068d` environment, not the newer source tree.
 - This public A-share route is the bounded `000703.SZ` development path, with closed-bar fills, fees and T+1 behavior; it is **not** a general multi-instrument portfolio or decision-grade seam. Its existing two-session public fixture was executed successfully in the isolated aligned environment; no user strategy or live market study was run.
