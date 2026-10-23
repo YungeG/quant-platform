@@ -40,7 +40,9 @@ def _read_bounded(path: str | os.PathLike[str], limit: int) -> bytes:
         for part in (absolute, *absolute.parents):
             if part.is_symlink():
                 _fail("unsafe_path")
-        with p.open("rb") as f:
+        flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+        fd = os.open(p, flags)
+        with os.fdopen(fd, "rb") as f:
             before = os.fstat(f.fileno())
             if not stat.S_ISREG(before.st_mode) or before.st_size > limit:
                 _fail("input_limit")
@@ -151,8 +153,14 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
     return {"role": "retained_source_bundle_identity_check_not_financial_validation", "source_commit": commit, "files_verified": len(seen), "archive_sha256": archive_hash.lower(), "inventory_sha256": manifest_hash, "old_worktree_path": old, "old_paths_restored": False, "market_data_read": False, "replay_executed": False, "financial_qualification": False, "manifest_authenticated": authenticated}
 
 
+class _BoundedArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        print("verification rejected: invalid_arguments", file=sys.stderr)
+        raise SystemExit(2)
+
+
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _BoundedArgumentParser(description=__doc__)
     parser.add_argument("--inventory", required=True)
     parser.add_argument("--archive")
     parser.add_argument("--expected-inventory-sha256")
