@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+import io
 import json
 import os
 import re
@@ -102,7 +103,7 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
         if (not _safe_path(path) or path in expected or mode not in ("100644", "100755") or
             type(size) is not int or size < 0 or size > MAX_FILE or
             not isinstance(sha, str) or not HEX256.fullmatch(sha) or
-            not isinstance(blob, str) or not re.fullmatch(r"[0-9a-fA-F]{40}", blob)):
+            not isinstance(blob, str) or not HEX40.fullmatch(blob)):
             _fail("invalid_inventory_entry")
         expected[path] = (mode, size, sha.lower(), blob.lower())
     apath = archive_path if archive_path is not None else manifest.get("archive_path")
@@ -112,7 +113,7 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
     if len(raw) != archive_bytes or hashlib.sha256(raw).hexdigest().lower() != archive_hash.lower():
         _fail("archive_identity_mismatch")
     try:
-        with gzip.GzipFile(fileobj=__import__("io").BytesIO(raw), mode="rb") as stream:
+        with gzip.GzipFile(fileobj=io.BytesIO(raw), mode="rb") as stream:
             decompressed = stream.read(MAX_TAR + 1)
     except (OSError, EOFError, gzip.BadGzipFile, zlib.error):
         _fail("invalid_archive")
@@ -121,7 +122,6 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
     seen = set()
     member_count = 0
     try:
-        import io
         with tarfile.open(fileobj=io.BytesIO(decompressed), mode="r:") as tar:
             for member in tar:
                 member_count += 1
