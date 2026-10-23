@@ -15,15 +15,22 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest==8.4.2"]
+# The offline-pc profile qualifies this complete declared test dependency closure.
+dev = [
+  "pytest==8.4.2",
+  "packaging==26.3",
+  "pandas==3.0.6",
+  "numpy==2.5.3",
+  "iniconfig==2.3.0",
+  "pluggy==1.6.0",
+  "pygments==2.20.0",
+  "python-dateutil==2.9.0.post0",
+  "six==1.17.0",
+]
 
 [tool.uv]
 package = false
 exclude-newer = "7 days"
-override-dependencies = [
-  "crypto-quant-domain @ git+https://github.com/YungeG/quant-backtest.git@8cc5b874c31c38a6ec7526d1dbf345b93998a39f#subdirectory=packages/trading-domain",
-  "crypto-quant-market-data @ git+https://github.com/YungeG/quant-backtest.git@8cc5b874c31c38a6ec7526d1dbf345b93998a39f#subdirectory=packages/market-data-contracts",
-]
 
 [tool.uv.workspace]
 members = [
@@ -46,12 +53,12 @@ testpaths = [
 ]
 
 [tool.uv.sources]
-crypto-quant-backtest = { path = "backtest/packages/backtest-runtime", editable = true }
-crypto-quant-bundle-builder = { git = "https://github.com/YungeG/quant-backtest.git", rev = "8cc5b874c31c38a6ec7526d1dbf345b93998a39f", subdirectory = "packages/market-bundle-builder" }
-crypto-quant-domain = { git = "https://github.com/YungeG/quant-backtest.git", rev = "8cc5b874c31c38a6ec7526d1dbf345b93998a39f", subdirectory = "packages/trading-domain" }
+crypto-quant-backtest = { git = "https://github.com/YungeG/quant-backtest.git", rev = "ea957d59527e93765681d85c7a2f3fd83e6356a0", subdirectory = "packages/backtest-runtime" }
+crypto-quant-bundle-builder = { git = "https://github.com/YungeG/quant-backtest.git", rev = "ea957d59527e93765681d85c7a2f3fd83e6356a0", subdirectory = "packages/market-bundle-builder" }
+crypto-quant-domain = { git = "https://github.com/YungeG/quant-backtest.git", rev = "ea957d59527e93765681d85c7a2f3fd83e6356a0", subdirectory = "packages/trading-domain" }
 crypto-quant-foundation = { workspace = true }
-crypto-quant-market-data = { git = "https://github.com/YungeG/quant-backtest.git", rev = "8cc5b874c31c38a6ec7526d1dbf345b93998a39f", subdirectory = "packages/market-data-contracts" }
+crypto-quant-market-data = { git = "https://github.com/YungeG/quant-backtest.git", rev = "ea957d59527e93765681d85c7a2f3fd83e6356a0", subdirectory = "packages/market-data-contracts" }
 crypto-quant-promotion = { workspace = true }
 crypto-quant-research = { workspace = true }
-crypto-quant-trading = { path = "backtest/packages/trading-kernel", editable = true }
+crypto-quant-trading = { git = "https://github.com/YungeG/quant-backtest.git", rev = "ea957d59527e93765681d85c7a2f3fd83e6356a0", subdirectory = "packages/trading-kernel" }
 crypto-quant-validation = { workspace = true }
