@@ -92,13 +92,13 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
 | `AR-00` | DONE | baseline, isolated source cohort and D1/D2/D3 frozen in [interface record](ar-00-interface-freeze-20261022.md); B/A/C representative source smokes passed 2/2/1; not implementation acceptance |
 | `AR-01` | DONE | Research `220744b5` / Validation `ccecf5bb`; parent191 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); root fan-in/default environment remain separate |
-| `AR-02` | ACTIVE | D2a accepted at Research `ba2af01b` / Validation `a8c9127d` after parent132 tests and targeted review; D2b runtime/report/composition migration executing; findings2/7 not closed yet |
+| `AR-02` | DONE | Research `ba2af01b` / Validation `fa16b688`; public composition migrated, parent891 governance +63 targeted/seam tests and fresh review; [receipt](ar-02-provenance-replay-receipt-20261022.md); default environment/final root gates separate |
 | `AR-03`, `AR-04` | DONE | Backtest `3e01ef7f`, parent248 focused tests + fresh review; inherited AST failure explicitly fixed/tested in combined `6ce79d6d`; [leaf receipt](ar-03-04-06-08-receipt-20261022.md); full-leaf fan-in still AR-09 |
-| `AR-05` | DONE | Backtest `5f633cf4`; parent85 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); combined Backtest/root checks pending |
+| `AR-05` | DONE | Full gate exposed native v1 source/signature protection conflict after initial focused acceptance; corrected in `0eb0377f` by exact legacy restore + explicit v2 clock CLI, parent109 tests and fresh review clear; original dividend/hash fixes retained; final Backtest gate pending |
 | `AR-06` | DONE | Promotion `4de95ace`, parent114 full tests + targeted review accepted after exact nested-ref repair; [leaf receipt](ar-03-04-06-08-receipt-20261022.md); root caller migration/fan-in separate |
-| `AR-07` | BLOCKED_LEAF_EVIDENCE | final version/SDK pins await A2b accepted leaf commits and publishing authority; source-cohort design fixed in AR-00 |
+| `AR-07` | BLOCKED_FINAL_BACKTEST_AND_PUBLICATION | A2b leaves accepted; final Backtest baseline repairs and remote publication authority still required for release pins; source-cohort design fixed in AR-00 |
 | `AR-08` | DONE | root portability candidate `322aadf` cherry-picked; parent10 tests + real1101-file code bundle check + targeted review; old path not restored, no market replay; [receipt](ar-03-04-06-08-receipt-20261022.md) |
-| `AR-09` | ACTIVE_VALIDATION | combined Backtest `6ce79d6d` single full suite executing in frozen development cohort; final root acceptance still requires AR-02/07 and default environment |
+| `AR-09` | FAILED_GATE_REPAIRING | [First full-gate disposition](ar-09-backtest-full-gate-20261022.md):3245 passed/11 failed/2 skipped; 2 own native regressions corrected via protected-v1/new-v2, 9 baseline failures under exact seam/fixture/schema repair; final full/default/root gate not PASS |
 | `AR-10` | NOT_AUTHORIZED | real strategy/data execution retains separate user authorization and actual provider/prepare evidence requirements |
 
 ## 3. Execution DAG
