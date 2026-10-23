@@ -1,0 +1,55 @@
+{
+  "contract_id": "model-evaluation-scope-v1",
+  "schema_version": 1,
+  "authority": {
+    "user_authorized_scope": true,
+    "parent_freezes_implementation_interface": true,
+    "claims_user_signed_fixture_hash": false
+  },
+  "experiment": {
+    "new_schema_version": 3,
+    "legacy_schema_versions": [1, 2],
+    "public_type": "ExperimentSpec",
+    "appended_field": "evaluation_slices",
+    "default": null,
+    "none_preserves_legacy_bytes": true,
+    "new_mode_requires_model_plan": true,
+    "new_mode_allows_target_recipe": false,
+    "evaluation_axis": "nonempty_exact_sorted_unique_DataSlice_tuple",
+    "declaration_set": "exact_union_of_plan_training_slice_and_evaluation_slices",
+    "training_membership_preserved": true,
+    "chronology": "each_evaluation_start_greater_than_or_equal_to_training_end",
+    "trial_axis_projection": "trial_data_slices",
+    "legacy_trial_axis": "data_slices",
+    "new_trial_axis": "evaluation_slices"
+  },
+  "unchanged": {
+    "model_candidate_schema_version": 2,
+    "model_build_plan_schema_version": 1,
+    "model_build_evidence_schema_version": 1,
+    "validation_report_schema_version": 1,
+    "target_experiment_schema_version": 2,
+    "target_candidate_schema_version": 3,
+    "selection_reserves_all_declared_slices": true,
+    "training_artifact_interval_exact": true,
+    "actual_model_availability_guard": true,
+    "no_replay_reads_or_new_reservations": true,
+    "no_validation_import_of_research": true,
+    "no_preparation_failure_ref_fabrication": true
+  },
+  "synthetic_chain": {
+    "training_interval_ns": [0, 1000],
+    "evaluation_interval_ns": [2000, 3000],
+    "evaluation_target_ns": 2100,
+    "evaluation_bar_ns": 2200,
+    "oos_interval_ns": [4000, 5000],
+    "oos_target_ns": 4100,
+    "oos_bar_ns": 4200,
+    "declared_slices": 2,
+    "evaluation_slices": 1,
+    "trials": 4,
+    "task_universe": 10,
+    "source_refs_and_clocks_must_match_declarations": true,
+    "qualification": "synthetic_protocol_only"
+  }
+}

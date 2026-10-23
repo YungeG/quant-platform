@@ -1,6 +1,6 @@
 # Platform glossary
 
-This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md) and additive [Integration v2](overall/integration-v2.md), [Integration v3](overall/integration-v3.md), [Integration v5](overall/integration-v5.md), and [Integration v6](overall/integration-v6.md); Integration v4 remains an approved/deferred proposal. Frozen pure-value terms remain defined by their module designs.
+This file defines concepts only. Normative interfaces, schemas, state machines, and acceptance rules are in [Integration v1](overall/integration-v1.md) and additive [Integration v2](overall/integration-v2.md), [Integration v3](overall/integration-v3.md), [Integration v5](overall/integration-v5.md), and [Integration v6](overall/integration-v6.md), and [Model evaluation scope v1](overall/model-evaluation-scope-v1.md); Integration v4 remains an approved/deferred proposal. Frozen pure-value terms remain defined by their module designs.
 
 ## Evidence and storage
 
@@ -115,6 +115,18 @@ _Avoid_: feature callback, plugin, DataFrame
 The immutable identity of one training contract: its logical key, code hash, model lineage, and explicit hyperparameters. It is not an estimator object, search space, or model loader.
 
 _Avoid_: trainer callback, framework object, hyperparameter search
+
+**Training scope**
+
+The declared samples consumed to build a model and its features, distinct from the samples used to evaluate that model.
+
+_Avoid_: Trial universe, evaluation scope, model availability
+
+**Evaluation scope**
+
+The declared samples on which a built model is evaluated. Evaluation alone does not imply independently unseen holdout evidence.
+
+_Avoid_: training scope, automatically blind OOS, validated effectiveness
 
 **ModelBuildPlan**
 
