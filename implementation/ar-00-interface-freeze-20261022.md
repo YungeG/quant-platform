@@ -33,6 +33,8 @@ SampleConsumptionLedger.require_foundation(foundation: LocalFoundation) -> None
 - Validation-owned frozen in-memory `VerifiedCandidateProvenance`：绑定candidate、family、experiment、execution manifest、selection declaration和真实manifest截止entry；不是持久证书、布尔自证或对恶意插件的安全认证。
 - Research-owned `verify_candidate_provenance(candidate_ref, foundation, backtest)`：只读重建完整已发布Experiment，复用既有任务/attempt/manifest/selection算法，不执行、预约、derive、创建新checkpoint或发布。
 - `validate_candidate`及`validate_target_candidate`新增keyword-only `candidate_provenance_verifier`，由composition root从Research公共根注入。缺失时明确NoReport，不保留弱默认通路；非callable为TypeError；身份不匹配/来源语义失败按既有provenance失败映射。
+- 六项身份绑定的职责分配：runtime独立解析真实manifest owner-publication的LogEntryRef，校验verifier给出的截止引用；纯CandidateGraph只比较自己能见到的其余身份及名义结果类型，不增一个只会复制callback值的冗余cutoff字段。该窄澄清已记录`interface_freeze_addendum_v2.json`，没有削弱实际截止点检查。
+- 迁移本地测试port时，Research和OOS需要不同的完整、相互一致的fixture引用；可在Research发布前建立确定性的`research:<case>`副本，不能依赖analysis加载次数、改冻结BT-PORT JSON或伪造positive verifier来跳过生产校验。
 - 这是有意的调用方迁移，不宣称所有旧调用透明兼容；原有效artifact/schema/refs不变。所有库内调用者需要显式接线。纯core夹具可提供绑定的假值，但不能据此当作生产来源验收；生产通路必须使用真实Research verifier。
 - Research复用`validate_execution_prefix`、`build_execution_manifest`、`build_candidate_family`及`select_candidate`；不在Validation复制第二套Experiment checker，不把Foundation存储权限当作语义正确性。
 - v1已有报告回放需解析原Plan、完整必需CaseResults、真实assessment、原预约和Backtest证据，复算报告派生字段后返回原引用；不能先shape-check报告便早退。v6保留较强既有target恢复路径。

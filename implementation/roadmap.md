@@ -92,13 +92,13 @@ These states are authoritative. Subplans link here rather than maintaining dupli
 | `TSR-ASH-Q-01` | SEPARATE_H2 | broad A-share historical qualification remains separate from the narrow accepted route |
 | `AR-00` | DONE | baseline, isolated source cohort and D1/D2/D3 frozen in [interface record](ar-00-interface-freeze-20261022.md); B/A/C representative source smokes passed 2/2/1; not implementation acceptance |
 | `AR-01` | DONE | Research `220744b5` / Validation `ccecf5bb`; parent191 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); root fan-in/default environment remain separate |
-| `AR-02` | ACTIVE | D2a writer implementing Research read-only verifier + Validation-owned in-memory result; D2b report/caller enforcement follows, no closure claim yet |
-| `AR-03`, `AR-04` | ACTIVE | B writer owns integer-share/T+1, model time and source-derived Analysis validation in isolated Backtest branch; parent acceptance outstanding |
+| `AR-02` | ACTIVE | D2a accepted at Research `ba2af01b` / Validation `a8c9127d` after parent132 tests and targeted review; D2b runtime/report/composition migration executing; findings2/7 not closed yet |
+| `AR-03`, `AR-04` | DONE | Backtest `3e01ef7f`, parent248 focused tests + fresh review; inherited AST failure explicitly fixed/tested in combined `6ce79d6d`; [leaf receipt](ar-03-04-06-08-receipt-20261022.md); full-leaf fan-in still AR-09 |
 | `AR-05` | DONE | Backtest `5f633cf4`; parent85 focused tests and fresh review accepted; [leaf receipt](ar-01-ar-05-receipt-20261022.md); combined Backtest/root checks pending |
-| `AR-06` | ACTIVE | C writing slot moved to isolated Promotion branch; pending Evaluation recovery/shared-publication correctness under focused RED/GREEN |
-| `AR-07` | BLOCKED_LEAF_EVIDENCE | final version/SDK pins require actual accepted leaf commits; inventory/design may proceed in AR-00 |
-| `AR-08` | QUEUED | approved portability and operation simplification; historical bytes remain immutable |
-| `AR-09` | BLOCKED_LEAF_EVIDENCE | one-writer root integration and required independent/full validation after AR-01–07 |
+| `AR-06` | DONE | Promotion `4de95ace`, parent114 full tests + targeted review accepted after exact nested-ref repair; [leaf receipt](ar-03-04-06-08-receipt-20261022.md); root caller migration/fan-in separate |
+| `AR-07` | BLOCKED_LEAF_EVIDENCE | final version/SDK pins await A2b accepted leaf commits and publishing authority; source-cohort design fixed in AR-00 |
+| `AR-08` | DONE | root portability candidate `322aadf` cherry-picked; parent10 tests + real1101-file code bundle check + targeted review; old path not restored, no market replay; [receipt](ar-03-04-06-08-receipt-20261022.md) |
+| `AR-09` | ACTIVE_VALIDATION | combined Backtest `6ce79d6d` single full suite executing in frozen development cohort; final root acceptance still requires AR-02/07 and default environment |
 | `AR-10` | NOT_AUTHORIZED | real strategy/data execution retains separate user authorization and actual provider/prepare evidence requirements |
 
 ## 3. Execution DAG
