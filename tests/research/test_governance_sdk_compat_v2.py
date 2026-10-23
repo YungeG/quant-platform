@@ -45,11 +45,12 @@ def test_historic_v1_pins_cannot_authorize_current_capture(tmp_path, monkeypatch
     with pytest.raises(capture.CaptureError, match="CAPTURE_GOV_CODE_PIN"):
         capture.issue_capture_admission(spec, protocol, runtime_authorize=lambda: None)
     assert (Path(spec.output) / "governance-account/close.json").exists()
+    assert not (Path(spec.output) / "data").exists()
 
 
 def test_ledger_foundation_guard_is_pure_identity_check(tmp_path, monkeypatch) -> None:
     from crypto_quant_foundation import LocalFoundation
-    from crypto_quant_validation import SampleConsumptionLedger
+    from crypto_quant_validation import SampleConsumptionLedger, ValidationCoreFailure
 
     def no_clock():
         raise AssertionError("guard must not read clock")
@@ -60,5 +61,6 @@ def test_ledger_foundation_guard_is_pure_identity_check(tmp_path, monkeypatch) -
     monkeypatch.setattr(Path, "stat", lambda *a, **k: (_ for _ in ()).throw(AssertionError("filesystem I/O")))
     monkeypatch.setattr(Path, "open", lambda *a, **k: (_ for _ in ()).throw(AssertionError("filesystem I/O")))
     ledger.require_foundation(first)
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationCoreFailure) as failure:
         ledger.require_foundation(second)
+    assert failure.value.code == "SAMPLE_LEDGER_CONFLICT"

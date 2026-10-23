@@ -41,7 +41,8 @@ def test_rejects_invalid_mode_stage_or_sha(monkeypatch, tmp_path, row: str) -> N
 
 
 def test_rejects_zero_or_multiple_index_rows(monkeypatch, tmp_path) -> None:
-    check = Mock(side_effect=["", "160000 " + "a" * 40 + " 0\tbacktest\n" * 2])
+    row = "160000 " + "a" * 40 + " 0\tbacktest\n"
+    check = Mock(side_effect=["", row * 2])
     monkeypatch.setattr(dependency_revision.subprocess, "check_output", check)
     for _ in range(2):
         with pytest.raises(ValueError):

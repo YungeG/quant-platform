@@ -20,12 +20,17 @@ COVERS = ("proxy_smoke", "proxy_regression", "capture_integration")
 LIMITS = {"preflight_seconds": 30, "child_seconds": 60, "total_seconds": 120,
           "close_seconds": 10, "log_bytes": 2 * 1024 * 1024, "report_bytes": 2 * 1024 * 1024,
           "source_file_bytes": 2 * 1024 * 1024, "snapshot_bytes": 32 * 1024 * 1024}
-PINS = {
+# Preserve the old qualification facts; only the explicit v2 binding is current.
+IDENTITY_SCOPE = "offline-pc-inputs-v2"
+PINS_V1 = {
     FILES[0]: "e74298c88d9e0ec2088a86ba6a374664c266c173ef3ce574e7842d838966c2ba",
     FILES[1]: "8b8f6f812abc574c48eb1bc610b13e0ef62c4bb6ddf3f3c369679e51564b66fc",
     "tests/research/conftest.py": "385b36bb23043a5d5439287f52f130ebd7289a6eda5add3be8c182d54d2a3456",
     "pyproject.toml": "c33c31e91a80ca5c56b1b5ccf1356c18dd8deff28ca07a0605a15448182e0aab",
     "uv.lock": "77e015a4b69f4bce62f61170dc80201a0abee51fd2b4e507819cfd0f4d8a3e5f"}
+PINS = {**PINS_V1,
+    "pyproject.toml": "a3a065c81ba4e9bbc878a37fca676ead543c64e91af77e60eb5fa2d719774fa4",
+    "uv.lock": "85deae6e0e319998cd49e47d7a4321d468a47f88909dd05f30d745a71f86e8d2"}
 VERSIONS = {"crypto-quant-domain": "0.1.0", "crypto-quant-foundation": "0.1.0",
             "crypto-quant-research": "0.1.0", "crypto-quant-validation": "0.1.0",
             "pytest": "8.4.2", "packaging": "26.3", "pandas": "3.0.6", "numpy": "2.5.3",
@@ -149,7 +154,7 @@ def snapshot_pc(root, runtime):
     files = {rel: reader.identity(root / rel) for rel in sorted(paths)}
     if any(files[rel]["sha256"] != expected for rel, expected in PINS.items()):
         raise QualificationError("FIXTURE_OR_CONFIG_QUALIFICATION_CHANGED")
-    return {"schema_version": 1, "identity_scope": "offline-pc-inputs-v1", "files": files,
+    return {"schema_version": 1, "identity_scope": IDENTITY_SCOPE, "files": files,
             "runtime": runtime, "distributions": distribution_snapshot(reader), "env": clean_env(),
             "argv_template": argv_for_pc(root, Path("<EXCLUSIVE_OUTPUT>")), "cwd": str(root),
             "limits": LIMITS, "coverage_contract": "98-all-phases-S4/4/1-v1",

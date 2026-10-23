@@ -627,7 +627,7 @@ def _offline_pc_main(args):
         if code in (130, 143):
             for s in (signal.SIGINT, signal.SIGTERM):
                 signal.signal(s, signal.SIG_IGN)
-        result = {"schema_version": 1, "profile": "offline-pc", "identity_scope": "offline-pc-inputs-v1",
+        result = {"schema_version": 1, "profile": "offline-pc", "identity_scope": pc.IDENTITY_SCOPE,
             "input_manifest": "inputs.json", "input_before_sha256": digest(encoded(before)) if before else None,
             "input_after_sha256": digest(encoded(after)) if after else None, "overall_status": status,
             "verification_passed": status == "PASS", "reason": reason, "checks": checks, "coverage": coverage,

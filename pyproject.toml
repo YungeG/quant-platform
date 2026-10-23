@@ -21,6 +21,7 @@ dev = [
   "packaging==26.3",
   "pandas==3.0.6",
   "numpy==2.5.3",
+  "duckdb==1.5.4", # Existing synthetic catalog fixtures use the pinned native parser.
   "iniconfig==2.3.0",
   "pluggy==1.6.0",
   "pygments==2.20.0",

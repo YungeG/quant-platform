@@ -290,6 +290,7 @@ def test_offline_pc_fixed_entry_and_exclusive_output(tmp_path, monkeypatch):
     assert v.main(["--profile", "offline-pc", "--output", str(output)]) == 0
     result = json.loads((output / "result.json").read_text())
     assert result["coverage"]["covered"] == list(pc.COVERS)
+    assert result["identity_scope"] == pc.IDENTITY_SCOPE
     assert result["source_qualified"] is result["native_authorized"] is result["reuse_allowed"] is False
     assert calls == [(argv, ROOT, 60, 2 * 1024 * 1024, pc.clean_env())]
     assert v.main(["--profile", "offline-pc", "--output", str(output)]) == 2
@@ -354,6 +355,27 @@ def test_offline_pc_bounded_report(tmp_path, kind, monkeypatch):
             monkeypatch.setitem(pc.LIMITS, "report_bytes", 5)
     with pytest.raises(pc.QualificationError):
         pc.read_child_report(tmp_path)
+
+
+def test_offline_pc_v2_preserves_fixed_fixture_and_old_config_binding():
+    pc = pc_module()
+    assert pc.IDENTITY_SCOPE == "offline-pc-inputs-v2"
+    assert pc.PINS_V1["pyproject.toml"] == "c33c31e91a80ca5c56b1b5ccf1356c18dd8deff28ca07a0605a15448182e0aab"
+    assert pc.PINS_V1["uv.lock"] == "77e015a4b69f4bce62f61170dc80201a0abee51fd2b4e507819cfd0f4d8a3e5f"
+    assert set(pc.PINS) == set(pc.PINS_V1)
+    for name in (*pc.FILES, "tests/research/conftest.py"):
+        assert pc.PINS[name] == pc.PINS_V1[name]
+    assert pc.PINS["pyproject.toml"] == "a3a065c81ba4e9bbc878a37fca676ead543c64e91af77e60eb5fa2d719774fa4"
+    assert pc.PINS["uv.lock"] == "85deae6e0e319998cd49e47d7a4321d468a47f88909dd05f30d745a71f86e8d2"
+
+
+def test_offline_pc_old_config_binding_is_not_current_authority(monkeypatch):
+    pc = pc_module()
+    monkeypatch.setattr(pc, "PINS", dict(pc.PINS_V1))
+    monkeypatch.setattr(pc, "module_paths", lambda root: {})
+    monkeypatch.setattr(pc, "distribution_snapshot", lambda reader: pytest.fail("old config must fail first"))
+    with pytest.raises(pc.QualificationError, match="FIXTURE_OR_CONFIG_QUALIFICATION_CHANGED"):
+        pc.snapshot_pc(ROOT, {})
 
 
 def test_offline_pc_explicit_env_and_synthetic_guard(tmp_path, monkeypatch):
