@@ -11,6 +11,7 @@ import re
 import stat
 import sys
 import tarfile
+import zlib
 from pathlib import Path, PurePosixPath
 
 MAX_INVENTORY = 2 * 1024 * 1024
@@ -77,7 +78,7 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
         _fail("inventory_hash_mismatch")
     try:
         manifest = json.loads(manifest_raw)
-    except (UnicodeError, json.JSONDecodeError):
+    except (UnicodeError, json.JSONDecodeError, RecursionError):
         _fail("invalid_inventory")
     if not isinstance(manifest, dict):
         _fail("invalid_inventory")
@@ -113,7 +114,7 @@ def verify_bundle(inventory_path, archive_path=None, *, expected_inventory_sha25
     try:
         with gzip.GzipFile(fileobj=__import__("io").BytesIO(raw), mode="rb") as stream:
             decompressed = stream.read(MAX_TAR + 1)
-    except (OSError, EOFError, gzip.BadGzipFile):
+    except (OSError, EOFError, gzip.BadGzipFile, zlib.error):
         _fail("invalid_archive")
     if len(decompressed) > MAX_TAR:
         _fail("tar_size_limit")

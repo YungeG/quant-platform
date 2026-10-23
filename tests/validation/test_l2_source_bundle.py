@@ -162,6 +162,35 @@ def test_small_patched_limits_rejected(tmp_path, monkeypatch):
         verify_bundle(ip2, ap2)
 
 
+def test_cli_bounds_nested_json_decoder_error(tmp_path):
+    inventory = tmp_path / "SECRET_NESTED_INVENTORY.json"
+    inventory.write_text("[" * 2000 + "]" * 2000)
+    proc = subprocess.run(
+        [sys.executable, "tools/verify_l2_source_bundle.py", "--inventory", str(inventory)],
+        cwd=os.getcwd(), capture_output=True, text=True, timeout=3,
+    )
+    assert proc.returncode == 1
+    assert len(proc.stderr) < 200
+    assert "Traceback" not in proc.stderr and "SECRET" not in proc.stderr
+
+
+def test_cli_bounds_corrupt_deflate_decoder_error(tmp_path):
+    ip, ap, manifest = fixture(tmp_path)
+    raw = bytearray(ap.read_bytes())
+    raw[10] ^= 0xff
+    ap.write_bytes(raw)
+    manifest["archive_bytes"] = len(raw)
+    manifest["archive_sha256"] = hashlib.sha256(raw).hexdigest()
+    ip.write_text(json.dumps(manifest))
+    proc = subprocess.run(
+        [sys.executable, "tools/verify_l2_source_bundle.py", "--inventory", str(ip)],
+        cwd=os.getcwd(), capture_output=True, text=True, timeout=3,
+    )
+    assert proc.returncode == 1
+    assert len(proc.stderr) < 200
+    assert "Traceback" not in proc.stderr and "SECRET" not in proc.stderr
+
+
 def test_rejects_traversal_and_relocated_archive_mismatch(tmp_path):
     ip, ap, manifest = fixture(tmp_path)
     manifest["files"][0]["path"] = "../escape"
