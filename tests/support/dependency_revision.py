@@ -9,6 +9,28 @@ import subprocess
 import tomllib
 from pathlib import Path
 
+SUBMODULES = ("backtest", "foundation", "research-platform", "strategy-validation", "promotion-gate")
+
+
+def submodule_revision(name: str, root: Path | None = None) -> str:
+    if name not in SUBMODULES:
+        raise ValueError("unknown dependency submodule")
+    root = root or Path(__file__).resolve().parents[2]
+    try:
+        rows = subprocess.check_output(["git", "ls-files", "--stage", "--", name], cwd=root, text=True).splitlines()
+        if len(rows) != 1:
+            raise ValueError("dependency must have exactly one staged gitlink")
+        fields = rows[0].split()
+        if (len(fields) != 4 or fields[0] != "160000" or fields[2:] != ["0", name]
+                or len(fields[1]) != 40 or any(c not in "0123456789abcdef" for c in fields[1])):
+            raise ValueError("dependency must have one exact staged gitlink")
+        checked_out = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root / name, text=True).strip()
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise ValueError("dependency Git coordinate is unavailable") from error
+    if checked_out != fields[1]:
+        raise ValueError("dependency checkout differs from workspace gitlink")
+    return fields[1]
+
 
 def backtest_revision(root: Path | None = None) -> str:
     root = root or Path(__file__).resolve().parents[2]
@@ -16,26 +38,13 @@ def backtest_revision(root: Path | None = None) -> str:
     source = project["tool"]["uv"]["sources"]["crypto-quant-backtest"]
     if "rev" in source and "path" not in source:
         revision = source["rev"]
-        if type(revision) is not str or not revision:
-            raise ValueError("Backtest Git revision must be explicit")
+        if (type(revision) is not str or len(revision) != 40
+                or any(c not in "0123456789abcdef" for c in revision)):
+            raise ValueError("Backtest Git revision must be explicit lowercase SHA-1")
         return revision
     if source != {"path": "backtest/packages/backtest-runtime", "editable": True}:
         raise ValueError("Backtest local source must use the exact submodule runtime path")
     package = root / "backtest/packages/backtest-runtime"
     if not (package / "src/crypto_quant_backtest/__init__.py").is_file():
         raise ValueError("local editable Backtest package is unavailable")
-    try:
-        entry = subprocess.check_output(
-            ["git", "ls-files", "--stage", "--", "backtest"], cwd=root, text=True
-        ).strip().split()
-        if (len(entry) != 4 or entry[0] != "160000" or entry[2:] != ["0", "backtest"]
-                or len(entry[1]) != 40 or any(c not in "0123456789abcdef" for c in entry[1])):
-            raise ValueError("Backtest dependency must have one exact staged gitlink")
-        checked_out = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=root / "backtest", text=True
-        ).strip()
-    except (OSError, subprocess.CalledProcessError) as error:
-        raise ValueError("local editable Backtest Git base is unavailable") from error
-    if checked_out != entry[1]:
-        raise ValueError("Backtest checkout differs from the workspace gitlink")
-    return entry[1]
+    return submodule_revision("backtest", root)

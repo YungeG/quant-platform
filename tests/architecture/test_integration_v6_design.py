@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from tests.support.dependency_revision import backtest_revision
+from tests.support.dependency_revision import backtest_revision, submodule_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v6.md"
@@ -360,15 +360,24 @@ def test_integration_v6_status_and_root_fan_in_are_accepted() -> None:
     assert BASELINES["backtest"] not in pyproject
     assert BASELINES["backtest"] not in lock
 
+    historic_gitlinks = subprocess.check_output(
+        ["git", "ls-tree", "2a9103dd9e4b8503658db88a17fbbf201c62d16e", "backtest", "research-platform", "strategy-validation"],
+        cwd=ROOT, text=True,
+    ).splitlines()
+    historic = {line.split("\t", 1)[1]: line.split()[2] for line in historic_gitlinks}
+    assert historic == {
+        "backtest": FANIN["backtest"],
+        "research-platform": FANIN["research"],
+        "strategy-validation": FANIN["validation"],
+    }
     for path, key in (
         ("backtest", "backtest"),
         ("research-platform", "research"),
         ("strategy-validation", "validation"),
     ):
-        current = subprocess.check_output(
-            ["git", "-C", path, "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip()
-        assert current == (backtest_revision() if key == "backtest" else FANIN[key])
+        current = submodule_revision(path, ROOT)
+        if key == "backtest":
+            assert current == backtest_revision()
         assert subprocess.run(
             ["git", "-C", path, "merge-base", "--is-ancestor", FANIN[key], current],
             cwd=ROOT, check=False, timeout=10,
@@ -380,7 +389,8 @@ def test_integration_v6_status_and_root_fan_in_are_accepted() -> None:
         ).returncode == 0
 
     for path, key in (("foundation", "foundation"), ("promotion-gate", "promotion")):
-        entry = subprocess.check_output(
-            ["git", "ls-files", "-s", path], cwd=ROOT, text=True
-        ).split()
-        assert entry[:2] == ["160000", BASELINES[key]]
+        current = submodule_revision(path, ROOT)
+        assert subprocess.run(
+            ["git", "-C", path, "merge-base", "--is-ancestor", BASELINES[key], current],
+            cwd=ROOT, check=False, timeout=10,
+        ).returncode == 0

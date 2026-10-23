@@ -1,0 +1,9 @@
+# AR-07 SDK compatibility binding v2 and current history coordinates
+
+The catalog harness now declares the `platform-audit-remediation-20261022-v2` SDK binding explicitly. Its seven current source pins are literal and include three reviewed Validation SDK source identities; the exact former seven-pin mapping remains available as `CATALOG_GOVERNANCE_CODE_PINS_V1` solely as historical metadata. Runtime authority continues to consult only the current mapping. No fallback, automatic pin calculation, persisted migration, schema change, or governor/receipt change was introduced.
+
+The binding records Foundation `9d88ed67a84d06c558276f8bae2206b069bcec8f`, Research `ba2af01b7e070a677b7f365ef37f7d8a6a071ff6`, and Validation `fa16b688cc1468007c2f92e2c53079bc4ab5464d`. The updated Validation hashes correspond to the exact three declared files; other four pins are unchanged. The ledger's `require_foundation` basis is the pure identity guard already implemented in the SDK. This is not a new physical-I/O claim: existing Foundation instance use and existing bounded capture behavior remain as before.
+
+A test-only helper validates current workspace coordinates against a single stage-0 mode-160000 gitlink and the checked-out submodule HEAD for the five declared dependencies. It asserts coordinate identity only, not cleanliness, build identity, or release authority. V5 retains historic acceptance SHAs separately and checks ancestry to current coordinates. V6 preserves the frozen baseline/fan-in and historic root pyproject/lock facts while comparing installed workspace checkouts to current gitlinks and verifying ancestry.
+
+No source business logic, financial formula, guard, receipt, persisted migration, legacy fixture, or fixture hash was changed. Local checked tests do not constitute release acceptance; parent-owned qualification configuration/default-environment gates remain outstanding.

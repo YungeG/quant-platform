@@ -5,7 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from tests.support.dependency_revision import backtest_revision
+from tests.support.dependency_revision import backtest_revision, submodule_revision
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "overall/integration-v5.md"
@@ -34,10 +34,11 @@ BACKTEST_FANIN_SHA = "8de544e7794ee05b652355c9809b5454d7ace494"
 CURRENT_BACKTEST_SHA = backtest_revision()
 V5_LOCK_SHA = "75a91665859490d03544066d0585bceec9b6dbe7156cf322b4cb67f95a6a420f"
 RP_DG_SHA = "1557ec1904de6f2a8f8a32c2f37ce038a0daa022"
-CURRENT_RP_SHA = "c06662449a8a13aed5824398b96bd21e889a9fee"
+CURRENT_RP_SHA = submodule_revision("research-platform")
 SV_DG_SHA = "cd966d92dad2110af7d8b1bf580536f6c3cdb998"
-CURRENT_SV_SHA = "dad119842737fd06137914537fcc51df12996353"
+CURRENT_SV_SHA = submodule_revision("strategy-validation")
 PG_DG_SHA = "8e6dddf5da0494b57cca6990d5024fe4198e6b44"
+CURRENT_PG_SHA = submodule_revision("promotion-gate")
 DG_THIN_SHA = "2b21c8df40174d5a9a5b9def9a9646c34c587832"
 FI_GOLDEN_SHA = "324f2fd08d8d9be4f4c32e222ee5bc63306ac81e"
 
@@ -161,11 +162,12 @@ def test_v5_roadmap_records_the_approved_contract_and_execution_dag() -> None:
     assert subprocess.check_output(
         ["git", "-C", "strategy-validation", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip() == CURRENT_SV_SHA
-    assert promotion_entry[:2] == ["160000", PG_DG_SHA]
+    assert promotion_entry[:2] == ["160000", CURRENT_PG_SHA]
     for path, accepted, current in (
         ("backtest", BACKTEST_FANIN_SHA, CURRENT_BACKTEST_SHA),
         ("research-platform", RP_DG_SHA, CURRENT_RP_SHA),
         ("strategy-validation", SV_DG_SHA, CURRENT_SV_SHA),
+        ("promotion-gate", PG_DG_SHA, CURRENT_PG_SHA),
     ):
         assert subprocess.run(
             ["git", "-C", path, "merge-base", "--is-ancestor", accepted, current],
