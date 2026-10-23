@@ -30,10 +30,11 @@ Thus one Plan, two parameter combinations, two seeds, one evaluation slice and o
 ## 3. Source, reservation and temporal authority
 
 - FeatureBuild and ModelTraining reserve the exact Plan training slice before their callbacks. Trial reservations cover only generated evaluation Trials. Same-Foundation ledger identity guard remains first and performs no I/O/clock.
+- Public Backtest preparation reads/materializes market inputs. Therefore **all model versions reserve all published Trial discovery producers before the ALL-prepare callback**, after the existing replay early-return/build gates. Reuse the same idempotent reservations later in dispatch. A reservation failure propagates its original error, prevents the whole prepare callback/read, and retains earlier reservations conservatively; it does not invent a request, outcome or closed family. This corrects the existing ordering bug without changing legacy payload/ref identities or rewriting old evidence.
 - Selection continues its existing reservation over all declared data_slices; this contract does not silently redefine that existing behavior.
 - Model artifact training_start/end must still exactly equal the Plan/manifest interval; hashes/schema/model lineage bindings stay exact. Never backdate available_at or invent a shorter training interval.
 - Actual request window, target/bar/mark clocks, bundle ref and the declared evaluation slice must agree. The unchanged Backtest public preparation rejects a future model before publishing its request/attempt; no manufactured request refs or new preparation-failure protocol.
-- Model OOS has its own explicitly scoped policy/source/reader/window, not the ordinary fixture's unrelated dates. Both discovery/training and OOS remain pre-read reservations. Evaluation is **not automatically blind or independent OOS**.
+- Model OOS has its own explicitly scoped policy/source/reader/window, not the ordinary fixture's unrelated dates. Both discovery/training and OOS remain pre-read reservations. Actual OOS preparation is deferred into the existing run port after the actual Validation Case reservation; inert configuration is not an early/fabricated prepared request. Evaluation is **not automatically blind or independent OOS**.
 - Synthetic tests prove source/ref/clock/protocol coherence only; they do not prove actual training/inference, provider/PIT qualification or financial effectiveness.
 
 ## 4. Reconstruction and consumers
@@ -41,6 +42,7 @@ Thus one Plan, two parameter combinations, two seeds, one evaluation slice and o
 - Research's existing read-only verifier explicitly decodes Experiment schemas1/2/3, reconstructs the exact canonical @3 value including evaluations, and uses the same task generator for full closure/selection. A legacy envelope containing the new field, or @3 missing it, is rejected; malformed values stay in the existing failure domain.
 - Research local-reference parsing admits `experiment_spec@3` **only**; unchanged artifact kinds do not gain @3. Both frozen model inputs and the internal post-build FrozenExperimentInputs admit the explicit @3 model variant while preserving target-mode separation and exact execution/request checks.
 - Validation's model Experiment loader and its exact field-set check dispatch explicitly between unchanged @1 and new @3. VerifiedCandidateProvenance may bind Experiment@3. Research remains the semantic reconstruction authority; no Validation→Research import or duplicate compiler.
+- Promotion's existing model Candidate@2 closure explicitly admits Experiment@1/@3, including its governed-reference parser; ordinary Candidate@1 remains Experiment@1, and target Candidate@3/Report@2 remain unsupported. No eligibility, grade or status-policy change is implied.
 - The six provenance identities, independently resolved manifest owner/cutoff, full source analyses, valid Backtest metrics, original OOS publication/reservation and original replay refs remain required. No repair/reissue/re-reservation or rerun on replay.
 
 ## 5. Failure precedence and compatibility
