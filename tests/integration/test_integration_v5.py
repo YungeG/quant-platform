@@ -7,6 +7,7 @@ from pathlib import Path
 
 import crypto_quant_backtest as backtest
 import pytest
+from crypto_quant_research import verify_candidate_provenance
 from crypto_quant_domain import ArtifactRef, canonical_bytes, canonical_sha256
 from crypto_quant_foundation import LocalFoundation
 from crypto_quant_promotion import PublishedPositiveDecision, evaluate_positive_case
@@ -148,6 +149,7 @@ def test_real_decision_grade_candidate_supported_chain_is_exact_v2_replay_stable
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     report = _VALIDATION._payload(foundation, validation.validation_report_ref)
     plan = _VALIDATION._payload(foundation, validation.validation_plan_ref)
@@ -280,6 +282,7 @@ def test_real_decision_grade_candidate_supported_chain_is_exact_v2_replay_stable
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     admission_replay = (
         _ADMISSION.admit_backtest_evidence(publication_ref, repository, foundation),

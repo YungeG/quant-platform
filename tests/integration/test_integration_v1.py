@@ -8,6 +8,7 @@ from typing import Any
 
 import crypto_quant_backtest as backtest
 import pytest
+from crypto_quant_research import verify_candidate_provenance
 from crypto_quant_domain import ArtifactRef, canonical_bytes
 from crypto_quant_promotion import PublishedNegativeDecision, evaluate_case
 from crypto_quant_validation import PublishedValidationReport
@@ -82,6 +83,7 @@ def test_whole_platform_golden_is_one_replay_stable_provenance_chain(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     assert type(validation) is PublishedValidationReport
     validation_report = _payload(foundation, validation.validation_report_ref)
@@ -141,6 +143,7 @@ def test_whole_platform_golden_is_one_replay_stable_provenance_chain(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     admission_replay = tuple(
         _ADMISSION.admit_backtest_evidence(

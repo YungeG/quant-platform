@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import crypto_quant_backtest as backtest
+from crypto_quant_research import verify_candidate_provenance
 from crypto_quant_domain import ArtifactRef
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -72,6 +73,7 @@ def test_integration_v2_whole_platform_golden_replays_one_model_lineage(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     validation_replay = _VALIDATION.validate_candidate(
         candidate.strategy_candidate_ref,
@@ -81,6 +83,7 @@ def test_integration_v2_whole_platform_golden_replays_one_model_lineage(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     report = _payload(foundation, validation.validation_report_ref)
     plan_ref = _ref(report["validation_plan_ref"])  # type: ignore[arg-type]

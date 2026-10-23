@@ -12,7 +12,11 @@ import pytest
 from crypto_quant_domain import ArtifactRef, canonical_bytes, canonical_sha256
 from crypto_quant_foundation import LocalFoundation
 from crypto_quant_promotion import PromotionActors, evaluate_positive_case
-from crypto_quant_research import PublishedStrategyCandidate, execute_target_experiment
+from crypto_quant_research import (
+    PublishedStrategyCandidate,
+    execute_target_experiment,
+    verify_candidate_provenance,
+)
 from crypto_quant_validation import (
     PublishedValidationReport,
     SampleConsumptionLedger,
@@ -192,6 +196,7 @@ def test_development_cash_target_stream_research_to_independent_oos_golden_repla
         ledger,
         validation_materializer,
         binding,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
 
     assert type(validation) is PublishedValidationReport
@@ -328,6 +333,7 @@ def test_development_cash_target_stream_research_to_independent_oos_golden_repla
         ledger,
         validation_materializer,
         binding,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
 
     assert candidate_replay == candidate

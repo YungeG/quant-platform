@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import crypto_quant_backtest as backtest
+from crypto_quant_research import verify_candidate_provenance
 from crypto_quant_promotion import PublishedPositiveDecision, evaluate_positive_case
 from crypto_quant_validation import OosRule, PublishedValidationReport, ValidationPolicy
 
@@ -69,6 +70,7 @@ def test_real_supported_validation_reaches_shadow_ready_and_replays(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     assert type(validation) is PublishedValidationReport
     validation_report = _V1._payload(foundation, validation.validation_report_ref)
@@ -153,6 +155,7 @@ def test_real_supported_validation_reaches_shadow_ready_and_replays(
         foundation,
         ledger,
         provider,
+        candidate_provenance_verifier=verify_candidate_provenance,
     )
     admission_replay = tuple(
         _ADMISSION.admit_backtest_evidence(
